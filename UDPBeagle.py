@@ -1,6 +1,7 @@
 import random as r
 import socket
 import json as js
+import time
 
 UDP_IP = "127.0.0.1"
 UDP_PORT = 5005
@@ -8,6 +9,11 @@ ME_UDP_IP = "127.0.0.1"
 ME_UDP_PORT = 8008
 BUFFER_SIZE = 1024
 NUM_OF_SENSORS = 5
+SLEEP_SECONDS = 1.0
+ON = 1
+OFF = 0
+
+STOPPER_COND = 5100
 
 def generateRandomData(sensorTotal):
 	return [ r.randint(1,10*(i+1)) for i in range(sensorTotal)]
@@ -21,17 +27,19 @@ def sendToClients(generatedData):
 	sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	sock.sendto(js.dumps(generatedData), (UDP_IP, UDP_PORT))
 
-stop = 0
-stopper = js.dumps(55100)
-while stop != 1 :	
+
+stop = ON
+stopper = js.dumps(STOPPER_COND)
+while stop != OFF :	
+	time.sleep(SLEEP_SECONDS)
 	listener = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
 	listener.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
 	listener.bind((ME_UDP_IP, ME_UDP_PORT))
 	generatedData = generateRandomData(NUM_OF_SENSORS)
-	#print (generatedData)
+	print (generatedData)
 	updateData(generatedData)
 	sendToClients(generatedData)
-	data, addr = listener.recvfrom(BUFFER_SIZE)
-	print js.loads(data)
-	if (js.loads(data) == js.loads(stopper)): 
-		stop = 1
+	#data, addr = listener.recvfrom(BUFFER_SIZE)
+	#print js.loads(data)
+	#if (js.loads(data) == js.loads(stopper)): 
+	#	stop = OFF
