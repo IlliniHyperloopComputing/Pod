@@ -13,7 +13,7 @@ SLEEP_SECONDS = 1.0
 ON = 1
 OFF = 0
 
-STOPPER_COND = 5100
+STOPPER_COND = 20
 
 def generateRandomData(sensorTotal):
 	return [ r.randint(1,10*(i+1)) for i in range(sensorTotal)]

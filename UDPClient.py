@@ -4,9 +4,9 @@ from time import time
 from random import random
 from flask import Flask, render_template, make_response
 
-UDP_IP = "127.0.0.1"
+UDP_IP = "192.168.7.1"
 UDP_PORT = 5005
-SENDER_UDP_IP = "127.0.0.1"
+SENDER_UDP_IP = "192.168.7.2"
 SENDER_UDP_PORT = 8008
 BUFFER_SIZE = 1024
 
@@ -25,6 +25,7 @@ def live_data():
 	sock.bind((UDP_IP, UDP_PORT))
 	count = 0
 	data, addr = sock.recvfrom(BUFFER_SIZE) 
+	print ("asdasdasd")
 	if data:
 		print "received message:", js.loads(data)
 		sock.sendto(js.dumps(count), (SENDER_UDP_IP, SENDER_UDP_PORT))
