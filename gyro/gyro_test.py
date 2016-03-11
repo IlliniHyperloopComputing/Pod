@@ -14,9 +14,9 @@ n=0
 while n<20000:
 	time.sleep(.05)
 
-	xlo = i2c.readS8(0x28)#read the xlo bit. it is signed
+	xlo = i2c.readU8(0x28)#read the xlo bit. it is signed
 	xhi = i2c.readS8(0x29)#read the xhi bit. it is signed
-	print ((xlo | (xhi <<8)) * 0.00875);// bit shift into place and multiply
+	print ((xlo | (xhi <<8)) * 0.00875);# bit shift into place and multiply
 
 	n = n+1
 
