@@ -1,3 +1,8 @@
+## Follow this guide on the adafruit_i2c module if this test code 
+## is not running.
+## https://learn.adafruit.com/setting-up-io-python-library-on-beaglebone-black/i2c
+## Probably, you need to apt-get python-smbus
+##
 from Adafruit_I2C import Adafruit_I2C
 import time
 address = 0x6b #I2C address. can also be 0x6a if SD0 is grounded
