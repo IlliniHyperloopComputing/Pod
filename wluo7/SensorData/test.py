@@ -8,7 +8,7 @@ while True:
 	if not temp: break	
 	line = temp
 
-match = re.search(r'(\w+):(\w+) (\S+)', line)
+match = re.search(r'(\S+):(\S+)\s(\S+)', line)
 print match.group(1)
 print match.group(2)
 print match.group(3)

@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import signal, os
 import sys
 import re
 import socket
@@ -7,18 +8,31 @@ import thread
 
 from RequestHandlers.GEThandler import *
 
-TCP_IP = '192.168.1.109'
+TCP_IP = '127.0.0.1' # Change to 192.168.1.109 if on Beaglebone or its static ip
 TCP_PORT = 5005
 BUFFER_SIZE = 1024
 SERVER_ON = True 
 
 # Parses the incoming request to appropriate function
 def process_request(request):
-	return get_data(request)	
-	
+	match = re.search(r'(\S+)\s(\S+)', request)	
+	if match:
+		type = match.group(1);
+		content = match.group(2)
+		switch = {
+			'GET': get_data,
+		}
+		try:
+			return switch.get(type)(content)
+		except TypeError, NameError:
+			return 'Invalid request type "'+type+'"'	
+	else:
+		return 'Invalid, can not parse request "'+request+'"'	
+		
+
 
 # Called when connection is recieved
-def handler(conn, addr):
+def request_handler(conn, addr):
 	while True:
 		request = conn.recv(BUFFER_SIZE)
 		result = process_request(request)	
@@ -34,7 +48,11 @@ if __name__ == '__main__':
 	s.listen(3)
 
 # Wait for client connection
-	while SERVER_ON:
-		conn, addr = s.accept()
-		print "Connected to client ", addr
-    		thread.start_new_thread(handler, (conn, addr))		
+	try:
+		while SERVER_ON:
+			conn, addr = s.accept()
+			print "Connected to client ", addr
+    			thread.start_new_thread(request_handler, (conn, addr))
+	except KeyboardInterrupt:
+		s.close()
+		print "\rBeagleboneServer socket at "+TCP_IP+":"+str(TCP_PORT)+" closed."
