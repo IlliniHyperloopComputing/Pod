@@ -10,10 +10,12 @@ def get_data(data_request):
 	except IOError:
 		return "Invalid Request: "+'"'+location+'" data file not available.'
 
-	# Returns the last (i.e. most recent) data line in data file
+	# Finds the last (i.e. most recent) data line in data file
 	line = f.readline()		
 	while True:
 		temp = f.readline()
 		if not temp: break
 		line = temp
+
+	# Return the most recent data line from file
 	return line;

@@ -19,6 +19,8 @@ def process_request(request):
 	if match:
 		type = match.group(1);
 		content = match.group(2)
+		
+		# Include corresponding functions for avaiable http requests
 		switch = {
 			'GET': get_data,
 		}
@@ -53,6 +55,7 @@ if __name__ == '__main__':
 			conn, addr = s.accept()
 			print "Connected to client ", addr
     			thread.start_new_thread(request_handler, (conn, addr))
+	# Close server socket if ctrl-c is recieved
 	except KeyboardInterrupt:
 		s.close()
 		print "\rBeagleboneServer socket at "+TCP_IP+":"+str(TCP_PORT)+" closed."
