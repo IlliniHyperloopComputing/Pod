@@ -8,7 +8,7 @@ import thread
 
 from RequestHandlers.GEThandler import *
 
-TCP_IP = '127.0.0.1' # Change to 192.168.1.109 if on Beaglebone or its static ip
+TCP_IP = '127.0.0.1' # Change to Beaglebone static ip
 TCP_PORT = 5005
 BUFFER_SIZE = 1024
 SERVER_ON = True 
