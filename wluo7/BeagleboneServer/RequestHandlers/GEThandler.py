@@ -18,4 +18,4 @@ def get_data(data_request):
 		line = temp
 
 	# Return the most recent data line from file
-	return line;
+	return "%04d%s%s" % (len(line), data_request, line);
