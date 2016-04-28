@@ -8,7 +8,7 @@ import thread
 
 from RequestHandlers.GEThandler import *
 
-TCP_IP = '127.0.0.1' # Change to Beaglebone static ip
+TCP_IP = '192.168.137.10' # Change to Beaglebone static ip
 TCP_PORT = 5005
 BUFFER_SIZE = 1024
 SERVER_ON = True 
@@ -39,7 +39,7 @@ def request_handler(conn, addr):
 		request = conn.recv(BUFFER_SIZE)
 		result = process_request(request)	
 		conn.send(result)
-		conn.close()
+		#conn.close()
 		print "Disconnected client ", addr
 		break
 					
