@@ -6,7 +6,7 @@ import re
 import socket
 import thread
 
-from RequestHandlers.GEThandler import *
+from RequestHandlers.GEThandlerLabVIEW import *
 
 TCP_IP = '192.168.137.10' # Change to 192.168.1.109 if on Beaglebone or its static ip
 TCP_PORT = 5005
