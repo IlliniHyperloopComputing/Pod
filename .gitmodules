@@ -1,0 +1,3 @@
+[submodule "BlackLib"]
+	path = BlackLib
+	url = https://github.com/yigityuce/BlackLib.git
