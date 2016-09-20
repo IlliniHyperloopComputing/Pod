@@ -44,6 +44,11 @@ class motor_control{
 		void set_microseconds(uint16_t microseconds);
 		float create_percent(uint16_t microseconds);
 
+
+		//Updates percentage of duty cycle
+		//over the range of possible duty cycle values
+		void update_percent( uint16_t new_us );
+
 		//Data
 		enum BlackLib::pwmName pwm_pin;
 		uint16_t initial_us;

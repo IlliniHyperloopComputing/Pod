@@ -11,11 +11,34 @@ motor_control::motor_control(enum BlackLib::pwmName pwm_pin, uint16_t initial_us
 
 
 void motor_control::raise_by_percent(float percent){
+	uint16_t change_us = (uint16_t)( percent * ( high_us - low_us ) );
+	uint16_t new_us = current_us - change_us;
+	if ( new_us > high_us ) {
+		new_us = high_us;
+	}
 
+
+	update_percent( new_us );
+	
+	set_microseconds( new_us );
 }
 
 void motor_control::lower_by_percent(float percent){
+	uint16_t change_us = (uint16_t)( percent * ( high_us - low_us ) );
+	uint16_t new_us = current_us - change_us;
+	if ( new_us > high_us ) {
+		new_us = low_us;
+	}
+	
+	update_percent( new_us );
+	
+	set_microseconds( new_us );
+}
 
+// Updates the percentage, doesn't control pod
+// Returns percentage of the range of possible duty cycle values
+void motor_control::update_percent( uint16_t new_us ) {
+	percent = ( new_us - low_us ) / ( high_us - low_us );
 }
 
 float motor_control::get_percent(){
@@ -42,6 +65,8 @@ void motor_control::set_low(){
 }
 
 void motor_control::set_microseconds(uint16_t microseconds){
+	
+	pwm.setDutyPercent(create_percent(microseconds));
 
 }
 
