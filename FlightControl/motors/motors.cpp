@@ -16,9 +16,6 @@ void motor_control::raise_by_percent(float percent){
 	if ( new_us > high_us ) {
 		new_us = high_us;
 	}
-
-
-	update_percent( new_us );
 	
 	set_microseconds( new_us );
 }
@@ -30,13 +27,11 @@ void motor_control::lower_by_percent(float percent){
 		new_us = low_us;
 	}
 	
-	update_percent( new_us );
-	
 	set_microseconds( new_us );
 }
 
 // Updates the percentage, doesn't control pod
-// Returns percentage of the range of possible duty cycle values
+// Sets percentage of the range of possible duty cycle values
 void motor_control::update_percent( uint16_t new_us ) {
 	percent = ( new_us - low_us ) / ( high_us - low_us );
 }
@@ -51,6 +46,8 @@ uint16_t motor_control::get_microseconds(){
 
 void motor_control::arm(){
 
+	
+	set_microseconds( arm_us );
 
 }
 
@@ -61,10 +58,13 @@ BlackLib::BlackPWM * motor_control::tmp_testing_get_pwm_ptr(){
 
 
 void motor_control::set_low(){
+	
+	set_microseconds( low_us );
 
 }
 
-void motor_control::set_microseconds(uint16_t microseconds){
+void motor_control::set_microseconds(uint16_t microseconds){	
+	update_percent( new_us );
 	
 	pwm.setDutyPercent(create_percent(microseconds));
 
@@ -72,12 +72,9 @@ void motor_control::set_microseconds(uint16_t microseconds){
 
 float motor_control::create_percent(uint16_t microseconds_in){
 	
-	//implement
-	//Duty Cycle = TimeOn / Period
-	//Period == 20 milliseconds
-    //TimeOn 
+	uint16_t percent_us = ( microseconds_in - low_us ) / ( high_us - low_us );
 
-	return 50;
+	return percent_us;
 }
 
 
