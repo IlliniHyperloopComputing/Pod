@@ -64,7 +64,7 @@ void motor_control::set_low(){
 }
 
 void motor_control::set_microseconds(uint16_t microseconds){	
-	update_percent( new_us );
+	update_percent( microseconds );
 	
 	pwm.setDutyPercent(create_percent(microseconds));
 
