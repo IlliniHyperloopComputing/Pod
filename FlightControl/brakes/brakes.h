@@ -11,12 +11,11 @@
 
 class brake_control{
 	public:
-		// Constructor
-		// Takes in two pins which control the power and the flipflop
+		// Constructor Takes in two pins which control the power and the flipflop
 		// Power controls whether or not the brakes will be operable
 		// Flip flop controls the direction the brakes will move
 		//	off is forward, on is backward
-		motor_control(enum BlackLib::pwmName power, enum BlackLib::pwmName flip_flop);
+		motor_control(enum BlackLib::gpioName power, enum BlackLib::gpioName flip_flop);
 
 		// Turn on power, turn off flipflop
 		void forward();
@@ -29,8 +28,8 @@ class brake_control{
 		
 	private:
 
-		enum BlackLib::pwnName power;
-		enum BlackLib::pwnName flip_flop;
+		enum BlackLib::gpioName power;
+		enum BlackLib::gpioName flip_flop;
 
 }
 
