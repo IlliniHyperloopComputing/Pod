@@ -1,6 +1,6 @@
 #include "motors.h"
 
-motor_control::motor_control(enum BlackLib::pwmName pwm_pin, uint16_t initial_us, uint16_t arm_us, uint16_t low_us, uint16_t high_us)
+motor_control::motor_control(enum BlackLib::pwmName pwm_pin, double initial_us, double arm_us, double low_us, double high_us)
 				: pwm_pin(pwm_pin), initial_us(initial_us), 
 					arm_us(arm_us), low_us(low_us), 
 					high_us(high_us), pwm(pwm_pin)
@@ -10,20 +10,20 @@ motor_control::motor_control(enum BlackLib::pwmName pwm_pin, uint16_t initial_us
 }
 
 
-void motor_control::raise_by_percent(float percent){
-	uint16_t change_us = (uint16_t)( percent * ( high_us - low_us ) );
-	uint16_t new_us = current_us - change_us;
+void motor_control::raise_by_percent(double percent){
+	double change_us = ( percent * ( high_us - low_us ) );
+	double new_us = current_us + change_us;
 	if ( new_us > high_us ) {
 		new_us = high_us;
 	}
-	
+
 	set_microseconds( new_us );
 }
 
-void motor_control::lower_by_percent(float percent){
-	uint16_t change_us = (uint16_t)( percent * ( high_us - low_us ) );
-	uint16_t new_us = current_us - change_us;
-	if ( new_us > high_us ) {
+void motor_control::lower_by_percent(double percent){
+	double change_us = ( percent *( high_us - low_us ) );
+	double new_us = current_us - change_us;
+	if ( new_us < low_us ) {
 		new_us = low_us;
 	}
 	
@@ -32,21 +32,21 @@ void motor_control::lower_by_percent(float percent){
 
 // Updates the percentage, doesn't control pod
 // Sets percentage of the range of possible duty cycle values
-void motor_control::update_percent( uint16_t new_us ) {
+void motor_control::update_percent( double new_us ) {
 	percent = ( new_us - low_us ) / ( high_us - low_us );
 }
 
-float motor_control::get_percent(){
+double motor_control::get_percent(){
 	return percent;
 }
 
-uint16_t motor_control::get_microseconds(){
+double motor_control::get_microseconds(){
 	return current_us;
 }
 
 void motor_control::arm(){
 
-	
+	is_armed = true;	
 	set_microseconds( arm_us );
 
 }
@@ -63,18 +63,16 @@ void motor_control::set_low(){
 
 }
 
-void motor_control::set_microseconds(uint16_t microseconds){	
+void motor_control::set_microseconds(double microseconds){	
 	update_percent( microseconds );
-	
+	current_us = microseconds;
 	pwm.setDutyPercent(create_percent(microseconds));
 
 }
 
-float motor_control::create_percent(uint16_t microseconds_in){
+double motor_control::create_percent(double microseconds_in){
 	
-	uint16_t percent_us = ( microseconds_in - low_us ) / ( high_us - low_us );
+	double percent_us = ( microseconds_in - low_us ) / ( high_us - low_us );
 
 	return percent_us;
 }
-
-

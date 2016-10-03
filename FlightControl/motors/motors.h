@@ -17,19 +17,19 @@ class motor_control{
 		//arm duty cycle -- switch to this duty cycle from initial to arm the motor
 		//low duty cycle -- the lowest the motor can go 
 		//high duty cycle -- highest the motor can go 
-		motor_control(enum BlackLib::pwmName pwm_pin, uint16_t initial_us, uint16_t arm_us, uint16_t low_us, uint16_t high_us);
+		motor_control(enum BlackLib::pwmName pwm_pin, double initial_us, double arm_us, double low_us, double high_us);
 
 		//Raise PWM pulse by x%.  100% == high_us, 0% = low_us
 		//Do not confuse this with raising/lower the Duty Cycle by a %
 		//This is the way of traversing between low_us and high_us,
 		//since direct control of the microseconds is not suggested.
-		void raise_by_percent(float percent); 
-		void lower_by_percent(float percent);
+		void raise_by_percent(double percent); 
+		void lower_by_percent(double percent);
 
 		//Get percentage
-		float get_percent();
+		double get_percent();
 		//Get microseconds
-		uint16_t get_microseconds();
+		double get_microseconds();
 
 		//will arm the motor if not already armed
 		void arm();
@@ -39,24 +39,25 @@ class motor_control{
 
 		BlackLib::BlackPWM * tmp_testing_get_pwm_ptr();
 
+		void set_microseconds( double microseconds);
 		
 	private:
-		void set_microseconds(uint16_t microseconds);
-		float create_percent(uint16_t microseconds);
+		//void set_microseconds(uint16_t microseconds);
+		double create_percent( double microseconds);
 
 
 		//Updates percentage of duty cycle
 		//over the range of possible duty cycle values
-		void update_percent( uint16_t new_us );
+		void update_percent( double new_us );
 
 		//Data
 		enum BlackLib::pwmName pwm_pin;
-		uint16_t initial_us;
-		uint16_t arm_us;
-		uint16_t low_us;
-		uint16_t high_us;
-		uint16_t current_us;
-		float percent;
+		double initial_us;
+		double arm_us;
+		double low_us;
+		double high_us;
+		double current_us;
+		double percent;
 		BlackLib::BlackPWM pwm;
 		bool is_armed;
 

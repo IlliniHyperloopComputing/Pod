@@ -28,4 +28,5 @@ blackcore.o : ../../BlackLib/v3_0/BlackCore.cpp
 
 clean:
 	rm -f motors.o
-
+	rm -f main.o
+	rm -f blackpwm.o
