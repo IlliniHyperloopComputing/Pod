@@ -14,7 +14,7 @@ all: $(EXECUTABLE)
 $(EXECUTABLE): main.o motors.o blackpwm.o blackcore.o
 	$(CXX) $? $(LDFLAGS) -o $@
 
-main.o : main_test.cpp
+main.o : main_test.cpp 
 	$(CXX) $(CXXFLAGS) $? -o $@
 
 motors.o : motors.cpp 
