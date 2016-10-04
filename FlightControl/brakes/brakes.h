@@ -3,7 +3,7 @@
 #define BRAKES_H
 
 #include <stdint.h>
-#include "../../BlackLib/v3_0/BlackPWM/BlackPWM.h"
+#include "../../BlackLib/v3_0/BlackGPIO/BlackGPIO.h"
 
 // brake control. 
 // when this object is initialized, it has the ability to control the brakes
@@ -15,7 +15,7 @@ class brake_control{
 		// Power controls whether or not the brakes will be operable
 		// Flip flop controls the direction the brakes will move
 		//	off is forward, on is backward
-		motor_control(enum BlackLib::gpioName power, enum BlackLib::gpioName flip_flop);
+		brake_control(enum BlackLib::gpioName power, enum BlackLib::gpioName flip_flop);
 
 		// Turn on power, turn off flipflop
 		void forward();
@@ -28,9 +28,12 @@ class brake_control{
 		
 	private:
 
-		enum BlackLib::gpioName power;
-		enum BlackLib::gpioName flip_flop;
+		BlackLib::BlackGPIO power;
+		BlackLib::BlackGPIO flip_flop;
+		
+		enum BlackLib::gpioName power_pin;
+		enum BlackLib::gpioName flip_flop_pin;
 
-}
+};
 
 #endif

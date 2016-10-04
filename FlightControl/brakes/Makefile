@@ -11,22 +11,22 @@ EXECUTABLE=test_build
 
 all: $(EXECUTABLE)
     
-$(EXECUTABLE): main.o motors.o blackpwm.o blackcore.o
+$(EXECUTABLE): blackgpio.o main.o brakes.o blackcore.o
 	$(CXX) $? $(LDFLAGS) -o $@
 
-main.o : main_test.cpp 
+main.o : main_test.cpp
 	$(CXX) $(CXXFLAGS) $? -o $@
 
-motors.o : motors.cpp 
+brakes.o : brakes.cpp 
 	$(CXX) $(CXXFLAGS) $? -o $@
 
-blackpwm.o : ../../BlackLib/v3_0/BlackPWM/BlackPWM.cpp
+blackgpio.o : ../../BlackLib/v3_0/BlackGPIO/BlackGPIO.cpp
 	$(CXX) $(CXXFLAGS) $? -o $@
 
 blackcore.o : ../../BlackLib/v3_0/BlackCore.cpp
 	$(CXX) $(CXXFLAGS) $? -o $@
 
 clean:
-	rm -f motors.o
+	rm -f brakes.o
 	rm -f main.o
-	rm -f blackpwm.o
+	rm -f blackgpio.o
