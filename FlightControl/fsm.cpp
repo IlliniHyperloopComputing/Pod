@@ -209,12 +209,66 @@ namespace  // Concrete FSM implementation
             }
         };
 
+ //       struct SensorsWait: public msm::front::state<>
+ //       {
+ //           template <class Event,class FSM>
+ //           void on_entry(Event const&,FSM& )
+ //           {
+ //               std::cout << "entering: SensorsWait" << std::endl;
+ //           }
+
+ //           template <class Event,class FSM>
+ //           void on_exit(Event const&,FSM& )
+ //           {
+ //               std::cout << "leaving: SensorsWait" << std::endl;
+ //           }
+ //       };
+ //       struct SensorsInit: public msm::front::state<>
+ //       {
+ //           template <class Event,class FSM>
+ //           void on_entry(Event const&,FSM& )
+ //           {
+ //               std::cout << "entering: SensorsInit" << std::endl;
+ //           }
+
+ //           template <class Event,class FSM>
+ //           void on_exit(Event const&,FSM& )
+ //           {
+ //               std::cout << "leaving: SensorsInit" << std::endl;
+ //           }
+ //       };
+ //       struct SensorsGetData: public msm::front::state<>
+ //       {
+ //           template <class Event,class FSM>
+ //           void on_entry(Event const&,FSM& )
+ //           {
+ //               std::cout << "entering: SensorsGetData" << std::endl;
+ //           }
+
+ //           template <class Event,class FSM>
+ //           void on_exit(Event const&,FSM& )
+ //           {
+ //               std::cout << "leaving: SensorsGetData" << std::endl;
+ //           }
+        //};
+
+    
+
         // the initial state of the player SM. Must be defined
         typedef SafeMode initial_state;
+        //typedef mpl::vector<SafeMode,SensorsWait> initial_state;
 
         // transition actions
         // as the functors are generic on events, fsm and source/target state, 
         // you can reuse them in another machine if you wish
+ //       struct turn_on_sensors 
+ //       {
+ //           template <class EVT,class FSM,class SourceState,class TargetState>
+ //           void operator()(EVT const&, FSM&,SourceState& ,TargetState& )
+ //           {
+ //               cout << "turn_on_sensors-- transition with event:" << typeid(EVT).name() << endl;
+ //           }
+ //       };
         struct TestFct 
         {
             template <class EVT,class FSM,class SourceState,class TargetState>
@@ -268,9 +322,11 @@ namespace  // Concrete FSM implementation
             Row < FlightAccel , user_select , SafeMode    , none                  , flightA_safe          >,
             Row < FlightAccel , flight_coast, FlightCoast , none                  , flightA_flightC       >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < FlightCoast , flight_brake, FlightBrake , none                  , flightC_flightB       >,
+            Row < FlightCoast , flight_brake, FlightBrake , none                  , flightC_flightB       >
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < FlightBrake , user_select , SafeMode    , none                  , flightB_safe          >
+ //           Row < FlightBrake , user_select , SafeMode    , none                  , flightB_safe          >,
+ //           //  +-------------+-------------+-------------+-----------------------+----------------------+
+ //           Row < SensorsWait , init_sensors, SensorsInit , turn_on_sensors       , none                  >
             /*
 
             Row < Stopped     , play        , Playing , ActionSequence_
@@ -319,10 +375,11 @@ namespace  // Concrete FSM implementation
             //    Start         Event         Next          Action                 
             //  +-------------+-------------+-------------+-----------------------+
             Row < state1      , state_swap        , state2      , none                  >,
-			Row < state2      , state_swap        , state1      , none                  >>{};
+	        Row < state2      , state_swap        , state1      , none                  >
+	    >{};
 		
-	};
-	typedef msm::back::state_machine<FlightCoast_> Coasting;
+        };
+    typedef msm::back::state_machine<FlightCoast_> Coasting;
         // Replaces the default no-transition response.
         template <class FSM,class Event>
         void no_transition(Event const& e, FSM&,int state)
@@ -346,42 +403,42 @@ namespace  // Concrete FSM implementation
         // needed to start the highest-level SM. This will call on_entry and mark the start of the SM
         p.start(); 
         // go to Open, call on_exit on Empty, then action, then on_entry on Open
-	std::cout << "user select safe mode"<<std::endl;
-        p.process_event(
-            user_select(SAFE_MODE)); pstate(p);
-	std::cout << "user select init sensors"<<std::endl;
-        p.process_event(
-            user_select(INIT_SENSORS)); pstate(p);
-	std::cout << "user select funct A"<<std::endl;
-        p.process_event(
-            user_select(FUNCT_A)); pstate(p);
-	std::cout << "user select funct B"<<std::endl;
-        p.process_event(
-            user_select(FUNCT_B)); pstate(p);
-	std::cout << "user select funct C"<<std::endl;
-        p.process_event(
-            user_select(FUNCT_C)); pstate(p);
-	std::cout << "user select funct D"<<std::endl;
-        p.process_event(
-            user_select(FUNCT_D)); pstate(p);
-	std::cout << "user select Loading"<<std::endl;
-        p.process_event(
-            user_select(LOADING)); pstate(p);
-	std::cout << "user select funct A"<<std::endl;
-        p.process_event(
-            user_select(FUNCT_A)); pstate(p);
-	std::cout << "user select funct B"<<std::endl;
-        p.process_event(
-            user_select(FUNCT_B)); pstate(p);
-	std::cout << "user select funct C"<<std::endl;
-        p.process_event(
-            user_select(FUNCT_C)); pstate(p);
-	std::cout << "user select funct D"<<std::endl;
-        p.process_event(
-            user_select(FUNCT_D)); pstate(p);
-	std::cout << "user select flight A"<<std::endl;
-        p.process_event(
-            user_select(FLIGHT_A)); pstate(p);
+//	std::cout << "user select safe mode"<<std::endl;
+//        p.process_event(
+//            user_select(SAFE_MODE)); pstate(p);
+//	std::cout << "user select init sensors"<<std::endl;
+//        p.process_event(
+//            user_select(INIT_SENSORS)); pstate(p);
+//	std::cout << "user select funct A"<<std::endl;
+//        p.process_event(
+//            user_select(FUNCT_A)); pstate(p);
+//	std::cout << "user select funct B"<<std::endl;
+//        p.process_event(
+//            user_select(FUNCT_B)); pstate(p);
+//	std::cout << "user select funct C"<<std::endl;
+//        p.process_event(
+//            user_select(FUNCT_C)); pstate(p);
+//	std::cout << "user select funct D"<<std::endl;
+//        p.process_event(
+//            user_select(FUNCT_D)); pstate(p);
+//	std::cout << "user select Loading"<<std::endl;
+//        p.process_event(
+//            user_select(LOADING)); pstate(p);
+//	std::cout << "user select funct A"<<std::endl;
+//        p.process_event(
+//            user_select(FUNCT_A)); pstate(p);
+//	std::cout << "user select funct B"<<std::endl;
+//        p.process_event(
+//            user_select(FUNCT_B)); pstate(p);
+//	std::cout << "user select funct C"<<std::endl;
+//        p.process_event(
+//            user_select(FUNCT_C)); pstate(p);
+//	std::cout << "user select funct D"<<std::endl;
+//        p.process_event(
+//            user_select(FUNCT_D)); pstate(p);
+//	std::cout << "user select flight A"<<std::endl;
+//        p.process_event(
+//            user_select(FLIGHT_A)); pstate(p);
         /*p.process_event(open_close()); pstate(p);
         // will be rejected, wrong disk type
         p.process_event(
