@@ -20,6 +20,9 @@
 // for And_ operator
 #include <boost/msm/front/euml/operator.hpp>
 
+#include "guards.hpp"
+#include "events.hpp"
+
 using namespace std;
 namespace msm = boost::msm;
 namespace mpl = boost::mpl;
@@ -29,38 +32,6 @@ using namespace msm::front::euml;
 
 namespace  // Concrete FSM implementation
 {
-    /*struct play {};
-    struct end_pause {};
-    struct stop {};
-    struct pause {};
-    struct open_close {};
-    */
-    struct flight_coast {};
-    struct flight_brake {};
-
-    // A "complicated" event type that carries some data.
-    enum StateSelectEnum
-    {
-        SAFE_MODE=0,
-        INIT_SENSORS=1,
-        FUNCT_A=2,
-        FUNCT_B=3,
-        FUNCT_C=4,
-        FUNCT_D=5,
-        LOADING=6,
-        FLIGHT_A=7,
-        E_BRAKE=8
-    };
-    struct user_select
-    {
-        user_select(StateSelectEnum state)
-            : state_select(state)
-        {}
-            
-        StateSelectEnum state_select;
-
-    };
-
     // front-end: define the FSM structure 
     struct pod_ : public msm::front::state_machine_def<pod_>
     {
@@ -87,10 +58,9 @@ namespace  // Concrete FSM implementation
             template <class Event,class FSM>
             void on_exit(Event const&,FSM& )
             {
-                std::cout << "entering: SafeMode" << std::endl;
+                std::cout << "leaving: SafeMode" << std::endl;
             }
         };
-
         struct InitSensors : public msm::front::state<>
         {
             template <class Event,class FSM>
@@ -102,7 +72,7 @@ namespace  // Concrete FSM implementation
             template <class Event,class FSM>
             void on_exit(Event const&,FSM& )
             {
-                std::cout << "entering: InitSensors" << std::endl;
+                std::cout << "leaving: InitSensors" << std::endl;
             }
         };
 
@@ -117,7 +87,7 @@ namespace  // Concrete FSM implementation
             template <class Event,class FSM>
             void on_exit(Event const&,FSM& )
             {
-                std::cout << "entering: EBrake" << std::endl;
+                std::cout << "leaving: EBrake" << std::endl;
             }
         };
 
@@ -132,7 +102,7 @@ namespace  // Concrete FSM implementation
             template <class Event,class FSM>
             void on_exit(Event const&,FSM& )
             {
-                std::cout << "entering: FunctionalA" << std::endl;
+                std::cout << "leaving: FunctionalA" << std::endl;
             }
         };
 
@@ -147,7 +117,7 @@ namespace  // Concrete FSM implementation
             template <class Event,class FSM>
             void on_exit(Event const&,FSM& )
             {
-                std::cout << "entering: FunctionalB" << std::endl;
+                std::cout << "leaving: FunctionalB" << std::endl;
             }
         };
 
@@ -162,7 +132,7 @@ namespace  // Concrete FSM implementation
             template <class Event,class FSM>
             void on_exit(Event const&,FSM& )
             {
-                std::cout << "entering: FunctionalC" << std::endl;
+                std::cout << "leaving: FunctionalC" << std::endl;
             }
         };
 
@@ -177,7 +147,7 @@ namespace  // Concrete FSM implementation
             template <class Event,class FSM>
             void on_exit(Event const&,FSM& )
             {
-                std::cout << "entering: FunctionalD" << std::endl;
+                std::cout << "leaving: FunctionalD" << std::endl;
             }
         };
 
@@ -192,7 +162,7 @@ namespace  // Concrete FSM implementation
             template <class Event,class FSM>
             void on_exit(Event const&,FSM& )
             {
-                std::cout << "entering: Loading" << std::endl;
+                std::cout << "leaving: Loading" << std::endl;
             }
         };
 
@@ -207,7 +177,7 @@ namespace  // Concrete FSM implementation
             template <class Event,class FSM>
             void on_exit(Event const&,FSM& )
             {
-                std::cout << "entering: FlightAccel" << std::endl;
+                std::cout << "leaving: FlightAccel" << std::endl;
             }
         };
         struct FlightCoast : public msm::front::state<>
@@ -221,7 +191,7 @@ namespace  // Concrete FSM implementation
             template <class Event,class FSM>
             void on_exit(Event const&,FSM& )
             {
-                std::cout << "entering: FlightCoast" << std::endl;
+                std::cout << "leaving: FlightCoast" << std::endl;
             }
         };
         struct FlightBrake : public msm::front::state<>
@@ -235,7 +205,7 @@ namespace  // Concrete FSM implementation
             template <class Event,class FSM>
             void on_exit(Event const&,FSM& )
             {
-                std::cout << "entering: FlightBrake" << std::endl;
+                std::cout << "leaving: FlightBrake" << std::endl;
             }
         };
 
@@ -261,139 +231,57 @@ namespace  // Concrete FSM implementation
                 cout << "player::start_playback" << endl;
             }
         };
-        struct open_drawer 
-        {
-            template <class EVT,class FSM,class SourceState,class TargetState>
-            void operator()(EVT const& ,FSM& ,SourceState& ,TargetState& )
-            {
-                cout << "player::open_drawer" << endl;
-            }
-        };
-        struct close_drawer 
-        {
-            template <class EVT,class FSM,class SourceState,class TargetState>
-            void operator()(EVT const& ,FSM& ,SourceState& ,TargetState& )
-            {
-                cout << "player::close_drawer" << endl;
-            }
-        };
         struct store_cd_info 
         {
             template <class EVT,class FSM,class SourceState,class TargetState>
             void operator()(EVT const&,FSM& fsm ,SourceState& ,TargetState& )
             {
                 cout << "player::store_cd_info" << endl;
-                fsm.process_event(play());
+                //fsm.process_event(play());
             }
         };
-        struct stop_playback 
-        {
-            template <class EVT,class FSM,class SourceState,class TargetState>
-            void operator()(EVT const& ,FSM& ,SourceState& ,TargetState& )
-            {
-                cout << "player::stop_playback" << endl;
-            }
-        };
-        struct pause_playback 
-        {
-            template <class EVT,class FSM,class SourceState,class TargetState>
-            void operator()(EVT const& ,FSM& ,SourceState& ,TargetState& )
-            {
-                cout << "player::pause_playback" << endl;
-            }
-        };
-        struct resume_playback 
-        {
-            template <class EVT,class FSM,class SourceState,class TargetState>
-            void operator()(EVT const& ,FSM& ,SourceState& ,TargetState& )
-            {
-                cout << "player::resume_playback" << endl;
-            }
-        };
-        struct stop_and_open 
-        {
-            template <class EVT,class FSM,class SourceState,class TargetState>
-            void operator()(EVT const& ,FSM& ,SourceState& ,TargetState& )
-            {
-                cout << "player::stop_and_open" << endl;
-            }
-        };
-        struct stopped_again 
-        {
-            template <class EVT,class FSM,class SourceState,class TargetState>
-            void operator()(EVT const& ,FSM& ,SourceState& ,TargetState& )
-            {
-                cout << "player::stopped_again" << endl;
-            }
-        };
-        // guard conditions
-        struct DummyGuard 
-        {
-            template <class EVT,class FSM,class SourceState,class TargetState>
-            bool operator()(EVT const& evt,FSM& fsm,SourceState& src,TargetState& tgt)
-            {
-                return true;
-            }
-        };
-        struct good_disk_format 
-        {
-            template <class EVT,class FSM,class SourceState,class TargetState>
-            bool operator()(EVT const& evt ,FSM&,SourceState& ,TargetState& )
-            {
-                // to test a guard condition, let's say we understand only CDs, not DVD
-                if (evt.disc_type != DISK_CD)
-                {
-                    std::cout << "wrong disk, sorry" << std::endl;
-                    return false;
-                }
-                return true;
-            }
-        };
-        struct always_true 
-        {
-            template <class EVT,class FSM,class SourceState,class TargetState>
-            bool operator()(EVT const& evt ,FSM&,SourceState& ,TargetState& )
-            {             
-                return true;
-            }
-        };
-        // we want to define one row with the classic look.
-        bool auto_start(cd_detected const& evt)
-        {
-            return false;
-        }
+
  
         typedef pod_ p; // makes transition table cleaner
 
         // Transition table for player
         struct transition_table : mpl::vector<
-            //    Start     Event         Next          Action                     Guard
-            //  +---------+-------------+-------------+-----------------------+----------------------+
-            Row < SafeMode, user_select , InitSensors , none                  , none                 >,
-            Row < SafeMode, user_select , InitSensors , none                  , none                 >,
-            Row < Stopped , play        , Playing , ActionSequence_
+            //    Start         Event         Next          Action                  Guard
+            //  +-------------+-------------+-------------+-----------------------+----------------------+
+            Row < SafeMode    , user_select , FunctionalA , none                  , safe_functA           >,
+            Row < SafeMode    , user_select , InitSensors , none                  , safe_init_sensors     >,
+            //  +-------------+-------------+-------------+-----------------------+----------------------+
+            Row < InitSensors , user_select , FunctionalA , none                  , init_functA           >,
+            //  +-------------+-------------+-------------+-----------------------+----------------------+
+            Row < FunctionalA , user_select , FunctionalB , none                  , functA_functB         >,
+            //  +-------------+-------------+-------------+-----------------------+----------------------+
+            Row < FunctionalB , user_select , FunctionalC , none                  , functB_functC         >,
+            //  +-------------+-------------+-------------+-----------------------+----------------------+
+            Row < FunctionalC , user_select , FunctionalD , none                  , functC_functD         >,
+            //  +-------------+-------------+-------------+-----------------------+----------------------+
+            Row < FunctionalD , user_select , SafeMode    , none                  , functD_safe           >,
+            Row < FunctionalD , user_select , Loading     , none                  , functD_loading        >,
+            Row < FunctionalD , user_select , FlightAccel , none                  , functD_flightA        >,
+            //  +-------------+-------------+-------------+-----------------------+----------------------+
+            Row < Loading     , user_select , FunctionalA , none                  , loading_functA        >,
+            //  +-------------+-------------+-------------+-----------------------+----------------------+
+            Row < FlightAccel , user_select , SafeMode    , none                  , flightA_safe          >,
+            Row < FlightAccel , flight_coast, FlightCoast , none                  , flightA_flightC       >,
+            //  +-------------+-------------+-------------+-----------------------+----------------------+
+            Row < FlightCoast , flight_brake, FlightBrake , none                  , flightC_flightB       >,
+            //  +-------------+-------------+-------------+-----------------------+----------------------+
+            Row < FlightBrake , user_select , SafeMode    , none                  , flightB_safe          >
+            /*
+
+            Row < Stopped     , play        , Playing , ActionSequence_
                                                      <mpl::vector<
                                                      TestFct,start_playback> >            
                                                                               , DummyGuard           >,
-            Row < Stopped , open_close  , Open    , open_drawer               , none                 >,
-            Row < Stopped , stop        , Stopped , none                      , none                 >,
-            //  +---------+-------------+---------+---------------------------+----------------------+
-            Row < Open    , open_close  , Empty   , close_drawer              , none                 >,
-            //  +---------+-------------+---------+---------------------------+----------------------+
-            Row < Empty   , open_close  , Open    , open_drawer               , none                 >,
             Row < Empty   , cd_detected , Stopped , store_cd_info             , And_<good_disk_format,
                                                                                      always_true>    >,
             // we here also mix with some "classical row"
           g_row < Empty   , cd_detected , Playing                             , &p::auto_start       >,
-            //  +---------+-------------+---------+---------------------------+----------------------+
-            Row < Playing , stop        , Stopped , stop_playback             , none                 >,
-            Row < Playing , pause       , Paused  , pause_playback            , none                 >,
-            Row < Playing , open_close  , Open    , stop_and_open             , none                 >,
-            //  +---------+-------------+---------+---------------------------+----------------------+
-            Row < Paused  , end_pause   , Playing , resume_playback           , none                 >,
-            Row < Paused  , stop        , Stopped , stop_playback             , none                 >,
-            Row < Paused  , open_close  , Open    , stop_and_open             , none                 >
-            //  +---------+-------------+---------+---------------------------+----------------------+
+            */
         > {};
         // Replaces the default no-transition response.
         template <class FSM,class Event>
@@ -404,25 +292,60 @@ namespace  // Concrete FSM implementation
         }
     };
     // Pick a back-end
-    typedef msm::back::state_machine<pod_> player;
+    typedef msm::back::state_machine<pod_> pod;
 
     //
     // Testing utilities.
     //
-    static char const* const state_names[] = { "Stopped", "Open", "Empty", "Playing", "Paused" };
-    void pstate(player const& p)
+    static char const* const state_names[] = { "Safe", "init", "FunctA", "functB", "functC", "functD", "Loading", "Flight Accel" , "Flight Coast", "Flight Brake"};
+    void pstate(pod const& p)
     {
         std::cout << " -> " << state_names[p.current_state()[0]] << std::endl;
     }
 
     void test()
     {        
-        player p;
+        pod p;
         // needed to start the highest-level SM. This will call on_entry and mark the start of the SM
         p.start(); 
         // go to Open, call on_exit on Empty, then action, then on_entry on Open
-        p.process_event(open_close()); pstate(p);
-        p.process_event(open_close()); pstate(p);
+	std::cout << "user select safe mode"<<std::endl;
+        p.process_event(
+            user_select(SAFE_MODE)); pstate(p);
+	std::cout << "user select init sensors"<<std::endl;
+        p.process_event(
+            user_select(INIT_SENSORS)); pstate(p);
+	std::cout << "user select funct A"<<std::endl;
+        p.process_event(
+            user_select(FUNCT_A)); pstate(p);
+	std::cout << "user select funct B"<<std::endl;
+        p.process_event(
+            user_select(FUNCT_B)); pstate(p);
+	std::cout << "user select funct C"<<std::endl;
+        p.process_event(
+            user_select(FUNCT_C)); pstate(p);
+	std::cout << "user select funct D"<<std::endl;
+        p.process_event(
+            user_select(FUNCT_D)); pstate(p);
+	std::cout << "user select Loading"<<std::endl;
+        p.process_event(
+            user_select(LOADING)); pstate(p);
+	std::cout << "user select funct A"<<std::endl;
+        p.process_event(
+            user_select(FUNCT_A)); pstate(p);
+	std::cout << "user select funct B"<<std::endl;
+        p.process_event(
+            user_select(FUNCT_B)); pstate(p);
+	std::cout << "user select funct C"<<std::endl;
+        p.process_event(
+            user_select(FUNCT_C)); pstate(p);
+	std::cout << "user select funct D"<<std::endl;
+        p.process_event(
+            user_select(FUNCT_D)); pstate(p);
+	std::cout << "user select flight A"<<std::endl;
+        p.process_event(
+            user_select(FLIGHT_A)); pstate(p);
+        /*p.process_event(open_close()); pstate(p);
         // will be rejected, wrong disk type
         p.process_event(
             cd_detected("louie, louie",DISK_DVD)); pstate(p);
@@ -439,7 +362,8 @@ namespace  // Concrete FSM implementation
         p.process_event(stop());  pstate(p);
         // event leading to the same state
         // no action method called as it is not present in the transition table
-        p.process_event(stop());  pstate(p);
+        */
+        //p.process_event(stop());  pstate(p);
         std::cout << "stop fsm" << std::endl;
         p.stop();
 
