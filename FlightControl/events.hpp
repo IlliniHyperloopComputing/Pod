@@ -3,6 +3,7 @@
 
 struct flight_coast {};
 struct flight_brake {};
+struct init_sensors {};//used to start sensor orthagonal machine
 
 // A "complicated" event type that carries some data.
 enum StateSelectEnum
@@ -26,6 +27,9 @@ struct user_select
     StateSelectEnum state_select;
 
 };
+
+
+//submachine
 struct state_swap
 {
 
