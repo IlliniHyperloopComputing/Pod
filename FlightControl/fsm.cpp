@@ -283,6 +283,46 @@ namespace  // Concrete FSM implementation
           g_row < Empty   , cd_detected , Playing                             , &p::auto_start       >,
             */
         > {};
+	//let's define a submachine!
+	struct FlightCoast_ : public msm::front::state_machine_def<FlightCoast_>{
+        struct state1 : public msm::front::state<>
+        {
+            template <class Event,class FSM>
+            void on_entry(Event const&,FSM& )
+            {
+                std::cout << "entering: state1" << std::endl;
+            }
+
+            template <class Event,class FSM>
+            void on_exit(Event const&,FSM& )
+            {
+                std::cout << "leaving: state1" << std::endl;
+            }
+        };
+        struct state2 : public msm::front::state<>
+        {
+            template <class Event,class FSM>
+            void on_entry(Event const&,FSM& )
+            {
+                std::cout << "entering: state2" << std::endl;
+            }
+
+            template <class Event,class FSM>
+            void on_exit(Event const&,FSM& )
+            {
+                std::cout << "leaving: state2" << std::endl;
+            }
+        };
+		typedef state1 initial_state; 	
+		struct transition_table : mpl::vector<
+
+            //    Start         Event         Next          Action                 
+            //  +-------------+-------------+-------------+-----------------------+
+            Row < state1      , state_swap        , state2      , none                  >,
+			Row < state2      , state_swap        , state1      , none                  >>{};
+		
+	};
+	typedef msm::back::state_machine<FlightCoast_> Coasting;
         // Replaces the default no-transition response.
         template <class FSM,class Event>
         void no_transition(Event const& e, FSM&,int state)
@@ -293,10 +333,7 @@ namespace  // Concrete FSM implementation
     };
     // Pick a back-end
     typedef msm::back::state_machine<pod_> pod;
-
-    //
-    // Testing utilities.
-    //
+// // Testing utilities.  //
     static char const* const state_names[] = { "Safe", "init", "FunctA", "functB", "functC", "functD", "Loading", "Flight Accel" , "Flight Coast", "Flight Brake"};
     void pstate(pod const& p)
     {

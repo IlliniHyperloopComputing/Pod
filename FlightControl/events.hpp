@@ -26,5 +26,9 @@ struct user_select
     StateSelectEnum state_select;
 
 };
+struct state_swap
+{
+
+};
 
 #endif
