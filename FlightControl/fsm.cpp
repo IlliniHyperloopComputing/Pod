@@ -1,12 +1,7 @@
-// Copyright 2010 Christophe Henry
-// henry UNDERSCORE christophe AT hotmail DOT com
-// This is an extended version of the state machine available in the boost::mpl library
-// Distributed under the same license as the original.
-// Copyright for the original version:
-// Copyright 2005 David Abrahams and Aleksey Gurtovoy. Distributed
-// under the Boost Software License, Version 1.0. (See accompanying
-// file LICENSE_1_0.txt or copy at
-// http://www.boost.org/LICENSE_1_0.txt)
+//threading
+#include <boost/thread/thread.hpp>
+#include <boost/lockfree/spsc_queue.hpp>
+#include <boost/atomic.hpp>
 
 #include <vector>
 #include <iostream>
@@ -23,12 +18,17 @@
 #include "guards.hpp"
 #include "events.hpp"
 
+
 using namespace std;
+//MSM
 namespace msm = boost::msm;
 namespace mpl = boost::mpl;
 using namespace msm::front;
 // for And_ operator
 using namespace msm::front::euml;
+
+//Threading / queue
+boost::lockfree::spsc_queue<char, boost::lockfree::capacity<1024> > spsc_queue;
 
 namespace  // Concrete FSM implementation
 {
@@ -397,7 +397,7 @@ namespace  // Concrete FSM implementation
         std::cout << " -> " << state_names[p.current_state()[0]] << std::endl;
     }
 
-    void test()
+    void state_machine_loop(void)
     {        
         pod p;
         // needed to start the highest-level SM. This will call on_entry and mark the start of the SM
@@ -458,14 +458,45 @@ namespace  // Concrete FSM implementation
         // no action method called as it is not present in the transition table
         */
         //p.process_event(stop());  pstate(p);
+
+        while(1){
+            char letter;
+            bool has_element = spsc_queue.pop(letter);
+            if(has_element)
+                std::cout<<"Hey! we got something!    "<<letter<<endl;
+            if(letter=='c')
+                break;
+        }
         std::cout << "stop fsm" << std::endl;
         p.stop();
 
     }
 }
 
+void example_input(void){
+    while(1){
+        char input;
+        cin>>input;
+        
+        spsc_queue.push(input);
+        if(input == 'c')
+            break;
+    }
+
+}
+
 int main()
 {
-    test();
+
+    cout << "boost::lockfree::queue is ";
+    if (!spsc_queue.is_lock_free())
+        cout << "not ";
+    cout << "lockfree" << endl;
+
+    boost::thread state_machine_thread(state_machine_loop);
+    boost::thread network_thread(example_input);
+
+    state_machine_thread.join();
+    network_thread.join();
     return 0;
 }

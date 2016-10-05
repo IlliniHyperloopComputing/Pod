@@ -6,7 +6,7 @@ CXXFLAGS=-std=c++0x -O0 -g3 -Wall -c
 EXECUTABLE=test_build_cross
 EXECUTABLENORMAL=test_build
 
-LDFLAGS=-lpthread
+LDFLAGS= -lboost_thread -lboost_system
 
 cross-compile: $(EXECUTABLE)
 
@@ -25,10 +25,10 @@ $(EXECUTABLENORMAL): fsm-n.o
 	$(CXXNORMAL) $? $(LDFLAGS) -o $@
 
 fsm-n.o: fsm.cpp
-	$(CXXNORMAL) $(CXXFLAGS) $? -o $@
+	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
 
 
 
 clean:
-	rm -f events.o $(EXECUTABLE) $(EXECUTABLENORMAL)
+	rm -f fsm-n.o fsm.o events.o $(EXECUTABLE) $(EXECUTABLENORMAL)
 
