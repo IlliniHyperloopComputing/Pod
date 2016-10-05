@@ -3,6 +3,10 @@
 #include <boost/lockfree/spsc_queue.hpp>
 #include <boost/atomic.hpp>
 
+//Network
+#include "server.h"
+
+
 #include <vector>
 #include <iostream>
 // back-end
@@ -482,7 +486,10 @@ void example_input(void){
         if(input == 'c')
             break;
     }
+}
 
+void network_connect(void){
+    
 }
 
 int main()
@@ -494,7 +501,8 @@ int main()
     cout << "lockfree" << endl;
 
     boost::thread state_machine_thread(state_machine_loop);
-    boost::thread network_thread(example_input);
+    //boost::thread network_thread(example_input);
+    boost::thread network_thread(network_connect);
 
     state_machine_thread.join();
     network_thread.join();

@@ -36,6 +36,8 @@ class tcp_server{
                 const boost:system::error_code&error);
         
         tcp::acceptor acceptor_;
+        std::string message_;
+        //std::string
 
 };
 

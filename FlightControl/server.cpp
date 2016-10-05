@@ -22,6 +22,12 @@ void tcp_connection::start(){
             boost::bind(&tcp_connection::handle_write, shared_from_this(),
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));
+    boost::asio::async_read_until(socket_, , "\n",
+            boost::bind(&tcp_connection::handle_read, shared_from_this(),
+            boost::asio::placeholders::error,
+            boost::asio::placeholders::bytes_transferred));
+
+    socket_.async_read_until(boost::asio::buffer(data_
 }
 
 tcp_connection::tcp_connection(boost::asio::io_service& io_service)
@@ -33,6 +39,12 @@ void tcp_connection::handle_write(const boost::system::error_code&,size_t){
     //get data and then write again
 }
 
+void tcp_connection::handle_read(const boost:system::error_code&, std::size_t bytes_transferred){
+    
+
+
+}
+
 
 ////////////////
 ////////////////
@@ -42,9 +54,10 @@ void tcp_connection::handle_write(const boost::system::error_code&,size_t){
 tcp_server::tcp_server(boost::asio::io_service& io_service)
             : acceptor_(io_service, tcp::endpoint(tcp::v4(),8800))
 {
-    start_accept();
+    start_accept();//start accepting connections
 }
 
+//async wait for a new connection
 void tcp_server::start_accept()
 {
     tcp_connection::pointer new_connection = 
@@ -55,6 +68,7 @@ void tcp_server::start_accept()
             boost::asio::placeholders::error));
 }
 
+//accept the connection, and if no error, begin sending/recieving data
 void tcp_server::handle_accept(tcp_connection::pointer new_connection, 
         const boost::system::error_code& error)
 {
