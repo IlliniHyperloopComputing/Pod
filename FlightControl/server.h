@@ -10,7 +10,7 @@
 
 using boost::asio::ip::tcp;
 
-class tcp_connection : public boost:enable_shared_from_this<tcp_connection>
+class tcp_connection : public boost::enable_shared_from_this<tcp_connection>
 {
     public:
         typedef boost::shared_ptr<tcp_connection> pointer;
@@ -21,19 +21,19 @@ class tcp_connection : public boost:enable_shared_from_this<tcp_connection>
     
     private:
         tcp_connection(boost::asio::io_service& io_service);
-        void handle_write(const boost:system:error_code& , size_t);
+        void handle_write(const boost::system::error_code& , size_t);
 
         tcp::socket socket_;
 };
 
 class tcp_server{
     public:
-        tcp_server(boost::asio::io_serivce& io_service);
+        tcp_server(boost::asio::io_service& io_service);
     
     private:
         void start_accept();
         void handle_accept(tcp_connection::pointer new_connection, 
-                const boost:system::error_code&error);
+                const boost::system::error_code&error);
         
         tcp::acceptor acceptor_;
         std::string message_;

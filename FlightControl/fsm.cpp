@@ -501,6 +501,7 @@ int main()
     cout << "lockfree" << endl;
 
     boost::thread state_machine_thread(state_machine_loop);
+    //uncomment this (and comment the one below it) to test it out!
     //boost::thread network_thread(example_input);
     boost::thread network_thread(network_connect);
 
