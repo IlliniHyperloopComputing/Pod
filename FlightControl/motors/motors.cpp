@@ -13,16 +13,27 @@ motor_control::motor_control(enum BlackLib::pwmName pwm_pin, double initial_us, 
 void motor_control::raise_by_percent(double percent){
 	double change_us = ( percent * ( high_us - low_us ) );
 	double new_us = current_us + change_us;
+	
 	if ( new_us > high_us ) {
 		new_us = high_us;
 	}
 
+
+	if ( new_us < low_us ) {
+		new_us = low_us;
+	}
+	
 	set_microseconds( new_us );
 }
 
 void motor_control::lower_by_percent(double percent){
 	double change_us = ( percent *( high_us - low_us ) );
 	double new_us = current_us - change_us;
+	
+	if ( new_us > high_us ) {
+		new_us = high_us;
+	}
+	
 	if ( new_us < low_us ) {
 		new_us = low_us;
 	}
@@ -45,10 +56,14 @@ double motor_control::get_microseconds(){
 }
 
 void motor_control::arm(){
-
 	is_armed = true;	
 	set_microseconds( arm_us );
+	update_percent( arm_us );
+}
 
+void motor_control::disarm(){
+	is_armed = false;
+	set_microseconds( 0 );
 }
 
 BlackLib::BlackPWM * motor_control::tmp_testing_get_pwm_ptr(){
