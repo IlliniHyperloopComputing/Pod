@@ -22,6 +22,9 @@
 #include "guards.hpp"
 #include "events.hpp"
 
+// check this
+#include "motors/motors.h"
+
 
 using namespace std;
 //MSM
@@ -30,6 +33,9 @@ namespace mpl = boost::mpl;
 using namespace msm::front;
 // for And_ operator
 using namespace msm::front::euml;
+
+// objects for motors go here
+
 
 //Threading / queue
 boost::lockfree::spsc_queue<char, boost::lockfree::capacity<1024> > spsc_queue;
