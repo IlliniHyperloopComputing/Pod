@@ -21,6 +21,7 @@
 
 #include "guards.hpp"
 #include "events.hpp"
+#include "server.h"
 
 
 using namespace std;
@@ -33,6 +34,10 @@ using namespace msm::front::euml;
 
 //Threading / queue
 boost::lockfree::spsc_queue<char, boost::lockfree::capacity<1024> > spsc_queue;
+
+//Server
+tcp_server * server;
+boost::asio::io_service ioservice;
 
 namespace  // Concrete FSM implementation
 {
@@ -489,7 +494,9 @@ void example_input(void){
 }
 
 void network_connect(void){
-    
+    server = new tcp_server(ioservice);
+    cout <<"hey we are running the service now"<<endl;
+    ioservice.run();
 }
 
 int main()
@@ -507,5 +514,6 @@ int main()
 
     state_machine_thread.join();
     network_thread.join();
+    delete server;
     return 0;
 }

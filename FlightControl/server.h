@@ -23,7 +23,7 @@ class tcp_connection : public boost::enable_shared_from_this<tcp_connection>
         tcp_connection(boost::asio::io_service& io_service,bool no_delay);
         void handle_write(const boost::system::error_code& , size_t);
         void handle_read(const boost::system::error_code&, size_t bytes_transferred);
-        std::string buffer_to_string(boost::asio::streambuf& read_buffer);
+        std::string buffer_to_string(boost::asio::streambuf& read_buffer, std::size_t bytes_transferred);
 
         tcp::socket socket_;
         tcp::no_delay no_delay_;
