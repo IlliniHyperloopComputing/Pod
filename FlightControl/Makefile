@@ -1,7 +1,7 @@
 CXXNORMAL=g++
 CXXCROSS=arm-linux-gnueabihf-g++
 
-LANGUAGE = -std=c++0x -ansi -pedantic
+LANGUAGE = -std=c++0x -pedantic
 WARNINGS = -Wall -Wextra -Winit-self -Wcast-align -Wcast-qual -Wold-style-cast -Wuninitialized -Wmissing-declarations -Wno-unused-parameter -Wno-unused-variable
 DEP=-MMD -MF $(basename $@).dep
 OPTIMF= -O2 -ftree-vectorize -fstrict-aliasing -freorder-blocks
@@ -13,8 +13,8 @@ CXXFLAGSO = $(LANGUAGE) $(WARNINGS) $(OPTIMF) $(DEP) -MMD -c
 
 EXECUTABLEBBB=bbb
 EXECUTABLEBBBO=bbb-optim
-ECECUTABLETEST=test
-ECECUTABLETESTO=test-optim
+EXECUTABLETEST=test
+EXECUTABLETESTO=test-optim
 EXECUTABLECROSS=cross
 
 LDFLAGS= -lboost_thread -lboost_system
@@ -26,7 +26,7 @@ all :
 ###############
 #BBB/Test compile
 ###############
-$(EXECUTABLEBBB) $(EXECUTABLETEST) : fsm-b.o server-b.o codec-b.o motors-b.o 
+$(EXECUTABLEBBB) $(EXECUTABLETEST) : fsm-b.o server-b.o codec-b.o motors-b.o blackpwm-b.o blackcore-b.o
 	$(CXXNORMAL) $? $(LDFLAGS) -o $@
 fsm-b.o: fsm.cpp
 	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
@@ -36,11 +36,15 @@ codec-b.o: codec.cpp
 	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
 motors-b.o: motors/motors.cpp
 	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
+blackpwm-b.o : ../BlackLib/v3_0/BlackPWM/BlackPWM.cpp
+	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
+blackcore-b.o : ../BlackLib/v3_0/BlackCore.cpp
+	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
 
 ###############
 #BBBO compile
 ###############
-$(EXECUTABLEBBBO) : fsm-bo.o server-bo.o codec-bo.o motors-bo.o 
+$(EXECUTABLEBBBO) : fsm-bo.o server-bo.o codec-bo.o motors-bo.o blackpwm-bo.o blackcore-bo.o
 	$(CXXNORMAL) $? $(LDFLAGS) -o $@
 fsm-bo.o: fsm.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
@@ -50,25 +54,15 @@ codec-bo.o: codec.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
 motors-bo.o: motors/motors.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
-
-###############
-#Test compile
-###############
-#$(EXECUTABLETEST) : fsm-t.o server-t.o codec-t.o motors-t.o 
-#	$(CXXNORMAL) $? $(LDFLAGS) -o $@
-#fsm-t.o: fsm.cpp
-#	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
-#server-t.o: server.cpp
-#	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
-#codec-t.o: codec.cpp
-#	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
-#motors-t.o: motors/motors.cpp
-#	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
+blackpwm-bo.o : ../BlackLib/v3_0/BlackPWM/BlackPWM.cpp
+	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
+blackcore-bo.o : ../BlackLib/v3_0/BlackCore.cpp
+	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
 
 ###############
 #TestO compile
 ###############
-$(EXECUTABLETESTO) : fsm-to.o server-to.o codec-to.o motors-to.o 
+$(EXECUTABLETESTO) : fsm-to.o server-to.o codec-to.o motors-to.o blackpwm-to.o blackcore-to.o
 	$(CXXNORMAL) $? $(LDFLAGS) -o $@
 fsm-to.o: fsm.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMM) -o $@
@@ -78,25 +72,33 @@ codec-to.o: codec.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMM) -o $@
 motors-to.o: motors/motors.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMM) -o $@
+blackpwm-to.o : ../BlackLib/v3_0/BlackPWM/BlackPWM.cpp
+	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMM) -o $@
+blackcore-to.o : ../BlackLib/v3_0/BlackCore.cpp
+	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMM) -o $@
 
 
 ##############
 #Cross compile
 ##############
-$(EXECUTABLECROSS): fsm-co.o server-co.o codec-co.o motors-co.o 
+$(EXECUTABLECROSS): fsm-co.o server-co.o codec-co.o motors-co.o blackpwm-co.o blackcore-co.o
 	$(CXXCROSS) $? $(LDFLAGS) -o $@
 fsm-co.o: fsm.cpp
-	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMM) -o $@
+	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
 server-co.o: server.cpp
-	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMM) -o $@
+	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
 codec-co.o: codec.cpp
-	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMM) -o $@
+	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
 motors-co.o: motors/motors.cpp
-	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMM) -o $@
+	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
+blackpwm-co.o : ../BlackLib/v3_0/BlackPWM/BlackPWM.cpp
+	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
+blackcore-co.o : ../BlackLib/v3_0/BlackCore.cpp
+	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
 
 push:
 	scp $(EXECUTABLE) root@192.168.7.2:~/
 
 clean:
-	rm -f fsm*.o server*.o codec*.o motors*.o $(EXECUTABLECROSS) $(EXECUTABLETESTO) $(EXECUTABLETEST) $(EXECUTABLEBBB) $(EXECUTABLEBBBO)
+	rm -f fsm*.dep fsm*.o server*.dep server*.o codec*.dep codec*.o motors*.dep motors*.o black*.o $(EXECUTABLECROSS) $(EXECUTABLETESTO) $(EXECUTABLETEST) $(EXECUTABLEBBB) $(EXECUTABLEBBBO)
 

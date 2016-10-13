@@ -5,7 +5,7 @@ motor_control::motor_control(enum BlackLib::pwmName pwm_pin, double initial_us, 
 					arm_us(arm_us), low_us(low_us), 
 					high_us(high_us), pwm(pwm_pin)
 {
-	pwm.setPeriodTime(uint64_t(20), BlackLib::timeType::milisecond);
+	pwm.setPeriodTime(uint64_t(20), BlackLib::milisecond);
 	pwm.setDutyPercent(create_percent(this->initial_us));
 }
 
