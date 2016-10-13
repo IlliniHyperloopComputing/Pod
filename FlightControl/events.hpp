@@ -1,6 +1,7 @@
 #ifndef FSM_EVENTS
 #define FSM_EVENTS
 
+struct event{};
 struct flight_coast {};
 struct flight_brake {};
 struct init_sensors {};//used to start sensor orthagonal machine

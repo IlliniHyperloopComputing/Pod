@@ -39,7 +39,9 @@ using namespace msm::front::euml;
 
 
 //Threading / queue
-boost::lockfree::spsc_queue<char, boost::lockfree::capacity<1024> > spsc_queue;
+typedef boost::shared_ptr<user_select> user_select_ptr;
+typedef boost::lockfree::spsc_queue<user_select_ptr, boost::lockfree::capacity<1024> > user_queue;
+user_queue queue;
 
 //Server
 tcp_server * server;
@@ -475,12 +477,12 @@ namespace  // Concrete FSM implementation
         //p.process_event(stop());  pstate(p);
 
         while(1){
-            char letter;
-            bool has_element = spsc_queue.pop(letter);
-            if(has_element)
-                std::cout<<"Hey! we got something!    "<<letter<<endl;
-            if(letter=='c')
-                break;
+            user_select_ptr usp;
+            queue.pop(usp);
+            if(usp){
+                std::cout<<"Hey we got soemthing"<<endl;
+                p.process_event(*usp); pstate(p);
+            }
         }
         std::cout << "stop fsm" << std::endl;
         p.stop();
@@ -488,28 +490,29 @@ namespace  // Concrete FSM implementation
     }
 }
 
-void example_input(void){
+/*void example_input(void){
     while(1){
         char input;
         cin>>input;
         
-        spsc_queue.push(input);
+        queue.push(input);
         if(input == 'c')
             break;
     }
 }
+*/
+
 
 void network_connect(void){
-    server = new tcp_server(ioservice);
+    server = new tcp_server(ioservice, &queue);
     cout <<"hey we are running the service now"<<endl;
     ioservice.run();
 }
 
 int main()
 {
-
     cout << "boost::lockfree::queue is ";
-    if (!spsc_queue.is_lock_free())
+    if (!queue.is_lock_free())
         cout << "not ";
     cout << "lockfree" << endl;
 
