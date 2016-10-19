@@ -30,30 +30,34 @@ user_select_ptr codec::decode_input(const std::string & x){
     return ep;
 }
 
-void codec::create_message(std::string & buff){
-    //modify buff
-}
 
-void codec::append_to_data_buffer(std::string & type, double * data, int data_size){
-    //append to string
-	/*string result = "";	
-	result.reserve(200);//store room in result now
-	for(int i = 0; i<data_size; i++){
-		char tmp[21];
-		sprintf(tmp,"%F", data[i]);
-		result += tmp;
-		result += ",";
-	}
-	size_t message_size = result.length();//get the size of the message
-	result = result.substr(0, message_size-1);//removes last comma
-	message_size--;//decrement message size since we just removed a comma
+void codec::append_to_data_buffer(std::string & buff, std::string & type, double * data, size_t data_length){
+    std::string message;
+    
+    message.reserve((21 * data_length));
+    for(size_t i = 0; i<data_length; i++){
+        char tmp[21];
+        sprintf(tmp, "%F", data[i]);
+        message += tmp;
+        message += ",";
+    }
+    //remove last comma and compute size
+    size_t message_size = result.length();
+    message = message.substr(0, message_size-1);
+    message_size--;
 
+    //calculate message size
 	char tmp[5];
-	sprintf(tmp,"%04d", message_size);//copy message size 
+	sprintf(tmp,"%04d", message_size);//write message size 
 
-	return tmp + msg_type + result;//adds size, message type, and the data
-    */
 
+    //reserver extra space to buffer
+    buff.reserve(7+message_size+buff.length());
+    //add to buffer
+    buff+=tmp;
+    buff+=type;
+    buff+=message;
+    
 }
 
 

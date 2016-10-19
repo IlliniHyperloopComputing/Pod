@@ -3,6 +3,7 @@ class sensor{
         sensor();
         ~sensor();
         void update();
+        void create_message(std::string & buff);
     
         double * get_x();
         double * get_z();
@@ -21,4 +22,14 @@ class sensor{
         double brake_pressure;  //
         double * esc;           //fl, fr, bl, br; 
         double * tot;           //cu, am, b1, b2;
+
+        uint8_t tick;
+        const uint8_t x_timing = 1;       //every 5 ticks
+        const uint8_t z_timing = 4;
+        const uint8_t lev_timing = 3;      
+        const uint8_t v_timing = 2;       
+        const uint8_t a_timing = 1;
+        const uint8_t brake_timing = 1;     
+        const uint8_t esc_timing = 4;
+        const uint8_t tot_timing = 4;
 };

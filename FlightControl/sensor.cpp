@@ -1,6 +1,7 @@
 #include "sensor.h"
 
 sensor::sensor(){
+    tick =1;
     x=0;    
     z=0;
     lev = new double[2];
@@ -25,8 +26,12 @@ sensor::~sensor(){
 }
 
 void sensor::update(){
+    
     //update selected sensors here and store values
-
+    //if(x_timing % tick == 0)
+    //    update
+    
+    tick = (tick %11)+1; //tick range: [1:10]
 }
 
 double * sensor::get_x(){

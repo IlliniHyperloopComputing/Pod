@@ -22,12 +22,12 @@ class tcp_connection : public boost::enable_shared_from_this<tcp_connection>
         typedef boost::shared_ptr<user_select> user_select_ptr;
         typedef boost::lockfree::spsc_queue<user_select_ptr, boost::lockfree::capacity<1024> > user_queue;
 */
-        static pointer create(boost::asio::io_service& io_service, user_queue * queue);
+        static pointer create(boost::asio::io_service& io_service, user_queue * queue, sensor * sen);
         tcp::socket& socket();
         void start();
     
     private:
-        tcp_connection(boost::asio::io_service& io_service,bool no_delay, user_queue *queue);
+        tcp_connection(boost::asio::io_service& io_service,bool no_delay, user_queue *queue, sensor * sen);
         void handle_write(const boost::system::error_code& , size_t);
         void handle_read(const boost::system::error_code&, size_t bytes_transferred);
         std::string buffer_to_string(boost::asio::streambuf& read_buffer, std::size_t bytes_transferred);
@@ -37,11 +37,13 @@ class tcp_connection : public boost::enable_shared_from_this<tcp_connection>
         std::string message_;
         boost::asio::streambuf read_buffer_;
         user_queue * queue_;
+        sensor * sensor_;
 };
 
 class tcp_server{
     public:
         tcp_server(boost::asio::io_service& io_service, user_queue * queue);
+        ~tcp_server();
     
     private:
         void start_accept();
@@ -49,6 +51,8 @@ class tcp_server{
         tcp::acceptor acceptor_;
 
         user_queue * queue_;
+        
+        sensor  * sensor_;
 
 };
 

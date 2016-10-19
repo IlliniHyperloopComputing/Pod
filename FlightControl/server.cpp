@@ -7,9 +7,9 @@ typedef boost::lockfree::spsc_queue<user_select_ptr, boost::lockfree::capacity<1
 ////////////////
 ////////////////
 //tcp_connection
-pointer tcp_connection::create(boost::asio::io_service & io_service, user_queue * queue){
+pointer tcp_connection::create(boost::asio::io_service & io_service, user_queue * queue, sensor * sen){
     std::cout<<"we were able to create a new pointer"<<std::endl;
-    return pointer(new tcp_connection(io_service, true, queue));
+    return pointer(new tcp_connection(io_service, true, queue, sen));
 }
 
 tcp::socket& tcp_connection::socket(){
@@ -37,26 +37,22 @@ void tcp_connection::start(){
 
 }
 
-tcp_connection::tcp_connection(boost::asio::io_service& io_service, bool no_delay, user_queue * queue)
-            : socket_(io_service), no_delay_(no_delay), queue_(queue)
+tcp_connection::tcp_connection(boost::asio::io_service& io_service, bool no_delay, user_queue * queue, sensor * sen)
+            : socket_(io_service), no_delay_(no_delay), queue_(queue), sensor_(sen)
 { 
 
 }
 void tcp_connection::handle_write(const boost::system::error_code&,size_t bytes_transferred){
 
-    //sensor.update();
+    sensor_->update();//update necessary sensors
+    sensor_->create_message(message_);//create message to send
 
-    //codec.create_message(message_)
-
-    //send message
-
-
-    //get data and then write again
-/*    boost::asio::async_write(socket_, boost::asio::buffer(message_),
+    //send data
+    boost::asio::async_write(socket_, boost::asio::buffer(message_),
             boost::bind(&tcp_connection::handle_write, shared_from_this(),
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));
-*/
+
 }
 
 void tcp_connection::handle_read(const boost::system::error_code&, std::size_t bytes_transferred){
@@ -92,16 +88,23 @@ std::string tcp_connection::buffer_to_string(boost::asio::streambuf& read_buffer
 //tcp_server
 //typedef  spsc_queue;
 tcp_server::tcp_server(boost::asio::io_service& io_service, user_queue *queue)
-            : acceptor_(io_service, tcp::endpoint(tcp::v4(),8888)), queue_(queue)
+            : acceptor_(io_service, tcp::endpoint(tcp::v5(),8888)), queue_(queue)
 {
+    sensor_ = new sensor();
     start_accept();//start accepting connections
+}
+
+tcp_server::~tcp_server()
+{
+    if(sensor_!=NULL)
+        delete sensor_;
 }
 
 //async wait for a new connection
 void tcp_server::start_accept()
 {
     tcp_connection::pointer new_connection = 
-        tcp_connection::create(acceptor_.get_io_service(),queue_);
+        tcp_connection::create(acceptor_.get_io_service(),queue_, sensor_);
 
 
     acceptor_.async_accept(new_connection->socket(),
@@ -120,7 +123,6 @@ void tcp_server::handle_accept(tcp_connection::pointer new_connection, const boo
     }
     
     start_accept();//optionally look for another connection
-
 }
 
 

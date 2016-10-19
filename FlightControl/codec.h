@@ -9,11 +9,8 @@ typedef boost::shared_ptr<user_select> user_select_ptr;
 
 class codec{
     public:
-        codec();
         static user_select_ptr decode_input(const std::string & x);
-        void create_message(std::string & buff);
-    private:
-        void append_to_data_buffer(string & type, double *data, int size);
+        static void append_to_data_buffer(std::string & buff, std::string & type, double *data, size_t data_length);
 };
         
 
