@@ -43,6 +43,14 @@ tcp_connection::tcp_connection(boost::asio::io_service& io_service, bool no_dela
 
 }
 void tcp_connection::handle_write(const boost::system::error_code&,size_t bytes_transferred){
+
+    //sensor.update();
+
+    //codec.create_message(message_)
+
+    //send message
+
+
     //get data and then write again
 /*    boost::asio::async_write(socket_, boost::asio::buffer(message_),
             boost::bind(&tcp_connection::handle_write, shared_from_this(),
