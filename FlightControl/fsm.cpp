@@ -6,6 +6,9 @@
 //Network
 #include "server.h"
 
+//Sensor
+#include "sensor.h"
+
 
 #include <vector>
 #include <iostream>
@@ -43,9 +46,9 @@ typedef boost::shared_ptr<user_select> user_select_ptr;
 typedef boost::lockfree::spsc_queue<user_select_ptr, boost::lockfree::capacity<1024> > user_queue;
 user_queue queue;
 
-//Server
 tcp_server * server;
 boost::asio::io_service ioservice;
+sensor * sen;
 
 namespace  // Concrete FSM implementation
 {
@@ -416,6 +419,7 @@ namespace  // Concrete FSM implementation
 
     void state_machine_loop(void)
     {        
+        cout <<"Running FSM"<<endl;
         pod p;
         // needed to start the highest-level SM. This will call on_entry and mark the start of the SM
         p.start(); 
@@ -480,7 +484,6 @@ namespace  // Concrete FSM implementation
             user_select_ptr usp;
             queue.pop(usp);
             if(usp){
-                std::cout<<"Hey we got soemthing"<<endl;
                 p.process_event(*usp); pstate(p);
             }
         }
@@ -490,22 +493,17 @@ namespace  // Concrete FSM implementation
     }
 }
 
-/*void example_input(void){
+void sensor_loop(void){
+    cout <<"Running Sensor loop"<<endl; 
+    //infinate loop is not good idea. come up with something else
     while(1){
-        char input;
-        cin>>input;
-        
-        queue.push(input);
-        if(input == 'c')
-            break;
+        sen->update();
     }
 }
-*/
-
 
 void network_connect(void){
-    server = new tcp_server(ioservice, &queue);
-    cout <<"hey we are running the service now"<<endl;
+    server = new tcp_server(ioservice, &queue, sen);
+    cout <<"Running network service"<<endl;
     ioservice.run();
 }
 
@@ -516,13 +514,16 @@ int main()
         cout << "not ";
     cout << "lockfree" << endl;
 
+    sen = new sensor();
+    boost::thread sensor_thread(sensor_loop);
     boost::thread state_machine_thread(state_machine_loop);
-    //uncomment this (and comment the one below it) to test it out!
-    //boost::thread network_thread(example_input);
     boost::thread network_thread(network_connect);
+
 
     state_machine_thread.join();
     network_thread.join();
+    sensor_thread.join();
     delete server;
+    delete sen;
     return 0;
 }

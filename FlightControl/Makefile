@@ -26,13 +26,15 @@ all :
 ###############
 #BBB/Test compile
 ###############
-$(EXECUTABLEBBB) $(EXECUTABLETEST) : fsm-b.o server-b.o codec-b.o motors-b.o blackpwm-b.o blackcore-b.o
+$(EXECUTABLEBBB) $(EXECUTABLETEST) : fsm-b.o server-b.o codec-b.o motors-b.o sensor-b.o blackpwm-b.o blackcore-b.o 
 	$(CXXNORMAL) $? $(LDFLAGS) -o $@
 fsm-b.o: fsm.cpp
 	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
 server-b.o: server.cpp
 	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
 codec-b.o: codec.cpp
+	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
+sensor-b.o: sensor.cpp
 	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
 motors-b.o: motors/motors.cpp
 	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
@@ -44,13 +46,15 @@ blackcore-b.o : ../BlackLib/v3_0/BlackCore.cpp
 ###############
 #BBBO compile
 ###############
-$(EXECUTABLEBBBO) : fsm-bo.o server-bo.o codec-bo.o motors-bo.o blackpwm-bo.o blackcore-bo.o
+$(EXECUTABLEBBBO) : fsm-bo.o server-bo.o codec-bo.o motors-bo.o sensor-bo.o blackpwm-bo.o blackcore-bo.o
 	$(CXXNORMAL) $? $(LDFLAGS) -o $@
 fsm-bo.o: fsm.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
 server-bo.o: server.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
 codec-bo.o: codec.cpp
+	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
+sensor-bo.o: sensor.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
 motors-bo.o: motors/motors.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
@@ -62,13 +66,15 @@ blackcore-bo.o : ../BlackLib/v3_0/BlackCore.cpp
 ###############
 #TestO compile
 ###############
-$(EXECUTABLETESTO) : fsm-to.o server-to.o codec-to.o motors-to.o blackpwm-to.o blackcore-to.o
+$(EXECUTABLETESTO) : fsm-to.o server-to.o codec-to.o sensor-to.o motors-to.o blackpwm-to.o blackcore-to.o
 	$(CXXNORMAL) $? $(LDFLAGS) -o $@
 fsm-to.o: fsm.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMM) -o $@
 server-to.o: server.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMM) -o $@
 codec-to.o: codec.cpp
+	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMM) -o $@
+sensor-to.o: sensor.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMM) -o $@
 motors-to.o: motors/motors.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMM) -o $@
@@ -81,13 +87,15 @@ blackcore-to.o : ../BlackLib/v3_0/BlackCore.cpp
 ##############
 #Cross compile
 ##############
-$(EXECUTABLECROSS): fsm-co.o server-co.o codec-co.o motors-co.o blackpwm-co.o blackcore-co.o
+$(EXECUTABLECROSS): fsm-co.o server-co.o codec-co.o sensor-co.o motors-co.o blackpwm-co.o blackcore-co.o
 	$(CXXCROSS) $? $(LDFLAGS) -o $@
 fsm-co.o: fsm.cpp
 	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
 server-co.o: server.cpp
 	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
 codec-co.o: codec.cpp
+	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
+sensor-co.o: sensor.cpp
 	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
 motors-co.o: motors/motors.cpp
 	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
@@ -100,5 +108,5 @@ push:
 	scp $(EXECUTABLE) root@192.168.7.2:~/
 
 clean:
-	rm -f fsm*.dep fsm*.o server*.dep server*.o codec*.dep codec*.o motors*.dep motors*.o black*.o $(EXECUTABLECROSS) $(EXECUTABLETESTO) $(EXECUTABLETEST) $(EXECUTABLEBBB) $(EXECUTABLEBBBO)
+	rm -f fsm*.dep black*.dep fsm*.o server*.dep server*.o codec*.dep codec*.o motors*.dep motors*.o black*.o $(EXECUTABLECROSS) $(EXECUTABLETESTO) $(EXECUTABLETEST) $(EXECUTABLEBBB) $(EXECUTABLEBBBO)
 

@@ -9,6 +9,7 @@
 #include <boost/lockfree/spsc_queue.hpp>
 #include <boost/asio.hpp>
 #include "codec.h"
+#include "sensor.h"
 
 using boost::asio::ip::tcp;
 typedef boost::shared_ptr<user_select> user_select_ptr;
@@ -42,18 +43,16 @@ class tcp_connection : public boost::enable_shared_from_this<tcp_connection>
 
 class tcp_server{
     public:
-        tcp_server(boost::asio::io_service& io_service, user_queue * queue);
+        tcp_server(boost::asio::io_service& io_service, user_queue * queue, sensor * sen);
         ~tcp_server();
     
     private:
         void start_accept();
         void handle_accept(tcp_connection::pointer new_connection, const boost::system::error_code&error);
+
         tcp::acceptor acceptor_;
-
         user_queue * queue_;
-        
         sensor  * sensor_;
-
 };
 
 #endif
