@@ -11,6 +11,7 @@
 
 //BlackLib
 #include "../BlackLib/v3_0/BlackPWM/BlackPWM.h"
+#include "../BlackLib/v3_0/BlackGPIO/BlackGPIO.h"
 
 #include <vector>
 #include <iostream>
@@ -30,7 +31,7 @@
 
 // check this
 #include "motors/motors.h"
-
+#include "brakes/brakes.h"
 
 using namespace std;
 //MSM
@@ -44,6 +45,9 @@ using namespace msm::front::euml;
 // TODO these are not finalized
 motor_control* motor_levitation = new motor_control(BlackLib::pwmName::P9_21, 1000.0, 700.0, 700.0, 200000.0);
 motor_control* motor_stability = new motor_control(BlackLib::pwmName::P9_21, 1000.0, 700.0, 700.0, 20000);
+
+// objects for brakes
+brake_control* brakes = new brake_control(BlackLib::gpioName::GPIO_67, BlackLib::gpioName::GPIO_68);
 
 //Threading / queue
 typedef boost::shared_ptr<user_select> user_select_ptr;

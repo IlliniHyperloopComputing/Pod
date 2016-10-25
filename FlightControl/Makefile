@@ -26,7 +26,7 @@ all :
 ###############
 #BBB/Test compile
 ###############
-$(EXECUTABLEBBB) $(EXECUTABLETEST) : fsm-b.o server-b.o codec-b.o motors-b.o sensor-b.o blackpwm-b.o blackcore-b.o 
+$(EXECUTABLEBBB) $(EXECUTABLETEST) : fsm-b.o server-b.o codec-b.o motors-b.o brakes-b.o  sensor-b.o blackpwm-b.o blackcore-b.o 
 	$(CXXNORMAL) $? $(LDFLAGS) -o $@
 fsm-b.o: fsm.cpp
 	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
@@ -37,6 +37,8 @@ codec-b.o: codec.cpp
 sensor-b.o: sensor.cpp
 	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
 motors-b.o: motors/motors.cpp
+	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
+brakes-b.o: brakes/brakes.cpp
 	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
 blackpwm-b.o : ../BlackLib/v3_0/BlackPWM/BlackPWM.cpp
 	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
