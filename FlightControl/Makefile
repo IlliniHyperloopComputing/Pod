@@ -17,7 +17,7 @@ EXECUTABLETEST=test
 EXECUTABLETESTO=test-optim
 EXECUTABLECROSS=cross
 
-LDFLAGS= -lboost_thread -lboost_system
+LDFLAGS= -lboost_thread -lboost_system -L/usr/arm-linux-gnueabihf/ -lpthread
 
 all :
 	echo "\n================\n================\nuse: make [compiletype]\n\t[compiletype] = 'bbb'\t'bbb-optim' to compile when on the BBB, the -optim option will take a while\n\t[compiletype] = 'test'\t'test-optim' when testing on regular linux machine\n\t[compiletype] = 'cross'\twhen cross compiling to BBB\n================\n================\n"
@@ -105,7 +105,7 @@ blackcore-co.o : ../BlackLib/v3_0/BlackCore.cpp
 	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
 
 push:
-	scp $(EXECUTABLE) root@192.168.7.2:~/
+	scp $(EXECUTABLECROSS) root@192.168.137.10:~/
 
 clean:
 	rm -f fsm*.dep black*.dep fsm*.o server*.dep server*.o codec*.dep codec*.o motors*.dep motors*.o black*.o $(EXECUTABLECROSS) $(EXECUTABLETESTO) $(EXECUTABLETEST) $(EXECUTABLEBBB) $(EXECUTABLEBBBO)

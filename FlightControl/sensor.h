@@ -4,6 +4,11 @@
 #include <iostream>
 #include <string>
 #include <atomic>
+#include <linux/i2c-dev.h>
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <errno.h>
+#include <sys/ioctl.h>
 
 class sensor{
     public:
@@ -32,7 +37,7 @@ class sensor{
         std::atomic<double> *  get_atomic_brake();
         std::atomic<double> *  get_atomic_esc();
         std::atomic<double> *  get_atomic_tot();
-
+    
 
     private:
         /*double x, z;
@@ -54,7 +59,30 @@ class sensor{
         std::atomic<double>  atomic_brake_pressure;
         std::atomic<double> * atomic_esc;
         std::atomic<double> * atomic_tot;
-        
+        std::atomic<uint8_t> x_status;
+        std::atomic<uint8_t> z_status;
+        std::atomic<uint8_t> lev_status;
+        std::atomic<uint8_t> v_status;
+        std::atomic<uint8_t> a_status;
+        std::atomic<uint8_t> att_status;
+        std::atomic<uint8_t> brake_pressure_status;
+        std::atomic<uint8_t> esc_status;
+        std::atomic<uint8_t> tot_status;
+
+        int i2c;
+        void open_i2c();
+        int  open_12c_address(int address);
+
+        void init_x();
+        void init_z();
+        void init_lev();
+        void init_v();
+        void init_a();
+        void init_att();
+        void init_brake_pressure();
+        void init_esc();
+        void init_tot();
+
 
         void update_x();
         void update_z();

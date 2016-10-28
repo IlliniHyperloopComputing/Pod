@@ -141,7 +141,7 @@ std::atomic<double> *  sensor::get_atomic_tot(){
 }
 
 void sensor::update_x(){
-    atomic_x.store(1);
+    atomic_x.store(atomic_x.load()+1);
 }
 
 void sensor::update_z(){
@@ -191,3 +191,25 @@ void sensor::update_tot(){
     atomic_tot[3].store(78);
 }
 
+
+void open_i2c(){
+	i2c = open("/dev/i2c-1", O_RDWR);
+	
+	if(i2c < 0){
+		cout << "Something went wrong opening the i2c port" <<endl;
+		cout << "Error code: " << errno << endl;
+		return 2;
+	}
+}
+
+int open_i2c_address(int address){
+	if( ioctl( i2c, I2C_SLAVE, address) < 0){
+		cout << "Failed to set i2c (address: " << address << ") slave address" <<endl;
+		cout << "Error Code: " << cerr << endl;
+		return 2;
+	}
+	
+	return i2c;
+}
+
+void 

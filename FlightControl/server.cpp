@@ -41,6 +41,7 @@ tcp_connection::tcp_connection(boost::asio::io_service& io_service, bool no_dela
 }
 void tcp_connection::handle_write(const boost::system::error_code& error_message,size_t bytes_transferred){
 
+    usleep(30000);
     if(socket_.is_open()){
         codec::create_message(sensor_,message_);//create message to send
 
