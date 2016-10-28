@@ -26,7 +26,7 @@ all :
 ###############
 #BBB/Test compile
 ###############
-$(EXECUTABLEBBB) $(EXECUTABLETEST) : fsm-b.o server-b.o codec-b.o motors-b.o brakes-b.o  sensor-b.o blackpwm-b.o blackcore-b.o 
+$(EXECUTABLEBBB) $(EXECUTABLETEST) : fsm-b.o server-b.o codec-b.o motors-b.o brakes-b.o  sensor-b.o blackpwm-b.o blackcore-b.o blackgpio-b.o
 	$(CXXNORMAL) $? $(LDFLAGS) -o $@
 fsm-b.o: fsm.cpp
 	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
@@ -41,6 +41,8 @@ motors-b.o: motors/motors.cpp
 brakes-b.o: brakes/brakes.cpp
 	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
 blackpwm-b.o : ../BlackLib/v3_0/BlackPWM/BlackPWM.cpp
+	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
+blackgpio-b.o : ../BlackLib/v3_0/BlackGPIO/BlackGPIO.cpp
 	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
 blackcore-b.o : ../BlackLib/v3_0/BlackCore.cpp
 	$(CXXNORMAL) $? $(CXXFLAGS) -o $@
@@ -68,7 +70,7 @@ blackcore-bo.o : ../BlackLib/v3_0/BlackCore.cpp
 ###############
 #TestO compile
 ###############
-$(EXECUTABLETESTO) : fsm-to.o server-to.o codec-to.o sensor-to.o motors-to.o blackpwm-to.o blackcore-to.o
+$(EXECUTABLETESTO) : fsm-to.o server-to.o codec-to.o sensor-to.o motors-to.o blackpwm-to.o blackcore-to.o blackgpio-to.o
 	$(CXXNORMAL) $? $(LDFLAGS) -o $@
 fsm-to.o: fsm.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMM) -o $@
@@ -82,6 +84,8 @@ motors-to.o: motors/motors.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMM) -o $@
 blackpwm-to.o : ../BlackLib/v3_0/BlackPWM/BlackPWM.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMM) -o $@
+blackgpio-to.o : ../BlackLib/v3_0/BlackGPIO/BlackGPIO.cpp
+	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMM) -o $@
 blackcore-to.o : ../BlackLib/v3_0/BlackCore.cpp
 	$(CXXNORMAL) $? $(CXXFLAGSO) $(OPTIMM) -o $@
 
@@ -89,7 +93,7 @@ blackcore-to.o : ../BlackLib/v3_0/BlackCore.cpp
 ##############
 #Cross compile
 ##############
-$(EXECUTABLECROSS): fsm-co.o server-co.o codec-co.o sensor-co.o motors-co.o blackpwm-co.o blackcore-co.o
+$(EXECUTABLECROSS): fsm-co.o server-co.o codec-co.o sensor-co.o motors-co.o blackpwm-co.o blackcore-co.o brakes-co.o blackgpio-co.o
 	$(CXXCROSS) $? $(LDFLAGS) -o $@
 fsm-co.o: fsm.cpp
 	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
@@ -103,7 +107,11 @@ motors-co.o: motors/motors.cpp
 	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
 blackpwm-co.o : ../BlackLib/v3_0/BlackPWM/BlackPWM.cpp
 	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
+blackgpio-co.o : ../BlackLib/v3_0/BlackGPIO/BlackGPIO.cpp
+	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
 blackcore-co.o : ../BlackLib/v3_0/BlackCore.cpp
+	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
+brakes-co.o: brakes/brakes.cpp
 	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
 
 push:

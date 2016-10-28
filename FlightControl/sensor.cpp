@@ -192,24 +192,21 @@ void sensor::update_tot(){
 }
 
 
-void open_i2c(){
+void sensor::open_i2c(){
 	i2c = open("/dev/i2c-1", O_RDWR);
 	
 	if(i2c < 0){
-		cout << "Something went wrong opening the i2c port" <<endl;
-		cout << "Error code: " << errno << endl;
-		return 2;
+		std::cout << "Something went wrong opening the i2c port" <<std::endl;
+	//	cout << "Error code: " << errno << endl;
 	}
 }
 
-int open_i2c_address(int address){
+int sensor::open_i2c_address(int address){
 	if( ioctl( i2c, I2C_SLAVE, address) < 0){
-		cout << "Failed to set i2c (address: " << address << ") slave address" <<endl;
-		cout << "Error Code: " << cerr << endl;
+		std::cout << "Failed to set i2c (address: " << address << ") slave address" <<std::endl;
+	//	cout << "Error Code: " << cerr << endl;
 		return 2;
 	}
 	
 	return i2c;
 }
-
-void 

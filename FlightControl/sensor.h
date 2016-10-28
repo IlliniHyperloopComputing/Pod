@@ -71,7 +71,7 @@ class sensor{
 
         int i2c;
         void open_i2c();
-        int  open_12c_address(int address);
+        int  open_i2c_address(int address);
 
         void init_x();
         void init_z();
