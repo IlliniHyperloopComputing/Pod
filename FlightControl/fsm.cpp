@@ -9,6 +9,9 @@
 //Sensor
 #include "sensor.h"
 
+//BlackLib
+#include "../BlackLib/v3_0/BlackPWM/BlackPWM.h"
+#include "../BlackLib/v3_0/BlackGPIO/BlackGPIO.h"
 
 #include <vector>
 #include <iostream>
@@ -28,7 +31,7 @@
 
 // check this
 #include "motors/motors.h"
-
+#include "brakes/brakes.h"
 
 using namespace std;
 //MSM
@@ -39,7 +42,12 @@ using namespace msm::front;
 using namespace msm::front::euml;
 
 // objects for motors go here
+// TODO these are not finalized
+motor_control* motor_levitation = new motor_control(BlackLib::pwmName::P9_21, 1000.0, 700.0, 700.0, 200000.0);
+motor_control* motor_stability = new motor_control(BlackLib::pwmName::P9_21, 1000.0, 700.0, 700.0, 20000);
 
+// objects for brakes
+brake_control* brakes = new brake_control(BlackLib::gpioName::GPIO_67, BlackLib::gpioName::GPIO_68);
 
 //Threading / queue
 typedef boost::shared_ptr<user_select> user_select_ptr;
@@ -289,33 +297,59 @@ namespace  // Concrete FSM implementation
  //               cout << "turn_on_sensors-- transition with event:" << typeid(EVT).name() << endl;
  //           }
  //       };
-        struct TestFct 
-        {
-            template <class EVT,class FSM,class SourceState,class TargetState>
-            void operator()(EVT const&, FSM&,SourceState& ,TargetState& )
-            {
-                cout << "transition with event:" << typeid(EVT).name() << endl;
-            }
-        };
-        struct start_playback 
-        {
-            template <class EVT,class FSM,class SourceState,class TargetState>
-            void operator()(EVT const& ,FSM& ,SourceState& ,TargetState& )
-            {
-                cout << "player::start_playback" << endl;
-            }
-        };
-        struct store_cd_info 
+
+
+	// performs neccesary actions when moving into loading 
+        struct to_loading 
         {
             template <class EVT,class FSM,class SourceState,class TargetState>
             void operator()(EVT const&,FSM& fsm ,SourceState& ,TargetState& )
             {
-                cout << "player::store_cd_info" << endl;
-                //fsm.process_event(play());
+                cout << "moving into loading state" << endl;
+		motor_levitation->disarm();
+		motor_stability->disarm();
             }
         };
 
- 
+	// performs actions when moving into flight_acceleration
+        struct to_flight_accel
+        {
+            template <class EVT,class FSM,class SourceState,class TargetState>
+            void operator()(EVT const&,FSM& fsm ,SourceState& ,TargetState& )
+            {
+                cout << "moving into flight accel state" << endl;
+                motor_levitation->arm();
+		motor_stability->arm();
+            }
+        };
+
+	
+	// performs actions when moving into flight_coast
+        struct to_flight_coast
+        {
+            template <class EVT,class FSM,class SourceState,class TargetState>
+            void operator()(EVT const&,FSM& fsm ,SourceState& ,TargetState& )
+            {
+                cout << "moving into flight coast state" << endl;
+                motor_levitation->arm();
+		// needs to implement levitation profile
+		motor_stability->arm();
+            }
+        };
+
+
+	// performs actions when moving into flight_brake
+        struct to_flight_brake
+        {
+            template <class EVT,class FSM,class SourceState,class TargetState>
+            void operator()(EVT const&,FSM& fsm ,SourceState& ,TargetState& )
+            {
+                cout << "moving into flight brake state" << endl;
+                motor_levitation->disarm();
+		motor_stability->arm();
+            }
+        };
+
         typedef pod_ p; // makes transition table cleaner
 
         // Transition table for player
@@ -334,15 +368,15 @@ namespace  // Concrete FSM implementation
             Row < FunctionalC , user_select , FunctionalD , none                  , functC_functD         >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
             Row < FunctionalD , user_select , SafeMode    , none                  , functD_safe           >,
-            Row < FunctionalD , user_select , Loading     , none                  , functD_loading        >,
-            Row < FunctionalD , user_select , FlightAccel , none                  , functD_flightA        >,
+            Row < FunctionalD , user_select , Loading     , to_loading            , functD_loading        >,
+            Row < FunctionalD , user_select , FlightAccel , to_flight_accel       , functD_flightA        >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
             Row < Loading     , user_select , FunctionalA , none                  , loading_functA        >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
             Row < FlightAccel , user_select , SafeMode    , none                  , flightA_safe          >,
-            Row < FlightAccel , flight_coast, FlightCoast , none                  , flightA_flightC       >,
+            Row < FlightAccel , flight_coast, FlightCoast , to_flight_coast       , flightA_flightC       >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < FlightCoast , flight_brake, FlightBrake , none                  , flightC_flightB       >
+            Row < FlightCoast , flight_brake, FlightBrake , to_flight_brake       , flightC_flightB       >
             //  +-------------+-------------+-------------+-----------------------+----------------------+
  //           Row < FlightBrake , user_select , SafeMode    , none                  , flightB_safe          >,
  //           //  +-------------+-------------+-------------+-----------------------+----------------------+
