@@ -69,8 +69,8 @@ class sensor{
         std::atomic<uint8_t> esc_status;
         std::atomic<uint8_t> tot_status;
 
-        int i2c;
-        void open_i2c();
+        int  i2c;
+        int  open_i2c();
         int  open_i2c_address(int address);
 
         void init_x();
