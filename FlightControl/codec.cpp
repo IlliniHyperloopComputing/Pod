@@ -32,6 +32,9 @@ command_ptr codec::decode_input(const std::string & x){
              int value = stoi(x.substr(3));
              ep = command_ptr(new command(LEV_MOTOR, value)); 
         }
+        else if(state == "OFF"){
+            ep = command_ptr(new command(OFF));
+        }
         else {
             ep = command_ptr(new command(SAFE_MODE));
         }
@@ -106,8 +109,7 @@ void codec::create_message(sensor * sen, std::string & buff){
     codec::append_to_data_buffer(buff,"VEL",sen->get_atomic_v(),3);
     codec::append_to_data_buffer(buff,"HOF",sen->get_atomic_z(),1);
     codec::append_to_data_buffer(buff,"LVH",sen->get_atomic_lev(),2);
-    codec::append_to_data_buffer(buff,"ESC",sen->get_atomic_esc(),4);
-    codec::append_to_data_buffer(buff,"TOT",sen->get_atomic_tot(),4);
+    codec::append_to_data_buffer(buff,"TMP",sen->get_atomic_temps(), 8);
 
     //for now, lets just send everything. We will see how that works
     /*switch(tick){

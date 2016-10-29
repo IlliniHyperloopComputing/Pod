@@ -25,8 +25,7 @@ sensor::sensor(){
     atomic_a   = new std::atomic<double>[3];
     atomic_att = new std::atomic<double>[3];
     atomic_brake_pressure.store(3);
-    atomic_esc = new std::atomic<double>[4];
-    atomic_tot = new std::atomic<double>[4];
+    atomic_temps = new std::atomic<double>[8];
     open_i2c();
     open_i2c_address(0x15);
     
@@ -54,10 +53,8 @@ sensor::~sensor(){
         delete[] atomic_a;
     if(atomic_att != NULL)
         delete[] atomic_att;
-    if(atomic_esc != NULL)
-        delete[] atomic_esc;
-    if(atomic_tot != NULL)
-        delete[] atomic_tot;
+    if(atomic_temps != NULL)
+        delete[] atomic_temps;
 }
 
 void sensor::update(){
@@ -139,11 +136,8 @@ std::atomic<double> *  sensor::get_atomic_att(){
 std::atomic<double> *  sensor::get_atomic_brake(){
     return &atomic_brake_pressure;
 }
-std::atomic<double> *  sensor::get_atomic_esc(){
-    return atomic_esc;
-}
-std::atomic<double> *  sensor::get_atomic_tot(){
-    return atomic_tot;
+std::atomic<double> * sensor::get_atomic_temps(){
+    return atomic_temps;
 }
 
 void sensor::update_x(){
@@ -231,6 +225,8 @@ void sensor::update_temp(){
         val = i2c_smbus_read_byte_data(i2c,i);
         //std::cout << (unsigned int)val << std::endl;
         //std::cout << "Thermocouple " << i << " : " << (int)val << std::endl; 
+        atomic_temps[i].store(val);
+        
     }
 }
 

@@ -19,7 +19,8 @@ enum IncomingCommandEnum
     FLIGHT_A=7,
     E_BRAKE=8,
     LEV_MOTOR=9,
-    STA_MOTOR = 10
+    STA_MOTOR = 10,
+    OFF = 11
 };
 /*
 struct user_select

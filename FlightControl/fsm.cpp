@@ -525,17 +525,22 @@ namespace  // Concrete FSM implementation
                     motor_levitation->set_microseconds(cp->command_value); 
                 } else if(cp->command_type == STA_MOTOR) {
                     motor_stability->set_microseconds(cp->command_value);
+                } else if(cp->command_type == OFF) {
+                    motor_levitation->set_low();
+                    motor_stability->set_low();
+                    break; // exit while loop 
+                }
                 } else { 
                     p.process_event(*cp); 
                     pstate(p);
                 }
             }
+            cout << "stop fsm" << endl;
+             p.stop();
         }
-        std::cout << "stop fsm" << std::endl;
-        p.stop();
 
-    }
 }
+
 
 void sensor_loop(void){
     cout <<"Running Sensor loop"<<endl; 
