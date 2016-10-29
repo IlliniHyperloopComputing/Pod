@@ -79,6 +79,7 @@ void motor_control::set_low(){
 }
 
 void motor_control::set_microseconds(double microseconds){	
+    std::cout << "Setting motor microseconds to : " << microseconds << std::endl;
 	update_percent( microseconds );
 	current_us = microseconds;
 	pwm.setDutyPercent(create_percent(microseconds));
