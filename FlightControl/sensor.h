@@ -91,8 +91,9 @@ class sensor{
         void update_a();
         void update_att();
         void update_brake_pressure();
-        void update_esc();
-        void update_tot();
+        //void update_esc();
+        //void update_tot();
+        void update_temp();
 
         uint8_t tick;
 };

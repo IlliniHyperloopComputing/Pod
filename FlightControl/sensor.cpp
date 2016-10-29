@@ -1,5 +1,7 @@
 #include "sensor.h"
+#include <string.h>
 #include "codec.h"
+
 
 sensor::sensor(){
     tick =1;
@@ -13,8 +15,9 @@ sensor::sensor(){
     brake_pressure = 0;
     esc = new double[4];
     tot = new double[4];
-    */
+       */
 
+    
     atomic_x.store(1);// = new std::atomic<double>(1);
     atomic_z.store(1);
     atomic_lev = new std::atomic<double>[2];
@@ -24,6 +27,8 @@ sensor::sensor(){
     atomic_brake_pressure.store(3);
     atomic_esc = new std::atomic<double>[4];
     atomic_tot = new std::atomic<double>[4];
+    open_i2c();
+    open_i2c_address(0x15);
     
 }
 
@@ -68,12 +73,13 @@ void sensor::update(){
             break;
         case 2:
             update_lev();
-            update_esc();
+            //update_esc();
+            update_temp();
             update_att();
             break;
         case 3:
             update_v();
-            update_tot();
+            //update_tot();
             break;
         default:
             break;
@@ -177,6 +183,7 @@ void sensor::update_brake_pressure(){
     atomic_brake_pressure.store(atomic_brake_pressure.load()+1);
 }
 
+/*
 void sensor::update_esc(){
     atomic_esc[0].store(3);
     atomic_esc[1].store(50);
@@ -189,6 +196,40 @@ void sensor::update_tot(){
     atomic_tot[1].store(50);
     atomic_tot[2].store(57);
     atomic_tot[3].store(78);
+}*/
+
+
+void sensor::update_temp(){
+/*
+    std::cout << "Updating temp" << std::endl;
+    char buf[3];
+
+    memset(buf, 0, 3);
+    int bytesread = read(i2c, buf, 3);
+
+    std::cout << "Bytes read : " <<bytesread<< std::endl;
+
+    for(int i = 0; i < 3; i++){
+       std::cout << "Thermocouple " << i << " : " << (int)buf[i] << std::endl; 
+    }
+*/
+
+/*
+    unsigned char buf[8];
+    memset(buf, 0, 8);
+     
+    i2c_smbus_read_block_data(i2c, 0x00, buf);
+    
+    for(int i = 0; i < 8; i++){
+       std::cout << "Thermocouple " << i << " : " << (int)buf[i] << std::endl; 
+    }
+*/
+
+    unsigned char val = 0;
+
+    val = i2c_smbus_read_byte(i2c);
+    std::cout << (unsigned int)val << std::endl;
+    
 }
 
 

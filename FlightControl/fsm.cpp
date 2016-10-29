@@ -43,8 +43,8 @@ using namespace msm::front::euml;
 
 // objects for motors go here
 // TODO these are not finalized
-motor_control* motor_levitation = new motor_control(BlackLib::pwmName::P9_21, 1000.0, 700.0, 700.0, 200000.0);
-motor_control* motor_stability = new motor_control(BlackLib::pwmName::P9_21, 1000.0, 700.0, 700.0, 20000);
+//motor_control* motor_levitation = new motor_control(BlackLib::pwmName::P9_21, 1000.0, 700.0, 700.0, 200000.0);
+//motor_control* motor_stability = new motor_control(BlackLib::pwmName::P9_21, 1000.0, 700.0, 700.0, 20000);
 
 / objects for brakes
 
@@ -306,8 +306,8 @@ namespace  // Concrete FSM implementation
             void operator()(EVT const&,FSM& fsm ,SourceState& ,TargetState& )
             {
                 cout << "moving into loading state" << endl;
-		motor_levitation->disarm();
-		motor_stability->disarm();
+		//motor_levitation->disarm();
+		//motor_stability->disarm();
             }
         };
 
@@ -318,8 +318,8 @@ namespace  // Concrete FSM implementation
             void operator()(EVT const&,FSM& fsm ,SourceState& ,TargetState& )
             {
                 cout << "moving into flight accel state" << endl;
-                motor_levitation->arm();
-		motor_stability->arm();
+         //       motor_levitation->arm();
+		//motor_stability->arm();
             }
         };
 
@@ -331,9 +331,9 @@ namespace  // Concrete FSM implementation
             void operator()(EVT const&,FSM& fsm ,SourceState& ,TargetState& )
             {
                 cout << "moving into flight coast state" << endl;
-                motor_levitation->arm();
+         //       motor_levitation->arm();
 		// needs to implement levitation profile
-		motor_stability->arm();
+		//motor_stability->arm();
             }
         };
 
@@ -345,8 +345,8 @@ namespace  // Concrete FSM implementation
             void operator()(EVT const&,FSM& fsm ,SourceState& ,TargetState& )
             {
                 cout << "moving into flight brake state" << endl;
-                motor_levitation->disarm();
-		motor_stability->arm();
+         //       motor_levitation->disarm();
+		//motor_stability->arm();
             }
         };
 
@@ -543,7 +543,7 @@ void network_connect(void){
 
 int main()
 {
-    cout << "boost::lockfree::queue is ";
+    cout << "boost::lockfree::queue is " << endl;
     if (!queue.is_lock_free())
         cout << "not ";
     cout << "lockfree" << endl;
