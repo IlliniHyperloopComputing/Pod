@@ -520,6 +520,7 @@ namespace  // Concrete FSM implementation
             command_ptr cp;
             queue.pop(cp);
             if(cp){
+                std::cout << "Received command " << cp->command_type << " with value " << cp->command_value << std::endl;
                 if(cp->command_type == LEV_MOTOR){
                     motor_levitation->set_microseconds(cp->command_value); 
                 } else if(cp->command_type == STA_MOTOR) {
