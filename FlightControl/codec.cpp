@@ -2,9 +2,9 @@
 
 command_ptr codec::decode_input(const std::string & x){
     command_ptr ep;
-    //ensure that size == 6, and first letters are FSM
+        //commands of the form LEV1000, FA1
         std::string state = x.substr(0,3);
- 
+        std::cout << "Command string = " << x << std::endl; 
         if(state == "SMD")
              ep = command_ptr(new command(SAFE_MODE));
         else if(state == "ISN")
@@ -25,11 +25,11 @@ command_ptr codec::decode_input(const std::string & x){
              ep = command_ptr(new command(FLIGHT_A));
         
         else if(state == "LEV"){
-             int value = stoi(x.substr(4));
+             int value = stoi(x.substr(3));
              ep = command_ptr(new command(LEV_MOTOR, value));
         }
         else if(state == "STA"){
-             int value = stoi(x.substr(4));
+             int value = stoi(x.substr(3));
              ep = command_ptr(new command(LEV_MOTOR, value)); 
         }
         else {
