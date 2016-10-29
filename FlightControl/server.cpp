@@ -1,7 +1,7 @@
 #include "server.h"
 typedef boost::shared_ptr<tcp_connection> pointer;
-typedef boost::shared_ptr<user_select> user_select_ptr;
-typedef boost::lockfree::spsc_queue<user_select_ptr, boost::lockfree::capacity<1024> > user_queue;
+typedef boost::shared_ptr<command> command_ptr;
+typedef boost::lockfree::spsc_queue<command_ptr, boost::lockfree::capacity<1024> > user_queue;
 
 ////////////////
 ////////////////
@@ -59,8 +59,8 @@ void tcp_connection::handle_read(const boost::system::error_code& error_message,
         //get string value of read
         std::string buf_val = buffer_to_string(read_buffer_,bytes_transferred);
         //parse read value using decoder_input()
-        user_select_ptr usp = codec::decode_input(buf_val);
-        queue_->push(usp);
+        command_ptr cp = codec::decode_input(buf_val);
+        queue_->push(cp);
         //read again if no error
         boost::asio::async_read(socket_,read_buffer_.prepare(6),
                 boost::bind(&tcp_connection::handle_read, shared_from_this(),

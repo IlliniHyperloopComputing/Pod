@@ -7,7 +7,7 @@ struct flight_brake {};
 struct init_sensors {};//used to start sensor orthagonal machine
 
 // A "complicated" event type that carries some data.
-enum StateSelectEnum
+enum IncomingCommandEnum
 {
     SAFE_MODE=0,
     INIT_SENSORS=1,
@@ -17,16 +17,30 @@ enum StateSelectEnum
     FUNCT_D=5,
     LOADING=6,
     FLIGHT_A=7,
-    E_BRAKE=8
+    E_BRAKE=8,
+    LEV_MOTOR=9,
+    STA_MOTOR = 10
 };
+/*
 struct user_select
 {
-    user_select(StateSelectEnum state)
+    user_sel`ect(StateSelectEnum state)
         : state_select(state)
     {}
         
     StateSelectEnum state_select;
 
+};*/
+
+struct command
+{
+    command(IncomingCommandEnum c, int val)
+        : command_type(c), command_value(val){} 
+    command(IncomingCommandEnum c)
+        : command_type(c), command_value(0){}
+
+    IncomingCommandEnum command_type;
+    int command_value;
 };
 
 

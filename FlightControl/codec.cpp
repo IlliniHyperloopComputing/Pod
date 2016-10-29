@@ -1,32 +1,40 @@
 #include "codec.h"
 
-user_select_ptr codec::decode_input(const std::string & x){
-    user_select_ptr ep;
+command_ptr codec::decode_input(const std::string & x){
+    command_ptr ep;
     //ensure that size == 6, and first letters are FSM
-    if( (x.size()==6) & (x.substr(0,3)=="FSM")){
-        std::string state = x.substr(3,3);
+        std::string state = x.substr(0,3);
+ 
         if(state == "SMD")
-             ep = user_select_ptr(new user_select(SAFE_MODE));
+             ep = command_ptr(new command(SAFE_MODE));
         else if(state == "ISN")
-             ep = user_select_ptr(new user_select(INIT_SENSORS));
+             ep = command_ptr(new command(INIT_SENSORS));
         else if(state == "EMB")
-             ep = user_select_ptr(new user_select(E_BRAKE));
+             ep = command_ptr(new command(E_BRAKE));
         else if(state == "FTA")
-             ep = user_select_ptr(new user_select(FUNCT_A));
+             ep = command_ptr(new command(FUNCT_A));
         else if(state == "FTB")
-             ep = user_select_ptr(new user_select(FUNCT_B));
+             ep = command_ptr(new command(FUNCT_B));
         else if(state == "FTC")
-             ep = user_select_ptr(new user_select(FUNCT_C));
+             ep = command_ptr(new command(FUNCT_C));
         else if(state == "FTD")
-             ep = user_select_ptr(new user_select(FUNCT_D));
+             ep = command_ptr(new command(FUNCT_D));
         else if(state == "LDG")
-             ep = user_select_ptr(new user_select(LOADING));
+             ep = command_ptr(new command(LOADING));
         else if(state == "FA1")
-             ep = user_select_ptr(new user_select(FLIGHT_A));
+             ep = command_ptr(new command(FLIGHT_A));
+        
+        else if(state == "LEV"){
+             int value = stoi(x.substr(4));
+             ep = command_ptr(new command(LEV_MOTOR, value));
         }
-    else {
-        ep = user_select_ptr(new user_select(SAFE_MODE));
-    }
+        else if(state == "STA"){
+             int value = stoi(x.substr(4));
+             ep = command_ptr(new command(LEV_MOTOR, value)); 
+        }
+        else {
+            ep = command_ptr(new command(SAFE_MODE));
+        }
     return ep;
 }
 

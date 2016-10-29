@@ -22,7 +22,7 @@ struct safe_functA
     template <class EVT,class FSM,class SourceState,class TargetState>
     bool operator()(EVT const& evt ,FSM&,SourceState& ,TargetState& )
     {
-        if (evt.state_select == FUNCT_A)
+        if (evt.command_type == FUNCT_A)
         {
             std::cout << "safe_functA true" << std::endl;
             return true;
@@ -36,7 +36,7 @@ struct safe_init_sensors
     template <class EVT,class FSM,class SourceState,class TargetState>
     bool operator()(EVT const& evt ,FSM&,SourceState& ,TargetState& )
     {
-        if (evt.state_select == INIT_SENSORS)
+        if (evt.command_type == INIT_SENSORS)
         {
             std::cout << "safe_init_sensors true" << std::endl;
             return true;
@@ -50,7 +50,7 @@ struct init_functA
     template <class EVT,class FSM,class SourceState,class TargetState>
     bool operator()(EVT const& evt ,FSM&,SourceState& ,TargetState& )
     {
-        if (evt.state_select == FUNCT_A)
+        if (evt.command_type == FUNCT_A)
         {
             std::cout << "init_functA true" << std::endl;
             return true;
@@ -64,7 +64,7 @@ struct functA_functB
     template <class EVT,class FSM,class SourceState,class TargetState>
     bool operator()(EVT const& evt ,FSM&,SourceState& ,TargetState& )
     {
-        if (evt.state_select == FUNCT_B)
+        if (evt.command_type == FUNCT_B)
         {
             std::cout << "functA_functB true" << std::endl;
             return true;
@@ -78,7 +78,7 @@ struct functB_functC
     template <class EVT,class FSM,class SourceState,class TargetState>
     bool operator()(EVT const& evt ,FSM&,SourceState& ,TargetState& )
     {
-        if (evt.state_select == FUNCT_C)
+        if (evt.command_type == FUNCT_C)
         {
             std::cout << "functB_functC true" << std::endl;
             return true;
@@ -92,7 +92,7 @@ struct functC_functD
     template <class EVT,class FSM,class SourceState,class TargetState>
     bool operator()(EVT const& evt ,FSM&,SourceState& ,TargetState& )
     {
-        if (evt.state_select == FUNCT_D)
+        if (evt.command_type == FUNCT_D)
         {
             std::cout << "functC_functD true" << std::endl;
             return true;
@@ -106,7 +106,7 @@ struct functD_safe
     template <class EVT,class FSM,class SourceState,class TargetState>
     bool operator()(EVT const& evt ,FSM&,SourceState& ,TargetState& )
     {
-        if (evt.state_select == SAFE_MODE)
+        if (evt.command_type == SAFE_MODE)
         {
             std::cout << "functD_safe true" << std::endl;
             return true;
@@ -120,7 +120,7 @@ struct functD_loading
     template <class EVT,class FSM,class SourceState,class TargetState>
     bool operator()(EVT const& evt ,FSM&,SourceState& ,TargetState& )
     {
-        if (evt.state_select == LOADING)
+        if (evt.command_type == LOADING)
         {
             std::cout << "functD_loading true" << std::endl;
             return true;
@@ -134,7 +134,7 @@ struct functD_flightA
     template <class EVT,class FSM,class SourceState,class TargetState>
     bool operator()(EVT const& evt ,FSM&,SourceState& ,TargetState& )
     {
-        if (evt.state_select == FLIGHT_A)
+        if (evt.command_type == FLIGHT_A)
         {
             std::cout << "functD_flightA true" << std::endl;
             return true;
@@ -148,7 +148,7 @@ struct loading_functA
     template <class EVT,class FSM,class SourceState,class TargetState>
     bool operator()(EVT const& evt ,FSM&,SourceState& ,TargetState& )
     {
-        if (evt.state_select == FUNCT_A)
+        if (evt.command_type == FUNCT_A)
         {
             std::cout << "loading_functA true" << std::endl;
             return true;
@@ -162,7 +162,7 @@ struct flightA_safe
     template <class EVT,class FSM,class SourceState,class TargetState>
     bool operator()(EVT const& evt ,FSM&,SourceState& ,TargetState& )
     {
-        if (evt.state_select == SAFE_MODE)
+        if (evt.command_type == SAFE_MODE)
         {
             std::cout << "flightA_safe true" << std::endl;
             return true;
@@ -194,7 +194,7 @@ struct flightB_safe
     template <class EVT,class FSM,class SourceState,class TargetState>
     bool operator()(EVT const& evt ,FSM&,SourceState& ,TargetState& )
     {
-        if (evt.state_select == SAFE_MODE)
+        if (evt.command_type == SAFE_MODE)
         {
             std::cout << "flightB_safe true" << std::endl;
             return true;

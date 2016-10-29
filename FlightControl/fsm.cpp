@@ -43,15 +43,17 @@ using namespace msm::front::euml;
 
 // objects for motors go here
 // TODO these are not finalized
-//motor_control* motor_levitation = new motor_control(BlackLib::pwmName::P9_21, 1000.0, 700.0, 700.0, 200000.0);
-//motor_control* motor_stability = new motor_control(BlackLib::pwmName::P9_21, 1000.0, 700.0, 700.0, 20000);
+
+motor_control * motor_levitation;
+motor_control * motor_stability;
+//motor_control motor_stability(BlackLib::pwmName::P9_22, 1000.0, 700.0, 700.0, 20000);
 
 // objects for brakes
 
 
 //Threading / queue
-
-typedef boost::lockfree::spsc_queue<user_select_ptr, boost::lockfree::capacity<1024> > user_queue;
+typedef boost::shared_ptr<command> command_ptr;
+typedef boost::lockfree::spsc_queue<command_ptr, boost::lockfree::capacity<1024> > user_queue;
 user_queue queue;
 
 tcp_server * server;
@@ -356,29 +358,29 @@ namespace  // Concrete FSM implementation
         struct transition_table : mpl::vector<
             //    Start         Event         Next          Action                  Guard
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < SafeMode    , user_select , FunctionalA , none                  , safe_functA           >,
-            Row < SafeMode    , user_select , InitSensors , none                  , safe_init_sensors     >,
+            Row < SafeMode    , command , FunctionalA , none                  , safe_functA           >,
+            Row < SafeMode    , command , InitSensors , none                  , safe_init_sensors     >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < InitSensors , user_select , FunctionalA , none                  , init_functA           >,
+            Row < InitSensors , command , FunctionalA , none                  , init_functA           >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < FunctionalA , user_select , FunctionalB , none                  , functA_functB         >,
+            Row < FunctionalA , command , FunctionalB , none                  , functA_functB         >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < FunctionalB , user_select , FunctionalC , none                  , functB_functC         >,
+            Row < FunctionalB , command , FunctionalC , none                  , functB_functC         >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < FunctionalC , user_select , FunctionalD , none                  , functC_functD         >,
+            Row < FunctionalC , command , FunctionalD , none                  , functC_functD         >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < FunctionalD , user_select , SafeMode    , none                  , functD_safe           >,
-            Row < FunctionalD , user_select , Loading     , to_loading            , functD_loading        >,
-            Row < FunctionalD , user_select , FlightAccel , to_flight_accel       , functD_flightA        >,
+            Row < FunctionalD , command , SafeMode    , none                  , functD_safe           >,
+            Row < FunctionalD , command , Loading     , to_loading            , functD_loading        >,
+            Row < FunctionalD , command , FlightAccel , to_flight_accel       , functD_flightA        >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < Loading     , user_select , FunctionalA , none                  , loading_functA        >,
+            Row < Loading     , command , FunctionalA , none                  , loading_functA        >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < FlightAccel , user_select , SafeMode    , none                  , flightA_safe          >,
+            Row < FlightAccel , command , SafeMode    , none                  , flightA_safe          >,
             Row < FlightAccel , flight_coast, FlightCoast , to_flight_coast       , flightA_flightC       >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
             Row < FlightCoast , flight_brake, FlightBrake , to_flight_brake       , flightC_flightB       >
             //  +-------------+-------------+-------------+-----------------------+----------------------+
- //           Row < FlightBrake , user_select , SafeMode    , none                  , flightB_safe          >,
+ //           Row < FlightBrake , command , SafeMode    , none                  , flightB_safe          >,
  //           //  +-------------+-------------+-------------+-----------------------+----------------------+
  //           Row < SensorsWait , init_sensors, SensorsInit , turn_on_sensors       , none                  >
             /*
@@ -460,40 +462,40 @@ namespace  // Concrete FSM implementation
         // go to Open, call on_exit on Empty, then action, then on_entry on Open
 //	std::cout << "user select safe mode"<<std::endl;
 //        p.process_event(
-//            user_select(SAFE_MODE)); pstate(p);
+//            command(SAFE_MODE)); pstate(p);
 //	std::cout << "user select init sensors"<<std::endl;
 //        p.process_event(
-//            user_select(INIT_SENSORS)); pstate(p);
+//            command(INIT_SENSORS)); pstate(p);
 //	std::cout << "user select funct A"<<std::endl;
 //        p.process_event(
-//            user_select(FUNCT_A)); pstate(p);
+//            command(FUNCT_A)); pstate(p);
 //	std::cout << "user select funct B"<<std::endl;
 //        p.process_event(
-//            user_select(FUNCT_B)); pstate(p);
+//            command(FUNCT_B)); pstate(p);
 //	std::cout << "user select funct C"<<std::endl;
 //        p.process_event(
-//            user_select(FUNCT_C)); pstate(p);
+//            command(FUNCT_C)); pstate(p);
 //	std::cout << "user select funct D"<<std::endl;
 //        p.process_event(
-//            user_select(FUNCT_D)); pstate(p);
+//            command(FUNCT_D)); pstate(p);
 //	std::cout << "user select Loading"<<std::endl;
 //        p.process_event(
-//            user_select(LOADING)); pstate(p);
+//            command(LOADING)); pstate(p);
 //	std::cout << "user select funct A"<<std::endl;
 //        p.process_event(
-//            user_select(FUNCT_A)); pstate(p);
+//            command(FUNCT_A)); pstate(p);
 //	std::cout << "user select funct B"<<std::endl;
 //        p.process_event(
-//            user_select(FUNCT_B)); pstate(p);
+//            command(FUNCT_B)); pstate(p);
 //	std::cout << "user select funct C"<<std::endl;
 //        p.process_event(
-//            user_select(FUNCT_C)); pstate(p);
+//            command(FUNCT_C)); pstate(p);
 //	std::cout << "user select funct D"<<std::endl;
 //        p.process_event(
-//            user_select(FUNCT_D)); pstate(p);
+//            command(FUNCT_D)); pstate(p);
 //	std::cout << "user select flight A"<<std::endl;
 //        p.process_event(
-//            user_select(FLIGHT_A)); pstate(p);
+//            command(FLIGHT_A)); pstate(p);
         /*p.process_event(open_close()); pstate(p);
         // will be rejected, wrong disk type
         p.process_event(
@@ -515,10 +517,17 @@ namespace  // Concrete FSM implementation
         //p.process_event(stop());  pstate(p);
 
         while(1){
-            user_select_ptr usp;
-            queue.pop(usp);
-            if(usp){
-                p.process_event(*usp); pstate(p);
+            command_ptr cp;
+            queue.pop(cp);
+            if(cp){
+                if(cp->command_type == LEV_MOTOR){
+                    motor_levitation->set_microseconds(cp->command_value); 
+                } else if(cp->command_type == STA_MOTOR) {
+                    motor_stability->set_microseconds(cp->command_value);
+                } else { 
+                    p.process_event(*cp); 
+                    pstate(p);
+                }
             }
         }
         std::cout << "stop fsm" << std::endl;
@@ -548,6 +557,9 @@ int main()
         cout << "not ";
     cout << "lockfree" << endl;
 
+    motor_levitation = new motor_control(BlackLib::pwmName::P9_21, 1000.0, 700.0, 700.0, 200000.0);
+    motor_stability = new motor_control(BlackLib::pwmName::P9_22, 1000.0, 700.0, 700.0, 20000);
+
     sen = new sensor();
     boost::thread sensor_thread(sensor_loop);
     boost::thread state_machine_thread(state_machine_loop);
@@ -559,5 +571,7 @@ int main()
     sensor_thread.join();
     delete server;
     delete sen;
+    delete motor_levitation;
+    delete motor_stability;
     return 0;
 }
