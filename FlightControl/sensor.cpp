@@ -1,5 +1,7 @@
 #include "sensor.h"
+#include <string.h>
 #include "codec.h"
+
 
 sensor::sensor(){
     tick =1;
@@ -26,7 +28,7 @@ sensor::sensor(){
     atomic_esc = new std::atomic<double>[4];
     atomic_tot = new std::atomic<double>[4];
     open_i2c();
-    open_i2c_address(15);
+    open_i2c_address(0x15);
     
 }
 
@@ -198,14 +200,35 @@ void sensor::update_tot(){
 
 
 void sensor::update_temp(){
-    char buf[8];
-    int bytesread = read(i2c, buf, 8);
-    if(bytesread != 8) /*cry */ {
-        std::cout << "RIP thermocouple" << std::endl;
+/*
+    std::cout << "Updating temp" << std::endl;
+    char buf[3];
+
+    memset(buf, 0, 3);
+    int bytesread = read(i2c, buf, 3);
+
+    std::cout << "Bytes read : " <<bytesread<< std::endl;
+
+    for(int i = 0; i < 3; i++){
+       std::cout << "Thermocouple " << i << " : " << (int)buf[i] << std::endl; 
     }
+*/
+
+/*
+    unsigned char buf[8];
+    memset(buf, 0, 8);
+     
+    i2c_smbus_read_block_data(i2c, 0x00, buf);
+    
     for(int i = 0; i < 8; i++){
-       std::cout << "Thermocouple " << i << " : " << buf[i] << std::endl; 
+       std::cout << "Thermocouple " << i << " : " << (int)buf[i] << std::endl; 
     }
+*/
+
+    unsigned char val = 0;
+
+    val = i2c_smbus_read_byte(i2c);
+    std::cout << (unsigned int)val << std::endl;
     
 }
 

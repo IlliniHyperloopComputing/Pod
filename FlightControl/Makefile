@@ -8,7 +8,7 @@ OPTIMF= -O2 -ftree-vectorize -fstrict-aliasing -freorder-blocks
 OPTIMM= -march=native
 OPTIMMBBB= -march=armv7-a
 
-CXXFLAGS = $(LANGUAGE) $(WARNINGS) $(DEP) -Og -c
+CXXFLAGS = $(LANGUAGE) $(WARNINGS) $(DEP) -g -c
 CXXFLAGSO = $(LANGUAGE) $(WARNINGS) $(OPTIMF) $(DEP) -MMD -c
 
 EXECUTABLEBBB=bbb
@@ -96,26 +96,26 @@ blackcore-to.o : ../BlackLib/v3_0/BlackCore.cpp
 $(EXECUTABLECROSS): fsm-co.o server-co.o codec-co.o sensor-co.o motors-co.o blackpwm-co.o blackcore-co.o brakes-co.o blackgpio-co.o
 	$(CXXCROSS) $? $(LDFLAGS) -o $@
 fsm-co.o: fsm.cpp
-	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
+	$(CXXCROSS) $? $(CXXFLAGS) $(OPTIMBBB) -o $@
 server-co.o: server.cpp
-	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
+	$(CXXCROSS) $? $(CXXFLAGS) $(OPTIMBBB) -o $@
 codec-co.o: codec.cpp
-	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
+	$(CXXCROSS) $? $(CXXFLAGS) $(OPTIMBBB) -o $@
 sensor-co.o: sensor.cpp
-	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
+	$(CXXCROSS) $? $(CXXFLAGS) $(OPTIMBBB) -o $@
 motors-co.o: motors/motors.cpp
-	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
+	$(CXXCROSS) $? $(CXXFLAGS) $(OPTIMBBB) -o $@
 blackpwm-co.o : ../BlackLib/v3_0/BlackPWM/BlackPWM.cpp
-	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
+	$(CXXCROSS) $? $(CXXFLAGS) $(OPTIMBBB) -o $@
 blackgpio-co.o : ../BlackLib/v3_0/BlackGPIO/BlackGPIO.cpp
-	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
+	$(CXXCROSS) $? $(CXXFLAGS) $(OPTIMBBB) -o $@
 blackcore-co.o : ../BlackLib/v3_0/BlackCore.cpp
-	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
+	$(CXXCROSS) $? $(CXXFLAGS) $(OPTIMBBB) -o $@
 brakes-co.o: brakes/brakes.cpp
-	$(CXXCROSS) $? $(CXXFLAGSO) $(OPTIMBBB) -o $@
+	$(CXXCROSS) $? $(CXXFLAGS) $(OPTIMBBB) -o $@
 
 push:
-	scp $(EXECUTABLECROSS) root@192.168.137.10:~/
+	scp $(EXECUTABLECROSS) root@192.168.7.2:~/
 
 clean:
 	rm -f fsm*.dep black*.dep fsm*.o server*.dep server*.o codec*.dep codec*.o motors*.dep motors*.o black*.o $(EXECUTABLECROSS) $(EXECUTABLETESTO) $(EXECUTABLETEST) $(EXECUTABLEBBB) $(EXECUTABLEBBBO)
