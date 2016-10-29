@@ -531,13 +531,15 @@ namespace  // Concrete FSM implementation
                     break; // exit while loop 
                 }
                 } else { 
-                    p.process_event(*cp); 
+                    p.process_event(cp->command_type); 
                     pstate(p);
                 }
+            
             }
-            cout << "stop fsm" << endl;
-             p.stop();
         }
+            cout << "stop fsm" << endl;
+            p.stop();
+    }
 
 }
 
