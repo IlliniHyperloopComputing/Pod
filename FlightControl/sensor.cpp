@@ -221,13 +221,12 @@ void sensor::update_temp(){
     i2c_smbus_read_block_data(i2c, 0x00, buf);
     
     for(int i = 0; i < 8; i++){
-       std::cout << "Thermocouple " << i << " : " << (int)buf[i] << std::endl; 
-    }
-*/
+       std::cout << "Thermocouple " << i << " : " << (unsigned int)buf[i] << std::endl; 
+    }*/
 
     unsigned char val = 0;
 
-    val = i2c_smbus_read_byte(i2c);
+    val = i2c_smbus_read_byte_data(i2c, 0x1);
     std::cout << (unsigned int)val << std::endl;
     
 }
