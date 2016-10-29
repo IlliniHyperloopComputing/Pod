@@ -225,11 +225,13 @@ void sensor::update_temp(){
     }
 */
 
-    unsigned char val = 0;
-
-    val = i2c_smbus_read_byte(i2c);
-    std::cout << (unsigned int)val << std::endl;
-    
+    for(int i = 0; i < 3; i++){
+        unsigned char val = 0;
+        i2c_smbus_write_byte(i2c,i);
+        val = i2c_smbus_read_byte_data(i2c,i);
+        //std::cout << (unsigned int)val << std::endl;
+        std::cout << "Thermocouple " << i << " : " << (int)val << std::endl; 
+    }
 }
 
 
