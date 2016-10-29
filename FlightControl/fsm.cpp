@@ -529,16 +529,15 @@ namespace  // Concrete FSM implementation
                     motor_levitation->set_low();
                     motor_stability->set_low();
                     break; // exit while loop 
-                }
-                } else { 
-                    p.process_event(cp->command_type); 
+                }  else { 
+                    p.process_event(*cp); 
                     pstate(p);
                 }
             
             }
-        }
             cout << "stop fsm" << endl;
             p.stop();
+        }
     }
 
 }
