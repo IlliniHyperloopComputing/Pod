@@ -26,11 +26,11 @@ void tcp_connection::start(){
             boost::asio::placeholders::bytes_transferred));
 
     //Wait for commands
-    boost::asio::async_read(socket_,read_buffer_.prepare(6),
+    boost::asio::async_read(socket_,read_buffer_.prepare(7),
             boost::bind(&tcp_connection::handle_read, shared_from_this(),
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));
-    read_buffer_.commit(6);
+    read_buffer_.commit(7);
 
 }
 
@@ -62,11 +62,11 @@ void tcp_connection::handle_read(const boost::system::error_code& error_message,
         command_ptr cp = codec::decode_input(buf_val);
         queue_->push(cp);
         //read again if no error
-        boost::asio::async_read(socket_,read_buffer_.prepare(6),
+        boost::asio::async_read(socket_,read_buffer_.prepare(7),
                 boost::bind(&tcp_connection::handle_read, shared_from_this(),
                 boost::asio::placeholders::error,
                 boost::asio::placeholders::bytes_transferred));
-        read_buffer_.commit(6);
+        read_buffer_.commit(7);
     }
     else if(boost::asio::error::eof == error_message || boost::asio::error::connection_reset == error_message){
         std::cout << error_message.message() << std::endl;

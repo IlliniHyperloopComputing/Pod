@@ -535,9 +535,9 @@ namespace  // Concrete FSM implementation
                 }
             
             }
+        }
             cout << "stop fsm" << endl;
             p.stop();
-        }
     }
 
 }
