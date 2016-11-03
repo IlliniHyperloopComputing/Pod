@@ -2,7 +2,7 @@
 #define MOTORS_H
 
 #include <stdint.h>
-#include "../../BlackLib/v3_0/BlackPWM/BlackPWM.h"
+#include "../BlackLib/v3_0/BlackPWM/BlackPWM.h"
 
 //motor control. 
 //when this object is initialized, it has the ability to control any of our motors
@@ -61,7 +61,7 @@ class motor_control{
 		double high_us;
 		double current_us;
 		double percent;
-		BlackLib::BlackPWM pwm;
+		BlackLib::BlackPWM  pwm;
 		bool is_armed;
 
 };

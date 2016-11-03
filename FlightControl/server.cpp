@@ -41,7 +41,7 @@ tcp_connection::tcp_connection(boost::asio::io_service& io_service, bool no_dela
 }
 void tcp_connection::handle_write(const boost::system::error_code& error_message,size_t bytes_transferred){
 
-    usleep(30000);
+    usleep(3000);
     if(socket_.is_open()){
         codec::create_message(sensor_,message_);//create message to send
 
@@ -79,8 +79,8 @@ void tcp_connection::handle_read(const boost::system::error_code& error_message,
         if(errorcode){
             std::cout<<"socket.close error: "<<errorcode.message() <<std::endl;
         }
-        command_ptr c = command_ptr(new command(OFF));
-        queue_->push(cp);
+        command_ptr c= command_ptr(new command(OFF));
+        queue_->push(c);
     
         
     }

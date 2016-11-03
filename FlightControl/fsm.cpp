@@ -30,8 +30,8 @@
 #include "server.h"
 
 // check this
-#include "motors/motors.h"
-#include "brakes/brakes.h"
+#include "motors.h"
+#include "brakes.h"
 
 using namespace std;
 //MSM
@@ -564,14 +564,15 @@ int main()
         cout << "not ";
     cout << "lockfree" << endl;
 
-    motor_levitation = new motor_control(BlackLib::pwmName::P9_21, 1000.0, 700.0, 700.0, 200000.0);
-    motor_stability = new motor_control(BlackLib::pwmName::P9_22, 1000.0, 700.0, 700.0, 20000);
+    motor_levitation = new motor_control(BlackLib::pwmName::P9_21, 1000.0, 700.0, 700.0, 2000.0);
+    motor_stability = new motor_control(BlackLib::pwmName::P9_22, 900.0, 700.0, 700.0, 2000.0);
 
     sen = new sensor();
     boost::thread sensor_thread(sensor_loop);
     boost::thread state_machine_thread(state_machine_loop);
     boost::thread network_thread(network_connect);
 
+    cout << "Pls"<<endl;
 
     state_machine_thread.join();
     network_thread.join();

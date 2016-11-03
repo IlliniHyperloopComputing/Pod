@@ -5,8 +5,10 @@ motor_control::motor_control(enum BlackLib::pwmName pwm_pin, double initial_us, 
 					arm_us(arm_us), low_us(low_us), 
 					high_us(high_us), pwm(pwm_pin)
 {
+    pwm.setDutyPercent(100.0);
 	pwm.setPeriodTime(uint64_t(20), BlackLib::milisecond);
-	pwm.setDutyPercent(create_percent(this->initial_us));
+    std::cout<< pwm.getDutyValue() << std::endl;
+	//pwm.setDutyPercent(create_percent(this->initial_us));
 }
 
 
@@ -79,9 +81,21 @@ void motor_control::set_low(){
 }
 
 void motor_control::set_microseconds(double microseconds){	
-	update_percent( microseconds );
-	current_us = microseconds;
-	pwm.setDutyPercent(create_percent(microseconds));
+    pwm.setDutyPercent(100.0);
+	pwm.setPeriodTime(uint64_t(20), BlackLib::milisecond);
+
+    double x = microseconds / 20000.0;
+    pwm.setDutyPercent(x);
+    //pwm.setLoadRatioTime(microseconds, BlackLib::microsecond);
+    std::cout<< pwm.getNumericValue() << std::endl;
+    std::cout<< pwm.getDutyValue() << std::endl;
+    std::cout<< pwm.getPolarityValue()<<std::endl;
+    if(pwm.getPolarityValue() == "1"){
+        pwm.tooglePolarity();
+    }
+	//update_percent( microseconds );
+	//current_us = microseconds;
+	//pwm.setDutyPercent(create_percent(microseconds));
 
 }
 

@@ -3,7 +3,7 @@
 #define BRAKES_H
 
 #include <stdint.h>
-#include "../../BlackLib/v3_0/BlackGPIO/BlackGPIO.h"
+#include "../BlackLib/v3_0/BlackGPIO/BlackGPIO.h"
 
 // brake control. 
 // when this object is initialized, it has the ability to control the brakes

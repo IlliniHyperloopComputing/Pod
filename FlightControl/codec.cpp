@@ -4,7 +4,7 @@ command_ptr codec::decode_input(const std::string & x){
     command_ptr ep;
         //commands of the form LEV1000, FA1
         std::string state = x.substr(0,3);
-        std::cout << "Command string = " << x << std::endl; 
+        //std::cout << "Command string = " << x << std::endl; 
         if(state == "SMD")
              ep = command_ptr(new command(SAFE_MODE));
         else if(state == "ISN")
@@ -102,14 +102,15 @@ void codec::create_message(sensor * sen, std::string & buff){
     //clear string of any data
     buff.clear();
     //always add these
-    codec::append_to_data_buffer(buff,"XPO",sen->get_atomic_x(),1);
-    codec::append_to_data_buffer(buff,"ACC",sen->get_atomic_a(),3);
-    codec::append_to_data_buffer(buff,"BRK",sen->get_atomic_brake() ,1);
+    //codec::append_to_data_buffer(buff,"XPO",sen->get_atomic_x(),1);
+    //codec::append_to_data_buffer(buff,"ACC",sen->get_atomic_a(),3);
+    //codec::append_to_data_buffer(buff,"BRK",sen->get_atomic_brake() ,1);
 
-    codec::append_to_data_buffer(buff,"VEL",sen->get_atomic_v(),3);
-    codec::append_to_data_buffer(buff,"HOF",sen->get_atomic_z(),1);
-    codec::append_to_data_buffer(buff,"LVH",sen->get_atomic_lev(),2);
+    //codec::append_to_data_buffer(buff,"VEL",sen->get_atomic_v(),3);
+    //codec::append_to_data_buffer(buff,"HOF",sen->get_atomic_z(),1);
+    //codec::append_to_data_buffer(buff,"LVH",sen->get_atomic_lev(),2);
     codec::append_to_data_buffer(buff,"TMP",sen->get_atomic_temps(), 8);
+    
 
     //for now, lets just send everything. We will see how that works
     /*switch(tick){

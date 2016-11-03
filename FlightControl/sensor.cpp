@@ -59,23 +59,23 @@ sensor::~sensor(){
 
 void sensor::update(){
     //always update
-    update_x();
-    update_a();
-    update_brake_pressure();
+//    update_x();
+//    update_a();
+//    update_brake_pressure();
 
     switch(tick){
         case 1:
-            update_v();
-            update_z();
+//            update_v();
+//            update_z();
             break;
         case 2:
-            update_lev();
+ //           update_lev();
             //update_esc();
             update_temp();
-            update_att();
+//            update_att();
             break;
         case 3:
-            update_v();
+//            update_v();
             //update_tot();
             break;
         default:
@@ -177,22 +177,6 @@ void sensor::update_brake_pressure(){
     atomic_brake_pressure.store(atomic_brake_pressure.load()+1);
 }
 
-/*
-void sensor::update_esc(){
-    atomic_esc[0].store(3);
-    atomic_esc[1].store(50);
-    atomic_esc[2].store(57);
-    atomic_esc[3].store(78);
-}
-
-void sensor::update_tot(){
-    atomic_tot[0].store(3);
-    atomic_tot[1].store(50);
-    atomic_tot[2].store(57);
-    atomic_tot[3].store(78);
-}*/
-
-
 void sensor::update_temp(){
 /*
     std::cout << "Updating temp" << std::endl;
@@ -219,7 +203,7 @@ void sensor::update_temp(){
     }*/
 
     
-    for(int i = 0; i < 3; i++){
+    for(int i = 0; i < 8; i++){
         unsigned char val = 0;
         i2c_smbus_write_byte(i2c,i);
         val = i2c_smbus_read_byte_data(i2c,i);
