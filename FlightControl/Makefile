@@ -21,7 +21,7 @@ EXECUTABLECROSS=cross
 EXECUTABLECROSSO=crosso
 
 all :
-	echo "\n================\n================\nuse: make [compiletype]\n\t[compiletype] = 'bbb'\t'bbb-optim' to compile when on the BBB, the -optim option will take a while\n\t[compiletype] = 'test'\t'test-optim' when testing on regular linux machine\n\t[compiletype] = 'cross'\twhen cross compiling to BBB\n================\n================\n"
+	echo "\n================\n================\nuse: make [compiletype]\n\t[compiletype] = 'bbb' to compile on linux just to see if it compiles. \n\t[compiletype] = 'cross'\twhen cross compiling to BBB\n================\n================\n"
 
 $(EXECUTABLEBBB) : CXXFLAGS += -g
 $(EXECUTABLEBBB) : CXX = $(CXXNORMAL)
