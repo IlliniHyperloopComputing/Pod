@@ -14,7 +14,7 @@ OPTIM= -O2 -ftree-vectorize -fstrict-aliasing -freorder-blocks -march=armv7-a
 
 CXXFLAGS = $(LANGUAGE) $(WARNINGS) $(DEP) -c
 
-LDFLAGS= -lboost_thread -lboost_system -L/usr/arm-linux-gnueabihf -lpthread
+LDFLAGS= -lboost_thread -lboost_system -L/usr/arm-linux-gnueabihf -lpthread -MMD
 
 EXECUTABLEBBB=bbb
 EXECUTABLECROSS=cross
@@ -25,15 +25,15 @@ all :
 
 $(EXECUTABLEBBB) : CXXFLAGS += -g
 $(EXECUTABLEBBB) : CXX = $(CXXNORMAL)
-$(EXECUTABLEBBB) : build
+$(EXECUTABLEBBB) : cleanexe build
 
 $(EXECUTABLECROSS) : CXXFLAGS += -g
 $(EXECUTABLECROSS) : CXX = $(CXXCROSS)
-$(EXECUTABLECROSS) : build
+$(EXECUTABLECROSS) : cleanexe build
 
 $(EXECUTABLECROSSO) : CXXFLAGS += $(OPTIM)
 $(EXECUTABLECROSSO) : CXX = $(CXXCROSS)
-$(EXECUTABLECROSSO) : build
+$(EXECUTABLECROSSO) : cleanexe build
 
 build : $(OBJ_FILES) $(OBJ_BLACKLIB)
 	$(CXX) $? $(LDFLAGS) -o $@
@@ -51,5 +51,8 @@ push:
 	scp $(EXECUTABLECROSS) root@192.168.137.10:~/
 	scp $(EXECUTABLECROSS) root@192.168.137.100:~/
 
+cleanexe:
+	rm build | true
+
 clean:
-	rm -f obj/*
+	rm -f obj/* build
