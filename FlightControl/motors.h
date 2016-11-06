@@ -34,9 +34,7 @@ class motor_control{
 		//will arm the motor if not already armed
 		void arm();
 	
-		//will disarm the motor if not already disarmed
-		void disarm();
-		
+	
 		//will set the motor on low power
 		void set_low();
 
