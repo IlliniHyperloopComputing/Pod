@@ -84,15 +84,15 @@ void motor_control::set_microseconds(double microseconds){
     pwm.setDutyPercent(100.0);
 	pwm.setPeriodTime(uint64_t(20), BlackLib::milisecond);
 
-    double x = microseconds / 20000.0;
+    double x = microseconds / 200.0;//FUCK THIS STUPID FUCKING LINE
     pwm.setDutyPercent(x);
     //pwm.setLoadRatioTime(microseconds, BlackLib::microsecond);
     std::cout<< pwm.getNumericValue() << std::endl;
     std::cout<< pwm.getDutyValue() << std::endl;
     std::cout<< pwm.getPolarityValue()<<std::endl;
-    if(pwm.getPolarityValue() == "1"){
-        pwm.tooglePolarity();
-    }
+//    if(pwm.getPolarityValue() == "1"){
+//        pwm.tooglePolarity();
+//    }
 	//update_percent( microseconds );
 	//current_us = microseconds;
 	//pwm.setDutyPercent(create_percent(microseconds));

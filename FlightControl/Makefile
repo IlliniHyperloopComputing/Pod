@@ -47,9 +47,7 @@ obj/BlackCore.o : ../BlackLib/v3_0/BlackCore.cpp
 	$(CXX) $? $(CXXFLAGS) -o $@
 
 push:
-	scp $(EXECUTABLECROSS) root@192.168.7.2:~/
-	scp $(EXECUTABLECROSS) root@192.168.137.10:~/
-	scp $(EXECUTABLECROSS) root@192.168.137.100:~/
+	scp build root@192.168.137.100:~/
 
 cleanexe:
 	rm build | true

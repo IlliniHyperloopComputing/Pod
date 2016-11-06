@@ -564,7 +564,7 @@ int main()
         cout << "not ";
     cout << "lockfree" << endl;
 
-    motor_levitation = new motor_control(BlackLib::pwmName::P9_21, 1000.0, 700.0, 700.0, 2000.0);
+    motor_levitation = new motor_control(BlackLib::pwmName::P9_16, 1000.0, 700.0, 700.0, 2000.0);
     motor_stability = new motor_control(BlackLib::pwmName::P9_22, 900.0, 700.0, 700.0, 2000.0);
 
     sen = new sensor();
