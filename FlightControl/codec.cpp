@@ -109,7 +109,9 @@ void codec::create_message(sensor * sen, std::string & buff){
     //codec::append_to_data_buffer(buff,"VEL",sen->get_atomic_v(),3);
     //codec::append_to_data_buffer(buff,"HOF",sen->get_atomic_z(),1);
     //codec::append_to_data_buffer(buff,"LVH",sen->get_atomic_lev(),2);
-    codec::append_to_data_buffer(buff,"TMP",sen->get_atomic_temps(), 8);
+    //codec::append_to_data_buffer(buff,"TMP",sen->get_atomic_temps(), 8);
+    codec::append_to_data_buffer(buff,"RPM",sen->get_atomic_rpm(), 4);
+
     
 
     //for now, lets just send everything. We will see how that works

@@ -36,6 +36,7 @@ class sensor{
         std::atomic<double> *  get_atomic_att();
         std::atomic<double> *  get_atomic_brake();
         std::atomic<double> *  get_atomic_temps();
+        std::atomic<double> *  get_atomic_rpm();
     
 
     private:
@@ -57,6 +58,7 @@ class sensor{
         std::atomic<double> * atomic_att;
         std::atomic<double>  atomic_brake_pressure;
         std::atomic<double> * atomic_temps;
+        std::atomic<double> * atomic_rpm;
         std::atomic<uint8_t> x_status;
         std::atomic<uint8_t> z_status;
         std::atomic<uint8_t> lev_status;
@@ -65,9 +67,9 @@ class sensor{
         std::atomic<uint8_t> att_status;
         std::atomic<uint8_t> brake_pressure_status;
 
-        int  i2c;
-        int  open_i2c();
-        int  open_i2c_address(int address);
+        int  i2c_thermo;
+        int  i2c_rpm;
+        int  open_i2c(int address);
 
         void init_x();
         void init_z();
@@ -77,6 +79,7 @@ class sensor{
         void init_att();
         void init_brake_pressure();
         void init_temps();
+        void init_rpm();
 
 
         void update_x();
@@ -89,6 +92,7 @@ class sensor{
         //void update_esc();
         //void update_tot();
         void update_temp();
+        void update_rpm();
 
         uint8_t tick;
 };

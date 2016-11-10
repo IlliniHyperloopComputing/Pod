@@ -567,6 +567,7 @@ int main()
     motor_levitation = new motor_control(BlackLib::pwmName::P9_16, 1000.0, 700.0, 700.0, 2000.0);
     motor_stability = new motor_control(BlackLib::pwmName::P9_22, 900.0, 700.0, 700.0, 2000.0);
 
+    cout << "Pls"<<endl;
     sen = new sensor();
     boost::thread sensor_thread(sensor_loop);
     boost::thread state_machine_thread(state_machine_loop);
