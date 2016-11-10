@@ -352,35 +352,97 @@ namespace  // Concrete FSM implementation
             }
         };
 
+
+	// performs actions when moving into FunctionalA
+        struct to_FunctionalA
+        {
+            template <class EVT,class FSM,class SourceState,class TargetState>
+            void operator()(EVT const&,FSM& fsm ,SourceState& ,TargetState& )
+            {
+                cout << "moving into FunctionalA state" << endl;
+            }
+        };
+
+
+	// performs actions when moving into FunctionalB
+        struct to_FunctionalB
+        {
+            template <class EVT,class FSM,class SourceState,class TargetState>
+            void operator()(EVT const&,FSM& fsm ,SourceState& ,TargetState& )
+            {
+                cout << "moving into FunctionalB state" << endl;
+            }
+        };
+
+	// performs actions when moving into FunctionalC
+        struct to_FunctionalC
+        {
+            template <class EVT,class FSM,class SourceState,class TargetState>
+            void operator()(EVT const&,FSM& fsm ,SourceState& ,TargetState& )
+            {
+                cout << "moving into FunctionalC state" << endl;
+            }
+        };
+
+	// performs actions when moving into FunctionalD
+        struct to_FunctionalD
+        {
+            template <class EVT,class FSM,class SourceState,class TargetState>
+            void operator()(EVT const&,FSM& fsm ,SourceState& ,TargetState& )
+            {
+                cout << "moving into FunctionalD state" << endl;
+            }
+        };
+
+	// performs actions when moving into SafeMode
+        struct to_SafeMode
+        {
+            template <class EVT,class FSM,class SourceState,class TargetState>
+            void operator()(EVT const&,FSM& fsm ,SourceState& ,TargetState& )
+            {
+                cout << "moving into SafeMode state" << endl;
+            }
+        };
+
+	// performs actions when moving into InitSensors
+        struct to_InitSensors
+        {
+            template <class EVT,class FSM,class SourceState,class TargetState>
+            void operator()(EVT const&,FSM& fsm ,SourceState& ,TargetState& )
+            {
+                cout << "moving into InitSensors state" << endl;
+            }
+        };
+
         typedef pod_ p; // makes transition table cleaner
 
         // Transition table for player
         struct transition_table : mpl::vector<
             //    Start         Event         Next          Action                  Guard
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < SafeMode    , command , FunctionalA , none                  , safe_functA           >,
-            Row < SafeMode    , command , InitSensors , none                  , safe_init_sensors     >,
+            Row < SafeMode    , command , FunctionalA , to_FunctionalA        , safe_functA           >,
+            Row < SafeMode    , command , InitSensors , to_InitSensors        , safe_init_sensors     >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < InitSensors , command , FunctionalA , none                  , init_functA           >,
+            Row < InitSensors , command , FunctionalA , to_InitSensors        , init_functA           >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < FunctionalA , command , FunctionalB , none                  , functA_functB         >,
+            Row < FunctionalA , command , FunctionalB , to_FunctionalB        , functA_functB         >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < FunctionalB , command , FunctionalC , none                  , functB_functC         >,
+            Row < FunctionalB , command , FunctionalC , to_FunctionalC        , functB_functC         >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < FunctionalC , command , FunctionalD , none                  , functC_functD         >,
+            Row < FunctionalC , command , FunctionalD , to_FunctionalD        , functC_functD         >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < FunctionalD , command , SafeMode    , none                  , functD_safe           >,
+            Row < FunctionalD , command , SafeMode    , to_SafeMode           , functD_safe           >,
             Row < FunctionalD , command , Loading     , to_loading            , functD_loading        >,
             Row < FunctionalD , command , FlightAccel , to_flight_accel       , functD_flightA        >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < Loading     , command , FunctionalA , none                  , loading_functA        >,
+            Row < Loading     , command , FunctionalA , to_FuncitonalA        , loading_functA        >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < FlightAccel , command , SafeMode    , none                  , flightA_safe          >,
-            Row < FlightAccel , flight_coast, FlightCoast , to_flight_coast       , flightA_flightC       >,
+            Row < FlightAccel , command , SafeMode    , to_SafeMode           , flightA_safe          >,
+            Row < FlightAccel , flight_coast, FlightCoast , to_flight_coast   , flightA_flightC       >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < FlightCoast , flight_brake, FlightBrake , to_flight_brake       , flightC_flightB       >
+            Row < FlightCoast , flight_brake, FlightBrake , to_flight_brake   , flightC_flightB       >
             //  +-------------+-------------+-------------+-----------------------+----------------------+
- //           Row < FlightBrake , command , SafeMode    , none                  , flightB_safe          >,
+ //           Row < FlightBrake , command , SafeMode  , to_SafeMode           , flightB_safe          >,
  //           //  +-------------+-------------+-------------+-----------------------+----------------------+
  //           Row < SensorsWait , init_sensors, SensorsInit , turn_on_sensors       , none                  >
             /*

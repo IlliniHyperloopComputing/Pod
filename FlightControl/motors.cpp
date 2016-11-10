@@ -17,11 +17,6 @@ void motor_control::arm(){
 	set_microseconds( arm_us );
 }
 
-void motor_control::disarm(){
-	is_armed = false;
-	set_microseconds( 0 );
-}
-
 BlackLib::BlackPWM * motor_control::tmp_testing_get_pwm_ptr(){
 	return &pwm;
 
