@@ -50,6 +50,7 @@ class sensor{
 
         int  i2c_thermo;
         int  i2c_rpm;
+	int  i2c_tape;
         int  open_i2c(int address);
 
         void init_x();
@@ -72,7 +73,7 @@ class sensor{
         void update_brake_pressure();
         void update_temp();
         void update_rpm();
-		void update_tape_count();
+	void update_tape_count();
 
         uint8_t tick;
 };

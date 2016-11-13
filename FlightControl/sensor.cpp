@@ -132,6 +132,8 @@ void sensor::init_rpm(){
 
 void sensor::init_tape_count(){
 	atomic_tape_count = new std::atomic<double>[4];
+	i2c_tape = open_i2c(0x17);
+
 }
 
 ////////////
@@ -186,8 +188,8 @@ void sensor::update_temp(){
 void sensor::update_tape_count(){
 	for(int i = 0; i < 4; i++){
         int val = 0;
-        i2c_smbus_write_byte(i2c_rpm,i);
-        val = i2c_smbus_read_word_data(i2c_rpm,i);
+        i2c_smbus_write_byte(i2c_tape,i);
+        val = i2c_smbus_read_word_data(i2c_tape,i);
         atomic_tape_count[i].store(val);
 	}
 }
