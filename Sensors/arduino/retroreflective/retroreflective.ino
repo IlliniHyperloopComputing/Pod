@@ -45,9 +45,7 @@ void loop(){
     counts[i]++;
     high[i] = 0;
   }
-
   i = (i + 1) % 4;
-
 }
 
 

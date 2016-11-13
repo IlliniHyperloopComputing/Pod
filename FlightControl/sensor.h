@@ -93,6 +93,7 @@ class sensor{
         //void update_tot();
         void update_temp();
         void update_rpm();
+		void update_tape_count();
 
         uint8_t tick;
 };
