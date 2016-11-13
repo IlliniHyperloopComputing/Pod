@@ -46,7 +46,7 @@ using namespace msm::front::euml;
 
 motor_control * motor_levitation;
 motor_control * motor_stability;
-//motor_control motor_stability(BlackLib::pwmName::P9_22, 1000.0, 700.0, 700.0, 20000);
+//motor_control motor_stability(BlackLib::pwmName::P9_22,BlackLib::gpioName::GPIO_39, 1000.0, 700.0, 700.0, 20000);
 
 // objects for brakes
 
@@ -571,8 +571,8 @@ int main()
         cout << "not ";
     cout << "lockfree" << endl;
 
-    motor_levitation = new motor_control(BlackLib::pwmName::P9_16, 1000.0, 700.0, 700.0, 2000.0);
-    motor_stability = new motor_control(BlackLib::pwmName::P9_22, 900.0, 700.0, 700.0, 2000.0);
+    motor_levitation = new motor_control(BlackLib::pwmName::P9_16, BlackLib::gpioName::GPIO_39, 1000.0, 700.0, 700.0, 2000.0);
+    motor_stability = new motor_control(BlackLib::pwmName::P9_22, BlackLib::gpioName::GPIO_39, 900.0, 700.0, 700.0, 2000.0);
 
     sen = new sensor();
     boost::thread sensor_thread(sensor_loop);

@@ -3,6 +3,7 @@
 
 #include <stdint.h>
 #include "../BlackLib/v3_0/BlackPWM/BlackPWM.h"
+#include "../BlackLib/v3_0/BlackGPIO/BlackGPIO.h"
 
 //motor control. 
 //when this object is initialized, it has the ability to control any of our motors
@@ -17,7 +18,7 @@ class motor_control{
 		//arm duty cycle -- switch to this duty cycle from initial to arm the motor
 		//low duty cycle -- the lowest the motor can go 
 		//high duty cycle -- highest the motor can go 
-		motor_control(enum BlackLib::pwmName pwm_pin, double initial_us, double arm_us, double low_us, double high_us);
+		motor_control(enum BlackLib::pwmName pwm_pin,enum BlackLib::gpioName gpio_power, double initial_us, double arm_us, double low_us, double high_us);
 
 		//Raise PWM pulse by x%.  100% == high_us, 0% = low_us
 		//Do not confuse this with raising/lower the Duty Cycle by a %
@@ -33,8 +34,12 @@ class motor_control{
 
 		//will arm the motor if not already armed
 		void arm();
-	
-	
+		
+		// turns the motor relay on, gpio pin high
+		void on();
+		// turns the motor relay off, gpio pin low
+		void off();
+
 		//will set the motor on low power
 		void set_low();
 
@@ -52,7 +57,11 @@ class motor_control{
 		void update_percent( double new_us );
 
 		//Data
-		enum BlackLib::pwmName pwm_pin;
+		enum BlackLib::pwmName pwm_pin;	
+		
+		BlackLib::BlackGPIO power;
+		enum BlackLib::gpioName gpio_power;
+
 		double initial_us;
 		double arm_us;
 		double low_us;
