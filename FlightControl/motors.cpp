@@ -5,6 +5,7 @@ motor_control::motor_control(enum BlackLib::pwmName pwm_pin, enum BlackLib::gpio
 					arm_us(arm_us), low_us(low_us), 
 					high_us(high_us), pwm(pwm_pin)
 {
+	off();
     pwm.setDutyPercent(100.0);
 	pwm.setPeriodTime(uint64_t(20), BlackLib::milisecond);
     std::cout<< pwm.getDutyValue() << std::endl;
