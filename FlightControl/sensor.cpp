@@ -6,19 +6,15 @@
 sensor::sensor(){
     tick =1;
     
-    atomic_x.store(1);// = new std::atomic<double>(1);
-    atomic_z.store(1);
-    atomic_lev = new std::atomic<double>[2];
-    atomic_v   = new std::atomic<double>[3];
-    atomic_a   = new std::atomic<double>[3];
-    atomic_att = new std::atomic<double>[3];
-    atomic_brake_pressure.store(3);
-    atomic_temps = new std::atomic<double>[8];
-    atomic_rpm = new std::atomic<double>[4];
-
-    i2c_thermo = open_i2c(0x15);
-    i2c_rpm = open_i2c(0x16);
-    
+    init_x();
+    init_z();
+    init_lev();
+    init_v();
+    init_a();
+    init_att();
+    init_brake_pressure();
+    init_temps();
+    init_rpm();
 }
 
 sensor::~sensor(){
@@ -36,8 +32,8 @@ sensor::~sensor(){
         delete[] atomic_rpm;
 }
 
+//
 void sensor::update(){
-    usleep(30000);
     //always update
 //    update_x();
 //    update_a();
@@ -67,36 +63,8 @@ void sensor::update(){
     tick = (tick %3)+1; //tick range: [1:3]
 }
 
-
-/*double * sensor::get_x(){
-    return &x;
-}
-double * sensor::get_z(){
-    return &z;
-}
-double * sensor::get_lev(){
-    return lev;
-}
-double * sensor::get_v(){
-    return v;
-}
-double * sensor::get_a(){
-    return a;
-}
-double * sensor::get_att(){
-    return att;
-}
-double * sensor::get_brake(){
-    return &brake_pressure;
-}
-double * sensor::get_esc(){
-    return esc;
-}
-double * sensor::get_tot(){
-    return tot;
-}
-*/
-
+///////////
+//Get 
 std::atomic<double> *  sensor::get_atomic_x(){
     return &atomic_x;
 }
@@ -125,43 +93,69 @@ std::atomic<double> * sensor::get_atomic_temps(){
     return atomic_temps;
 }
 
+
+///////////
+//Init
+void sensor::init_x(){
+    atomic_x.store(1);// = new std::atomic<double>(1);
+}
+void sensor::init_z(){
+    atomic_z.store(1);
+}
+void sensor::init_lev(){
+    atomic_lev = new std::atomic<double>[2];
+}
+void sensor::init_v(){
+    atomic_v   = new std::atomic<double>[3];
+}
+void sensor::init_a(){
+    atomic_a   = new std::atomic<double>[3];
+}
+void sensor::init_att(){
+    atomic_att = new std::atomic<double>[3];
+}
+void sensor::init_brake_pressure(){
+    atomic_brake_pressure.store(3);
+}
+void sensor::init_temps(){
+    atomic_temps = new std::atomic<double>[8];
+    i2c_thermo = open_i2c(0x15);
+}
+void sensor::init_rpm(){
+    atomic_rpm = new std::atomic<double>[4];
+    i2c_rpm = open_i2c(0x16);
+}
+
+////////////
+//Update
 void sensor::update_x(){
     atomic_x.store(atomic_x.load()+1);
 }
-
 void sensor::update_z(){
     atomic_z.store(1);
 }
-
 void sensor::update_lev(){
     atomic_lev[0].store(1);
     atomic_lev[1].store(2);
 }
-
 void sensor::update_v(){
     atomic_v[0].store(1);
     atomic_v[1].store(3);
     atomic_v[2].store(5);
-
 }
-
 void sensor::update_a(){
     atomic_a[0].store(1);
     atomic_a[1].store(2);
     atomic_a[2].store(5);
-
 }
-
 void sensor::update_att(){
     atomic_att[0].store(1);
     atomic_att[1].store(2);
     atomic_att[2].store(5);
 }
-
 void sensor::update_brake_pressure(){
     atomic_brake_pressure.store(atomic_brake_pressure.load()+1);
 }
-
 void sensor::update_rpm(){
     for(int i = 0; i < 4; i++){
         int val = 0;
@@ -170,7 +164,6 @@ void sensor::update_rpm(){
         atomic_rpm[i].store(val);
     }
 }
-
 void sensor::update_temp(){
     for(int i = 0; i < 8; i++){
         unsigned char val = 0;
@@ -182,6 +175,7 @@ void sensor::update_temp(){
         
     }
 }
+
 
 int sensor::open_i2c(int address){
     int i2c = 0;
