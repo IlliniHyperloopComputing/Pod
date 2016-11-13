@@ -15,19 +15,6 @@ class sensor{
         sensor();
         ~sensor();
         void update();
-        //void create_message(std::string & buff);
-    
-        /*double * get_x();
-        double * get_z();
-        double * get_lev();
-        double * get_v();
-        double * get_a();
-        double * get_att();
-        double * get_brake();
-        double * get_esc();
-        double * get_tot();
-        */
-
         std::atomic<double> *  get_atomic_x();
         std::atomic<double> *  get_atomic_z();
         std::atomic<double> *  get_atomic_lev();
@@ -37,18 +24,10 @@ class sensor{
         std::atomic<double> *  get_atomic_brake();
         std::atomic<double> *  get_atomic_temps();
         std::atomic<double> *  get_atomic_rpm();
+        std::atomic<double> *  get_atomic_tape_count();
     
 
     private:
-        /*double x, z;
-        double * lev;           //levf, levb
-        double * v;             //vx, vy, vz;
-        double * a;             //ax, ay, az;
-        double * att;             //ax, ay, az;
-        double brake_pressure;  //
-        double * esc;           //fl, fr, bl, br; 
-        double * tot;           //cu, am, b1, b2;
-        */
 
         std::atomic<double>  atomic_x;
         std::atomic<double>  atomic_z;
@@ -59,6 +38,8 @@ class sensor{
         std::atomic<double>  atomic_brake_pressure;
         std::atomic<double> * atomic_temps;
         std::atomic<double> * atomic_rpm;
+        std::atomic<double> * atomic_tape_count;
+
         std::atomic<uint8_t> x_status;
         std::atomic<uint8_t> z_status;
         std::atomic<uint8_t> lev_status;
@@ -69,6 +50,7 @@ class sensor{
 
         int  i2c_thermo;
         int  i2c_rpm;
+	int  i2c_tape;
         int  open_i2c(int address);
 
         void init_x();
@@ -80,7 +62,7 @@ class sensor{
         void init_brake_pressure();
         void init_temps();
         void init_rpm();
-
+        void init_tape_count();
 
         void update_x();
         void update_z();
@@ -89,11 +71,9 @@ class sensor{
         void update_a();
         void update_att();
         void update_brake_pressure();
-        //void update_esc();
-        //void update_tot();
         void update_temp();
         void update_rpm();
-		void update_tape_count();
+	void update_tape_count();
 
         uint8_t tick;
 };

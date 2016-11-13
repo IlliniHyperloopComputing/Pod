@@ -46,7 +46,7 @@ using namespace msm::front::euml;
 
 motor_control * motor_levitation;
 motor_control * motor_stability;
-//motor_control motor_stability(BlackLib::pwmName::P9_22, 1000.0, 700.0, 700.0, 20000);
+//motor_control motor_stability(BlackLib::pwmName::P9_22,BlackLib::gpioName::GPIO_39, 1000.0, 700.0, 700.0, 20000);
 
 // objects for brakes
 
@@ -435,7 +435,7 @@ namespace  // Concrete FSM implementation
             Row < FunctionalD , command , Loading     , to_loading            , functD_loading        >,
             Row < FunctionalD , command , FlightAccel , to_flight_accel       , functD_flightA        >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
-            Row < Loading     , command , FunctionalA , to_FuncitonalA        , loading_functA        >,
+            Row < Loading     , command , FunctionalA , to_FunctionalA        , loading_functA        >,
             //  +-------------+-------------+-------------+-----------------------+----------------------+
             Row < FlightAccel , command , SafeMode    , to_SafeMode           , flightA_safe          >,
             Row < FlightAccel , flight_coast, FlightCoast , to_flight_coast   , flightA_flightC       >,
@@ -508,7 +508,7 @@ namespace  // Concrete FSM implementation
     };
     // Pick a back-end
     typedef msm::back::state_machine<pod_> pod;
-// // Testing utilities.  //
+
     static char const* const state_names[] = { "Safe", "init", "FunctA", "functB", "functC", "functD", "Loading", "Flight Accel" , "Flight Coast", "Flight Brake"};
     void pstate(pod const& p)
     {
@@ -519,70 +519,14 @@ namespace  // Concrete FSM implementation
     {        
         cout <<"Running FSM"<<endl;
         pod p;
-        // needed to start the highest-level SM. This will call on_entry and mark the start of the SM
         p.start(); 
-        // go to Open, call on_exit on Empty, then action, then on_entry on Open
-//	std::cout << "user select safe mode"<<std::endl;
-//        p.process_event(
-//            command(SAFE_MODE)); pstate(p);
-//	std::cout << "user select init sensors"<<std::endl;
-//        p.process_event(
-//            command(INIT_SENSORS)); pstate(p);
-//	std::cout << "user select funct A"<<std::endl;
-//        p.process_event(
-//            command(FUNCT_A)); pstate(p);
-//	std::cout << "user select funct B"<<std::endl;
-//        p.process_event(
-//            command(FUNCT_B)); pstate(p);
-//	std::cout << "user select funct C"<<std::endl;
-//        p.process_event(
-//            command(FUNCT_C)); pstate(p);
-//	std::cout << "user select funct D"<<std::endl;
-//        p.process_event(
-//            command(FUNCT_D)); pstate(p);
-//	std::cout << "user select Loading"<<std::endl;
-//        p.process_event(
-//            command(LOADING)); pstate(p);
-//	std::cout << "user select funct A"<<std::endl;
-//        p.process_event(
-//            command(FUNCT_A)); pstate(p);
-//	std::cout << "user select funct B"<<std::endl;
-//        p.process_event(
-//            command(FUNCT_B)); pstate(p);
-//	std::cout << "user select funct C"<<std::endl;
-//        p.process_event(
-//            command(FUNCT_C)); pstate(p);
-//	std::cout << "user select funct D"<<std::endl;
-//        p.process_event(
-//            command(FUNCT_D)); pstate(p);
-//	std::cout << "user select flight A"<<std::endl;
-//        p.process_event(
-//            command(FLIGHT_A)); pstate(p);
-        /*p.process_event(open_close()); pstate(p);
-        // will be rejected, wrong disk type
-        p.process_event(
-            cd_detected("louie, louie",DISK_DVD)); pstate(p);
-        p.process_event(
-            cd_detected("louie, louie",DISK_CD)); pstate(p);
-        // no need to call play() as the previous event does it in its action method
-        //p.process_event(play());
-
-        // at this point, Play is active      
-        p.process_event(pause()); pstate(p);
-        // go back to Playing
-        p.process_event(end_pause());  pstate(p);
-        p.process_event(pause()); pstate(p);
-        p.process_event(stop());  pstate(p);
-        // event leading to the same state
-        // no action method called as it is not present in the transition table
-        */
-        //p.process_event(stop());  pstate(p);
 
         while(1){
             command_ptr cp;
             queue.pop(cp);
             if(cp){
                 std::cout << "Received command " << cp->command_type << " with value " << cp->command_value << std::endl;
+
                 if(cp->command_type == LEV_MOTOR){
                     motor_levitation->set_microseconds(cp->command_value); 
                 } else if(cp->command_type == STA_MOTOR) {
@@ -590,7 +534,6 @@ namespace  // Concrete FSM implementation
                 } else if(cp->command_type == OFF) {
                     motor_levitation->set_low();
                     motor_stability->set_low();
-                    break; // exit while loop 
                 }  else { 
                     p.process_event(*cp); 
                     pstate(p);
@@ -598,8 +541,9 @@ namespace  // Concrete FSM implementation
             
             }
         }
-            cout << "stop fsm" << endl;
-            p.stop();
+
+        cout << "stop fsm" << endl;
+        p.stop();
     }
 
 }
@@ -609,6 +553,7 @@ void sensor_loop(void){
     cout <<"Running Sensor loop"<<endl; 
     //infinate loop is not good idea. come up with something else
     while(1){
+        usleep(30000);
         sen->update();
     }
 }
@@ -626,20 +571,18 @@ int main()
         cout << "not ";
     cout << "lockfree" << endl;
 
-    motor_levitation = new motor_control(BlackLib::pwmName::P9_16, 1000.0, 700.0, 700.0, 2000.0);
-    motor_stability = new motor_control(BlackLib::pwmName::P9_22, 900.0, 700.0, 700.0, 2000.0);
+    motor_levitation = new motor_control(BlackLib::pwmName::P9_16, BlackLib::gpioName::GPIO_39, 1000.0, 700.0, 700.0, 2000.0);
+    motor_stability = new motor_control(BlackLib::pwmName::P9_22, BlackLib::gpioName::GPIO_39, 900.0, 700.0, 700.0, 2000.0);
 
-    cout << "Pls"<<endl;
     sen = new sensor();
     boost::thread sensor_thread(sensor_loop);
     boost::thread state_machine_thread(state_machine_loop);
     boost::thread network_thread(network_connect);
 
-    cout << "Pls"<<endl;
-
     state_machine_thread.join();
     network_thread.join();
     sensor_thread.join();
+
     delete server;
     delete sen;
     delete motor_levitation;

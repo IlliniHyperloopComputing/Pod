@@ -44,6 +44,10 @@ void loop(){
     //could calculate deltas using risingTimes[i]
     counts[i]++;
     high[i] = 0;
+    Serial.print("Falling edge, counts[");
+    Serial.print(i);
+    Serial.print("] = ");
+    Serial.println(counts[i]);
   }
   //i = (i + 1) % 4;
 }
