@@ -5,18 +5,6 @@
 
 sensor::sensor(){
     tick =1;
-    /*
-    x=0;    
-    z=0;
-    lev = new double[2];
-    v   = new double[3];
-    a   = new double[3];
-    att = new double[3];
-    brake_pressure = 0;
-    esc = new double[4];
-    tot = new double[4];
-       */
-
     
     atomic_x.store(1);// = new std::atomic<double>(1);
     atomic_z.store(1);
@@ -26,25 +14,14 @@ sensor::sensor(){
     atomic_att = new std::atomic<double>[3];
     atomic_brake_pressure.store(3);
     atomic_temps = new std::atomic<double>[8];
-    open_i2c();
-    open_i2c_address(0x15);
+    atomic_rpm = new std::atomic<double>[4];
+
+    i2c_thermo = open_i2c(0x15);
+    i2c_rpm = open_i2c(0x16);
     
 }
 
 sensor::~sensor(){
-    /*if(lev != NULL)
-        delete[] lev;
-    if(v != NULL)
-        delete[] v;
-    if(a != NULL)
-        delete[] a;
-    if(att != NULL)
-        delete[] att;
-    if(esc != NULL)
-        delete[] esc;
-    if(tot != NULL)
-        delete[] tot;
-    */
     if(atomic_lev != NULL)
         delete[] atomic_lev;
     if(atomic_v != NULL)
@@ -55,9 +32,12 @@ sensor::~sensor(){
         delete[] atomic_att;
     if(atomic_temps != NULL)
         delete[] atomic_temps;
+    if(atomic_rpm != NULL)
+        delete[] atomic_rpm;
 }
 
 void sensor::update(){
+    usleep(30000);
     //always update
 //    update_x();
 //    update_a();
@@ -71,7 +51,9 @@ void sensor::update(){
         case 2:
  //           update_lev();
             //update_esc();
-            update_temp();
+           // update_temp();
+            update_rpm();
+            
 //            update_att();
             break;
         case 3:
@@ -136,6 +118,9 @@ std::atomic<double> *  sensor::get_atomic_att(){
 std::atomic<double> *  sensor::get_atomic_brake(){
     return &atomic_brake_pressure;
 }
+std::atomic<double> *  sensor::get_atomic_rpm(){
+    return atomic_rpm;
+}
 std::atomic<double> * sensor::get_atomic_temps(){
     return atomic_temps;
 }
@@ -177,61 +162,37 @@ void sensor::update_brake_pressure(){
     atomic_brake_pressure.store(atomic_brake_pressure.load()+1);
 }
 
-void sensor::update_temp(){
-/*
-    std::cout << "Updating temp" << std::endl;
-    char buf[3];
-
-    memset(buf, 0, 3);
-    int bytesread = read(i2c, buf, 3);
-
-    std::cout << "Bytes read : " <<bytesread<< std::endl;
-
-    for(int i = 0; i < 3; i++){
-       std::cout << "Thermocouple " << i << " : " << (int)buf[i] << std::endl; 
+void sensor::update_rpm(){
+    for(int i = 0; i < 4; i++){
+        int val = 0;
+        i2c_smbus_write_byte(i2c_rpm,i);
+        val = i2c_smbus_read_word_data(i2c_rpm,i);
+        atomic_rpm[i].store(val);
     }
-*/
+}
 
-/*
-    unsigned char buf[8];
-    memset(buf, 0, 8);
-     
-    i2c_smbus_read_block_data(i2c, 0x00, buf);
-    
-    for(int i = 0; i < 8; i++){
-       std::cout << "Thermocouple " << i << " : " << (unsigned int)buf[i] << std::endl; 
-    }*/
-
-    
+void sensor::update_temp(){
     for(int i = 0; i < 8; i++){
         unsigned char val = 0;
-        i2c_smbus_write_byte(i2c,i);
-        val = i2c_smbus_read_byte_data(i2c,i);
-        //std::cout << (unsigned int)val << std::endl;
+        i2c_smbus_write_byte(i2c_thermo,i);
+        val = i2c_smbus_read_byte_data(i2c_thermo,i);
+        //std::cout << val << std::endl;
         //std::cout << "Thermocouple " << i << " : " << (int)val << std::endl; 
         atomic_temps[i].store(val);
         
     }
 }
 
-
-int sensor::open_i2c(){
+int sensor::open_i2c(int address){
+    int i2c = 0;
 	i2c = open("/dev/i2c-1", O_RDWR);
 	if(i2c < 0){
 		std::cout << "Something went wrong opening the i2c port" <<std::endl;
         return -1;
 	}
-    return 1;
-}
-
-//-1 == fail
-//1 == good
-int sensor::open_i2c_address(int address){
 	if( ioctl( i2c, I2C_SLAVE, address) < 0){
 		std::cout << "Failed to set i2c (address: " << address << ") slave address" <<std::endl;
-	//	cout << "Error Code: " << cerr << endl;
 		return -1;
 	}
-	
-	return 1;
+	return i2c;
 }
