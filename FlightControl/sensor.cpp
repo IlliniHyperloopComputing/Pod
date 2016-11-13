@@ -15,6 +15,7 @@ sensor::sensor(){
     init_brake_pressure();
     init_temps();
     init_rpm();
+    init_tape_count();
 }
 
 sensor::~sensor(){
@@ -30,6 +31,8 @@ sensor::~sensor(){
         delete[] atomic_temps;
     if(atomic_rpm != NULL)
         delete[] atomic_rpm;
+    if(atomic_tape_count != NULL)
+        delete[] atomic_tape_count;
 }
 
 //
@@ -49,6 +52,7 @@ void sensor::update(){
             //update_esc();
            // update_temp();
             update_rpm();
+			update_tape_count();
             
 //            update_att();
             break;
@@ -126,6 +130,10 @@ void sensor::init_rpm(){
     i2c_rpm = open_i2c(0x16);
 }
 
+void sensor::init_tape_count(){
+	atomic_tape_count = new std::atomic<double>[4];
+}
+
 ////////////
 //Update
 void sensor::update_x(){
@@ -153,8 +161,7 @@ void sensor::update_att(){
     atomic_att[1].store(2);
     atomic_att[2].store(5);
 }
-void sensor::update_brake_pressure(){
-    atomic_brake_pressure.store(atomic_brake_pressure.load()+1);
+void sensor::update_brake_pressure(){ atomic_brake_pressure.store(atomic_brake_pressure.load()+1);
 }
 void sensor::update_rpm(){
     for(int i = 0; i < 4; i++){
@@ -176,6 +183,14 @@ void sensor::update_temp(){
     }
 }
 
+void sensor::update_tape_count(){
+	for(int i = 0; i < 4; i++){
+        int val = 0;
+        i2c_smbus_write_byte(i2c_rpm,i);
+        val = i2c_smbus_read_word_data(i2c_rpm,i);
+        atomic_tape_count[i].store(val);
+	}
+}
 
 int sensor::open_i2c(int address){
     int i2c = 0;
