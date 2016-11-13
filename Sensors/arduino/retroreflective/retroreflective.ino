@@ -2,7 +2,7 @@
 #include <Wire.h>
 unsigned long last_time = 0;
 
-int pins[4] = {0, 0, 0, 0};
+int pins[4] = {7, 0, 0, 0};
 int counts[4]; //how many times has it sensed a
 int high[4]; //whether the pin is high or not
 long risingTimes[4];
@@ -23,7 +23,7 @@ void setup() {
 
 uint8_t which = 0;
 void beagleReceive(int numbytes){
-
+  
 }
 void beagleTransmit() {
   //Serial.println("which");
@@ -35,17 +35,17 @@ void beagleTransmit() {
 
 void loop(){
   int value = digitalRead(pins[i]);
-  if(value == HIGH && !high[i]){
+  if(value == LOW && !high[i]){
     //rising edge
     risingTimes[i] = micros();
     high[i] = 1;
-  } else if(value == LOW && high[i]){
+  } else if(value == HIGH && high[i]){
     //falling edge
     //could calculate deltas using risingTimes[i]
     counts[i]++;
     high[i] = 0;
   }
-  i = (i + 1) % 4;
+  //i = (i + 1) % 4;
 }
 
 
