@@ -101,8 +101,8 @@ std::string tcp_connection::buffer_to_string(boost::asio::streambuf& read_buffer
 ////////////////
 //tcp_server
 //typedef  spsc_queue;
-tcp_server::tcp_server(boost::asio::io_service& io_service, user_queue *queue, sensor * sen)
-            : acceptor_(io_service, tcp::endpoint(tcp::v4(),8888)), queue_(queue), sensor_(sen)
+tcp_server::tcp_server(boost::asio::io_service& io_service, command_queue *incoming_command_queue, status_queue * fsm_status_queue, sensor * sen)
+            : acceptor_(io_service, tcp::endpoint(tcp::v4(),8888)), incoming_command_queue_(incoming_command_queue), fsm_status_queue_(fsm_status_queue), sensor_(sen) 
 {
     start_accept();//start accepting connections
 }
@@ -115,7 +115,7 @@ tcp_server::~tcp_server()
 void tcp_server::start_accept()
 {
     tcp_connection::pointer new_connection = 
-        tcp_connection::create(acceptor_.get_io_service(),queue_, sensor_);
+        tcp_connection::create(acceptor_.get_io_service(),incoming_command_queue_, sensor_);
 
 
     acceptor_.async_accept(new_connection->socket(),
