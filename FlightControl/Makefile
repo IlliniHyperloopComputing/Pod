@@ -53,4 +53,4 @@ cleanexe:
 	rm build | true
 
 clean:
-	rm -f obj/* build
+	rm -f obj/*.o obj/*.d build
