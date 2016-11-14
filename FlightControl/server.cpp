@@ -2,6 +2,7 @@
 typedef boost::shared_ptr<tcp_connection> pointer;
 typedef boost::shared_ptr<command> command_ptr;
 typedef boost::lockfree::spsc_queue<command_ptr, boost::lockfree::capacity<1024> > user_queue;
+#define COMMAND_SIZE 7
 
 ////////////////
 ////////////////
@@ -26,11 +27,11 @@ void tcp_connection::start(){
             boost::asio::placeholders::bytes_transferred));
 
     //Wait for commands
-    boost::asio::async_read(socket_,read_buffer_.prepare(7),
+    boost::asio::async_read(socket_,read_buffer_.prepare(COMMAND_SIZE),
             boost::bind(&tcp_connection::handle_read, shared_from_this(),
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));
-    read_buffer_.commit(7);
+    read_buffer_.commit(COMMAND_SIZE);
 
 }
 
@@ -62,11 +63,11 @@ void tcp_connection::handle_read(const boost::system::error_code& error_message,
         command_ptr cp = codec::decode_input(buf_val);
         queue_->push(cp);
         //read again if no error
-        boost::asio::async_read(socket_,read_buffer_.prepare(7),
+        boost::asio::async_read(socket_,read_buffer_.prepare(COMMAND_SIZE),
                 boost::bind(&tcp_connection::handle_read, shared_from_this(),
                 boost::asio::placeholders::error,
                 boost::asio::placeholders::bytes_transferred));
-        read_buffer_.commit(7);
+        read_buffer_.commit(COMMAND_SIZE);
     }
     else if(boost::asio::error::eof == error_message || boost::asio::error::connection_reset == error_message){
         std::cout << error_message.message() << std::endl;
@@ -81,8 +82,6 @@ void tcp_connection::handle_read(const boost::system::error_code& error_message,
         }
         command_ptr c= command_ptr(new command(OFF));
         queue_->push(c);
-    
-        
     }
 
 }
@@ -133,7 +132,6 @@ void tcp_server::handle_accept(tcp_connection::pointer new_connection, const boo
         new_connection->socket().set_option(option);
         new_connection->start();
     }
-    
     start_accept();//optionally look for another connection
 }
 

@@ -348,7 +348,7 @@ namespace  // Concrete FSM implementation
             {
                 cout << "moving into flight brake state" << endl;
          //       motor_levitation->disarm();
-		//motor_stability->arm();
+		//        motor_stability->arm();
             }
         };
 
@@ -571,8 +571,8 @@ int main()
         cout << "not ";
     cout << "lockfree" << endl;
 
-    motor_levitation = new motor_control(BlackLib::pwmName::P9_16, BlackLib::gpioName::GPIO_39, 1000.0, 700.0, 700.0, 2000.0);
-    motor_stability = new motor_control(BlackLib::pwmName::P9_22, BlackLib::gpioName::GPIO_39, 900.0, 700.0, 700.0, 2000.0);
+    motor_levitation = new motor_control(BlackLib::pwmName::P9_16, BlackLib::gpioName::GPIO_39, 1000.0);
+    motor_stability = new motor_control(BlackLib::pwmName::P9_22, BlackLib::gpioName::GPIO_39, 1000.0);
 
     sen = new sensor();
     boost::thread sensor_thread(sensor_loop);

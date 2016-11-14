@@ -1,11 +1,9 @@
 #include "sensor.h"
-#include <string.h>
 #include "codec.h"
-
 
 sensor::sensor(){
     tick =1;
-    
+
     init_x();
     init_z();
     init_lev();
@@ -106,7 +104,7 @@ std::atomic<double> * sensor::get_atomic_tape_count(){
 ///////////
 //Init
 void sensor::init_x(){
-    atomic_x.store(1);// = new std::atomic<double>(1);
+    atomic_x.store(1);
 }
 void sensor::init_z(){
     atomic_z.store(1);
@@ -138,7 +136,6 @@ void sensor::init_rpm(){
 void sensor::init_tape_count(){
 	atomic_tape_count = new std::atomic<double>[4];
 	i2c_tape = open_i2c(0x17);
-
 }
 
 ////////////
