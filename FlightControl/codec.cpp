@@ -41,7 +41,8 @@ command_ptr codec::decode_input(const std::string & x){
     return ep;
 }
 
-
+//append_to_data_buffer for double * data
+//different method below for atomics
 void codec::append_to_data_buffer(std::string & buff, const std::string & type, double * data, size_t data_length){
     std::string message;
     
@@ -70,6 +71,7 @@ void codec::append_to_data_buffer(std::string & buff, const std::string & type, 
     buff+=message;
 }
 
+//append_to_data_buffer for atomic<double> * data
 void codec::append_to_data_buffer(std::string & buff, const std::string & type, std::atomic<double> const * const data, size_t data_length){
     std::string message;
     
@@ -97,6 +99,7 @@ void codec::append_to_data_buffer(std::string & buff, const std::string & type, 
     buff+=type;
     buff+=message;
 }
+
 
 void codec::create_message(sensor * sen, std::string & buff){
     //clear string of any data

@@ -2,6 +2,7 @@
 typedef boost::shared_ptr<tcp_connection> pointer;
 typedef boost::shared_ptr<command> command_ptr;
 typedef boost::lockfree::spsc_queue<command_ptr, boost::lockfree::capacity<1024> > user_queue;
+#define COMMAND_SIZE 7
 
 ////////////////
 ////////////////
@@ -26,11 +27,11 @@ void tcp_connection::start(){
             boost::asio::placeholders::bytes_transferred));
 
     //Wait for commands
-    boost::asio::async_read(socket_,read_buffer_.prepare(7),
+    boost::asio::async_read(socket_,read_buffer_.prepare(COMMAND_SIZE),
             boost::bind(&tcp_connection::handle_read, shared_from_this(),
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));
-    read_buffer_.commit(7);
+    read_buffer_.commit(COMMAND_SIZE);
 
 }
 
@@ -62,11 +63,11 @@ void tcp_connection::handle_read(const boost::system::error_code& error_message,
         command_ptr cp = codec::decode_input(buf_val);
         queue_->push(cp);
         //read again if no error
-        boost::asio::async_read(socket_,read_buffer_.prepare(7),
+        boost::asio::async_read(socket_,read_buffer_.prepare(COMMAND_SIZE),
                 boost::bind(&tcp_connection::handle_read, shared_from_this(),
                 boost::asio::placeholders::error,
                 boost::asio::placeholders::bytes_transferred));
-        read_buffer_.commit(7);
+        read_buffer_.commit(COMMAND_SIZE);
     }
     else if(boost::asio::error::eof == error_message || boost::asio::error::connection_reset == error_message){
         std::cout << error_message.message() << std::endl;
@@ -81,8 +82,6 @@ void tcp_connection::handle_read(const boost::system::error_code& error_message,
         }
         command_ptr c= command_ptr(new command(OFF));
         queue_->push(c);
-    
-        
     }
 
 }
@@ -102,8 +101,8 @@ std::string tcp_connection::buffer_to_string(boost::asio::streambuf& read_buffer
 ////////////////
 //tcp_server
 //typedef  spsc_queue;
-tcp_server::tcp_server(boost::asio::io_service& io_service, user_queue *queue, sensor * sen)
-            : acceptor_(io_service, tcp::endpoint(tcp::v4(),8888)), queue_(queue), sensor_(sen)
+tcp_server::tcp_server(boost::asio::io_service& io_service, command_queue *incoming_command_queue, status_queue * fsm_status_queue, sensor * sen)
+            : acceptor_(io_service, tcp::endpoint(tcp::v4(),8888)), incoming_command_queue_(incoming_command_queue), fsm_status_queue_(fsm_status_queue), sensor_(sen) 
 {
     start_accept();//start accepting connections
 }
@@ -116,7 +115,7 @@ tcp_server::~tcp_server()
 void tcp_server::start_accept()
 {
     tcp_connection::pointer new_connection = 
-        tcp_connection::create(acceptor_.get_io_service(),queue_, sensor_);
+        tcp_connection::create(acceptor_.get_io_service(),incoming_command_queue_, sensor_);
 
 
     acceptor_.async_accept(new_connection->socket(),
@@ -133,7 +132,6 @@ void tcp_server::handle_accept(tcp_connection::pointer new_connection, const boo
         new_connection->socket().set_option(option);
         new_connection->start();
     }
-    
     start_accept();//optionally look for another connection
 }
 

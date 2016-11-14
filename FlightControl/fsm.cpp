@@ -29,9 +29,10 @@
 #include "events.hpp"
 #include "server.h"
 
-// check this
 #include "motors.h"
 #include "brakes.h"
+
+#include "status.h"
 
 using namespace std;
 //MSM
@@ -41,20 +42,16 @@ using namespace msm::front;
 // for And_ operator
 using namespace msm::front::euml;
 
-// objects for motors go here
-// TODO these are not finalized
-
 motor_control * motor_levitation;
 motor_control * motor_stability;
-//motor_control motor_stability(BlackLib::pwmName::P9_22,BlackLib::gpioName::GPIO_39, 1000.0, 700.0, 700.0, 20000);
-
 // objects for brakes
-
 
 //Threading / queue
 typedef boost::shared_ptr<command> command_ptr;
-typedef boost::lockfree::spsc_queue<command_ptr, boost::lockfree::capacity<1024> > user_queue;
-user_queue queue;
+typedef boost::lockfree::spsc_queue<command_ptr, boost::lockfree::capacity<1024> > command_queue;
+command_queue incoming_command_queue;
+
+status_queue fsm_status_queue;
 
 tcp_server * server;
 boost::asio::io_service ioservice;
@@ -348,7 +345,7 @@ namespace  // Concrete FSM implementation
             {
                 cout << "moving into flight brake state" << endl;
          //       motor_levitation->disarm();
-		//motor_stability->arm();
+		//        motor_stability->arm();
             }
         };
 
@@ -523,7 +520,7 @@ namespace  // Concrete FSM implementation
 
         while(1){
             command_ptr cp;
-            queue.pop(cp);
+            incoming_command_queue.pop(cp);
             if(cp){
                 std::cout << "Received command " << cp->command_type << " with value " << cp->command_value << std::endl;
 
@@ -553,13 +550,13 @@ void sensor_loop(void){
     cout <<"Running Sensor loop"<<endl; 
     //infinate loop is not good idea. come up with something else
     while(1){
-        usleep(30000);
+        //usleep(30000);
         sen->update();
     }
 }
 
 void network_connect(void){
-    server = new tcp_server(ioservice, &queue, sen);
+    server = new tcp_server(ioservice, &incoming_command_queue, &fsm_status_queue, sen);
     cout <<"Running network service"<<endl;
     ioservice.run();
 }
@@ -567,12 +564,12 @@ void network_connect(void){
 int main()
 {
     cout << "boost::lockfree::queue is " << endl;
-    if (!queue.is_lock_free())
+    if (!incoming_command_queue.is_lock_free())
         cout << "not ";
     cout << "lockfree" << endl;
 
-    motor_levitation = new motor_control(BlackLib::pwmName::P9_16, BlackLib::gpioName::GPIO_39, 1000.0, 700.0, 700.0, 2000.0);
-    motor_stability = new motor_control(BlackLib::pwmName::P9_22, BlackLib::gpioName::GPIO_39, 900.0, 700.0, 700.0, 2000.0);
+    motor_levitation = new motor_control(BlackLib::pwmName::P9_16, BlackLib::gpioName::GPIO_39, 1000.0);
+    motor_stability = new motor_control(BlackLib::pwmName::P9_22, BlackLib::gpioName::GPIO_39, 1000.0);
 
     sen = new sensor();
     boost::thread sensor_thread(sensor_loop);

@@ -8,6 +8,7 @@
 #include <sys/stat.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <map>
 #include <sys/ioctl.h>
 
 class sensor{
@@ -40,17 +41,11 @@ class sensor{
         std::atomic<double> * atomic_rpm;
         std::atomic<double> * atomic_tape_count;
 
-        std::atomic<uint8_t> x_status;
-        std::atomic<uint8_t> z_status;
-        std::atomic<uint8_t> lev_status;
-        std::atomic<uint8_t> v_status;
-        std::atomic<uint8_t> a_status;
-        std::atomic<uint8_t> att_status;
-        std::atomic<uint8_t> brake_pressure_status;
+		std::map<double, int> count_to_distance;
 
         int  i2c_thermo;
         int  i2c_rpm;
-	int  i2c_tape;
+		int  i2c_tape;
         int  open_i2c(int address);
 
         void init_x();
@@ -63,6 +58,7 @@ class sensor{
         void init_temps();
         void init_rpm();
         void init_tape_count();
+		void init_map();
 
         void update_x();
         void update_z();
@@ -73,7 +69,7 @@ class sensor{
         void update_brake_pressure();
         void update_temp();
         void update_rpm();
-	void update_tape_count();
+		void update_tape_count();
 
         uint8_t tick;
 };

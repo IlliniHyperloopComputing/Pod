@@ -1,11 +1,9 @@
 #include "sensor.h"
-#include <string.h>
 #include "codec.h"
-
 
 sensor::sensor(){
     tick =1;
-    
+
     init_x();
     init_z();
     init_lev();
@@ -16,6 +14,7 @@ sensor::sensor(){
     init_temps();
     init_rpm();
     init_tape_count();
+	init_map();
 }
 
 sensor::~sensor(){
@@ -97,11 +96,15 @@ std::atomic<double> * sensor::get_atomic_temps(){
     return atomic_temps;
 }
 
+std::atomic<double> * sensor::get_atomic_tape_count(){
+	return atomic_tape_count;
+}
+
 
 ///////////
 //Init
 void sensor::init_x(){
-    atomic_x.store(1);// = new std::atomic<double>(1);
+    atomic_x.store(1);
 }
 void sensor::init_z(){
     atomic_z.store(1);
@@ -133,7 +136,6 @@ void sensor::init_rpm(){
 void sensor::init_tape_count(){
 	atomic_tape_count = new std::atomic<double>[4];
 	i2c_tape = open_i2c(0x17);
-
 }
 
 ////////////
@@ -206,4 +208,28 @@ int sensor::open_i2c(int address){
 		return -1;
 	}
 	return i2c;
+}
+
+void sensor::init_map(){
+	//first 9 tapes
+	//distance in inches
+	for(int i = 1; i <= 10; i++){
+		count_to_distance[i] = i * 100 * 12;
+	}
+
+	for(int i = 11; i <= 19; i++){
+		count_to_distance[i] = count_to_distance[10] +  8 * (i - 10);
+	}
+
+	for(int i = 20; i <= 25; i++){
+		count_to_distance[i] = 100 * 12 * (i - 9);
+	}
+
+	for(int i = 26; i <= 29; i++){
+		count_to_distance[i] = count_to_distance[25] + 8 * (i - 25);
+	}
+
+	for(int i = 30; i <= 33; i++){
+		count_to_distance[i] = 100 * 12 * (i - 14);
+	}
 }
