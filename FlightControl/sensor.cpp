@@ -14,7 +14,7 @@ sensor::sensor(){
     init_temps();
     init_rpm();
     init_tape_count();
-	init_map();
+	init_distances();
 }
 
 sensor::~sensor(){
@@ -100,6 +100,10 @@ std::atomic<double> * sensor::get_atomic_tape_count(){
 	return atomic_tape_count;
 }
 
+std::atomic<double> * sensor::get_distances() {
+	return distances;
+}
+
 
 ///////////
 //Init
@@ -137,11 +141,17 @@ void sensor::init_tape_count(){
 	atomic_tape_count = new std::atomic<double>[4];
 	i2c_tape = open_i2c(0x17);
 }
+void sensor::init_distances(){
+	distances = new std::atomic<double>[4];
+	remain_1000 = false;
+	remain_500 = false;
+}
+
 
 ////////////
 //Update
 void sensor::update_x(){
-    atomic_x.store(atomic_x.load()+1);
+    //atomic_x.store(atomic_x.load()+1);
 }
 void sensor::update_z(){
     atomic_z.store(1);
@@ -189,10 +199,26 @@ void sensor::update_temp(){
 
 void sensor::update_tape_count(){
 	for(int i = 0; i < 4; i++){
-        int val = 0;
+	    int val = 0;
         i2c_smbus_write_byte(i2c_tape,i);
         val = i2c_smbus_read_word_data(i2c_tape,i);
+		double oldCount = atomic_tape_count[i].load();
         atomic_tape_count[i].store(val);
+
+		time_t last = last_times[i];
+		time_t now = std::chrono::high_resolution_clock::now();
+		auto delta = last - now;
+		auto max_delay = std::chrono::duration<long long int, std::ratio<1ll, 1000000000ll> >(5000);
+		if(oldCount > val  && delta > max_delay){
+			distances[i].store(distances[i].load() + 100);
+		} else if(!remain_1000 && !remain_500){
+			remain_1000 = true;
+			distance_at_1000 = distances[i].load();
+		} else if(remain_1000 && !remain_500 && distances[i].load() > distance_at_1000){
+			remain_500 = true;
+		}	
+
+
 	}
 }
 
@@ -210,26 +236,3 @@ int sensor::open_i2c(int address){
 	return i2c;
 }
 
-void sensor::init_map(){
-	//first 9 tapes
-	//distance in inches
-	for(int i = 1; i <= 10; i++){
-		count_to_distance[i] = i * 100 * 12;
-	}
-
-	for(int i = 11; i <= 19; i++){
-		count_to_distance[i] = count_to_distance[10] +  8 * (i - 10);
-	}
-
-	for(int i = 20; i <= 25; i++){
-		count_to_distance[i] = 100 * 12 * (i - 9);
-	}
-
-	for(int i = 26; i <= 29; i++){
-		count_to_distance[i] = count_to_distance[25] + 8 * (i - 25);
-	}
-
-	for(int i = 30; i <= 33; i++){
-		count_to_distance[i] = 100 * 12 * (i - 14);
-	}
-}
