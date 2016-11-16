@@ -2,7 +2,7 @@
 #include <Wire.h>
 unsigned long last_time = 0;
 
-int pins[4] = {7, 0, 0, 0};
+int pins[4] = {12, 0, 0, 0};
 int counts[4]; //how many times has it sensed a
 int high[4]; //whether the pin is high or not
 long risingTimes[4];
@@ -44,10 +44,13 @@ void loop(){
     //could calculate deltas using risingTimes[i]
     counts[i]++;
     high[i] = 0;
-    Serial.print("Falling edge, counts[");
-    Serial.print(i);
-    Serial.print("] = ");
-    Serial.println(counts[i]);
+    if(counts[i] % 50 == 0){
+      Serial.print("Falling edge, counts[");
+      Serial.print(i);
+      Serial.print("] = ");
+      Serial.println(counts[i]);
+    }
+    
   }
   //i = (i + 1) % 4;
 }
