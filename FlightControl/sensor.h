@@ -10,8 +10,12 @@
 #include <errno.h>
 #include <map>
 #include <sys/ioctl.h>
+#include <sys/time.h>
+#include <chrono>
+
 
 class sensor{
+	typedef std::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::duration<long long int, std::ratio<1ll, 1000000000ll> > > time_t; 
     public:
         sensor();
         ~sensor();
@@ -26,6 +30,7 @@ class sensor{
         std::atomic<double> *  get_atomic_temps();
         std::atomic<double> *  get_atomic_rpm();
         std::atomic<double> *  get_atomic_tape_count();
+		std::atomic<double> * get_distances();
     
 
     private:
@@ -40,9 +45,15 @@ class sensor{
         std::atomic<double> * atomic_temps;
         std::atomic<double> * atomic_rpm;
         std::atomic<double> * atomic_tape_count;
+		std::atomic<double> * distances;
 
-		std::map<double, int> count_to_distance;
+		bool remain_1000;
+		bool remain_500;
+		time_t  last_times[4];
+		double distance_at_1000;
 
+
+		
         int  i2c_thermo;
         int  i2c_rpm;
 		int  i2c_tape;
@@ -58,7 +69,8 @@ class sensor{
         void init_temps();
         void init_rpm();
         void init_tape_count();
-		void init_map();
+		void init_distances();
+
 
         void update_x();
         void update_z();
@@ -70,7 +82,6 @@ class sensor{
         void update_temp();
         void update_rpm();
 		void update_tape_count();
-
         uint8_t tick;
 };
 
