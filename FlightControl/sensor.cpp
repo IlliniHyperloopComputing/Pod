@@ -203,7 +203,7 @@ void sensor::update_tape_count(){
         i2c_smbus_write_byte(i2c_tape,i);
         val = i2c_smbus_read_word_data(i2c_tape,i);
 		double oldCount = atomic_tape_count[i].load();
-        atomic_tape_count[i].store(val);
+       	atomic_tape_count[i].store(val);
 
 		time_t last = last_times[i];
 		time_t now = std::chrono::high_resolution_clock::now();
