@@ -528,6 +528,13 @@ namespace  // Concrete FSM implementation
                     motor_levitation->set_microseconds(cp->command_value); 
                 } else if(cp->command_type == STA_MOTOR) {
                     motor_stability->set_microseconds(cp->command_value);
+                } else if(cp->command_type == ARM_LEV_MOTOR) {
+                    if(cp->command_value ==0){
+                        motor_levitation->off();
+                    }
+                    else{
+                        motor_levitation->on();
+                    }
                 } else if(cp->command_type == OFF) {
                     motor_levitation->set_low();
                     motor_stability->set_low();
@@ -568,7 +575,7 @@ int main()
         cout << "not ";
     cout << "lockfree" << endl;
 
-    motor_levitation = new motor_control(BlackLib::pwmName::P9_16, BlackLib::gpioName::GPIO_39, 1000.0);
+    motor_levitation = new motor_control(BlackLib::pwmName::P9_16, BlackLib::gpioName::GPIO_60, 1000.0);
     motor_stability = new motor_control(BlackLib::pwmName::P9_22, BlackLib::gpioName::GPIO_39, 1000.0);
 
     sen = new sensor();
