@@ -30,7 +30,11 @@ command_ptr codec::decode_input(const std::string & x){
         }
         else if(state == "STA"){
              int value = stoi(x.substr(3));
-             ep = command_ptr(new command(LEV_MOTOR, value)); 
+             ep = command_ptr(new command(STA_MOTOR, value)); 
+        }
+        else if(state == "ARL"){//arm lev
+             int value = stoi(x.substr(3));
+             ep = command_ptr(new command(ARM_LEV_MOTOR, value)); 
         }
         else if(state == "OFF"){
             ep = command_ptr(new command(OFF));
