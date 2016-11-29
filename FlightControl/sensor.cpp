@@ -143,6 +143,11 @@ void sensor::init_tape_count(){
 }
 void sensor::init_distances(){
 	distances = new std::atomic<double>[4];
+    for(int i = 0; i < 4; i++){
+        distances[i] = 0;
+        last_times[i] = std::chrono::high_resolution_clock::now();
+
+    }
 	remain_1000 = false;
 	remain_500 = false;
 }
@@ -198,7 +203,7 @@ void sensor::update_temp(){
 }
 
 void sensor::update_tape_count(){
-	for(int i = 0; i < 4; i++){
+	for(int i = 0; i < 1; i++){
 	    int val = 0;
         i2c_smbus_write_byte(i2c_tape,i);
         val = i2c_smbus_read_word_data(i2c_tape,i);
@@ -207,16 +212,24 @@ void sensor::update_tape_count(){
 
 		time_t last = last_times[i];
 		time_t now = std::chrono::high_resolution_clock::now();
-		auto delta = last - now;
+		auto delta = now - last;
 		auto max_delay = std::chrono::duration<long long int, std::ratio<1ll, 1000000000ll> >(5000);
-		if(oldCount > val  && delta > max_delay){
-			distances[i].store(distances[i].load() + 100);
-		} else if(!remain_1000 && !remain_500){
-			remain_1000 = true;
-			distance_at_1000 = distances[i].load();
-		} else if(remain_1000 && !remain_500 && distances[i].load() > distance_at_1000){
-			remain_500 = true;
-		}	
+        std::cout << "Distances[" << i << "] = " << distances[i].load() <<"val: "<<val << " old_count: " << oldCount  << " delta: " << delta.count() << std::endl;
+		if(val > oldCount){
+            std::cout << "FOUND ONE MY GOD" << std::endl;
+            last_times[i] = now;
+            if(delta.count() > max_delay.count()){
+			    distances[i].store(distances[i].load() + 100);
+           
+		    } else if(!remain_1000 && !remain_500){
+                std::cout << "1000 feet left!" << std::endl;
+			    remain_1000 = true;
+			    distance_at_1000 = distances[i].load();
+		    } else if(remain_1000 && !remain_500 && distances[i].load() > distance_at_1000){
+                std::cout << "500 feet left!" << std::endl;
+			    remain_500 = true;
+		    }	
+        }
 
 
 	}
