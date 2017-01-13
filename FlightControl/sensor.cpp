@@ -203,7 +203,7 @@ void sensor::update_temp(){
 }
 
 void sensor::update_tape_count(){
-	for(int i = 0; i < 1; i++){
+	/*for(int i = 0; i < 1; i++){
 	    int val = 0;
         i2c_smbus_write_byte(i2c_tape,i);
         val = i2c_smbus_read_word_data(i2c_tape,i);
@@ -233,6 +233,7 @@ void sensor::update_tape_count(){
 
 
 	}
+    */
 }
 
 int sensor::open_i2c(int address){
