@@ -3,7 +3,7 @@
 
 sensor::sensor(){
     tick =1;
-
+    printf("Entering Sensor init\n");
     init_x();
     init_z();
     init_lev();
@@ -15,6 +15,7 @@ sensor::sensor(){
     init_rpm();
     init_tape_count();
 	init_distances();
+    printf("Exiting Sensor init\n");
 }
 
 sensor::~sensor(){
@@ -32,6 +33,13 @@ sensor::~sensor(){
         delete[] atomic_rpm;
     if(atomic_tape_count != NULL)
         delete[] atomic_tape_count;
+
+    if(i2c_brake_adc != NULL)
+        delete i2c_brake_adc;
+    close(i2c_brake);
+    close(i2c_thermo);
+    close(i2c_rpm);
+    close(i2c_tape);
 }
 
 //
@@ -126,7 +134,14 @@ void sensor::init_att(){
     atomic_att = new std::atomic<double>[3];
 }
 void sensor::init_brake_pressure(){
-    atomic_brake_pressure.store(3);
+    i2c_brake = open_i2c(0x48);
+    if(i2c_brake<0) return;//return if error
+    i2c_brake_adc = new ADS1115(i2c_brake);
+    i2c_brake_adc->setRate(ADS1115_RATE_475); //RATE 475 SPS
+	i2c_brake_adc->setGain(ADS1115_PGA_6P144);//GAIN of 6.144
+	i2c_brake_adc->setMultiplexer(ADS1115_MUX_P0_NG);//Pin 0
+	i2c_brake_adc->setMode(ADS1115_MODE_SINGLESHOT);//Mode SingleShot
+    atomic_brake_pressure.store(0);
 }
 void sensor::init_temps(){
     atomic_temps = new std::atomic<double>[8];
@@ -180,7 +195,10 @@ void sensor::update_att(){
     atomic_att[1].store(2);
     atomic_att[2].store(5);
 }
-void sensor::update_brake_pressure(){ atomic_brake_pressure.store(atomic_brake_pressure.load()+1);
+void sensor::update_brake_pressure(){ 
+    double millivolts = i2c_brake_adc->getMilliVolts();
+    //TODO: math that turns millivolts to pressure
+    atomic_brake_pressure.store(millivolts);
 }
 void sensor::update_rpm(){
     for(int i = 0; i < 4; i++){
@@ -240,11 +258,11 @@ int sensor::open_i2c(int address){
     int i2c = 0;
 	i2c = open("/dev/i2c-1", O_RDWR);
 	if(i2c < 0){
-		std::cout << "Something went wrong opening the i2c port" <<std::endl;
+       fprintf(stderr, "Error opening i2c port 0x%x\n\tSystem call open()\n",address);
         return -1;
 	}
 	if( ioctl( i2c, I2C_SLAVE, address) < 0){
-		std::cout << "Failed to set i2c (address: " << address << ") slave address" <<std::endl;
+        fprintf(stderr, "Error setting i2c address 0x%x\n\tSystem call ioctl()\n",address);
 		return -1;
 	}
 	return i2c;

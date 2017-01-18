@@ -70,17 +70,21 @@ int16_t ADS1115::getConversion() {
         /* Check for Operation Status. If it is 0 then we are ready to get data. Otherwise wait. */
         setOpStatus(ADS1115_OS_ACTIVE);
         while ((word.w & 0x80) == 0) {
-			word.w = i2c_smbus_read_word_data(fileDescriptor,ADS1115_RA_CONFIG);
-			if ( word.w < 0) 
-            //if ( I2Cdev::readWord(address, ADS1115_RA_CONFIG, &word.w) < 0 )
-                fprintf(stderr, "Error while reading config\n"); } } word.w = i2c_smbus_read_word_data(fileDescriptor, ADS1115_RA_CONVERSION);
-	if ( (word.w < 0)){
-    //if ( (I2Cdev::readWord(address, ADS1115_RA_CONVERSION, &word.w)) < 0 ) {
+            int16_t config_data = i2c_smbus_read_word_data(fileDescriptor,ADS1115_RA_CONFIG);
+            word.w = static_cast<uint16_t>(config_data);
+			if (config_data < 0)
+                fprintf(stderr, "Error while reading config\n"); 
+        } 
+    } 
+    int16_t config_data = i2c_smbus_read_word_data(fileDescriptor, ADS1115_RA_CONVERSION);
+    word.w = static_cast<uint16_t>(config_data);
+            
+	if (config_data<0){
         fprintf(stderr, "Error while reading\n");
     }
     /* Exchange MSB and LSB */
     word.w = word.b[0] << 8 | word.b[1];
-    return (int16_t) word.w;
+    return static_cast<int16_t> (word.w);
 }
 
 /**

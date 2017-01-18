@@ -12,6 +12,7 @@
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <chrono>
+#include "ADS1115.h"
 
 
 class sensor{
@@ -52,8 +53,8 @@ class sensor{
 		time_t  last_times[4];
 		double distance_at_1000;
 
-
-		
+        int  i2c_brake;
+        ADS1115* i2c_brake_adc; 
         int  i2c_thermo;
         int  i2c_rpm;
 		int  i2c_tape;

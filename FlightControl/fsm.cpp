@@ -514,7 +514,7 @@ namespace  // Concrete FSM implementation
 
     void state_machine_loop(void)
     {        
-        cout <<"Running FSM"<<endl;
+        printf("Running FSM");
         pod p;
         p.start(); 
 
@@ -522,7 +522,8 @@ namespace  // Concrete FSM implementation
             command_ptr cp;
             incoming_command_queue.pop(cp);
             if(cp){
-                std::cout << "Received command " << cp->command_type << " with value " << cp->command_value << std::endl;
+                printf("Received command %d with value %d", cp->command_type, cp->command_value);
+                //std::cout << "Received command " << cp->command_type << " with value " << cp->command_value << std::endl;
 
                 if(cp->command_type == LEV_MOTOR){
                     motor_levitation->set_microseconds(cp->command_value); 
@@ -546,7 +547,7 @@ namespace  // Concrete FSM implementation
             }
         }
 
-        cout << "stop fsm" << endl;
+        printf("Stoping FSM");
         p.stop();
     }
 
@@ -554,7 +555,7 @@ namespace  // Concrete FSM implementation
 
 
 void sensor_loop(void){
-    cout <<"Running Sensor loop"<<endl; 
+    printf("Running Sensor Loop");
     //infinate loop is not good idea. come up with something else
     while(1){
         //usleep(30000);
@@ -563,18 +564,15 @@ void sensor_loop(void){
 }
 
 void network_connect(void){
+    printf("Setting up Network");
     server = new tcp_server(ioservice, &incoming_command_queue, &fsm_status_queue, sen);
-    cout <<"Running network service"<<endl;
+    printf("Running Network");
     ioservice.run();
 }
 
 int main()
 {
-    cout << "boost::lockfree::queue is " << endl;
-    if (!incoming_command_queue.is_lock_free())
-        cout << "not ";
-    cout << "lockfree" << endl;
-
+    
     motor_levitation = new motor_control(BlackLib::pwmName::P9_16, BlackLib::gpioName::GPIO_60, 1000.0);
     motor_stability = new motor_control(BlackLib::pwmName::P9_22, BlackLib::gpioName::GPIO_39, 1000.0);
 
@@ -591,5 +589,6 @@ int main()
     delete sen;
     delete motor_levitation;
     delete motor_stability;
+
     return 0;
 }
