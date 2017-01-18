@@ -22,7 +22,8 @@ enum IncomingCommandEnum
     STA_MOTOR = 10,
     ARM_LEV_MOTOR = 11,
     ARM_STA_MOTOR = 12,
-    OFF = 13
+    OFF = 13,
+    BRAKE = 14
 };
 /*
 struct user_select

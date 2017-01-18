@@ -39,6 +39,10 @@ command_ptr codec::decode_input(const std::string & x){
         else if(state == "OFF"){
             ep = command_ptr(new command(OFF));
         }
+        else if(state == "BRK"){//Brake
+             int value = stoi(x.substr(3));
+            ep = command_ptr(new command(BRAKE, value));
+        }
         else {
             ep = command_ptr(new command(SAFE_MODE));
         }

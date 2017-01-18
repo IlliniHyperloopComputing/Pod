@@ -9,6 +9,9 @@
 //Sensor
 #include "sensor.h"
 
+//Active controls
+#include "active.h"
+
 //BlackLib
 #include "../BlackLib/v3_0/BlackPWM/BlackPWM.h"
 #include "../BlackLib/v3_0/BlackGPIO/BlackGPIO.h"
@@ -42,9 +45,8 @@ using namespace msm::front;
 // for And_ operator
 using namespace msm::front::euml;
 
-motor_control * motor_levitation;
-motor_control * motor_stability;
-// objects for brakes
+//Object for active controls (motors and brakes)
+active * act;
 
 //Threading / queue
 typedef boost::shared_ptr<command> command_ptr;
@@ -514,7 +516,7 @@ namespace  // Concrete FSM implementation
 
     void state_machine_loop(void)
     {        
-        printf("Running FSM");
+        printf("Running FSM\n");
         pod p;
         p.start(); 
 
@@ -522,23 +524,36 @@ namespace  // Concrete FSM implementation
             command_ptr cp;
             incoming_command_queue.pop(cp);
             if(cp){
-                printf("Received command %d with value %d", cp->command_type, cp->command_value);
-                //std::cout << "Received command " << cp->command_type << " with value " << cp->command_value << std::endl;
+                printf("Received command %d with value %d\n", cp->command_type, cp->command_value);
 
                 if(cp->command_type == LEV_MOTOR){
-                    motor_levitation->set_microseconds(cp->command_value); 
+                    act->set_lev(cp->command_value);
+                    //motor_levitation->set_microseconds(cp->command_value); 
                 } else if(cp->command_type == STA_MOTOR) {
-                    motor_stability->set_microseconds(cp->command_value);
+                    act->set_sta(cp->command_value);
+                    //motor_stability->set_microseconds(cp->command_value);
                 } else if(cp->command_type == ARM_LEV_MOTOR) {
                     if(cp->command_value ==0){
-                        motor_levitation->off();
+                        act->off_lev();
+                        //motor_levitation->off();
                     }
                     else{
-                        motor_levitation->on();
+                        act->on_lev();
+                        //motor_levitation->on();
                     }
                 } else if(cp->command_type == OFF) {
-                    motor_levitation->set_low();
-                    motor_stability->set_low();
+                    act->low_lev();
+                    act->low_sta();
+                    //motor_levitation->set_low();
+                    //motor_stability->set_low();
+                } else if(cp->command_type == BRAKE) {
+                    int val = cp->command_value;
+                    if(val==0)
+                        act->stop_brake();
+                    if(val==1)
+                        act->forward_brake();
+                    if(val==2)
+                        act->backward_brake();
                 }  else { 
                     p.process_event(*cp); 
                     pstate(p);
@@ -547,7 +562,7 @@ namespace  // Concrete FSM implementation
             }
         }
 
-        printf("Stoping FSM");
+        printf("Stoping FSM\n");
         p.stop();
     }
 
@@ -555,7 +570,7 @@ namespace  // Concrete FSM implementation
 
 
 void sensor_loop(void){
-    printf("Running Sensor Loop");
+    printf("Running Sensor Loop\n");
     //infinate loop is not good idea. come up with something else
     while(1){
         //usleep(30000);
@@ -564,19 +579,17 @@ void sensor_loop(void){
 }
 
 void network_connect(void){
-    printf("Setting up Network");
+    printf("Setting up Network\n");
     server = new tcp_server(ioservice, &incoming_command_queue, &fsm_status_queue, sen);
-    printf("Running Network");
+    printf("Running Network\n");
     ioservice.run();
 }
 
 int main()
 {
-    
-    motor_levitation = new motor_control(BlackLib::pwmName::P9_16, BlackLib::gpioName::GPIO_60, 1000.0);
-    motor_stability = new motor_control(BlackLib::pwmName::P9_22, BlackLib::gpioName::GPIO_39, 1000.0);
-
     sen = new sensor();
+    act = new active();
+
     boost::thread sensor_thread(sensor_loop);
     boost::thread state_machine_thread(state_machine_loop);
     boost::thread network_thread(network_connect);
@@ -586,9 +599,8 @@ int main()
     sensor_thread.join();
 
     delete server;
+    delete act;
     delete sen;
-    delete motor_levitation;
-    delete motor_stability;
 
     return 0;
 }

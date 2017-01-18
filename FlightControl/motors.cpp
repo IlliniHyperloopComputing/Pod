@@ -7,7 +7,7 @@ motor_control::motor_control(enum BlackLib::pwmName pwm_pin, enum BlackLib::gpio
 			    low_us(low_us) 
 {
     
-    std::cout<<"value of power pin"<<power.getValue()<<std::endl;    
+    //std::cout<<"value of power pin"<<power.getValue()<<std::endl;    
 	off();
     pwm.setDutyPercent(100.0);
 	pwm.setPeriodTime(uint64_t(20), BlackLib::milisecond);
@@ -15,12 +15,12 @@ motor_control::motor_control(enum BlackLib::pwmName pwm_pin, enum BlackLib::gpio
 
 void motor_control::on(){
 	power.setValue( BlackLib::high );
-    std::cout<<"value of power pin"<<power.getValue()<<std::endl;    
+    //std::cout<<"value of power pin"<<power.getValue()<<std::endl;    
 }
 
 void motor_control::off(){
 	power.setValue( BlackLib::low );
-    std::cout<<"value of power pin"<<power.getValue()<<std::endl;    
+    //std::cout<<"value of power pin"<<power.getValue()<<std::endl;    
 }
 
 void motor_control::set_low(){
