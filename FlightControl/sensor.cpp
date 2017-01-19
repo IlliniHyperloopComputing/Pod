@@ -1,20 +1,28 @@
 #include "sensor.h"
 #include "codec.h"
 
-sensor::sensor(){
+sensor::sensor(std::vector<status_message_ptr> * tmp_status_buff){
+    this->tmp_status_buff = tmp_status_buff;
+
+//    status_message_ptr smp(new status_message(STATUS_ERROR,error_msg));
+    //tmp_status_buff->push_back(smp);
     tick =1;
+    tmp_status_buff->push_back(status_message_ptr(new status_message(STATUS_MESSAGE,"Entering Sensor Init")));
     printf("Entering Sensor init\n");
-    init_x();
-    init_z();
-    init_lev();
-    init_v();
-    init_a();
-    init_att();
-    init_brake_pressure();
-    init_temps();
-    init_rpm();
-    init_tape_count();
-	init_distances();
+
+    tmp_status_buff->push_back(status_message_ptr(new status_message(init_x(),"Init x")));
+    tmp_status_buff->push_back(status_message_ptr(new status_message(init_z(),"Init z")));
+    tmp_status_buff->push_back(status_message_ptr(new status_message(init_lev(),"Init lev")));
+    tmp_status_buff->push_back(status_message_ptr(new status_message(init_v(),"Init v")));
+    tmp_status_buff->push_back(status_message_ptr(new status_message(init_a(),"Init a")));
+    tmp_status_buff->push_back(status_message_ptr(new status_message(init_att(),"Init att")));
+    tmp_status_buff->push_back(status_message_ptr(new status_message(init_brake_pressure(),"Init Brake pressure")));
+    tmp_status_buff->push_back(status_message_ptr(new status_message(init_temps(),"Init Temps")));
+    tmp_status_buff->push_back(status_message_ptr(new status_message(init_rpm(),"Init rpm")));
+    tmp_status_buff->push_back(status_message_ptr(new status_message(init_tape_count(),"Init tape count")));
+	tmp_status_buff->push_back(status_message_ptr(new status_message(init_distances(),"Init distances")));
+
+    tmp_status_buff->push_back(status_message_ptr(new status_message(STATUS_MESSAGE,"Exiting Sensor Init")));
     printf("Exiting Sensor init\n");
 }
 
@@ -115,48 +123,61 @@ std::atomic<double> * sensor::get_distances() {
 
 ///////////
 //Init
-void sensor::init_x(){
+int sensor::init_x(){
     atomic_x.store(1);
+    return 0;
 }
-void sensor::init_z(){
+int sensor::init_z(){
     atomic_z.store(1);
+    return 0;
 }
-void sensor::init_lev(){
+int sensor::init_lev(){
     atomic_lev = new std::atomic<double>[2];
+    return 0;
 }
-void sensor::init_v(){
+int sensor::init_v(){
     atomic_v   = new std::atomic<double>[3];
+    return 0;
 }
-void sensor::init_a(){
+int sensor::init_a(){
     atomic_a   = new std::atomic<double>[3];
+    return 0;
 }
-void sensor::init_att(){
+int sensor::init_att(){
     atomic_att = new std::atomic<double>[3];
+    return 0;
 }
-void sensor::init_brake_pressure(){
+int sensor::init_brake_pressure(){
     i2c_brake = open_i2c(0x48);
-    if(i2c_brake<0) return;//return if error
+    if(i2c_brake<0) return -1;//return if error
     i2c_brake_adc = new ADS1115(i2c_brake);
     i2c_brake_adc->setRate(ADS1115_RATE_475); //RATE 475 SPS
 	i2c_brake_adc->setGain(ADS1115_PGA_6P144);//GAIN of 6.144
 	i2c_brake_adc->setMultiplexer(ADS1115_MUX_P0_NG);//Pin 0
 	i2c_brake_adc->setMode(ADS1115_MODE_SINGLESHOT);//Mode SingleShot
     atomic_brake_pressure.store(0);
+    return 0;
 }
-void sensor::init_temps(){
+int sensor::init_temps(){
     atomic_temps = new std::atomic<double>[8];
     i2c_thermo = open_i2c(0x15);
+    if(i2c_thermo<0) return -1;
+    return 0;
 }
-void sensor::init_rpm(){
+int sensor::init_rpm(){
     atomic_rpm = new std::atomic<double>[4];
     i2c_rpm = open_i2c(0x16);
+    if(i2c_rpm<0) return -1;
+    return 0;
 }
 
-void sensor::init_tape_count(){
+int sensor::init_tape_count(){
 	atomic_tape_count = new std::atomic<double>[4];
 	i2c_tape = open_i2c(0x17);
+    if(i2c_tape<0) return -1;
+    return 0;
 }
-void sensor::init_distances(){
+int sensor::init_distances(){
 	distances = new std::atomic<double>[4];
     for(int i = 0; i < 4; i++){
         distances[i] = 0;
@@ -165,6 +186,8 @@ void sensor::init_distances(){
     }
 	remain_1000 = false;
 	remain_500 = false;
+
+    return 0;
 }
 
 
@@ -258,11 +281,21 @@ int sensor::open_i2c(int address){
     int i2c = 0;
 	i2c = open("/dev/i2c-1", O_RDWR);
 	if(i2c < 0){
-       fprintf(stderr, "Error opening i2c port 0x%x\n\tSystem call open()\n",address);
+        std::string error_msg;
+        error_msg= boost::str(boost::format("Error opening i2c port 0x%x\tSystem call open()\n") %address);
+        status_message_ptr smp(new status_message(STATUS_ERROR,error_msg));
+        tmp_status_buff->push_back(smp);
+
+        //print out message
+        fprintf(stderr, "Error opening i2c port 0x%x\tSystem call open()\n",address);
         return -1;
 	}
 	if( ioctl( i2c, I2C_SLAVE, address) < 0){
-        fprintf(stderr, "Error setting i2c address 0x%x\n\tSystem call ioctl()\n",address);
+        std::string error_msg;
+        error_msg= boost::str(boost::format("Error setting i2c address 0x%x\tSystem call ioctl()\n") %address);
+        status_message_ptr smp(new status_message(STATUS_ERROR,error_msg));
+        tmp_status_buff->push_back(smp);
+        fprintf(stderr, "Error setting i2c address 0x%x\tSystem call ioctl()\n",address);
 		return -1;
 	}
 	return i2c;

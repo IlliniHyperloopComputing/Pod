@@ -1,3 +1,5 @@
+#ifndef ACTIVE_CLASS
+#define ACTIVE_CLASS
 #include <iostream>
 #include "../BlackLib/v3_0/BlackGPIO/BlackGPIO.h"
 #include "motors.h"
@@ -29,3 +31,4 @@ class active{
         brake_control *brake;
 
 };
+#endif

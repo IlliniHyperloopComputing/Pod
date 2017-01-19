@@ -47,17 +47,21 @@ using namespace msm::front::euml;
 
 //Object for active controls (motors and brakes)
 active * act;
+//Object for the sensors
+sensor * sen;
 
 //Threading / queue
 typedef boost::shared_ptr<command> command_ptr;
 typedef boost::lockfree::spsc_queue<command_ptr, boost::lockfree::capacity<1024> > command_queue;
 command_queue incoming_command_queue;
 
+//Typedefs for this queue are found within status.h
 status_queue fsm_status_queue;
 
 tcp_server * server;
 boost::asio::io_service ioservice;
-sensor * sen;
+
+std::vector<status_message_ptr> tmp_status_buff;
 
 namespace  // Concrete FSM implementation
 {
@@ -516,6 +520,11 @@ namespace  // Concrete FSM implementation
 
     void state_machine_loop(void)
     {        
+        while (!tmp_status_buff.empty()) {
+            fsm_status_queue.push(tmp_status_buff.back());
+            tmp_status_buff.pop_back();
+        }        
+
         printf("Running FSM\n");
         pod p;
         p.start(); 
@@ -587,9 +596,14 @@ void network_connect(void){
 
 int main()
 {
-    sen = new sensor();
+    
+    
+    //Initialize the sensors
+    sen = new sensor(&tmp_status_buff);
+    //Initialize the active controls 
     act = new active();
 
+    //Spin off threads
     boost::thread sensor_thread(sensor_loop);
     boost::thread state_machine_thread(state_machine_loop);
     boost::thread network_thread(network_connect);

@@ -12,13 +12,17 @@
 #include <sys/ioctl.h>
 #include <sys/time.h>
 #include <chrono>
+#include <boost/format.hpp>
+#include <boost/thread/thread.hpp>
+#include <boost/lockfree/spsc_queue.hpp>
 #include "ADS1115.h"
+#include "status.h"
 
 
 class sensor{
 	typedef std::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::duration<long long int, std::ratio<1ll, 1000000000ll> > > time_t; 
     public:
-        sensor();
+        sensor(std::vector<status_message_ptr> * tmp_status_buff);
         ~sensor();
         void update();
         std::atomic<double> *  get_atomic_x();
@@ -60,18 +64,18 @@ class sensor{
 		int  i2c_tape;
         int  open_i2c(int address);
 
-        void init_x();
-        void init_z();
-        void init_lev();
-        void init_v();
-        void init_a();
-        void init_att();
-        void init_brake_pressure();
-        void init_temps();
-        void init_rpm();
-        void init_tape_count();
-		void init_distances();
-
+        int  init_x();
+        int  init_z();
+        int  init_lev();
+        int  init_v();
+        int  init_a();
+        int  init_att();
+        int  init_brake_pressure();
+        int  init_temps();
+        int  init_rpm();
+        int  init_tape_count();
+		int  init_distances();
+        std::vector<status_message_ptr> * tmp_status_buff;
 
         void update_x();
         void update_z();

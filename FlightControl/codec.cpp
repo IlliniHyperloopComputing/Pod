@@ -108,8 +108,11 @@ void codec::append_to_data_buffer(std::string & buff, const std::string & type, 
     buff+=message;
 }
 
+void codec::append_to_data_buffer(std::string & buff, const std::string & type, std::string & data, size_t data_length){
 
-void codec::create_message(sensor * sen, std::string & buff){
+}
+
+void codec::create_message(sensor * sen, status_queue * fsm_status_queue, std::string & buff){
     //clear string of any data
     buff.clear();
     //always add these
@@ -122,6 +125,13 @@ void codec::create_message(sensor * sen, std::string & buff){
     //codec::append_to_data_buffer(buff,"LVH",sen->get_atomic_lev(),2);
     //codec::append_to_data_buffer(buff,"TMP",sen->get_atomic_temps(), 8);
     codec::append_to_data_buffer(buff,"RPM",sen->get_atomic_rpm(), 4);
+
+    status_message_ptr smp;
+    fsm_status_queue->pop(smp);
+    if(smp){
+        std::string msg = smp->get_message();
+        codec::append_to_data_buffer(buff,"STT",msg,msg.length());
+    }
 
     
 

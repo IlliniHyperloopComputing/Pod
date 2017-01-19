@@ -5,33 +5,51 @@
 enum status_type{
     STATUS_ERROR = 0,
     STATUS_MESSAGE = 1,
-    STATUS_STATE = 2
+    STATUS_CONTROL = 2,
+    STATUS_STATE = 3
 };
 struct status_message {
+    /*
+    //Default constructor
     status_message()
         : type(STATUS_MESSAGE), message("")
     {}
+    */
 
     status_message(enum status_type type, std::string message) 
         : type(type), message(message)
     {}
+
+    status_message(int state, std::string message) 
+        : message(message)
+    {
+        if(state<0){
+            type = STATUS_ERROR;
+        }else{
+            type = STATUS_MESSAGE;
+        }
     
-    std::string operator()(){
-        char prefix = 'e';
+    }
+    
+    std::string get_message(){
+        char prefix = 'E';
         if(type == 1){
-            prefix = 'm';
+            prefix = 'M';
         }else if(type == 2){
-            prefix = 's';
+            prefix = 'C';
+        }else if(type == 3){
+            prefix = 'S';
         }
         return prefix + message;
     }
     enum status_type type;
     std::string message;
 };
-
 typedef boost::shared_ptr<status_message> status_message_ptr;
-typedef boost::lockfree::spsc_queue<status_message_ptr, boost::lockfree::capacity<512> > status_queue;
+typedef boost::lockfree::spsc_queue<status_message_ptr, boost::lockfree::capacity<1024> > status_queue;
 
+
+/*
 class status{
     public:
         status(status_queue * fsm_queue, status_queue * sensor_queue);
@@ -42,5 +60,6 @@ class status{
         status_queue * sensor_queue;
 
 };
+*/
 
 #endif
