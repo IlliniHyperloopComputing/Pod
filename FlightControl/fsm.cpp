@@ -535,24 +535,58 @@ namespace  // Concrete FSM implementation
             if(cp){
                 printf("Received command %d with value %d\n", cp->command_type, cp->command_value);
 
+                status_message_ptr smp;
                 if(cp->command_type == LEV_MOTOR){
+                    //Set the motor
                     act->set_lev(cp->command_value);
+
+                    //Send confermation of action
+                    char tmp[5];
+                    sprintf(tmp,"%4d",cp->command_value);
+                    std::string l = "L";
+                    smp = status_message_ptr(new status_message(STATUS_CONTROL,+tmp));
+
                     //motor_levitation->set_microseconds(cp->command_value); 
                 } else if(cp->command_type == STA_MOTOR) {
                     act->set_sta(cp->command_value);
+
+                    char tmp[5];
+                    sprintf(tmp,"%4d",cp->command_value);
+                    std::string s = "S";
+                    smp = status_message_ptr(new status_message(STATUS_CONTROL,s+tmp));
+
                     //motor_stability->set_microseconds(cp->command_value);
                 } else if(cp->command_type == ARM_LEV_MOTOR) {
                     if(cp->command_value ==0){
                         act->off_lev();
+
+                        smp = status_message_ptr(new status_message(STATUS_CONTROL,"L0"));
                         //motor_levitation->off();
                     }
                     else{
                         act->on_lev();
+                        smp = status_message_ptr(new status_message(STATUS_CONTROL,"L1"));
+                        //motor_levitation->on();
+                    }
+                } else if(cp->command_type == ARM_STA_MOTOR) {
+                    if(cp->command_value ==0){
+                        act->off_sta();
+
+                        smp = status_message_ptr(new status_message(STATUS_CONTROL,"S0"));
+                        //motor_levitation->off();
+                    }
+                    else{
+                        act->on_sta();
+                        smp = status_message_ptr(new status_message(STATUS_CONTROL,"S1"));
                         //motor_levitation->on();
                     }
                 } else if(cp->command_type == OFF) {
                     act->low_lev();
                     act->low_sta();
+                    act->off_sta();
+                    act->off_lev();
+                    smp = status_message_ptr(new status_message(STATUS_CONTROL,"S0"));
+                    smp = status_message_ptr(new status_message(STATUS_CONTROL,"L0"));
                     //motor_levitation->set_low();
                     //motor_stability->set_low();
                 } else if(cp->command_type == BRAKE) {
@@ -563,10 +597,15 @@ namespace  // Concrete FSM implementation
                         act->forward_brake();
                     if(val==2)
                         act->backward_brake();
+                    char tmp[2];
+                    sprintf(tmp,"%1d",val);
+                    std::string b = "B";
+                    smp = status_message_ptr(new status_message(STATUS_CONTROL,b+tmp));
                 }  else { 
                     p.process_event(*cp); 
                     pstate(p);
                 }
+            fsm_status_queue.push(smp);
             
             }
         }

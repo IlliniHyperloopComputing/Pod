@@ -17,7 +17,7 @@ class codec{
         static command_ptr decode_input(const std::string & x);
         static void append_to_data_buffer(std::string & buff, const std::string & type, double *data, size_t data_length);
         static void append_to_data_buffer(std::string & buff, const std::string & type, std::atomic<double> const * const data, size_t data_length);
-        static void append_to_data_buffer(std::string & buff, const std::string & type, std::string & data, size_t data_length);
+        static void append_to_data_buffer(std::string & buff, const std::string & type, const std::string & data, size_t data_length);
         static void create_message(sensor * sen, status_queue * fsm_status_queue, std::string & buff);
 };
         

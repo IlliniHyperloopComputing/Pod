@@ -49,6 +49,7 @@ command_ptr codec::decode_input(const std::string & x){
     return ep;
 }
 
+
 //append_to_data_buffer for double * data
 //different method below for atomics
 void codec::append_to_data_buffer(std::string & buff, const std::string & type, double * data, size_t data_length){
@@ -108,8 +109,20 @@ void codec::append_to_data_buffer(std::string & buff, const std::string & type, 
     buff+=message;
 }
 
-void codec::append_to_data_buffer(std::string & buff, const std::string & type, std::string & data, size_t data_length){
+void codec::append_to_data_buffer(std::string & buff, const std::string & type, const std::string & data, size_t data_length){
 
+    //calculate message size
+    int message_size = data.length();
+	char tmp[5];
+	sprintf(tmp,"%04d", message_size);//write message size 
+
+
+    //reserver extra space to buffer
+    buff.reserve(7+message_size+buff.length());
+    //add to buffer
+    buff+=tmp;
+    buff+=type;
+    buff+=data;
 }
 
 void codec::create_message(sensor * sen, status_queue * fsm_status_queue, std::string & buff){
