@@ -128,7 +128,7 @@ int sensor::init_v(){
 }
 int sensor::init_a(){
     atomic_a   = new std::atomic<double>[3];
-    i2c_a = open_i2c(0x4a);
+    i2c_a = open_i2c(0x48);
     if(i2c_a<0) return -1;//return if error
     i2c_a_adc = new ADS1115(i2c_a,0x4a);
     i2c_a_adc->setRate(ADS1115_RATE_475); //RATE 475 SPS
