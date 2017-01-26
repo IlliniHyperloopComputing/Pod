@@ -13,6 +13,8 @@ command_ptr codec::decode_input(const std::string & x){
              ep = command_ptr(new command(FUNCTIONAL_TEST));
         else if(state == "FLT")
              ep = command_ptr(new command(FLIGHT));
+		else if(state == "RST")
+			 ep = command_ptr(new command(RESET_SENSORS));
         else if(state == "LEV"){
              int value = stoi(x.substr(3));
              ep = command_ptr(new command(LEV_MOTOR, value));
@@ -30,9 +32,10 @@ command_ptr codec::decode_input(const std::string & x){
              ep = command_ptr(new command(ARM_STA_MOTOR, value)); 
         }
         else {
-			cout << "Unregistered command" << endl;
+			printf("Unregistered command");
             ep = command_ptr(new command(SAFE_MODE));
         }
+
     return ep;
 }
 

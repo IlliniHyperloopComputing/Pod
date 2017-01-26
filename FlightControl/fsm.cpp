@@ -23,10 +23,12 @@
 //front-end
 #include <boost/msm/front/state_machine_def.hpp>
 // functors
+
 #include <boost/msm/front/functor_row.hpp>
 #include <boost/msm/front/euml/common.hpp>
 // for And_ operator
 #include <boost/msm/front/euml/operator.hpp>
+
 
 #include "guards.hpp"
 #include "events.hpp"
@@ -141,46 +143,65 @@ namespace  // Concrete FSM implementation
                 std::cout << "leaving: Braking" << std::endl;
             }
         };
+	
+    	// the initial state of the player SM. Must be defined
+    	typedef SafeMode initial_state;
+		// performs neccesary actions when moving into loading 	
+		struct to_functional {	
+			template <class EVT, class FSM, class SourceState, class TargetState>
+			void operator()(EVT const&, FSM& fsm, SourceState&, TargetState&) {
+				cout << "moving into functionaltests" << endl;
+			}
+		};
+		struct to_flight {
+			template <class EVT, class FSM, class SourceState, class TargetState>
+			void operator()(EVT const&, FSM& fsm, SourceState&, TargetState&) {
+				cout << "moving into flight" << endl;
+			}
+		};
+		struct to_braking {	
+			template <class EVT, class FSM, class SourceState, class TargetState>
+			void operator()(EVT const&, FSM& fsm, SourceState&, TargetState&) {
+				cout << "moving into braking" << endl;
+			}
+		};
+		struct to_safe_mode {	
+			template <class EVT, class FSM, class SourceState, class TargetState>
+			void operator()(EVT const&, FSM& fsm, SourceState&, TargetState&) {
+				cout << "moving into safe_mode" << endl;
+			}
+		};
 
-    
 
-        // the initial state of the player SM. Must be defined
-        typedef SafeMode initial_state;
-        //typedef mpl::vector<SafeMode,SensorsWait> initial_state;
+		typedef pod_ p; // makes transition table cleaner
 
-	// performs neccesary actions when moving into loading 
-        struct to_loading 
-        {
-            template <class EVT,class FSM,class SourceState,class TargetState>
-            void operator()(EVT const&,FSM& fsm ,SourceState& ,TargetState& )
-            {
-                cout << "moving into loading state" << endl;
-		//motor_levitation->disarm();
-		//motor_stability->disarm();
-            }
-        };
+			// Transition table for player
+		struct transition_table : mpl::vector<
+				//      Start         Event         Next          Action           
+				//    +-----------+-------------+---------------+------------------+
+			Row < SafeMode      , command     , FunctionalTest, to_functional   >,
+			Row < FunctionalTest, command     , Flight        , to_flight       >,
+			Row < Flight	    , flight_brake, Braking       , to_braking      >,
+			Row < Flight        , command     , Braking       , to_braking      >,
+			Row < Braking       , command     , SafeMode      , to_safe_mode    >
+			
+			> {};
+	};
 
-        typedef pod_ p; // makes transition table cleaner
-
-        // Transition table for player
-        struct transition_table : mpl::vector<
-            //    Start         Event         Next          Action                  Guard
-            //  +---------------+-------------+---------------+-----------------+---------+
-	    Row < SafeMode      , command     , FunctionalTest, to_functional   , NULL  > 
-	    Row < FunctionalTest, command     , Flight        , to_flight       , NULL  >
-	    Row < Flight	, flight_brake, Braking       , to_braking      , NULL  >
-	    Row < Flight        , command     , Braking       , to_braking      , NULL  >
-	    Row < Braking       , command     , SafeMode      , to_safe_mode    , NULL  >
-		
-        > {};
 	//let's define a submachine! //let's not
     typedef msm::back::state_machine<pod_> pod;
+    static char const* const state_names[] = { "SafeMode", "FunctionalTest", "Flight", "Braking"};
 
-    static char const* const state_names[] = { "Safe", "init", "FunctA", "functB", "functC", "functD", "Loading", "Flight Accel" , "Flight Coast", "Flight Brake"};
     void pstate(pod const& p)
     {
         std::cout << " -> " << state_names[p.current_state()[0]] << std::endl;
     }
+	void reset_sensors(){
+		sensor_mutex.lock();
+		sen->reset_tape_count();
+		//TODO reset acceleration
+		sensor_mutex.unlock();
+	}
 
     void state_machine_loop(void)
     {        
@@ -242,8 +263,10 @@ namespace  // Concrete FSM implementation
                         act->on_sta();
                         smp = status_message_ptr(new status_message(STATUS_CONTROL,"S1"));
                         //motor_levitation->on();
-                    }
-                } else if(cp->command_type == SAFEMODE) {
+                    }	
+				} else if(cp->command_type == RESET_SENSORS) {
+					reset_sensors();	
+                } else if(cp->command_type == SAFE_MODE) {
                     act->low_lev();
                     act->low_sta();
                     act->off_sta();
@@ -251,7 +274,7 @@ namespace  // Concrete FSM implementation
 
                     smp = status_message_ptr(new status_message(STATUS_CONTROL,"S0"));
                     smp = status_message_ptr(new status_message(STATUS_CONTROL,"L0"));
-                } else if(cp->command_type == BRAKE) {
+                } else if(cp->command_type == BRAKING) {
                     int val = cp->command_value;
                     if(val==0)
                         act->stop_brake();
@@ -276,6 +299,7 @@ namespace  // Concrete FSM implementation
         p.stop();
     }
 
+	
 }
 
 
@@ -298,9 +322,7 @@ void network_connect(void){
 }
 
 int main()
-{
-    
-    
+{    
     //Initialize the sensors
     sen = new sensor(&tmp_status_buff);
     //Initialize the active controls 

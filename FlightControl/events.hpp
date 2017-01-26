@@ -14,6 +14,8 @@ enum IncomingCommandEnum
 	STA_MOTOR=5,
 	ARM_LEV_MOTOR=6,
 	ARM_STA_MOTOR=7,
+	RESET_SENSORS=8
+
 	
 };
 /*

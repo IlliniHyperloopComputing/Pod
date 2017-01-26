@@ -35,6 +35,7 @@ class sensor{
         std::atomic<double> *  get_atomic_rpm();
         std::atomic<double> *  get_atomic_tape_count();
 		std::atomic<double> *  get_distance();
+		void reset_tape_count();
     
 
     private:
@@ -85,7 +86,6 @@ class sensor{
         void update_rpm();
 		void update_tape_count();
 
-		void reset_tape_count();
         uint8_t tick;
 };
 
