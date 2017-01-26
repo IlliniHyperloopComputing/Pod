@@ -133,7 +133,7 @@ void codec::create_message(sensor * sen, status_queue * fsm_status_queue, std::s
     //clear string of any data
     buff.clear();
     //always add these
-    codec::append_to_data_buffer(buff,"XPO",sen->get_atomic_x(),1);
+    codec::append_to_data_buffer(buff,"XPO",sen->get_distance(),1);
     codec::append_to_data_buffer(buff,"ACC",sen->get_atomic_a(),3);
     codec::append_to_data_buffer(buff,"BRK",sen->get_atomic_brake() ,1);
 

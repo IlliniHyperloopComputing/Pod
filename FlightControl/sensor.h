@@ -25,7 +25,6 @@ class sensor{
         sensor(std::vector<status_message_ptr> * tmp_status_buff);
         ~sensor();
         void update();
-        std::atomic<double> *  get_atomic_x();
         std::atomic<double> *  get_atomic_z();
         std::atomic<double> *  get_atomic_lev();
         std::atomic<double> *  get_atomic_v();
@@ -35,12 +34,11 @@ class sensor{
         std::atomic<double> *  get_atomic_temps();
         std::atomic<double> *  get_atomic_rpm();
         std::atomic<double> *  get_atomic_tape_count();
-		std::atomic<double> * get_distances();
+		std::atomic<double> *  get_distance();
     
 
     private:
 
-        std::atomic<double>  atomic_x;
         std::atomic<double>  atomic_z;
         std::atomic<double> * atomic_lev;
         std::atomic<double> * atomic_v;
@@ -49,8 +47,8 @@ class sensor{
         std::atomic<double>  atomic_brake_pressure;
         std::atomic<double> * atomic_temps;
         std::atomic<double> * atomic_rpm;
-        std::atomic<double> * atomic_tape_count;
-		std::atomic<double> * distances;
+        std::atomic<double>  atomic_tape_count;
+		std::atomic<double>  distance;
 
 		bool remain_1000;
 		bool remain_500;
@@ -66,7 +64,6 @@ class sensor{
         ADS1115* i2c_a_adc; 
         int  open_i2c(int address);
 
-        int  init_x();
         int  init_z();
         int  init_lev();
         int  init_v();
@@ -76,10 +73,8 @@ class sensor{
         int  init_temps();
         int  init_rpm();
         int  init_tape_count();
-		int  init_distances();
         std::vector<status_message_ptr> * tmp_status_buff;
 
-        void update_x();
         void update_z();
         void update_lev();
         void update_v();
@@ -89,6 +84,8 @@ class sensor{
         void update_temp();
         void update_rpm();
 		void update_tape_count();
+
+		void reset_tape_count();
         uint8_t tick;
 };
 
