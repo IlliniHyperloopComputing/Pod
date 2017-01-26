@@ -12,7 +12,8 @@
  * Default mode is singleshot
  * @param address
  */
-ADS1115::ADS1115(uint8_t fileDescriptor) {
+ADS1115::ADS1115(uint8_t fileDescriptor,int address) {
+    this->address = address;
     this->fileDescriptor = fileDescriptor;
     memset(&config, 0, sizeof(config));
     setGain(ADS1115_PGA_4P096);
@@ -73,7 +74,7 @@ int16_t ADS1115::getConversion() {
             int16_t config_data = i2c_smbus_read_word_data(fileDescriptor,ADS1115_RA_CONFIG);
             word.w = static_cast<uint16_t>(config_data);
 			if (config_data < 0)
-                fprintf(stderr, "Error while reading config\n"); 
+                fprintf(stderr, "Error while reading config, address %x\n",address); 
         } 
     } 
     int16_t config_data = i2c_smbus_read_word_data(fileDescriptor, ADS1115_RA_CONVERSION);

@@ -11,11 +11,9 @@ sensor::sensor(std::vector<status_message_ptr> * tmp_status_buff){
     printf("Entering Sensor init\n");
 
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_x(),"Init x")));
-    tmp_status_buff->push_back(status_message_ptr(new status_message(init_z(),"Init z")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_lev(),"Init lev")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_v(),"Init v")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_a(),"Init a")));
-    tmp_status_buff->push_back(status_message_ptr(new status_message(init_att(),"Init att")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_brake_pressure(),"Init Brake pressure")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_temps(),"Init Temps")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_rpm(),"Init rpm")));
@@ -33,8 +31,6 @@ sensor::~sensor(){
         delete[] atomic_v;
     if(atomic_a != NULL)
         delete[] atomic_a;
-    if(atomic_att != NULL)
-        delete[] atomic_att;
     if(atomic_temps != NULL)
         delete[] atomic_temps;
     if(atomic_rpm != NULL)
@@ -44,36 +40,37 @@ sensor::~sensor(){
 
     if(i2c_brake_adc != NULL)
         delete i2c_brake_adc;
+    if(i2c_a_adc!= NULL)
+        delete i2c_a_adc;
     close(i2c_brake);
     close(i2c_thermo);
     close(i2c_rpm);
     close(i2c_tape);
+    close(i2c_a);
 }
 
 //
 void sensor::update(){
     //always update
-//    update_x();
-//    update_a();
-//    update_brake_pressure();
+      update_x();
+      //update_a();
+      update_brake_pressure();
 
     switch(tick){
         case 1:
 //            update_v();
-//            update_z();
             break;
         case 2:
  //           update_lev();
             //update_esc();
-           // update_temp();
+            update_temp();
             update_rpm();
 			update_tape_count();
             
-//            update_att();
             break;
         case 3:
 //            update_v();
-            //update_tot();
+              //update_tot();
             break;
         default:
             break;
@@ -87,9 +84,6 @@ void sensor::update(){
 std::atomic<double> *  sensor::get_atomic_x(){
     return &atomic_x;
 }
-std::atomic<double> *  sensor::get_atomic_z(){
-    return &atomic_z;
-}
 std::atomic<double> *  sensor::get_atomic_lev(){
     return atomic_lev;
 }
@@ -98,9 +92,6 @@ std::atomic<double> *  sensor::get_atomic_v(){
 }
 std::atomic<double> *  sensor::get_atomic_a(){
     return atomic_a;
-}
-std::atomic<double> *  sensor::get_atomic_att(){
-    return atomic_att;
 }
 std::atomic<double> *  sensor::get_atomic_brake(){
     return &atomic_brake_pressure;
@@ -127,12 +118,8 @@ int sensor::init_x(){
     atomic_x.store(1);
     return 0;
 }
-int sensor::init_z(){
-    atomic_z.store(1);
-    return 0;
-}
 int sensor::init_lev(){
-    atomic_lev = new std::atomic<double>[2];
+    atomic_lev = new std::atomic<double>[3];
     return 0;
 }
 int sensor::init_v(){
@@ -141,16 +128,20 @@ int sensor::init_v(){
 }
 int sensor::init_a(){
     atomic_a   = new std::atomic<double>[3];
-    return 0;
-}
-int sensor::init_att(){
-    atomic_att = new std::atomic<double>[3];
+    i2c_a = open_i2c(0x4a);
+    if(i2c_a<0) return -1;//return if error
+    i2c_a_adc = new ADS1115(i2c_a,0x4a);
+    i2c_a_adc->setRate(ADS1115_RATE_475); //RATE 475 SPS
+	i2c_a_adc->setGain(ADS1115_PGA_6P144);//GAIN of 6.144
+	i2c_a_adc->setMultiplexer(ADS1115_MUX_P0_NG);//Pin 0
+	i2c_a_adc->setMode(ADS1115_MODE_SINGLESHOT);//Mode SingleShot
+    atomic_brake_pressure.store(0);
     return 0;
 }
 int sensor::init_brake_pressure(){
     i2c_brake = open_i2c(0x48);
     if(i2c_brake<0) return -1;//return if error
-    i2c_brake_adc = new ADS1115(i2c_brake);
+    i2c_brake_adc = new ADS1115(i2c_brake,0x48);
     i2c_brake_adc->setRate(ADS1115_RATE_475); //RATE 475 SPS
 	i2c_brake_adc->setGain(ADS1115_PGA_6P144);//GAIN of 6.144
 	i2c_brake_adc->setMultiplexer(ADS1115_MUX_P0_NG);//Pin 0
@@ -165,7 +156,7 @@ int sensor::init_temps(){
     return 0;
 }
 int sensor::init_rpm(){
-    atomic_rpm = new std::atomic<double>[4];
+    atomic_rpm = new std::atomic<double>[6];
     i2c_rpm = open_i2c(0x16);
     if(i2c_rpm<0) return -1;
     return 0;
@@ -196,12 +187,10 @@ int sensor::init_distances(){
 void sensor::update_x(){
     //atomic_x.store(atomic_x.load()+1);
 }
-void sensor::update_z(){
-    atomic_z.store(1);
-}
 void sensor::update_lev(){
     atomic_lev[0].store(1);
     atomic_lev[1].store(2);
+    atomic_lev[2].store(3);
 }
 void sensor::update_v(){
     atomic_v[0].store(1);
@@ -209,22 +198,25 @@ void sensor::update_v(){
     atomic_v[2].store(5);
 }
 void sensor::update_a(){
-    atomic_a[0].store(1);
-    atomic_a[1].store(2);
-    atomic_a[2].store(5);
-}
-void sensor::update_att(){
-    atomic_att[0].store(1);
-    atomic_att[1].store(2);
-    atomic_att[2].store(5);
+	i2c_a_adc->setMultiplexer(ADS1115_MUX_P0_NG);
+    double x = i2c_a_adc->getMilliVolts();
+	i2c_a_adc->setMultiplexer(ADS1115_MUX_P1_NG);
+	x = (x + i2c_a_adc->getMilliVolts())/2.0;
+	i2c_a_adc->setMultiplexer(ADS1115_MUX_P2_NG);
+    double y = i2c_a_adc->getMilliVolts();
+	i2c_a_adc->setMultiplexer(ADS1115_MUX_P3_NG);
+    double z = i2c_a_adc->getMilliVolts();
+    atomic_a[0].store(x);
+    atomic_a[1].store(y);
+    atomic_a[2].store(z);
 }
 void sensor::update_brake_pressure(){ 
-    double millivolts = i2c_brake_adc->getMilliVolts();
+    double millivolts = 1;//i2c_brake_adc->getMilliVolts();
     //TODO: math that turns millivolts to pressure
     atomic_brake_pressure.store(millivolts);
 }
 void sensor::update_rpm(){
-    for(int i = 0; i < 4; i++){
+    for(int i = 0; i < 6; i++){
         int val = 0;
         i2c_smbus_write_byte(i2c_rpm,i);
         val = i2c_smbus_read_word_data(i2c_rpm,i);
@@ -249,8 +241,7 @@ void sensor::update_tape_count(){
         i2c_smbus_write_byte(i2c_tape,i);
         val = i2c_smbus_read_word_data(i2c_tape,i);
 		double oldCount = atomic_tape_count[i].load();
-       	atomic_tape_count[i].store(val);
-
+       	atomic_tape_count[i].store(val); 
 		time_t last = last_times[i];
 		time_t now = std::chrono::high_resolution_clock::now();
 		auto delta = now - last;

@@ -539,7 +539,6 @@ namespace  // Concrete FSM implementation
                 if(cp->command_type == LEV_MOTOR){
                     //Set the motor
                     act->set_lev(cp->command_value);
-
                     //Send confermation of action
                     char tmp[5];
                     sprintf(tmp,"%4d",cp->command_value);

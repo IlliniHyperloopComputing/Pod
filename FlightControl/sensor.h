@@ -62,6 +62,8 @@ class sensor{
         int  i2c_thermo;
         int  i2c_rpm;
 		int  i2c_tape;
+		int  i2c_a;
+        ADS1115* i2c_a_adc; 
         int  open_i2c(int address);
 
         int  init_x();

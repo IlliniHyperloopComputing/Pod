@@ -92,7 +92,7 @@
 
 class ADS1115 {
     public:
-        ADS1115(uint8_t file_descriptor);
+        ADS1115(uint8_t file_descriptor,int address);
         ~ADS1115();
 
         bool testConnection();
@@ -131,6 +131,7 @@ class ADS1115 {
         void showConfigRegister();
 
         uint8_t fileDescriptor;
+        int address;
 
         struct configRegister {
             uint16_t status;

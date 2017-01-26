@@ -36,6 +36,10 @@ command_ptr codec::decode_input(const std::string & x){
              int value = stoi(x.substr(3));
              ep = command_ptr(new command(ARM_LEV_MOTOR, value)); 
         }
+        else if(state == "ARS"){//arm sta
+             int value = stoi(x.substr(3));
+             ep = command_ptr(new command(ARM_STA_MOTOR, value)); 
+        }
         else if(state == "OFF"){
             ep = command_ptr(new command(OFF));
         }
@@ -129,15 +133,14 @@ void codec::create_message(sensor * sen, status_queue * fsm_status_queue, std::s
     //clear string of any data
     buff.clear();
     //always add these
-    //codec::append_to_data_buffer(buff,"XPO",sen->get_atomic_x(),1);
-    //codec::append_to_data_buffer(buff,"ACC",sen->get_atomic_a(),3);
-    //codec::append_to_data_buffer(buff,"BRK",sen->get_atomic_brake() ,1);
+    codec::append_to_data_buffer(buff,"XPO",sen->get_atomic_x(),1);
+    codec::append_to_data_buffer(buff,"ACC",sen->get_atomic_a(),3);
+    codec::append_to_data_buffer(buff,"BRK",sen->get_atomic_brake() ,1);
 
-    //codec::append_to_data_buffer(buff,"VEL",sen->get_atomic_v(),3);
-    //codec::append_to_data_buffer(buff,"HOF",sen->get_atomic_z(),1);
-    //codec::append_to_data_buffer(buff,"LVH",sen->get_atomic_lev(),2);
-    //codec::append_to_data_buffer(buff,"TMP",sen->get_atomic_temps(), 8);
-    codec::append_to_data_buffer(buff,"RPM",sen->get_atomic_rpm(), 4);
+    codec::append_to_data_buffer(buff,"VEL",sen->get_atomic_v(),3);
+    codec::append_to_data_buffer(buff,"LVH",sen->get_atomic_lev(),3);
+    codec::append_to_data_buffer(buff,"TMP",sen->get_atomic_temps(), 8);
+    codec::append_to_data_buffer(buff,"RPM",sen->get_atomic_rpm(), 6);
 
     status_message_ptr smp;
     fsm_status_queue->pop(smp);
