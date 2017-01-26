@@ -7,23 +7,14 @@ command_ptr codec::decode_input(const std::string & x){
         //std::cout << "Command string = " << x << std::endl; 
         if(state == "SMD")
              ep = command_ptr(new command(SAFE_MODE));
-        else if(state == "ISN")
-             ep = command_ptr(new command(INIT_SENSORS));
-        else if(state == "EMB")
-             ep = command_ptr(new command(E_BRAKE));
+        else if(state == "BRK")
+             ep = command_ptr(new command(BRAKING));
         else if(state == "FTA")
-             ep = command_ptr(new command(FUNCT_A));
-        else if(state == "FTB")
-             ep = command_ptr(new command(FUNCT_B));
-        else if(state == "FTC")
-             ep = command_ptr(new command(FUNCT_C));
-        else if(state == "FTD")
-             ep = command_ptr(new command(FUNCT_D));
-        else if(state == "LDG")
-             ep = command_ptr(new command(LOADING));
-        else if(state == "FA1")
-             ep = command_ptr(new command(FLIGHT_A));
-        
+             ep = command_ptr(new command(FUNCTIONAL_TEST));
+        else if(state == "FLT")
+             ep = command_ptr(new command(FLIGHT));
+		else if(state == "RST")
+			 ep = command_ptr(new command(RESET_SENSORS));
         else if(state == "LEV"){
              int value = stoi(x.substr(3));
              ep = command_ptr(new command(LEV_MOTOR, value));
@@ -40,16 +31,11 @@ command_ptr codec::decode_input(const std::string & x){
              int value = stoi(x.substr(3));
              ep = command_ptr(new command(ARM_STA_MOTOR, value)); 
         }
-        else if(state == "OFF"){
-            ep = command_ptr(new command(OFF));
-        }
-        else if(state == "BRK"){//Brake
-             int value = stoi(x.substr(3));
-            ep = command_ptr(new command(BRAKE, value));
-        }
         else {
+			printf("Unregistered command");
             ep = command_ptr(new command(SAFE_MODE));
         }
+
     return ep;
 }
 
@@ -133,7 +119,7 @@ void codec::create_message(sensor * sen, status_queue * fsm_status_queue, std::s
     //clear string of any data
     buff.clear();
     //always add these
-    codec::append_to_data_buffer(buff,"XPO",sen->get_atomic_x(),1);
+    codec::append_to_data_buffer(buff,"XPO",sen->get_distance(),1);
     codec::append_to_data_buffer(buff,"ACC",sen->get_atomic_a(),3);
     codec::append_to_data_buffer(buff,"BRK",sen->get_atomic_brake() ,1);
 
@@ -151,24 +137,5 @@ void codec::create_message(sensor * sen, status_queue * fsm_status_queue, std::s
 
     
 
-    //for now, lets just send everything. We will see how that works
-    /*switch(tick){
-        case 3:
-            codec::append_to_data_buffer(buff,"VEL",get_v(),3);
-            codec::append_to_data_buffer(buff,"HOF",get_z(),1);
-            break;
-        case 1:
-            codec::append_to_data_buffer(buff,"LVH",get_lev(),2);
-            codec::append_to_data_buffer(buff,"ESC",get_esc(),4);
-            codec::append_to_data_buffer(buff,"ATT",get_att(),3);
-            break;
-        case 2:
-            codec::append_to_data_buffer(buff,"VEL",get_v(),3);
-            codec::append_to_data_buffer(buff,"TOT",get_tot(),4);
-            break;
-        default:
-            break;
-    }
-    */
 
 }

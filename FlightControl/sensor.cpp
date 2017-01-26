@@ -10,7 +10,6 @@ sensor::sensor(std::vector<status_message_ptr> * tmp_status_buff){
     tmp_status_buff->push_back(status_message_ptr(new status_message(STATUS_MESSAGE,"Entering Sensor Init")));
     printf("Entering Sensor init\n");
 
-    tmp_status_buff->push_back(status_message_ptr(new status_message(init_x(),"Init x")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_lev(),"Init lev")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_v(),"Init v")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_a(),"Init a")));
@@ -18,7 +17,6 @@ sensor::sensor(std::vector<status_message_ptr> * tmp_status_buff){
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_temps(),"Init Temps")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_rpm(),"Init rpm")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_tape_count(),"Init tape count")));
-	tmp_status_buff->push_back(status_message_ptr(new status_message(init_distances(),"Init distances")));
 
     tmp_status_buff->push_back(status_message_ptr(new status_message(STATUS_MESSAGE,"Exiting Sensor Init")));
     printf("Exiting Sensor init\n");
@@ -35,8 +33,6 @@ sensor::~sensor(){
         delete[] atomic_temps;
     if(atomic_rpm != NULL)
         delete[] atomic_rpm;
-    if(atomic_tape_count != NULL)
-        delete[] atomic_tape_count;
 
     if(i2c_brake_adc != NULL)
         delete i2c_brake_adc;
@@ -52,7 +48,6 @@ sensor::~sensor(){
 //
 void sensor::update(){
     //always update
-      update_x();
       //update_a();
       update_brake_pressure();
 
@@ -81,9 +76,6 @@ void sensor::update(){
 
 ///////////
 //Get 
-std::atomic<double> *  sensor::get_atomic_x(){
-    return &atomic_x;
-}
 std::atomic<double> *  sensor::get_atomic_lev(){
     return atomic_lev;
 }
@@ -104,20 +96,16 @@ std::atomic<double> * sensor::get_atomic_temps(){
 }
 
 std::atomic<double> * sensor::get_atomic_tape_count(){
-	return atomic_tape_count;
+	return &atomic_tape_count;
 }
 
-std::atomic<double> * sensor::get_distances() {
-	return distances;
+std::atomic<double> * sensor::get_distance() {
+	return &distance;
 }
 
 
 ///////////
 //Init
-int sensor::init_x(){
-    atomic_x.store(1);
-    return 0;
-}
 int sensor::init_lev(){
     atomic_lev = new std::atomic<double>[3];
     return 0;
@@ -163,30 +151,14 @@ int sensor::init_rpm(){
 }
 
 int sensor::init_tape_count(){
-	atomic_tape_count = new std::atomic<double>[4];
 	i2c_tape = open_i2c(0x17);
     if(i2c_tape<0) return -1;
-    return 0;
-}
-int sensor::init_distances(){
-	distances = new std::atomic<double>[4];
-    for(int i = 0; i < 4; i++){
-        distances[i] = 0;
-        last_times[i] = std::chrono::high_resolution_clock::now();
-
-    }
-	remain_1000 = false;
-	remain_500 = false;
-
     return 0;
 }
 
 
 ////////////
 //Update
-void sensor::update_x(){
-    //atomic_x.store(atomic_x.load()+1);
-}
 void sensor::update_lev(){
     atomic_lev[0].store(1);
     atomic_lev[1].store(2);
@@ -266,6 +238,16 @@ void sensor::update_tape_count(){
 
 	}
     */
+
+	int val = i2c_smbus_read_word_data(i2c_tape, 0);
+	atomic_tape_count.store(val);
+	distance.store(val * 100);
+		
+}
+
+void sensor::reset_tape_count(){
+	i2c_smbus_write_byte(i2c_tape, 0xff);
+	//writes 0xff, which the arduino receives 
 }
 
 int sensor::open_i2c(int address){
