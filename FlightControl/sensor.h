@@ -15,6 +15,7 @@
 #include <boost/format.hpp>
 #include <boost/thread/thread.hpp>
 #include <boost/lockfree/spsc_queue.hpp>
+#include "boost/date_time/posix_time/posix_time.hpp"
 #include "ADS1115.h"
 #include "status.h"
 
@@ -25,6 +26,7 @@ class sensor{
         sensor(std::vector<status_message_ptr> * tmp_status_buff);
         ~sensor();
         void update();
+		std::atomic<double> *  get_brake_pressure();
         std::atomic<double> *  get_atomic_z();
         std::atomic<double> *  get_atomic_lev();
         std::atomic<double> *  get_atomic_v();
@@ -42,7 +44,7 @@ class sensor{
 
         std::atomic<double>  atomic_z;
         std::atomic<double> * atomic_lev;
-        std::atomic<double> * atomic_v;
+        std::atomic<double>  atomic_v;
         std::atomic<double> * atomic_a;
         std::atomic<double> * atomic_att;
         std::atomic<double>  atomic_brake_pressure;
@@ -56,6 +58,10 @@ class sensor{
 		time_t  last_times[4];
 		double distance_at_1000;
 
+		long delta;
+		
+	
+
         int  i2c_brake;
         ADS1115* i2c_brake_adc; 
         int  i2c_thermo;
@@ -67,7 +73,6 @@ class sensor{
 
         int  init_z();
         int  init_lev();
-        int  init_v();
         int  init_a();
         int  init_att();
         int  init_brake_pressure();

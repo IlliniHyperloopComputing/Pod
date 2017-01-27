@@ -1,7 +1,6 @@
 #ifndef FSM_EVENTS
 #define FSM_EVENTS
 
-struct flight_brake {};
 
 // A "complicated" event type that carries some data.
 enum IncomingCommandEnum
@@ -18,17 +17,8 @@ enum IncomingCommandEnum
 
 	
 };
-/*
-struct user_select
-{
-    user_sel`ect(StateSelectEnum state)
-        : state_select(state)
-    {}
-        
-    StateSelectEnum state_select;
 
-};*/
-
+struct flight_brake {};
 struct command
 {
     command(IncomingCommandEnum c, int val)
