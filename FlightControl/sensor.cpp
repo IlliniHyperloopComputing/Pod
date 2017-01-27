@@ -13,7 +13,7 @@ sensor::sensor(std::vector<status_message_ptr> * tmp_status_buff){
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_lev(),"Init lev")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_v(),"Init v")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_a(),"Init a")));
-    tmp_status_buff->push_back(status_message_ptr(new status_message(init_brake_pressure(),"Init Brake pressure")));
+    //tmp_status_buff->push_back(status_message_ptr(new status_message(init_brake_pressure(),"Init Brake pressure")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_temps(),"Init Temps")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_rpm(),"Init rpm")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_tape_count(),"Init tape count")));
@@ -48,8 +48,8 @@ sensor::~sensor(){
 //
 void sensor::update(){
     //always update
-      //update_a();
-      update_brake_pressure();
+      update_a();
+      //update_brake_pressure();
 
     switch(tick){
         case 1:
@@ -118,11 +118,15 @@ int sensor::init_a(){
     atomic_a   = new std::atomic<double>[3];
     i2c_a = open_i2c(0x48);
     if(i2c_a<0) return -1;//return if error
-    i2c_a_adc = new ADS1115(i2c_a,0x4a);
-    i2c_a_adc->setRate(ADS1115_RATE_475); //RATE 475 SPS
-	i2c_a_adc->setGain(ADS1115_PGA_6P144);//GAIN of 6.144
-	i2c_a_adc->setMultiplexer(ADS1115_MUX_P0_NG);//Pin 0
-	i2c_a_adc->setMode(ADS1115_MODE_SINGLESHOT);//Mode SingleShot
+    i2c_a_adc = new ADS1115(i2c_a,0x48);
+    if(i2c_a_adc->testConnection()==0){
+        printf("Something is wrong with init a\n");
+    }
+    
+    //i2c_a_adc->setRate(ADS1115_RATE_475); //RATE 475 SPS
+	//i2c_a_adc->setGain(ADS1115_PGA_6P144);//GAIN of 6.144
+	//i2c_a_adc->setMultiplexer(ADS1115_MUX_P0_NG);//Pin 0
+	//i2c_a_adc->setMode(ADS1115_MODE_SINGLESHOT);//Mode SingleShot
     atomic_brake_pressure.store(0);
     return 0;
 }
@@ -130,10 +134,10 @@ int sensor::init_brake_pressure(){
     i2c_brake = open_i2c(0x48);
     if(i2c_brake<0) return -1;//return if error
     i2c_brake_adc = new ADS1115(i2c_brake,0x48);
-    i2c_brake_adc->setRate(ADS1115_RATE_475); //RATE 475 SPS
-	i2c_brake_adc->setGain(ADS1115_PGA_6P144);//GAIN of 6.144
-	i2c_brake_adc->setMultiplexer(ADS1115_MUX_P0_NG);//Pin 0
-	i2c_brake_adc->setMode(ADS1115_MODE_SINGLESHOT);//Mode SingleShot
+    //i2c_brake_adc->setRate(ADS1115_RATE_475); //RATE 475 SPS
+	//i2c_brake_adc->setGain(ADS1115_PGA_6P144);//GAIN of 6.144
+	//i2c_brake_adc->setMultiplexer(ADS1115_MUX_P0_NG);//Pin 0
+	//i2c_brake_adc->setMode(ADS1115_MODE_SINGLESHOT);//Mode SingleShot
     atomic_brake_pressure.store(0);
     return 0;
 }
@@ -172,6 +176,7 @@ void sensor::update_v(){
 void sensor::update_a(){
 	i2c_a_adc->setMultiplexer(ADS1115_MUX_P0_NG);
     double x = i2c_a_adc->getMilliVolts();
+    printf("milii x: %f\n", x);
 	i2c_a_adc->setMultiplexer(ADS1115_MUX_P1_NG);
 	x = (x + i2c_a_adc->getMilliVolts())/2.0;
 	i2c_a_adc->setMultiplexer(ADS1115_MUX_P2_NG);

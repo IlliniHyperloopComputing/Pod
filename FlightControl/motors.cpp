@@ -20,7 +20,7 @@ void motor_control::on(){
 
 void motor_control::off(){
 	power.setValue( BlackLib::low );
-    std::cout<<"value of power pin"<<power.getValue()<<std::endl;    
+    //std::cout<<"value of power pin"<<power.getValue()<<std::endl;    
 }
 
 void motor_control::set_low(){
