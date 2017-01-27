@@ -22,10 +22,10 @@ void setup(void)
   //                                                                ADS1015  ADS1115
   //                                                                -------  -------
   // ads.setGain(GAIN_TWOTHIRDS);  // 2/3x gain +/- 6.144V  1 bit = 3mV      0.1875mV (default)
-  ads.setGain(GAIN_TWOTHIRDS);        // 1x gain   +/- 4.096V  1 bit = 2mV      0.125mV
-   ads1.setGain(GAIN_TWOTHIRDS); 
-   ads2.setGain(GAIN_TWOTHIRDS);
-   ads3.setGain(GAIN_TWOTHIRDS);
+  ads.setGain(GAIN_ONE);        // 1x gain   +/- 4.096V  1 bit = 2mV      0.125mV
+   ads1.setGain(GAIN_ONE); 
+   ads2.setGain(GAIN_ONE);
+   ads3.setGain(GAIN_ONE);
   // ads.setGain(GAIN_TWO);        // 2x gain   +/- 2.048V  1 bit = 1mV      0.0625mV
   // ads.setGain(GAIN_FOUR);       // 4x gain   +/- 1.024V  1 bit = 0.5mV    0.03125mV
   // ads.setGain(GAIN_EIGHT);      // 8x gain   +/- 0.512V  1 bit = 0.25mV   0.015625mV
@@ -90,6 +90,7 @@ void loop(void)
   adc3[2] = ads1.readADC_SingleEnded(2);
   adc3[3] = ads1.readADC_SingleEnded(3);
 
+  //Serial.println(adc0[0]);
+
   
-  //delay(100);
 }
