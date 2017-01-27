@@ -44,7 +44,7 @@ class sensor{
         std::atomic<double>  atomic_z;
         std::atomic<double> * atomic_lev;
         std::atomic<double>  atomic_v;
-        std::atomic<double> * atomic_a;
+        std::atomic<double>  atomic_a[3];
         std::atomic<double> * atomic_att;
         std::atomic<double>  atomic_brake_pressure;
         std::atomic<double> * atomic_temps;

@@ -19,12 +19,14 @@ tcp::socket& tcp_connection::socket(){
 void tcp_connection::start(){
     //create message here-- must be class variable/persist
     codec::create_message(sensor_,fsm_status_queue_,message_);//create message to send
+    std::cout<<"inside start tcp con"<<std::endl;
     
     //begin writing data
     boost::asio::async_write(socket_, boost::asio::buffer(message_),
             boost::bind(&tcp_connection::handle_write, shared_from_this(),
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));
+    std::cout<<"just wrote some data"<<std::endl;
 
     //Wait for commands
     boost::asio::async_read(socket_,read_buffer_.prepare(COMMAND_SIZE),
@@ -32,6 +34,7 @@ void tcp_connection::start(){
             boost::asio::placeholders::error,
             boost::asio::placeholders::bytes_transferred));
     read_buffer_.commit(COMMAND_SIZE);
+    std::cout<<"just wrote read some data"<<std::endl;
 
 }
 
@@ -130,6 +133,7 @@ void tcp_server::handle_accept(tcp_connection::pointer new_connection, const boo
         std::cout<<"New Connection:"<<std::endl;
         boost::asio::ip::tcp::no_delay option(true);
         new_connection->socket().set_option(option);
+        std::cout<<"About to start new connection"<<std::endl;
         new_connection->start();
     }
     start_accept();//optionally look for another connection

@@ -3,7 +3,7 @@
 #include "codec.h"
 
 
-#define MILLIVOLT_SENSITIVITY 300
+#define MILLIVOLT_SENSITIVITY 2434.0
 
 
 sensor::sensor(std::vector<status_message_ptr> * tmp_status_buff){
@@ -29,8 +29,6 @@ sensor::sensor(std::vector<status_message_ptr> * tmp_status_buff){
 sensor::~sensor(){
     if(atomic_lev != NULL)
         delete[] atomic_lev;
-    if(atomic_a != NULL)
-        delete[] atomic_a;
     if(atomic_temps != NULL)
         delete[] atomic_temps;
     if(atomic_rpm != NULL)
@@ -118,26 +116,31 @@ int sensor::init_v(){
     return 0;
 }*/
 void sensor::recalibrate_accelerometer(){
-
-	int16_t a_total = 0;
-	int16_t b_total = 0;
-	int16_t c_total = 0;
-	int16_t totals[3] = { 0, 0, 0};	
+	long totals[3] = {0, 0, 0};	
+    int16_t counts[3] = {1, 1, 1};
 	for(int i = 0; i < 100; i++){
-		for(int j = 0; j < 4; j++){
+		for(int j = 0; j < 3; j++){
 				
 			i2c_smbus_write_byte(i2c_a,j);	
 			int16_t x = i2c_smbus_read_word_data(i2c_a,0);
-			totals[j] += x;
+       //     std::cout << "x = " << x << ", totals[j] = " << totals[j]  << std::endl;
+            if(x > 7000 && x < 16000){
+			    totals[j] += x;
+                counts[j]++;
+            }
 		}
+        usleep(10000);
 	}
-	for(int i = 0; i < 4; i++){
-		starting_millivolts[i] = totals[i] / MILLIVOLT_SENSITIVITY;
+    //std::cout << "END CALIBRATION" << std::endl;
+	for(int i = 0; i < 3; i++){
+		starting_millivolts[i] = totals[i] / counts[i];
+        std::cout << starting_millivolts[i] << std::endl;
+        
 	}
 }
 
 int sensor::init_a(){
-    atomic_a  = new std::atomic<double>[3];
+    //atomic_a  = new std::atomic<double>[3];
     i2c_a = open_i2c(0x20);
     if(i2c_a<0) return -1;//return if error
 		
@@ -199,13 +202,17 @@ void sensor::update_v(){
 
 }
 void sensor::update_a(){
-	for(int i = 0; i < 4; i++){
+	for(int i = 0; i < 3; i++){
 	
     	i2c_smbus_write_byte(i2c_a,i);
 	
     	int16_t x = i2c_smbus_read_word_data(i2c_a,0);
-		int16_t g = (x - starting_millivolts[i]) / 300;
-    	atomic_a[i].store(x);
+        if(x > 7000 &&  x < 16000){
+            double g = (x - starting_millivolts[i]) / MILLIVOLT_SENSITIVITY;
+            atomic_a[i].store(g);
+
+            std::cout << "i = " << i << ", Starting millivolts[i] = " << starting_millivolts[i] << ", G = " << g << ", millivolts = "<<  x << std::endl;
+        }
 	}
 }
 void sensor::update_brake_pressure(){ 
