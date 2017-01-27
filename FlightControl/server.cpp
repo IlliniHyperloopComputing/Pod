@@ -1,15 +1,15 @@
 #include "server.h"
 typedef boost::shared_ptr<tcp_connection> pointer;
-typedef boost::shared_ptr<command> command_ptr;
-typedef boost::lockfree::spsc_queue<command_ptr, boost::lockfree::capacity<1024> > user_queue;
+//typedef boost::shared_ptr<command> command_ptr;
+//typedef boost::lockfree::spsc_queue<command_ptr, boost::lockfree::capacity<1024> > user_queue;
 #define COMMAND_SIZE 7
 
 ////////////////
 ////////////////
 ////////////////
 //tcp_connection
-pointer tcp_connection::create(boost::asio::io_service & io_service, user_queue * queue, sensor * sen){
-    return pointer(new tcp_connection(io_service, true, queue, sen));
+pointer tcp_connection::create(boost::asio::io_service & io_service, command_queue* queue, sensor * sen, status_queue * fsm_status_queue){
+    return pointer(new tcp_connection(io_service, true, queue, sen, fsm_status_queue));
 }
 
 tcp::socket& tcp_connection::socket(){
@@ -18,7 +18,7 @@ tcp::socket& tcp_connection::socket(){
 
 void tcp_connection::start(){
     //create message here-- must be class variable/persist
-    codec::create_message(sensor_,message_);//create message to send
+    codec::create_message(sensor_,fsm_status_queue_,message_);//create message to send
     
     //begin writing data
     boost::asio::async_write(socket_, boost::asio::buffer(message_),
@@ -35,8 +35,8 @@ void tcp_connection::start(){
 
 }
 
-tcp_connection::tcp_connection(boost::asio::io_service& io_service, bool no_delay, user_queue * queue, sensor * sen)
-            : socket_(io_service), no_delay_(no_delay), queue_(queue), sensor_(sen)
+tcp_connection::tcp_connection(boost::asio::io_service& io_service, bool no_delay, command_queue* queue, sensor * sen, status_queue * fsm_status_queue)
+            : socket_(io_service), no_delay_(no_delay), queue_(queue), sensor_(sen), fsm_status_queue_(fsm_status_queue)
 { 
 
 }
@@ -44,7 +44,7 @@ void tcp_connection::handle_write(const boost::system::error_code& error_message
 
     usleep(3000);
     if(socket_.is_open()){
-        codec::create_message(sensor_,message_);//create message to send
+        codec::create_message(sensor_,fsm_status_queue_,message_);//create message to send
 
         //send data
         boost::asio::async_write(socket_, boost::asio::buffer(message_),
@@ -115,7 +115,7 @@ tcp_server::~tcp_server()
 void tcp_server::start_accept()
 {
     tcp_connection::pointer new_connection = 
-        tcp_connection::create(acceptor_.get_io_service(),incoming_command_queue_, sensor_);
+        tcp_connection::create(acceptor_.get_io_service(),incoming_command_queue_, sensor_, fsm_status_queue_);
 
 
     acceptor_.async_accept(new_connection->socket(),
@@ -134,5 +134,4 @@ void tcp_server::handle_accept(tcp_connection::pointer new_connection, const boo
     }
     start_accept();//optionally look for another connection
 }
-
 
