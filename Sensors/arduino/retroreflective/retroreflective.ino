@@ -7,7 +7,7 @@ int pin = 12;
 int count = 0;
 int high = 0;
 long risingTime = 0;
-long delta = 0;
+int delta = 0;
 
 void setup() {
   // put your setup code here, to run once
@@ -34,8 +34,10 @@ void beagleTransmit() {
   //Serial.println("which");
   if(which == 0){
     Wire.write(count);
+    Wire.write(count >> 8);
   } else if (which == 1) {
     Wire.write(delta);
+    Wire.write(delta >> 8);
   }
   
   
@@ -45,6 +47,7 @@ void loop(){
   int value = digitalRead(pin);
   if(value == LOW && !high){
     //rising edge
+    
     delta = millis() - risingTime;
     risingTime = millis();
     high = 1;
@@ -53,12 +56,12 @@ void loop(){
     //could calculate deltas using risingTimes[i]
     count++;
     high = 0;
-
+/*
     //if(count % 50 == 0){
       Serial.print("Falling edge, count = ");
       Serial.println(count);
     //}
-
+*/
     
   }
 }
