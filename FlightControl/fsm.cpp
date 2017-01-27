@@ -85,12 +85,13 @@ void brake(int val) {
 	cout << "Braking" << endl;
 	if(val==0)
 		act->stop_brake();
-	if(val==1){
+	if(val==1 || val == 1111){
+
 		double brake_pressure = *sen->get_brake_pressure();
 		int counter = 0;
 		int total_time = 0;
-		const int A = 10000000;
-		while(brake_pressure <= 315){
+		const int A = 500000;
+		while(brake_pressure <= 315 && total_time <= A * 1.99){
 			act->forward_brake();
 			//1 second total
 			usleep(A/++counter);
@@ -101,7 +102,10 @@ void brake(int val) {
 	}
 	if(val==2)
 		act->backward_brake();
-	state = BRAKING_STATE;
+	state = BRAKING_STATE; 
+	status_message_ptr smp;
+	smp = status_message_ptr(new status_message(STATUS_STATE, state_names[state]));
+    fsm_status_queue.push(smp);
 }
 
 void reset_sensors(){
@@ -129,6 +133,7 @@ void state_machine_loop(void)
 			printf("Received command %d with value %d\n", cp->command_type, cp->command_value);
 
 			status_message_ptr smp;
+            
 			if(cp->command_type == LEV_MOTOR && (state == FUNCTIONAL_TEST_STATE || state == FLIGHT_STATE)){
 				//Set the motor
 				act->set_lev(cp->command_value);
@@ -175,8 +180,10 @@ void state_machine_loop(void)
 			} else if(cp->command_type == RESET_SENSORS) {
 				reset_sensors();	
 			} else if(cp->command_type == SAFE_MODE) {
-				if(state == FLIGHT_STATE) {
-					cout << "Brake before returning to safe mode, pod is in FLIGHT mode." << endl;
+				if(state == FLIGHT_STATE || state == SAFE_MODE_STATE) {
+                    string message = "Cannot return to safe mode"; 
+					cout << message << endl; 
+                    smp = status_message_ptr(new status_message(STATUS_ERROR, message));
 				} else {
 					cout << "Moving to safe_mode" << endl;
 					act->low_lev();
@@ -185,12 +192,17 @@ void state_machine_loop(void)
 					act->off_lev();
 
 					smp = status_message_ptr(new status_message(STATUS_CONTROL,"S0"));
+                    fsm_status_queue.push(smp); 
 					smp = status_message_ptr(new status_message(STATUS_CONTROL,"L0"));
+                    fsm_status_queue.push(smp);
 					state = SAFE_MODE_STATE;
+                    smp = status_message_ptr(new status_message(STATUS_STATE, state_names[state]));
 				}
 			} else if(cp->command_type == BRAKING) {
 				if(state != FLIGHT_STATE) {
-					cout << "Only brake from FLIGHT state, pod is in " << state_names[state] << " state." << endl;
+                    string message = "Only brake from FLIGHT state, pod is in " + state_names[state] + " state.";
+					cout << message << endl;
+                    smp = status_message_ptr(new status_message(STATUS_ERROR, message));
 				} else {
 					brake(cp->command_value);
 					char tmp[2];
@@ -200,19 +212,28 @@ void state_machine_loop(void)
 				}
 			 } else if(cp->command_type == FUNCTIONAL_TEST) {	
 				if(state != SAFE_MODE_STATE) {
-					cout << "Return to safe_mode before accessing functional_test, pod is in " << state_names[state] << " state." << endl;
+                    string message = "Return to safe_mode before starting functional_test, pod is in " +  state_names[state] +  " state.";
+					cout <<  message << endl;
+                    smp = status_message_ptr(new status_message(STATUS_ERROR, message));
 				} else {
 					cout << "Starting functional test" << endl;
 					state = FUNCTIONAL_TEST_STATE;
+					smp = status_message_ptr(new status_message(STATUS_STATE, state_names[state]));
+                    
 				}
 			} else if(cp->command_type == FLIGHT) {
 				if(state != FUNCTIONAL_TEST_STATE) {
-					cout << "Move to functional tests before flight" << endl;
+                    string message = "Move to functional tests before flight";
+					cout << message << endl;
+                    smp = status_message_ptr(new status_message(STATUS_ERROR, message));
 				} else {
+					cout << "Starting flight, motor control enabled" << endl;
 					state = FLIGHT_STATE;
+					smp = status_message_ptr(new status_message(STATUS_STATE, state_names[state]));
 				}
 			}
-		fsm_status_queue.push(smp);
+        if(smp != NULL)
+		    fsm_status_queue.push(smp);
 		
 		}
 	}

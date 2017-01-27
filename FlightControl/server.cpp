@@ -80,7 +80,7 @@ void tcp_connection::handle_read(const boost::system::error_code& error_message,
         if(errorcode){
             std::cout<<"socket.close error: "<<errorcode.message() <<std::endl;
         }
-        command_ptr c= command_ptr(new command(OFF));
+        command_ptr c= command_ptr(new command(DISCONNECT));
         queue_->push(c);
     }
 

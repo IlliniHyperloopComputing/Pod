@@ -176,18 +176,18 @@ void sensor::update_v(){
 	//request deltas
 	i2c_smbus_write_byte(i2c_tape, 1);
 	delta = i2c_smbus_read_word_data(i2c_tape, 0);
-	//delta is microseconds
+	//delta is milliseconds
 	double d = delta;
-	double velocity = 100.0 / d; //feet/microseconds
-	velocity *= velocity * 304800; //convert to meters/second
+	double velocity = 100.0 / d; //feet/milliseconds
+	velocity *= velocity * 304.8; //convert to meters/second
 	atomic_v.store(velocity);
 	
 
 }
 void sensor::update_a(){
     //i2c_smbus_write_byte(i2c_a,0);
-    int16_t x = i2c_smbus_read_byte_data(i2c_a,0);
-    printf("%d   the val",x);
+    int16_t x = i2c_smbus_read_word_data(i2c_a,0);
+    printf("%d   the val\n",x);
 //	i2c_a_adc->setMultiplexer(ADS1115_MUX_P0_NG);
 //    double x = i2c_a_adc->getMilliVolts();
 //    //printf("milii x: %f\n", x);

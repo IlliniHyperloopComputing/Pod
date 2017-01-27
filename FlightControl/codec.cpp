@@ -4,11 +4,9 @@ command_ptr codec::decode_input(const std::string & x){
     command_ptr ep;
         //commands of the form LEV1000, FA1
         std::string state = x.substr(0,3);
-        //std::cout << "Command string = " << x << std::endl; 
+        std::cout << "Command string = " << x << std::endl; 
         if(state == "SMD")
              ep = command_ptr(new command(SAFE_MODE));
-        else if(state == "BRK")
-             ep = command_ptr(new command(BRAKING));
         else if(state == "FTA")
              ep = command_ptr(new command(FUNCTIONAL_TEST));
         else if(state == "FLT")
@@ -18,6 +16,10 @@ command_ptr codec::decode_input(const std::string & x){
         else if(state == "LEV"){
              int value = stoi(x.substr(3));
              ep = command_ptr(new command(LEV_MOTOR, value));
+        }
+        else if(state == "BRK"){
+             int value = stoi(x.substr(3));
+             ep = command_ptr(new command(BRAKING, value));
         }
         else if(state == "STA"){
              int value = stoi(x.substr(3));

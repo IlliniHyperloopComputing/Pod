@@ -13,7 +13,8 @@ enum IncomingCommandEnum
 	STA_MOTOR=5,
 	ARM_LEV_MOTOR=6,
 	ARM_STA_MOTOR=7,
-	RESET_SENSORS=8
+	RESET_SENSORS=8,
+    DISCONNECT=9
 
 	
 };
@@ -28,13 +29,6 @@ struct command
 
     IncomingCommandEnum command_type;
     int command_value;
-};
-
-
-//submachine
-struct state_swap
-{
-
 };
 
 #endif
