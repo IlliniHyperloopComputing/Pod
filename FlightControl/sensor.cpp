@@ -11,7 +11,6 @@ sensor::sensor(std::vector<status_message_ptr> * tmp_status_buff){
     printf("Entering Sensor init\n");
 
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_lev(),"Init lev")));
-    tmp_status_buff->push_back(status_message_ptr(new status_message(init_v(),"Init v")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_a(),"Init a")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_brake_pressure(),"Init Brake pressure")));
     tmp_status_buff->push_back(status_message_ptr(new status_message(init_temps(),"Init Temps")));
@@ -25,8 +24,6 @@ sensor::sensor(std::vector<status_message_ptr> * tmp_status_buff){
 sensor::~sensor(){
     if(atomic_lev != NULL)
         delete[] atomic_lev;
-    if(atomic_v != NULL)
-        delete[] atomic_v;
     if(atomic_a != NULL)
         delete[] atomic_a;
     if(atomic_temps != NULL)
@@ -80,7 +77,7 @@ std::atomic<double> *  sensor::get_atomic_lev(){
     return atomic_lev;
 }
 std::atomic<double> *  sensor::get_atomic_v(){
-    return atomic_v;
+    return &atomic_v;
 }
 std::atomic<double> *  sensor::get_atomic_a(){
     return atomic_a;
@@ -93,6 +90,10 @@ std::atomic<double> *  sensor::get_atomic_rpm(){
 }
 std::atomic<double> * sensor::get_atomic_temps(){
     return atomic_temps;
+}
+
+std::atomic<double> * sensor::get_brake_pressure() {
+	return &atomic_brake_pressure
 }
 
 std::atomic<double> * sensor::get_atomic_tape_count(){
@@ -110,10 +111,11 @@ int sensor::init_lev(){
     atomic_lev = new std::atomic<double>[3];
     return 0;
 }
+/*
 int sensor::init_v(){
     atomic_v   = new std::atomic<double>[3];
     return 0;
-}
+}*/
 int sensor::init_a(){
     atomic_a   = new std::atomic<double>[3];
     i2c_a = open_i2c(0x48);
@@ -127,6 +129,7 @@ int sensor::init_a(){
     return 0;
 }
 int sensor::init_brake_pressure(){
+	//TODO give it a different address
     i2c_brake = open_i2c(0x48);
     if(i2c_brake<0) return -1;//return if error
     i2c_brake_adc = new ADS1115(i2c_brake,0x48);
@@ -160,14 +163,23 @@ int sensor::init_tape_count(){
 ////////////
 //Update
 void sensor::update_lev(){
+	//TODO Make it work
+
     atomic_lev[0].store(1);
     atomic_lev[1].store(2);
     atomic_lev[2].store(3);
 }
 void sensor::update_v(){
-    atomic_v[0].store(1);
-    atomic_v[1].store(3);
-    atomic_v[2].store(5);
+	//request deltas
+	i2c_smbus_write_byte(i2c_tape, 1);
+	delta = i2c_smbus_read_word_data(i2c_tape, 0);
+	//delta is microseconds
+	double d = delta;
+	double velocity = 100.0 / d; //feet/microseconds
+	velocity *= velocity * 304800; //convert to meters/second
+	atomic_v.store(velocity);
+	
+
 }
 void sensor::update_a(){
 	i2c_a_adc->setMultiplexer(ADS1115_MUX_P0_NG);
@@ -208,38 +220,12 @@ void sensor::update_temp(){
 }
 
 void sensor::update_tape_count(){
-	/*for(int i = 0; i < 1; i++){
-	    int val = 0;
-        i2c_smbus_write_byte(i2c_tape,i);
-        val = i2c_smbus_read_word_data(i2c_tape,i);
-		double oldCount = atomic_tape_count[i].load();
-       	atomic_tape_count[i].store(val); 
-		time_t last = last_times[i];
-		time_t now = std::chrono::high_resolution_clock::now();
-		auto delta = now - last;
-		auto max_delay = std::chrono::duration<long long int, std::ratio<1ll, 1000000000ll> >(5000);
-        std::cout << "Distances[" << i << "] = " << distances[i].load() <<"val: "<<val << " old_count: " << oldCount  << " delta: " << delta.count() << std::endl;
-		if(val > oldCount){
-            std::cout << "FOUND ONE MY GOD" << std::endl;
-            last_times[i] = now;
-            if(delta.count() > max_delay.count()){
-			    distances[i].store(distances[i].load() + 100);
-           
-		    } else if(!remain_1000 && !remain_500){
-                std::cout << "1000 feet left!" << std::endl;
-			    remain_1000 = true;
-			    distance_at_1000 = distances[i].load();
-		    } else if(remain_1000 && !remain_500 && distances[i].load() > distance_at_1000){
-                std::cout << "500 feet left!" << std::endl;
-			    remain_500 = true;
-		    }	
-        }
-
-
-	}
-    */
-
+	i2c_smbus_write_byte(i2c_tape, 0);
 	int val = i2c_smbus_read_word_data(i2c_tape, 0);
+	int current_count = atomic_tape_count.load();
+	if(current_count < val){
+		//find the speed
+	}
 	atomic_tape_count.store(val);
 	distance.store(val * 100);
 		
@@ -248,6 +234,8 @@ void sensor::update_tape_count(){
 void sensor::reset_tape_count(){
 	i2c_smbus_write_byte(i2c_tape, 0xff);
 	//writes 0xff, which the arduino receives 
+	distance.store(0);
+	atomic_tape_count.store(0);
 }
 
 int sensor::open_i2c(int address){

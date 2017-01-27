@@ -19,6 +19,7 @@
 #include <vector>
 #include <iostream>
 // back-end
+/*
 #include <boost/msm/back/state_machine.hpp>
 //front-end
 #include <boost/msm/front/state_machine_def.hpp>
@@ -28,7 +29,7 @@
 #include <boost/msm/front/euml/common.hpp>
 // for And_ operator
 #include <boost/msm/front/euml/operator.hpp>
-
+*/
 
 #include "guards.hpp"
 #include "events.hpp"
@@ -41,11 +42,6 @@
 
 using namespace std;
 //MSM
-namespace msm = boost::msm;
-namespace mpl = boost::mpl;
-using namespace msm::front;
-// for And_ operator
-using namespace msm::front::euml;
 
 //Object for active controls (motors and brakes)
 active * act;
@@ -66,251 +62,170 @@ boost::asio::io_service ioservice;
 std::vector<status_message_ptr> tmp_status_buff;
 boost::mutex sensor_mutex;
 
+//TODO configure acceleration/fix it
 
-namespace  // Concrete FSM implementation
+enum State
 {
-    // front-end: define the FSM structure 
-    struct pod_ : public msm::front::state_machine_def<pod_>
-    {
-        template <class Event,class FSM>
-        void on_entry(Event const& ,FSM&) 
-        {
-            std::cout << "entering: Pod" << std::endl;
-        }
-        template <class Event,class FSM>
-        void on_exit(Event const&,FSM& ) 
-        {
-            std::cout << "leaving: Pod" << std::endl;
-        }
+	SAFE_MODE_STATE=0,
+	FUNCTIONAL_TEST_STATE=1,
+	FLIGHT_STATE=2,
+	BRAKING_STATE=3
+};
 
-        // The list of FSM states
-        struct SafeMode : public msm::front::state<>
-        {
-            template <class Event,class FSM>
-            void on_entry(Event const&,FSM& )
-            {
-                std::cout << "entering: SafeMode" << std::endl;
-            }
+string state_names[] = { "SafeMode", "FunctionalTest", "Flight", "Braking"};
+State state = SAFE_MODE_STATE;
 
-            template <class Event,class FSM>
-            void on_exit(Event const&,FSM& )
-            {
-                std::cout << "leaving: SafeMode" << std::endl;
-            }
-        };
-
-        struct FunctionalTest : public msm::front::state<>
-        {
-            template <class Event,class FSM>
-            void on_entry(Event const&,FSM& )
-            {
-                std::cout << "entering: FunctionalTest" << std::endl;
-            }
-
-            template <class Event,class FSM>
-            void on_exit(Event const&,FSM& )
-            {
-                std::cout << "leaving: FunctionalTest" << std::endl;
-            }
-        };
-
-        struct Flight : public msm::front::state<>
-        {
-            template <class Event,class FSM>
-            void on_entry(Event const&,FSM& )
-            {
-                std::cout << "entering: Flight" << std::endl;
-            }
-
-            template <class Event,class FSM>
-            void on_exit(Event const&,FSM& )
-            {
-                std::cout << "leaving: Flight" << std::endl;
-            }
-        };
-
-        struct Braking : public msm::front::state<>
-        {
-            template <class Event,class FSM>
-            void on_entry(Event const&,FSM& )
-            {
-                std::cout << "entering: Braking" << std::endl;
-            }
-
-            template <class Event,class FSM>
-            void on_exit(Event const&,FSM& )
-            {
-                std::cout << "leaving: Braking" << std::endl;
-            }
-        };
-	
-    	// the initial state of the player SM. Must be defined
-    	typedef SafeMode initial_state;
-		// performs neccesary actions when moving into loading 	
-		struct to_functional {	
-			template <class EVT, class FSM, class SourceState, class TargetState>
-			void operator()(EVT const&, FSM& fsm, SourceState&, TargetState&) {
-				cout << "moving into functionaltests" << endl;
-			}
-		};
-		struct to_flight {
-			template <class EVT, class FSM, class SourceState, class TargetState>
-			void operator()(EVT const&, FSM& fsm, SourceState&, TargetState&) {
-				cout << "moving into flight" << endl;
-			}
-		};
-		struct to_braking {	
-			template <class EVT, class FSM, class SourceState, class TargetState>
-			void operator()(EVT const&, FSM& fsm, SourceState&, TargetState&) {
-				cout << "moving into braking" << endl;
-			}
-		};
-		struct to_safe_mode {	
-			template <class EVT, class FSM, class SourceState, class TargetState>
-			void operator()(EVT const&, FSM& fsm, SourceState&, TargetState&) {
-				cout << "moving into safe_mode" << endl;
-			}
-		};
-
-
-		typedef pod_ p; // makes transition table cleaner
-
-			// Transition table for player
-		struct transition_table : mpl::vector<
-				//      Start         Event         Next          Action           
-				//    +-----------+-------------+---------------+------------------+
-			Row < SafeMode      , command     , FunctionalTest, to_functional   >,
-			Row < FunctionalTest, command     , Flight        , to_flight       >,
-			Row < Flight	    , flight_brake, Braking       , to_braking      >,
-			Row < Flight        , command     , Braking       , to_braking      >,
-			Row < Braking       , command     , SafeMode      , to_safe_mode    >
-			
-			> {};
-	};
-
-	//let's define a submachine! //let's not
-    typedef msm::back::state_machine<pod_> pod;
-    static char const* const state_names[] = { "SafeMode", "FunctionalTest", "Flight", "Braking"};
-
-    void pstate(pod const& p)
-    {
-        std::cout << " -> " << state_names[p.current_state()[0]] << std::endl;
-    }
-	void reset_sensors(){
-		sensor_mutex.lock();
-		sen->reset_tape_count();
-		//TODO reset acceleration
-		sensor_mutex.unlock();
-	}
-
-    void state_machine_loop(void)
-    {        
-        while (!tmp_status_buff.empty()) {
-            fsm_status_queue.push(tmp_status_buff.back());
-            tmp_status_buff.pop_back();
-        }        
-
-        printf("Running FSM\n");
-        pod p;
-        p.start(); 
-
-        while(1){
-            command_ptr cp;
-            incoming_command_queue.pop(cp);
-            if(cp){
-                printf("Received command %d with value %d\n", cp->command_type, cp->command_value);
-
-                status_message_ptr smp;
-                if(cp->command_type == LEV_MOTOR){
-                    //Set the motor
-                    act->set_lev(cp->command_value);
-                    //Send confermation of action
-                    char tmp[5];
-                    sprintf(tmp,"%4d",cp->command_value);
-                    std::string l = "L";
-                    smp = status_message_ptr(new status_message(STATUS_CONTROL,+tmp));
-
-                    //motor_levitation->set_microseconds(cp->command_value); 
-                } else if(cp->command_type == STA_MOTOR) {
-                    act->set_sta(cp->command_value);
-
-                    char tmp[5];
-                    sprintf(tmp,"%4d",cp->command_value);
-                    std::string s = "S";
-                    smp = status_message_ptr(new status_message(STATUS_CONTROL,s+tmp));
-
-                    //motor_stability->set_microseconds(cp->command_value);
-                } else if(cp->command_type == ARM_LEV_MOTOR) {
-                    if(cp->command_value ==0){
-                        act->off_lev();
-
-                        smp = status_message_ptr(new status_message(STATUS_CONTROL,"L0"));
-                        //motor_levitation->off();
-                    }
-                    else{
-                        act->on_lev();
-                        smp = status_message_ptr(new status_message(STATUS_CONTROL,"L1"));
-                        //motor_levitation->on();
-                    }
-                } else if(cp->command_type == ARM_STA_MOTOR) {
-                    if(cp->command_value ==0){
-                        act->off_sta();
-
-                        smp = status_message_ptr(new status_message(STATUS_CONTROL,"S0"));
-                        //motor_levitation->off();
-                    }
-                    else{
-                        act->on_sta();
-                        smp = status_message_ptr(new status_message(STATUS_CONTROL,"S1"));
-                        //motor_levitation->on();
-                    }	
-				} else if(cp->command_type == RESET_SENSORS) {
-					reset_sensors();	
-                } else if(cp->command_type == SAFE_MODE) {
-                    act->low_lev();
-                    act->low_sta();
-                    act->off_sta();
-                    act->off_lev();
-
-                    smp = status_message_ptr(new status_message(STATUS_CONTROL,"S0"));
-                    smp = status_message_ptr(new status_message(STATUS_CONTROL,"L0"));
-                } else if(cp->command_type == BRAKING) {
-                    int val = cp->command_value;
-                    if(val==0)
-                        act->stop_brake();
-                    if(val==1)
-                        act->forward_brake();
-                    if(val==2)
-                        act->backward_brake();
-                    char tmp[2];
-                    sprintf(tmp,"%1d",val);
-                    std::string b = "B";
-                    smp = status_message_ptr(new status_message(STATUS_CONTROL,b+tmp));
-                }  else { 
-                    p.process_event(*cp); 
-                    pstate(p);
-                }
-            fsm_status_queue.push(smp);
-            
-            }
-        }
-
-        printf("Stopping FSM\n");
-        p.stop();
-    }
-
-	
+bool should_brake() {
+	// TODO Adjust 
+	return state == FLIGHT_STATE && (*sen->get_distance() > 1600 || (*sen->get_distance() > 500 && abs(sen->get_atomic_a()[0]) < 0.1));
 }
 
+void brake(int val) {
+	// TODO Deal with asymptote
+	cout << "Braking" << endl;
+	if(val==0)
+		act->stop_brake();
+	if(val==1){
+		double brake_pressure = sen->get_brake_pressure();
+		int counter = 0;
+		int total_time = 0;
+		const int A = 10000000
+		while(brake_pressure =< 315){
+			act->forward_brake();
+			//1 second total
+			usleep(A/++counter);
+			total_time += A/counter;
+			act->stop_brake();
+		}
+	}
+	if(val==2)
+		act->backward_brake();
+	state = BRAKING_STATE;
+}
+
+void reset_sensors(){
+	sensor_mutex.lock();
+	sen->reset_tape_count();
+	//TODO reset acceleration
+	sensor_mutex.unlock();
+}
+
+void state_machine_loop(void)
+{        
+	while (!tmp_status_buff.empty()) {
+		fsm_status_queue.push(tmp_status_buff.back());
+		tmp_status_buff.pop_back();
+	}        
+
+	printf("Running FSM\n");
+	while(1){
+		if(should_brake()){
+			brake(1);
+		}
+		command_ptr cp;
+		incoming_command_queue.pop(cp);
+		if(cp){
+			printf("Received command %d with value %d\n", cp->command_type, cp->command_value);
+
+			status_message_ptr smp;
+			if(cp->command_type == LEV_MOTOR && (state == FUNCTIONAL_TEST_STATE || state == FLIGHT_STATE)){
+				//Set the motor
+				act->set_lev(cp->command_value);
+				//Send confermation of action
+				char tmp[5];
+				sprintf(tmp,"%4d",cp->command_value);
+				std::string l = "L";
+				smp = status_message_ptr(new status_message(STATUS_CONTROL,+tmp));
+
+				//motor_levitation->set_microseconds(cp->command_value); 
+			} else if(cp->command_type == STA_MOTOR && (state == FUNCTIONAL_TEST_STATE ||  state == FLIGHT_STATE)) {
+				act->set_sta(cp->command_value);
+
+				char tmp[5];
+				sprintf(tmp,"%4d",cp->command_value);
+				std::string s = "S";
+				smp = status_message_ptr(new status_message(STATUS_CONTROL,s+tmp));
+
+				//motor_stability->set_microseconds(cp->command_value);
+			} else if(cp->command_type == ARM_LEV_MOTOR && (state == FUNCTIONAL_TEST_STATE || state == FLIGHT_STATE)) {
+				if(cp->command_value ==0){
+					act->off_lev();
+
+					smp = status_message_ptr(new status_message(STATUS_CONTROL,"L0"));
+					//motor_levitation->off();
+				}
+				else{
+					act->on_lev();
+					smp = status_message_ptr(new status_message(STATUS_CONTROL,"L1"));
+					//motor_levitation->on();
+				}
+			} else if(cp->command_type == ARM_STA_MOTOR && (state == FUNCTIONAL_TEST_STATE ||  state == FLIGHT_STATE)) {
+				if(cp->command_value ==0){
+					act->off_sta();
+
+					smp = status_message_ptr(new status_message(STATUS_CONTROL,"S0"));
+					//motor_levitation->off();
+				}
+				else{
+					act->on_sta();
+					smp = status_message_ptr(new status_message(STATUS_CONTROL,"S1"));
+					//motor_levitation->on();
+				}	
+			} else if(cp->command_type == RESET_SENSORS) {
+				reset_sensors();	
+			} else if(cp->command_type == SAFE_MODE) {
+				if(state == FLIGHT_STATE) {
+					cout << "Brake before returning to safe mode, pod is in FLIGHT mode." << endl;
+				} else {
+					cout << "Moving to safe_mode" << endl;
+					act->low_lev();
+					act->low_sta();
+					act->off_sta();
+					act->off_lev();
+
+					smp = status_message_ptr(new status_message(STATUS_CONTROL,"S0"));
+					smp = status_message_ptr(new status_message(STATUS_CONTROL,"L0"));
+					state = SAFE_MODE_STATE;
+				}
+			} else if(cp->command_type == BRAKING) {
+				if(state != FLIGHT_STATE) {
+					cout << "Only brake from FLIGHT state, pod is in " << state_names[state] << " state." << endl;
+				} else {
+					brake(cp->command_value);
+					char tmp[2];
+					sprintf(tmp,"%1d", cp->command_value);
+					std::string b = "B";
+					smp = status_message_ptr(new status_message(STATUS_CONTROL, b+tmp));
+				}
+			 } else if(cp->command_type == FUNCTIONAL_TEST) {	
+				if(state != SAFE_MODE_STATE) {
+					cout << "Return to safe_mode before accessing functional_test, pod is in " << state_names[state] << " state." << endl;
+				} else {
+					cout << "Starting functional test" << endl;
+					state = FUNCTIONAL_TEST_STATE;
+				}
+			} else if(cp->command_type == FLIGHT) {
+				if(state != FUNCTIONAL_TEST_STATE) {
+					cout << "Move to functional tests before flight" << endl;
+				} else {
+					state = FLIGHT_STATE;
+				}
+			}
+		fsm_status_queue.push(smp);
+		
+		}
+	}
+
+	printf("Stopping FSM\n");
+}
 
 void sensor_loop(void){
     printf("Running Sensor Loop\n");
     //infinate loop is not good idea. come up with something else
     while(1){
-        //usleep(30000);
-	sensor_mutex.lock();	
+		sensor_mutex.lock();	
         sen->update();
-	sensor_mutex.unlock();
+		sensor_mutex.unlock();
     }
 }
 
@@ -319,6 +234,7 @@ void network_connect(void){
     server = new tcp_server(ioservice, &incoming_command_queue, &fsm_status_queue, sen);
     printf("Running Network\n");
     ioservice.run();
+	//TODO handle connection drops
 }
 
 int main()
