@@ -16,7 +16,6 @@
 #include <boost/thread/thread.hpp>
 #include <boost/lockfree/spsc_queue.hpp>
 #include "boost/date_time/posix_time/posix_time.hpp"
-#include "ADS1115.h"
 #include "status.h"
 
 
@@ -37,7 +36,7 @@ class sensor{
         std::atomic<double> *  get_atomic_rpm();
         std::atomic<double> *  get_atomic_tape_count();
 		std::atomic<double> *  get_distance();
-		void reset_tape_count();
+		void reset_sensors();
     
 
     private:
@@ -63,12 +62,10 @@ class sensor{
 	
 
         int  i2c_brake;
-        ADS1115* i2c_brake_adc; 
         int  i2c_thermo;
         int  i2c_rpm;
 		int  i2c_tape;
 		int  i2c_a;
-        ADS1115* i2c_a_adc; 
         int  open_i2c(int address);
 
         int  init_z();
@@ -90,6 +87,8 @@ class sensor{
         void update_temp();
         void update_rpm();
 		void update_tape_count();
+		
+		void recalibrate_accelerometer();
 
         uint8_t tick;
 };
