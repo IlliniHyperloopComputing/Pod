@@ -86,16 +86,17 @@ void brake(int val) {
 	if(val==0)
 		act->stop_brake();
 	if(val==1){
-		double brake_pressure = sen->get_brake_pressure();
+		double brake_pressure = *sen->get_brake_pressure();
 		int counter = 0;
 		int total_time = 0;
-		const int A = 10000000
-		while(brake_pressure =< 315){
+		const int A = 10000000;
+		while(brake_pressure <= 315){
 			act->forward_brake();
 			//1 second total
 			usleep(A/++counter);
 			total_time += A/counter;
 			act->stop_brake();
+            brake_pressure = *sen->get_brake_pressure();
 		}
 	}
 	if(val==2)

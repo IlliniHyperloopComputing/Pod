@@ -93,7 +93,7 @@ std::atomic<double> * sensor::get_atomic_temps(){
 }
 
 std::atomic<double> * sensor::get_brake_pressure() {
-	return &atomic_brake_pressure
+	return &atomic_brake_pressure;
 }
 
 std::atomic<double> * sensor::get_atomic_tape_count(){
