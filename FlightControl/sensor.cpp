@@ -1,5 +1,10 @@
 #include "sensor.h"
+
 #include "codec.h"
+
+
+#define MILLIVOLT_SENSITIVITY 300
+
 
 sensor::sensor(std::vector<status_message_ptr> * tmp_status_buff){
     this->tmp_status_buff = tmp_status_buff;
@@ -31,17 +36,13 @@ sensor::~sensor(){
     if(atomic_rpm != NULL)
         delete[] atomic_rpm;
 
-    if(i2c_brake_adc != NULL)
-        delete i2c_brake_adc;
-    if(i2c_a_adc!= NULL)
-        delete i2c_a_adc;
     close(i2c_brake);
     close(i2c_thermo);
     close(i2c_rpm);
     close(i2c_tape);
     close(i2c_a);
 }
-
+int16_t starting_millivolts[3];
 //
 void sensor::update(){
     //always update
@@ -116,26 +117,39 @@ int sensor::init_v(){
     atomic_v   = new std::atomic<double>[3];
     return 0;
 }*/
+void sensor::recalibrate_accelerometer(){
+
+	int16_t a_total = 0;
+	int16_t b_total = 0;
+	int16_t c_total = 0;
+	int16_t totals[3] = { 0, 0, 0};	
+	for(int i = 0; i < 100; i++){
+		for(int j = 0; j < 4; j++){
+				
+			i2c_smbus_write_byte(i2c_a,j);	
+			int16_t x = i2c_smbus_read_word_data(i2c_a,0);
+			totals[j] += x;
+		}
+	}
+	for(int i = 0; i < 4; i++){
+		starting_millivolts[i] = totals[i] / MILLIVOLT_SENSITIVITY;
+	}
+}
+
 int sensor::init_a(){
-    atomic_a   = new std::atomic<double>[3];
+    atomic_a  = new std::atomic<double>[3];
     i2c_a = open_i2c(0x20);
     if(i2c_a<0) return -1;//return if error
-    //i2c_a_adc = new ADS1115(i2c_a);
-    //if(i2c_a_adc->testConnection()==0){
-    //    printf("Something is wrong with init a\n");
-    //}
-    
-    //i2c_a_adc->setRate(ADS1115_RATE_475); //RATE 475 SPS
-	//i2c_a_adc->setGain(ADS1115_PGA_6P144);//GAIN of 6.144
-	//i2c_a_adc->setMultiplexer(ADS1115_MUX_P0_NG);//Pin 0
-	//i2c_a_adc->setMode(ADS1115_MODE_SINGLESHOT);//Mode SingleShot
-    return 0;
+		
+	recalibrate_accelerometer();
+	return 0;
 }
+
 int sensor::init_brake_pressure(){
 	//TODO give it a different address
     i2c_brake = open_i2c(0x48);
     if(i2c_brake<0) return -1;//return if error
-    i2c_brake_adc = new ADS1115(i2c_brake);
+    //i2c_brake_adc = new ADS1115(i2c_brake);
     //i2c_brake_adc->setRate(ADS1115_RATE_475); //RATE 475 SPS
 	//i2c_brake_adc->setGain(ADS1115_PGA_6P144);//GAIN of 6.144
 	//i2c_brake_adc->setMultiplexer(ADS1115_MUX_P0_NG);//Pin 0
@@ -185,21 +199,14 @@ void sensor::update_v(){
 
 }
 void sensor::update_a(){
-    //i2c_smbus_write_byte(i2c_a,0);
-    int16_t x = i2c_smbus_read_word_data(i2c_a,0);
-    printf("%d   the val\n",x);
-//	i2c_a_adc->setMultiplexer(ADS1115_MUX_P0_NG);
-//    double x = i2c_a_adc->getMilliVolts();
-//    //printf("milii x: %f\n", x);
-//	i2c_a_adc->setMultiplexer(ADS1115_MUX_P1_NG);
-//	x = (x + i2c_a_adc->getMilliVolts())/2.0;
-//	i2c_a_adc->setMultiplexer(ADS1115_MUX_P2_NG);
-//    double y = i2c_a_adc->getMilliVolts();
-//	i2c_a_adc->setMultiplexer(ADS1115_MUX_P3_NG);
-//    double z = i2c_a_adc->getMilliVolts();
-    atomic_a[0].store(x);
-    //atomic_a[1].store(y);
-    //atomic_a[2].store(z);
+	for(int i = 0; i < 4; i++){
+	
+    	i2c_smbus_write_byte(i2c_a,i);
+	
+    	int16_t x = i2c_smbus_read_word_data(i2c_a,0);
+		int16_t g = (x - starting_millivolts[i]) / 300;
+    	atomic_a[i].store(x);
+	}
 }
 void sensor::update_brake_pressure(){ 
     double millivolts = 1;//i2c_brake_adc->getMilliVolts();
@@ -238,11 +245,12 @@ void sensor::update_tape_count(){
 		
 }
 
-void sensor::reset_tape_count(){
+void sensor::reset_sensors(){
 	i2c_smbus_write_byte(i2c_tape, 0xff);
 	//writes 0xff, which the arduino receives 
 	distance.store(0);
 	atomic_tape_count.store(0);
+	recalibrate_accelerometer();
 }
 
 int sensor::open_i2c(int address){

@@ -110,8 +110,7 @@ void brake(int val) {
 
 void reset_sensors(){
 	sensor_mutex.lock();
-	sen->reset_tape_count();
-	//TODO reset acceleration
+	sen->reset_sensors();
 	sensor_mutex.unlock();
 }
 
