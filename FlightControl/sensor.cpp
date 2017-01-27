@@ -116,24 +116,23 @@ int sensor::init_v(){
 }
 int sensor::init_a(){
     atomic_a   = new std::atomic<double>[3];
-    i2c_a = open_i2c(0x48);
+    i2c_a = open_i2c(0x20);
     if(i2c_a<0) return -1;//return if error
-    i2c_a_adc = new ADS1115(i2c_a,0x48);
-    if(i2c_a_adc->testConnection()==0){
-        printf("Something is wrong with init a\n");
-    }
+    //i2c_a_adc = new ADS1115(i2c_a);
+    //if(i2c_a_adc->testConnection()==0){
+    //    printf("Something is wrong with init a\n");
+    //}
     
     //i2c_a_adc->setRate(ADS1115_RATE_475); //RATE 475 SPS
 	//i2c_a_adc->setGain(ADS1115_PGA_6P144);//GAIN of 6.144
 	//i2c_a_adc->setMultiplexer(ADS1115_MUX_P0_NG);//Pin 0
 	//i2c_a_adc->setMode(ADS1115_MODE_SINGLESHOT);//Mode SingleShot
-    atomic_brake_pressure.store(0);
     return 0;
 }
 int sensor::init_brake_pressure(){
     i2c_brake = open_i2c(0x48);
     if(i2c_brake<0) return -1;//return if error
-    i2c_brake_adc = new ADS1115(i2c_brake,0x48);
+    i2c_brake_adc = new ADS1115(i2c_brake);
     //i2c_brake_adc->setRate(ADS1115_RATE_475); //RATE 475 SPS
 	//i2c_brake_adc->setGain(ADS1115_PGA_6P144);//GAIN of 6.144
 	//i2c_brake_adc->setMultiplexer(ADS1115_MUX_P0_NG);//Pin 0
@@ -174,18 +173,21 @@ void sensor::update_v(){
     atomic_v[2].store(5);
 }
 void sensor::update_a(){
-	i2c_a_adc->setMultiplexer(ADS1115_MUX_P0_NG);
-    double x = i2c_a_adc->getMilliVolts();
-    printf("milii x: %f\n", x);
-	i2c_a_adc->setMultiplexer(ADS1115_MUX_P1_NG);
-	x = (x + i2c_a_adc->getMilliVolts())/2.0;
-	i2c_a_adc->setMultiplexer(ADS1115_MUX_P2_NG);
-    double y = i2c_a_adc->getMilliVolts();
-	i2c_a_adc->setMultiplexer(ADS1115_MUX_P3_NG);
-    double z = i2c_a_adc->getMilliVolts();
+    //i2c_smbus_write_byte(i2c_a,0);
+    int16_t x = i2c_smbus_read_byte_data(i2c_a,0);
+    printf("%d   the val",x);
+//	i2c_a_adc->setMultiplexer(ADS1115_MUX_P0_NG);
+//    double x = i2c_a_adc->getMilliVolts();
+//    //printf("milii x: %f\n", x);
+//	i2c_a_adc->setMultiplexer(ADS1115_MUX_P1_NG);
+//	x = (x + i2c_a_adc->getMilliVolts())/2.0;
+//	i2c_a_adc->setMultiplexer(ADS1115_MUX_P2_NG);
+//    double y = i2c_a_adc->getMilliVolts();
+//	i2c_a_adc->setMultiplexer(ADS1115_MUX_P3_NG);
+//    double z = i2c_a_adc->getMilliVolts();
     atomic_a[0].store(x);
-    atomic_a[1].store(y);
-    atomic_a[2].store(z);
+    //atomic_a[1].store(y);
+    //atomic_a[2].store(z);
 }
 void sensor::update_brake_pressure(){ 
     double millivolts = 1;//i2c_brake_adc->getMilliVolts();
