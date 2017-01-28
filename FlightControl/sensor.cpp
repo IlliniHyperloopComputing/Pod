@@ -49,11 +49,11 @@ void sensor::update(){
 
     switch(tick){
         case 1:
-//            update_v();
+            update_v();
             break;
         case 2:
- //           update_lev();
-            //update_esc();
+            update_lev();
+           // update_esc();
             update_temp();
             update_rpm();
 			update_tape_count();
@@ -185,9 +185,16 @@ int sensor::init_tape_count(){
 void sensor::update_lev(){
 	//TODO Make it work
 
-    atomic_lev[0].store(1);
-    atomic_lev[1].store(2);
-    atomic_lev[2].store(3);
+	for(int i = 0; i < 3; i++) {
+		i2c_smbus_write_byte(i2c_a, i);
+
+		int16_t millivolts = i2c_smbus_read_word_data(i2c_a, 0);
+		if(millivolts > 900 && millivolts < 10500){
+			double val = millivolts;
+			double height = (((val - 1000.0) * 16.0)/9000) + 4;	
+			atomic_lev[i] = height;
+		}
+	}
 }
 void sensor::update_v(){
 	//request deltas

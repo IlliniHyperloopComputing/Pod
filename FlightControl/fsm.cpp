@@ -77,7 +77,7 @@ State state = SAFE_MODE_STATE;
 
 bool should_brake() {
 	// TODO Adjust 
-	return state == FLIGHT_STATE && (*sen->get_distance() > 1600 || (*sen->get_distance() > 500 && abs(sen->get_atomic_a()[0]) < 0.1));
+	return state == FLIGHT_STATE && (*sen->get_distance() > 1600 || (*sen->get_distance() > 500 && abs(sen->get_atomic_a()[0]) < 0.2));
 }
 
 void brake(int val) {
@@ -229,6 +229,14 @@ void state_machine_loop(void)
 					cout << "Starting flight, motor control enabled" << endl;
 					state = FLIGHT_STATE;
 					smp = status_message_ptr(new status_message(STATUS_STATE, state_names[state]));
+				}
+			} else if(cp->command_type == DISCONNECT) {
+				if(state == FLIGHT_STATE){
+					// cut the motors, wait for braking
+					act->off_lev();
+					act->off_sta();
+				} else if (state == FUNCTIONAL_TEST_STATE) {
+					state = SAFE_MODE_STATE;
 				}
 			}
         if(smp != NULL)
