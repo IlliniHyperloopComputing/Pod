@@ -2,14 +2,16 @@
 #include <Wire.h>
 
 
-unsigned long times[4];
-int pins[4] = {7, 0, 0, 0};
-int rpms[4];
+int highs[6];
+int pins[6] = {13, 12, 8, 7, 4, 2};
+unsigned long rising_times[6];
+int rpms[6];
 int loops;
 void setup() {
   // put your setup code here, to run once:
-  for(int i = 0; i < 4; i++){
-    times[i] = 0;
+  for(int i = 0; i < 6; i++){
+    rising_times[i] = 0;
+    highs[i] = 0;
     rpms[i] = 0xbeef;
   }
   Serial.begin(9600);
@@ -32,35 +34,20 @@ void beagleTransmit() {
 }
 void loop() {
   // put your main code here, to run repeatedly;
-  for(int i = 0; i < 1; i++){
-    
-    if(digitalRead(pins[i]) == LOW){
-      loops++;
-      if(loops == 1000){
-        Serial.print(" rpm = ");
-        Serial.println(rpms[i]);
-        loops = 0;
-      }
+  for(int i = 0; i < 6; i++){
+    int value = digitalRead(pins[i]);
+    if(value == HIGH && highs[i] == 0){
+      highs[i] = 1;
       unsigned long now = micros();
-      unsigned long delta = now - times[i];
-      if(delta > 12000){
-        times[i] = now;
-        noInterrupts();
-        rpms[i] = 60000000 / delta;
-        interrupts();
-        /*Serial.print("times[i] ");
-        Serial.print(times[i]);
-        //less than 5000rpm, gives signifcant time so no double hits
-        times[i] = now;
-        rpms[i] = 60000000 / delta;
-        
-        Serial.print(" now ");
-        Serial.print(now);
-        Serial.print(" delta = ");
-        Serial.print(delta);
-        Serial.print(" rpm = ");
-        Serial.println(rpms[i]);*/
-      }
+      unsigned long delta = now - rising_times[i];
+      noInterrupts();
+      rpms[i] = 60000000 / delta;
+      interrupts();
+      
     }
+    if(value == LOW && highs[i] == 1){
+      highs[i] = 0;
+    }
+      
   }
 }
