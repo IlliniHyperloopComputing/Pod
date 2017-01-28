@@ -51,12 +51,11 @@ int16_t starting_millivolts[3];
 double sim_accel(){
 	struct timeval now;
 	gettimeofday(&now, NULL);
-	long delta = now.tv_usec - start_time.tv_usec;	
-
-	if(delta < 5000000) {
+    double delta = now.tv_sec - start_time.tv_sec + (now.tv_usec - start_time.tv_usec) / 1000000.0;
+	if(delta < 10) {
 		return 0;
-	} else if (delta < 10000000){
-		return 2.0;
+	} else if (delta < 20){
+		return 2.1;
 	} else {
 		return 0;
 	}
@@ -92,9 +91,14 @@ void sensor::update(){
 	} else {
 		//simulation time	
 		double sim = sim_accel();
-		for(int i = 0; i < 3; i++){
+/*		for(int i = 0; i < 3; i++){
 			atomic_a[i] = sim;
+            
 		}
+*/
+        atomic_a[0] = 1;
+        atomic_a[1] = sim;
+        atomic_a[2] = 0;
 
 	}
 }
@@ -220,10 +224,10 @@ void sensor::update_lev(){
 	for(int i = 4; i < 7; i++) {
 
 		int16_t millivolts = i2c_smbus_read_word_data(i2c_a, i);
-		if(millivolts > 0) { 
+		if(millivolts > 4000) { 
 			double val = millivolts;
-			double height = ((val * 16.0)/4500) + 4;	
-			atomic_lev[i] = height;
+			double height = ((val - 4200) * 16.0)/22100 + 4;	
+			atomic_lev[i-4].store(height);
             std::cout << "millivolts : " << millivolts << ", height : " << height << std::endl;
 		}
 	}

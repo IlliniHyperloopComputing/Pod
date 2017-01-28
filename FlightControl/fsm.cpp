@@ -76,9 +76,22 @@ enum State
 string state_names[] = { "SafeMode", "FunctionalTest", "Flight", "Braking"};
 State state = SAFE_MODE_STATE;
 
+double median_acceleration(){
+    auto accels = sen->get_atomic_a();
+    double x = accels[0] - accels[1];
+    double y = accels[0] - accels[2];
+    if( x > 0 && y > 0 ){
+        return max(accels[1], accels[2]);
+    } else if (x < 0 && y < 0){
+        return min(accels[1], accels[2]);
+    } else {
+        return accels[0];
+    }
+}
+
 bool should_brake() {
 	// TODO Adjust 
-	return state == FLIGHT_STATE && (*sen->get_distance() > 1600 || (*sen->get_distance() > 500 && abs(sen->get_atomic_a()[0]) < 0.2));
+	return state == FLIGHT_STATE && (*sen->get_distance() > 2000 || (*sen->get_distance() > 500 && abs(median_acceleration()) < 0.2));
 }
 
 void brake(int val) {
@@ -270,7 +283,8 @@ void network_connect(void){
 int main(int argc, char ** argv)
 {    
     //Initialize the sensors
-	if(argc == 1 && !strcmp(argv[0], "test")){
+    cout << argc << argv[0] << endl;
+	if(argc == 2 && !strcmp(argv[1], "test")){
 		cout << "Activating test mode" << endl;
 		sen = new sensor(&tmp_status_buff, true);
 	} else {
