@@ -22,7 +22,7 @@
 class sensor{
 	typedef std::chrono::time_point<std::chrono::_V2::system_clock, std::chrono::duration<long long int, std::ratio<1ll, 1000000000ll> > > time_t; 
     public:
-        sensor(std::vector<status_message_ptr> * tmp_status_buff);
+        sensor(std::vector<status_message_ptr> * tmp_status_buff, bool test);
         ~sensor();
         void update();
 		std::atomic<double> *  get_brake_pressure();
@@ -37,6 +37,7 @@ class sensor{
         std::atomic<double> *  get_atomic_tape_count();
 		std::atomic<double> *  get_distance();
 		void reset_sensors();
+		bool simulate;
     
 
     private:
@@ -77,6 +78,7 @@ class sensor{
         int  init_rpm();
         int  init_tape_count();
         std::vector<status_message_ptr> * tmp_status_buff;
+
 
         void update_z();
         void update_lev();

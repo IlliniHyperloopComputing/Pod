@@ -40,6 +40,8 @@
 
 #include "status.h"
 
+#include <sys/time.h>
+
 using namespace std;
 //MSM
 
@@ -62,7 +64,6 @@ boost::asio::io_service ioservice;
 std::vector<status_message_ptr> tmp_status_buff;
 boost::mutex sensor_mutex;
 
-//TODO configure acceleration/fix it
 
 enum State
 {
@@ -266,10 +267,15 @@ void network_connect(void){
 	//TODO handle connection drops
 }
 
-int main()
+int main(int argc, char ** argv)
 {    
     //Initialize the sensors
-    sen = new sensor(&tmp_status_buff);
+	if(argc == 1 && !strcmp(argv[0], "test")){
+		cout << "Activating test mode" << endl;
+		sen = new sensor(&tmp_status_buff, true);
+	} else {
+    	sen = new sensor(&tmp_status_buff, false);
+	}
     //Initialize the active controls 
     act = new active();
 
