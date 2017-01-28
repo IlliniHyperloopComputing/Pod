@@ -96,25 +96,29 @@ bool should_brake() {
 
 void brake(int val) {
 	// TODO Deal with asymptote
-	cout << "Braking" << endl;
-	if(val==0)
-		act->stop_brake();
-	if(val==1 || val == 1111){
 
-		double brake_pressure = *sen->get_brake_pressure();
+	cout << "Braking" << endl;
+
+	if(val ==0)
+		act->stop_brake();
+	if(val == 1 || val == 1111) {
+		
 		int counter = 0;
-		int total_time = 0;
-		const int A = 500000;
-		while(brake_pressure <= 315 && total_time <= A * 1.99){
+		double const max_time = 2.0 * 1000000;
+		double  time_remaining = max_time;
+		const int A = max_time / 2;
+
+		double acceleration = median_acceleration();
+		while(acceleration > -1.5)
 			act->forward_brake();
-			//1 second total
-			usleep(A/++counter);
-			total_time += A/counter;
+			double sleep_time = min(A/++counter, time_remaining); 
+			usleep(sleep_time);
 			act->stop_brake();
-            brake_pressure = *sen->get_brake_pressure();
+			time_remaining -= sleep_time;	
+			acceleration = median_acceleration();
 		}
 	}
-	if(val==2)
+	if(val == 2)
 		act->backward_brake();
 	state = BRAKING_STATE; 
 	status_message_ptr smp;
