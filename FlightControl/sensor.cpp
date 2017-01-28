@@ -1,13 +1,19 @@
 #include "sensor.h"
 
 #include "codec.h"
+#include <sys/time.h>
 
 
 #define MILLIVOLT_SENSITIVITY 2434.0
 
-
-sensor::sensor(std::vector<status_message_ptr> * tmp_status_buff){
+struct timeval start_time;
+sensor::sensor(std::vector<status_message_ptr> * tmp_status_buff, bool test) {
     this->tmp_status_buff = tmp_status_buff;
+	this->simulate = test;
+	if(simulate){
+		gettimeofday(&start_time, NULL);
+		distance = 600;
+	}
 
 //    status_message_ptr smp(new status_message(STATUS_ERROR,error_msg));
     //tmp_status_buff->push_back(smp);
@@ -41,34 +47,60 @@ sensor::~sensor(){
     close(i2c_a);
 }
 int16_t starting_millivolts[3];
-//
-void sensor::update(){
-    //always update
-      update_a();
-      //update_brake_pressure();
 
-    switch(tick){
-        case 1:
-            update_v();
-            break;
-        case 2:
-            update_lev();
-           // update_esc();
-            update_temp();
-            update_rpm();
-			update_tape_count();
-            
-            break;
-        case 3:
-//            update_v();
-              //update_tot();
-            break;
-        default:
-            break;
-    }
-    
-    tick = (tick %3)+1; //tick range: [1:3]
+double sim_accel(){
+	struct timeval now;
+	gettimeofday(&now, NULL);
+	long delta = now.tv_usec - start_time.tv_usec;	
+
+	if(delta < 5000000) {
+		return 0;
+	} else if (delta < 10000000){
+		return 2.0;
+	} else {
+		return 0;
+	}
 }
+
+void sensor::update(){
+	if(!simulate){
+		//always update
+		update_a();
+		  //update_brake_pressure();
+		update_tape_count();
+		update_v();
+
+		switch(tick){
+			case 1:
+				break;
+			case 2:
+				update_lev();
+			   // update_esc();
+				update_temp();
+				update_rpm();
+				
+				break;
+			case 3:
+	//            update_v();
+				  //update_tot();
+				break;
+			default:
+				break;
+		}
+		
+		tick = (tick %3)+1; //tick range: [1:3]
+	} else {
+		//simulation time	
+		double sim = sim_accel();
+		for(int i = 0; i < 3; i++){
+			atomic_a[i] = sim;
+		}
+
+	}
+}
+
+
+
 
 ///////////
 //Get 
@@ -189,9 +221,9 @@ void sensor::update_lev(){
 		i2c_smbus_write_byte(i2c_a, i);
 
 		int16_t millivolts = i2c_smbus_read_word_data(i2c_a, 0);
-		if(millivolts > 900 && millivolts < 10500){
+		if(millivolts > 0 && millivolts < 4500) {
 			double val = millivolts;
-			double height = (((val - 1000.0) * 16.0)/9000) + 4;	
+			double height = ((val * 16.0)/4500) + 4;	
 			atomic_lev[i] = height;
 		}
 	}
