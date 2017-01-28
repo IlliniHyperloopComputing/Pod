@@ -185,14 +185,15 @@ int sensor::init_tape_count(){
 void sensor::update_lev(){
 	//TODO Make it work
 
-	for(int i = 0; i < 3; i++) {
-		i2c_smbus_write_byte(i2c_a, i);
+	for(int i = 4; i < 7; i++) {
+		//i2c_smbus_write_byte(i2c_a, i);
 
-		int16_t millivolts = i2c_smbus_read_word_data(i2c_a, 0);
-		if(millivolts > 900 && millivolts < 10500){
+		int16_t millivolts = i2c_smbus_read_word_data(i2c_a, i);
+		if(millivolts > 0) { 
 			double val = millivolts;
 			double height = (((val - 1000.0) * 16.0)/9000) + 4;	
 			atomic_lev[i] = height;
+            std::cout << "millivolts : " << millivolts << ", height : " << height << std::endl;
 		}
 	}
 }
