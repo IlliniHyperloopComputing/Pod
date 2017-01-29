@@ -50,13 +50,16 @@ int16_t adc3[4];
 uint8_t which = 0;
 void beagleReceive(int numbytes){
   which = Wire.read();
+  Serial.println(which);
 }
 void beagleTransmit() {
   int16_t x = 0;
   if(which<4){
     x = adc0[which%4];
   } else if(which<8){
+    //Serial.println("yoo");
     x = adc1[which%4];
+    //x = 5000;
   } else if(which<12){
     x = adc2[which%4];
   } else if(which<16){
@@ -69,18 +72,23 @@ void beagleTransmit() {
 void loop(void) 
 {
 
-  
+//ACCELEROMETERS  
   adc0[0] = ads.readADC_SingleEnded(0);
   adc0[1] = ads.readADC_SingleEnded(1);
   adc0[2] = ads.readADC_SingleEnded(2);
-  adc0[3] = ads.readADC_SingleEnded(3);
+//ACCELEROMETERS END
 
+  //adc0[3] = ads.readADC_SingleEnded(3);
+
+//DISTANCE
   adc1[0] = ads1.readADC_SingleEnded(0);
   adc1[1] = ads1.readADC_SingleEnded(1);
   adc1[2] = ads1.readADC_SingleEnded(2);
-  adc1[3] = ads1.readADC_SingleEnded(3);
+//END DISTANCE
 
-  adc2[0] = ads1.readADC_SingleEnded(0);
+  //adc1[3] = ads1.readADC_SingleEnded(3);
+
+  /*adc2[0] = ads1.readADC_SingleEnded(0);
   adc2[1] = ads1.readADC_SingleEnded(1);
   adc2[2] = ads1.readADC_SingleEnded(2);
   adc2[3] = ads1.readADC_SingleEnded(3);
@@ -89,8 +97,9 @@ void loop(void)
   adc3[1] = ads1.readADC_SingleEnded(1);
   adc3[2] = ads1.readADC_SingleEnded(2);
   adc3[3] = ads1.readADC_SingleEnded(3);
+  */
 
   //Serial.println(adc0[0]);
-
+  delay(10);
   
 }
