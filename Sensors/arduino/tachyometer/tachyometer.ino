@@ -3,12 +3,12 @@
 
 
 unsigned long times[4];
-int pins[4] = {7, 0, 0, 0};
-int rpms[4];
+int pins[6] = {13,12,8,7,4,2};
+int rpms[5];
 int loops;
 void setup() {
   // put your setup code here, to run once:
-  for(int i = 0; i < 4; i++){
+  for(int i = 0; i < 5; i++){
     times[i] = 0;
     rpms[i] = 0xbeef;
   }
@@ -32,7 +32,7 @@ void beagleTransmit() {
 }
 void loop() {
   // put your main code here, to run repeatedly;
-  for(int i = 0; i < 1; i++){
+  for(int i = 0; i < 6; i++){
     
     if(digitalRead(pins[i]) == LOW){
       loops++;
