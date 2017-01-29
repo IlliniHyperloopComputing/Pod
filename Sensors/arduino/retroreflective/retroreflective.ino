@@ -45,13 +45,13 @@ void beagleTransmit() {
 
 void loop(){
   int value = digitalRead(pin);
-  if(value == LOW && !high){
+  if(value == LOW && high){
     //rising edge
     
     delta = millis() - risingTime;
     risingTime = millis();
     high = 1;
-  } else if(value == HIGH && high){
+  } else if(value == HIGH && !high){
     //falling edge
     //could calculate deltas using risingTimes[i]
     count++;
