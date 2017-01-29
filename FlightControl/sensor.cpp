@@ -139,6 +139,10 @@ std::atomic<double> * sensor::get_distance() {
 	return &distance;
 }
 
+std::atomic<double> * sensor::get_battery_voltage() {
+	return battery_voltage;
+}
+
 
 ///////////
 //Init
@@ -215,6 +219,12 @@ int sensor::init_tape_count(){
     return 0;
 }
 
+int sensor::init_battery_voltages(){
+	i2c_battery = open_i2c(0x25);
+	if(i2c_tape<0) return -1;
+	return 0;
+}
+
 
 ////////////
 //Update
@@ -287,10 +297,18 @@ void sensor::update_tape_count(){
 	int current_count = atomic_tape_count.load();
 	if(current_count < val){
 		//find the speed
+		//TODO: find the speed
 	}
 	atomic_tape_count.store(val);
 	distance.store(val * 100);
 		
+}
+
+void sensor::update_battery_voltages(){
+	for(int i = 0; i < 6; i++){
+		int val = i2c_smbus_read_word_data(i2c_battery, i);
+		battery_voltage[i] = val;	
+	}
 }
 
 void sensor::reset_sensors(){

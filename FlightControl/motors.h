@@ -18,7 +18,7 @@ class motor_control{
 		//arm duty cycle -- switch to this duty cycle from initial to arm the motor
 		//low duty cycle -- the lowest the motor can go 
 		//high duty cycle -- highest the motor can go 
-		motor_control(enum BlackLib::pwmName pwm_pin,enum BlackLib::gpioName power_pin, double low_us);
+		motor_control(enum BlackLib::pwmName pwm_pin,enum BlackLib::gpioName power_pinA, enum BlackLib::gpioName power_pinB, enum BlackLib::gpioName power_pinC, double low_us);
 
 		// turns the motor relay on, gpio pin high
 		void on();
@@ -33,10 +33,14 @@ class motor_control{
 	private:
 		//Data
 		enum BlackLib::pwmName pwm_pin;	
-		enum BlackLib::gpioName power_pin;
+		enum BlackLib::gpioName power_pinA;
+		enum BlackLib::gpioName power_pinB;
+		enum BlackLib::gpioName power_pinC;
 		
 		BlackLib::BlackPWM  pwm;
-		BlackLib::BlackGPIO power;
+		BlackLib::BlackGPIO powerA;
+		BlackLib::BlackGPIO powerB;
+		BlackLib::BlackGPIO powerC;
 
 		double low_us;
 };

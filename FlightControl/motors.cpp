@@ -1,9 +1,11 @@
 #include "motors.h"
 
-motor_control::motor_control(enum BlackLib::pwmName pwm_pin, enum BlackLib::gpioName power_pin, double low_us)
-				: pwm_pin(pwm_pin), power_pin(power_pin),
+motor_control::motor_control(enum BlackLib::pwmName pwm_pin, enum BlackLib::gpioName power_pinA, enum BlackLib::gpioName power_pinB, enum BlackLib::gpioName power_pinC, double low_us)
+				: pwm_pin(pwm_pin), power_pinA(power_pinA), power_pinB(power_pinB), power_pinC(power_pinC),
 			    pwm(pwm_pin),
-                power(power_pin,BlackLib::output,BlackLib::FastMode), 
+                powerA(power_pinA,BlackLib::output,BlackLib::FastMode), 
+                powerB(power_pinB,BlackLib::output,BlackLib::FastMode), 
+                powerC(power_pinC,BlackLib::output,BlackLib::FastMode), 
 			    low_us(low_us) 
 {
     
@@ -14,12 +16,17 @@ motor_control::motor_control(enum BlackLib::pwmName pwm_pin, enum BlackLib::gpio
 }
 
 void motor_control::on(){
-	power.setValue( BlackLib::high );
+	powerA.setValue( BlackLib::high );
+	powerB.setValue( BlackLib::high );
+	powerC.setValue( BlackLib::high );
+
     //std::cout<<"value of power pin"<<power.getValue()<<std::endl;    
 }
 
 void motor_control::off(){
-	power.setValue( BlackLib::low );
+	powerA.setValue( BlackLib::low );
+	powerB.setValue( BlackLib::low );
+	powerC.setValue( BlackLib::low );
     //std::cout<<"value of power pin"<<power.getValue()<<std::endl;    
 }
 

@@ -2,6 +2,7 @@
 #include <boost/thread/thread.hpp>
 #include <boost/lockfree/spsc_queue.hpp>
 #include <boost/atomic.hpp>
+#include <algorithm>
 
 //Network
 #include "server.h"
@@ -106,12 +107,12 @@ void brake(int val) {
 		int counter = 0;
 		double const max_time = 2.0 * 1000000;
 		double  time_remaining = max_time;
-		const int A = max_time / 2;
+		const double  A = max_time / 2;
 
 		double acceleration = median_acceleration();
-		while(acceleration > -1.5)
+		while(acceleration > -1.5){
 			act->forward_brake();
-			double sleep_time = min(A/++counter, time_remaining); 
+			double sleep_time = std::min(A/++counter, time_remaining); 
 			usleep(sleep_time);
 			act->stop_brake();
 			time_remaining -= sleep_time;	

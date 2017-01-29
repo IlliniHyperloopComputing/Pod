@@ -36,6 +36,7 @@ class sensor{
         std::atomic<double> *  get_atomic_rpm();
         std::atomic<double> *  get_atomic_tape_count();
 		std::atomic<double> *  get_distance();
+		std::atomic<double> *  get_battery_voltage();
 		void reset_sensors();
 		bool simulate;
     
@@ -52,6 +53,7 @@ class sensor{
         std::atomic<double> * atomic_rpm;
         std::atomic<double>  atomic_tape_count;
 		std::atomic<double>  distance;
+		std::atomic<double>  battery_voltage[6];
 
 		bool remain_1000;
 		bool remain_500;
@@ -67,6 +69,7 @@ class sensor{
         int  i2c_rpm;
 		int  i2c_tape;
 		int  i2c_a;
+		int  i2c_battery;
         int  open_i2c(int address);
 
         int  init_z();
@@ -77,6 +80,7 @@ class sensor{
         int  init_temps();
         int  init_rpm();
         int  init_tape_count();
+		int  init_battery_voltages();
         std::vector<status_message_ptr> * tmp_status_buff;
 
 
@@ -89,6 +93,7 @@ class sensor{
         void update_temp();
         void update_rpm();
 		void update_tape_count();
+		void update_battery_voltages();
 		
 		void recalibrate_accelerometer();
 
