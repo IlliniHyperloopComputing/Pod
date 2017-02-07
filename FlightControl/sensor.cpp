@@ -238,7 +238,7 @@ void sensor::update_lev(){
 			double val = millivolts;
 			double height = ((val - 4200) * 16.0)/22100 + 4;	
 			atomic_lev[i-4].store(height);
-            std::cout << "millivolts : " << millivolts << ", height : " << height << std::endl;
+ //           std::cout << "millivolts : " << millivolts << ", height : " << height << std::endl;
 		}
 	}
 }
@@ -258,11 +258,11 @@ void sensor::update_a(){
 	
 	
     	int16_t x = i2c_smbus_read_word_data(i2c_a,i);
+//            std::cout << "i = " << i << ", Starting millivolts[i] = " << starting_millivolts[i] << ", millivolts = "<<  x << std::endl;
         if(x > 7000 &&  x < 16000){
             double g = (x - starting_millivolts[i]) / MILLIVOLT_SENSITIVITY;
             atomic_a[i].store(g);
 
-            std::cout << "i = " << i << ", Starting millivolts[i] = " << starting_millivolts[i] << ", G = " << g << ", millivolts = "<<  x << std::endl;
         }
 	}
 }

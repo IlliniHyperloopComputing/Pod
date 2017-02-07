@@ -2,8 +2,9 @@
 
 active::active(){
     printf("Entering active init\n");
-    motor_levitation = new motor_control(BlackLib::pwmName::P9_16, BlackLib::gpioName::GPIO_45, BlackLib::gpioName::GPIO_69, BlackLib::gpioName::GPIO_66, 1000.0);
-    motor_stability = new motor_control(BlackLib::pwmName::P9_22, BlackLib::gpioName::GPIO_68, BlackLib::gpioName::GPIO_49, BlackLib::gpioName::GPIO_117, 1000.0);
+    motor_levitation = new motor_control(BlackLib::pwmName::P9_22, BlackLib::gpioName::GPIO_45, BlackLib::gpioName::GPIO_69, BlackLib::gpioName::GPIO_66, 1000.0);
+
+    motor_stability = new motor_control(BlackLib::pwmName::P8_13, BlackLib::gpioName::GPIO_68, BlackLib::gpioName::GPIO_49, BlackLib::gpioName::GPIO_117, 1000.0);
     brake = new brake_control(BlackLib::gpioName::GPIO_44, BlackLib::gpioName::GPIO_26);
     printf("Exiting active init\n");
 
