@@ -7,9 +7,9 @@ Thermocouple::Thermocouple(Sensor_Configuration configuration) : Sensor_Group(co
 	
 }
 
-/*Thermocouple::~Thermocouple(){
+Thermocouple::~Thermocouple(){
 	//do nothing
-}*/
+}
 
 bool Thermocouple::connect() {
 	//TODO::implement connection

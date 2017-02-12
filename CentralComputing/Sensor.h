@@ -1,3 +1,6 @@
+#ifndef SENSOR_H
+#define SENSOR_H
+
 #include <map>
 #include <vector>
 
@@ -139,3 +142,5 @@ class Sensor_Package {
 		map<Sensor_Type, Sensor_Group * > sensor_groups;
 
 };
+
+#endif
