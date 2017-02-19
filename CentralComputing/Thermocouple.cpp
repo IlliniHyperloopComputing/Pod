@@ -40,9 +40,10 @@ void Thermocouple::simulation_1() {
 	
 	//TODO calc some actual value
 	
-	//TODO: lock mutex
+	//Creates a mutex lock that automatically unlocks after it falls out of scope
+	//Cleaner than calling mutex lock
+	lock_guard<mutex> guard(sensor_group_mutex);
 	for(size_t i = 0; i < data.size(); i++) {
 		data[i] = i;
 	}
-	//TODO: unlock mutex
 }

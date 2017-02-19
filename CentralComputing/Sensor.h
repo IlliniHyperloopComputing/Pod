@@ -3,6 +3,8 @@
 
 #include <map>
 #include <vector>
+#include <thread>
+#include <mutex>
 
 using namespace std;
 enum Sensor_Type {
@@ -28,9 +30,6 @@ struct Sensor_Configuration {
 class Sensor_Group {
 
 	public:
-
-		//Each sensor group instance also has a mutex that is grabbed on calling any function
-
 		/**
 		* Constructs a sensor group
 		* @param configuration the configuration for sensors
@@ -63,6 +62,10 @@ class Sensor_Group {
 		* Returns all available sensor data
 		**/
 		vector<double> get_data();
+
+		mutex sensor_group_mutex;
+
+
 
 	protected:
 	
