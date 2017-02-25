@@ -1,4 +1,3 @@
-
 #include "BlackLib/v3_0/BlackCore.h"
 #include "BlackLib/v3_0/BlackSPI/BlackSPI.h"
 #include <iostream>
@@ -6,12 +5,16 @@
 
 int main(){
 	BlackLib::BlackSPI  mySpi(BlackLib::SPI0_0, 8, BlackLib::SpiDefault, 2400000);
-	if( mySpi.fail(BlackLib::BlackSPI::dtErr) or mySpi.fail(BlackLib::BlackSPI::portPathErr) )
+	if( mySpi.fail(BlackLib::BlackSPI::dtErr)  )
 	{
-	    std::cout << "BlackSPI INITIALIZATION FAILED" << std::endl;
+	    std::cout << "BlackSPI INITIALIZATION FAILED dtErr" << std::endl;
 	}
-	else
+	else if(mySpi.fail(BlackLib::BlackSPI::portPathErr))
 	{
+	    std::cout << "BlackSPI INITIALIZATION FAILED portPathErr" << std::endl;
+	    std::cout << "BlackSPI INITIALIZATION IS OK" << std::endl;
+	}
+	else{
 	    std::cout << "BlackSPI INITIALIZATION IS OK" << std::endl;
 	}
 	mySpi.open( BlackLib::ReadWrite | BlackLib::NonBlock );
