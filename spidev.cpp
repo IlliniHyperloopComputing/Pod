@@ -26,24 +26,14 @@ int main(){
 	{
 	    std::cout << "OPENNING IS OK" << std::endl;
 	}
-	uint8_t sendBytes[4] = { 0x87, 0x41, 0xF1, 0x5A };
-	uint8_t recvBytes[4];
-	mySpi.transfer(sendBytes, recvBytes, sizeof(sendBytes), 100);
-	if( mySpi.fail(BlackLib::BlackSPI::transferErr) )
-	{
-	    if( mySpi.fail(BlackLib::BlackSPI::openErr) )
-	    {
-		std::cout << "TRANSFER ERROR OCCURED BECAUSE SPI TTY IS NOT OPEN" << std::endl;
-	    }
-	    else
-	    {
-		std::cout << "TRANSFER ERROR OCCURED" << std::endl;
-	    }
-	}
-	else
-	{
-	    std::cout << "TRANSFER IS OK" << std::endl;
-	}
+  while(1){
+    uint8_t sendBytes[4] = { 0x87, 0x87, 0x87, 0x87 };
+    uint8_t recvBytes[4];
+    if(mySpi.transfer(sendBytes, recvBytes, sizeof(sendBytes), 100)){
+      std::cout << "got: " << (char)recvBytes[0] << std::endl;
+    }
+    
+  }
 
 	return 0;
 }
