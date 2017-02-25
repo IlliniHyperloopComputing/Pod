@@ -1,6 +1,7 @@
 
 #include "BlackLib/v3_0/BlackCore.h"
 #include "BlackLib/v3_0/BlackSPI/BlackSPI.h"
+#include <iostream>
 
 
 int main(){
