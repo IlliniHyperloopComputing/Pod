@@ -117,14 +117,20 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
+	uint32_t speed = 1000000;
+	if (ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed) < 0) {
+		perror("SPI max_speed_hz");
+		return;
+	}
+
 	dumpstat(name, fd);
 	
 	uint8_t rx = 0;	
-	uint8_t tx = 0x87;	
+	uint8_t tx = 0xAA;	
 	
 	while(1){
 		write(fd,&tx,1);
-		read(fd,&rx,1);
+		//read(fd,&rx,1);
 		if((char)rx == 'z'){
 			printf("Omg it works\n");
 		}
