@@ -4,6 +4,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include <string.h>
+#include <time.h>
 
 #include <sys/ioctl.h>
 #include <sys/types.h>
@@ -122,18 +123,29 @@ int main(int argc, char **argv)
 		perror("SPI max_speed_hz");
 		return;
 	}
+	uint8_t bits_per_word = 8;
+	if (ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word) < 0) {
+		perror("SPI bits_per_word");
+		return;
+	}
 
 	dumpstat(name, fd);
 	
-	uint8_t rx = 0;	
-	uint8_t tx = 0xAA;	
-	
-	while(1){
+	uint16_t tx = 0xDE;	
+	uint16_t tx1 = 0xAD;
+	uint16_t rx = 0xBEEF;	
+	struct timespec ts, ts2;
+	while(getc(stdin)){
+		clock_gettime(CLOCK_MONOTONIC,&ts);
 		write(fd,&tx,1);
-		//read(fd,&rx,1);
-		if((char)rx == 'z'){
+		clock_gettime(CLOCK_MONOTONIC, &ts2);
+		write(fd,&tx1,1);
+		if(rx == 0x88){
 			printf("Omg it works\n");
 		}
+		double final = (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
+		printf("read: %x\n",rx);
+		printf("took %lf seconds\n", final);
 	}
 
 	close(fd);
