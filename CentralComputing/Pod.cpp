@@ -1,10 +1,5 @@
 #include "Pod.h"
 
-Pod::Pod() :
-	StateMachine(ST_MAX_STATES)
-{
-	//Any other constructor work
-}
 
 void Pod::move_functional_tests(){
 	BEGIN_TRANSITION_MAP							/* Current state */
