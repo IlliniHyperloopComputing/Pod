@@ -118,7 +118,8 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	uint32_t speed = 1000000;
+	//uint32_t speed = 1000000;
+	uint32_t speed = 500000;
 	if (ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed) < 0) {
 		perror("SPI max_speed_hz");
 		return;
@@ -131,22 +132,32 @@ int main(int argc, char **argv)
 
 	dumpstat(name, fd);
 	
-	uint16_t tx = 0xDE;	
-	uint16_t tx1 = 0xAD;
-	uint16_t rx = 0xBEEF;	
+	uint16_t tx = 0xde;	
+	uint16_t rx = 0xEF;	
+	uint16_t rxbuf[64];
 	struct timespec ts, ts2;
+	
+	int ct = 0;
+	double sum = 0;
 	while(getc(stdin)){
+	//while(ct<10000){
+		//printf("w: %x\t",tx);
 		clock_gettime(CLOCK_MONOTONIC,&ts);
-		write(fd,&tx,1);
+
+		//write(fd,&tx,4);
+		read(fd,&rxbuf,64);
+
 		clock_gettime(CLOCK_MONOTONIC, &ts2);
-		write(fd,&tx1,1);
-		if(rx == 0x88){
-			printf("Omg it works\n");
-		}
-		double final = (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
-		printf("read: %x\n",rx);
-		printf("took %lf seconds\n", final);
+		//printf("r: %x\n",rx);
+		sum += (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
+		printf("took: %lf seconds\n", sum);
+		sum = 0;
+		ct++;
+		//double final = (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
 	}
+	//double final = (sum)///1000000000.0;
+	printf("took: %lf seconds\n", sum);
+	printf(" avg: %lf seconds\n", sum/10000);
 
 	close(fd);
 	return 0;
