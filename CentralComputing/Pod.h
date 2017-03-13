@@ -2,6 +2,7 @@
 #define _POD_H
 
 #include "StateMachineCompact/StateMachine.h"
+#include <iostream>
 
 
 class Pod : public StateMachine {
