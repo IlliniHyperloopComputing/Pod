@@ -19,15 +19,18 @@ POD_D 			= build_test
 POD_CROSS 	= cross
 POD_CROSS_D = cross_test
 
-all : 
+all : mkdir_obj
 	$(error Usage: make [compile type]  build  build_test  cross  cross_test)
 
 
+.PHONY: mkdir_obj
 mkdir_obj:
 	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $(OBJ_DIR)/StateMachineCompact
 
 #Setup specific build rules
 #This allows for one set of build rules
+
 $(POD) : CXX 		 	= $(CXX_NORM)
 $(POD) : CFLAGS  	= $(CFLAGS_RELEASE)
 $(POD) : LD  			= $(LD_NORM)
@@ -38,30 +41,33 @@ $(POD_D) : CXX 		 	= $(CXX_NORM)
 $(POD_D) : CFLAGS  	= $(CFLAGS_DEBUG)
 $(POD_D) : LD  			= $(LD_NORM)
 $(POD_D) : EXENAME	= $(POD_D)
+$(POD_D) : EXE
 
 $(POD_CROSS) : CXX 		 	= $(CXX_CROSS)
 $(POD_CROSS) : CFLAGS  	= $(CFLAGS_RELEASE)
 $(POD_CROSS) : LD  			= $(LD_BBB)
 $(POD_CROSS) : EXENAME	= $(POD_CROSS)
+$(POD_CROSS) : EXE
 
 $(POD_CROSS_D) : CXX 		 	= $(CXX_CROSS)
 $(POD_CROSS_D) : CFLAGS  	= $(CFLAGS_DEBUG)
 $(POD_CROSS_D) : LD  			= $(LD_BBB)
 $(POD_CROSS_D) : EXENAME	= $(POD_CROSS_D)
+$(POD_CROSS_D) : EXE
 
 #include dependencies
--include $(OBJ_DIR)/*-$(EXENAME).d
+#-include $(OBJ_DIR)/*.d
 
 #
 # LINK LINK LINK LINK
 #
-EXE : mkdir_obj $(OBJ:%.o=$(OBJ_DIR)/%-$(EXENAME).o)
+EXE : $(OBJ:%.o=$(OBJ_DIR)/%.o)
 	$(CXX) $? $(LDFLAGS) -o $(EXENAME)
 
 #
 # COMPILE COMPILE COMPILE
 #
-$(OBJ_DIR)/%-$(EXENAME).o : %.cpp
+$(OBJ_DIR)/%.o : %.cpp
 	$(CXX) $? $(CFLAGS) -o $@
 
 clean:
