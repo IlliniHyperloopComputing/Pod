@@ -8,13 +8,16 @@
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
 
+//
 enum Xmega_Request {
   //Read num bytes as described in Xmega_Setup
-  SENSOR = 0,
+  X_SENSOR = 0,
   //Read byte to determine if any Xmega sensor error
-  SENSOR_STATUS = 1,
-  //What state is the Xmega in
-  STATE = 2,
+  X_SENSOR_STATUS = 1,
+  //What state is the Xmega in. Reads a byte
+  X_STATE = 2,
+  //Read All of the above at once
+  X_ALL = 3,
   
 }
 
@@ -33,6 +36,8 @@ class Spi {
   public: 
     /**
     * Construct an Spi object
+    * @param  Xmega #1 setup
+    * @param  Xmega #2 setup
     **/ 
     Spi(Xmega_Setup * x1, Xmega_Setup * x2);
 
@@ -40,6 +45,16 @@ class Spi {
     * Destructor
     **/
     ~Spi();
+
+    /**
+    * Send a request to the Xmega for data. Also read it back
+    * @param Enum describing request type. Doubles as the request code
+    * @param Device number 0 or 1. Depends on constructor initalization order
+    **/
+    request(Xmega_Request request_type, uint8_t device);
+
+
+    
 
 
 
