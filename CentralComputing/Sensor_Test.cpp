@@ -16,7 +16,7 @@ int main() {
 	configs.push_back(c);
 
 	Sensor_Package p(configs);
-	usleep(20000000);
+	usleep(200000);
 	p.update();
 	
 	cout << "Mostly works!" << endl;
