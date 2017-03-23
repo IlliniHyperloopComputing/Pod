@@ -8,8 +8,7 @@
 
 #include <sys/ioctl.h>
 #include <sys/types.h>
-#include <sys/stat.h>
-
+#include <sys/stat.h> 
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
 
@@ -110,6 +109,7 @@ int main(int argc, char **argv)
 	int		readcount = 0;
 	int		msglen = 0;
 	int		fd;
+	int		fd2;
 	const char	*name;
 
 	fd = open("/dev/spidev1.0", O_RDWR);
@@ -118,19 +118,34 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	//uint32_t speed = 1000000;
 	uint32_t speed = 500000;
 	if (ioctl(fd, SPI_IOC_WR_MAX_SPEED_HZ, &speed) < 0) {
 		perror("SPI max_speed_hz");
 		return;
 	}
+
+
 	uint8_t bits_per_word = 8;
 	if (ioctl(fd, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word) < 0) {
 		perror("SPI bits_per_word");
 		return;
 	}
-
 	dumpstat(name, fd);
+
+	//fd2 = open("/dev/spidev1.1", O_RDWR);
+	//if (fd2 < 0) {
+	//	perror("open");
+	//	return 1;
+	//}
+	//if (ioctl(fd2, SPI_IOC_WR_MAX_SPEED_HZ, &speed) < 0) {
+	//	perror("SPI max_speed_hz");
+	//	return;
+	//}
+	//if (ioctl(fd2, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word) < 0) {
+	//	perror("SPI bits_per_word");
+	//	return;
+	//}
+	//dumpstat(name, fd2);
 	
 	uint16_t tx = 0xde;	
 	uint16_t rx = 0xEF;	
@@ -140,25 +155,29 @@ int main(int argc, char **argv)
 	int ct = 0;
 	double sum = 0;
 	while(getc(stdin)){
-	//while(ct<10000){
 		//printf("w: %x\t",tx);
-		clock_gettime(CLOCK_MONOTONIC,&ts);
+		//clock_gettime(CLOCK_MONOTONIC,&ts);
 
-		//write(fd,&tx,4);
-		read(fd,&rxbuf,64);
+		write(fd,&tx,1);
+		read(fd,&rx,1);
+		printf("fd1 r: %x\n",rx);
 
-		clock_gettime(CLOCK_MONOTONIC, &ts2);
-		//printf("r: %x\n",rx);
-		sum += (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
-		printf("took: %lf seconds\n", sum);
-		sum = 0;
-		ct++;
+		//write(fd2,&tx,1);
+		//read(fd2,&rx,1);
+		//printf("fd2 r: %x\n",rx);
+
+		//sum += (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
+		//printf("took: %lf seconds\n", sum);
+		//clock_gettime(CLOCK_MONOTONIC, &ts2);
+		//sum = 0;
+		//ct++;
 		//double final = (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
 	}
 	//double final = (sum)///1000000000.0;
-	printf("took: %lf seconds\n", sum);
-	printf(" avg: %lf seconds\n", sum/10000);
+	//printf("took: %lf seconds\n", sum);
+	//printf(" avg: %lf seconds\n", sum/10000);
 
 	close(fd);
+	close(fd2);
 	return 0;
 }
