@@ -132,20 +132,20 @@ int main(int argc, char **argv)
 	}
 	dumpstat(name, fd);
 
-	//fd2 = open("/dev/spidev1.1", O_RDWR);
-	//if (fd2 < 0) {
-	//	perror("open");
-	//	return 1;
-	//}
-	//if (ioctl(fd2, SPI_IOC_WR_MAX_SPEED_HZ, &speed) < 0) {
-	//	perror("SPI max_speed_hz");
-	//	return;
-	//}
-	//if (ioctl(fd2, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word) < 0) {
-	//	perror("SPI bits_per_word");
-	//	return;
-	//}
-	//dumpstat(name, fd2);
+	fd2 = open("/dev/spidev1.1", O_RDWR);
+	if (fd2 < 0) {
+		perror("open");
+		return 1;
+	}
+	if (ioctl(fd2, SPI_IOC_WR_MAX_SPEED_HZ, &speed) < 0) {
+		perror("SPI max_speed_hz");
+		return;
+	}
+	if (ioctl(fd2, SPI_IOC_WR_BITS_PER_WORD, &bits_per_word) < 0) {
+		perror("SPI bits_per_word");
+		return;
+	}
+	dumpstat(name, fd2);
 	
 	uint16_t tx = 0xde;	
 	uint16_t rx = 0xEF;	
@@ -162,9 +162,9 @@ int main(int argc, char **argv)
 		read(fd,&rx,1);
 		printf("fd1 r: %x\n",rx);
 
-		//write(fd2,&tx,1);
-		//read(fd2,&rx,1);
-		//printf("fd2 r: %x\n",rx);
+		write(fd2,&tx,1);
+		read(fd2,&rx,1);
+		printf("fd2 r: %x\n",rx);
 
 		//sum += (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
 		//printf("took: %lf seconds\n", sum);
