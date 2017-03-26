@@ -12,6 +12,7 @@
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
 
+#include "crc.h"
 
 static int verbose;
 
@@ -46,35 +47,30 @@ static void do_read(int fd, int len)
 	printf("\n");
 }
 
-static void do_msg(int fd, int len)
+uint8_t trade_byte(int fd, uint8_t msg)
 {
 	struct spi_ioc_transfer	xfer[2];
-	unsigned char		buf[32], *bp;
-	int			status;
+	uint8_t in;
 
-	memset(xfer, 0, sizeof xfer);
-	memset(buf, 0, sizeof buf);
+	memset(xfer, 0, sizeof(xfer));
 
-	if (len > sizeof buf)
-		len = sizeof buf;
-
-	buf[0] = 0xaa;
-	xfer[0].tx_buf = (unsigned long)buf;
+	xfer[0].tx_buf =  (size_t)(&msg);
 	xfer[0].len = 1;
+	xfer[0].cs_change = 1;
 
-	xfer[1].rx_buf = (unsigned long) buf;
-	xfer[1].len = len;
+	xfer[1].rx_buf = (size_t)(&in);
+	xfer[1].len = 1;
+	xfer[1].cs_change = 0;
 
-	status = ioctl(fd, SPI_IOC_MESSAGE(2), xfer);
+	
+
+	int status = ioctl(fd, SPI_IOC_MESSAGE(2), xfer);
 	if (status < 0) {
-		perror("SPI_IOC_MESSAGE");
-		return;
+		perror("SPI_IOC_MESSAGE"); return;
 	}
 
-	printf("response(%2d, %2d): ", len, status);
-	for (bp = buf; len; len--)
-		printf(" %02x", *bp++);
-	printf("\n");
+	return in;
+
 }
 
 static void dumpstat(const char *name, int fd)
@@ -147,28 +143,57 @@ int main(int argc, char **argv)
 	}
 	dumpstat(name, fd2);
 	
+
+
 	uint16_t tx = 0xde;	
 	uint16_t rx = 0xEF;	
-	uint16_t rxbuf[64];
+	size_t tx_4 = 0xdededede;
+	size_t rx_4 ;
 	struct timespec ts, ts2;
-	
 	int ct = 0;
 	double sum = 0;
+	uint8_t rx_buff[15];
+
+	uint8_t to_crc = 0xde;
+	uint16_t crc_check = CRCCCITT(&to_crc,1,0x0000);
+	uint16_t crc_check1 = CRCCCITT_byte(0,0x00de);
+
+	printf("crc_check: %x    %x\n",crc_check, crc_check1); 
+
 	while(getc(stdin)){
-		//printf("w: %x\t",tx);
-		//clock_gettime(CLOCK_MONOTONIC,&ts);
+		memset(rx_buff, 0, 15);
+		crc_check = 0;
 
-		write(fd,&tx,1);
-		read(fd,&rx,1);
-		printf("fd1 r: %x\n",rx);
+		clock_gettime(CLOCK_MONOTONIC,&ts);
+		//write(fd,&tx,1);
+		//read(fd,&rx,1);
+		//printf("fd1 r: %x\n",rx);
 
-		write(fd2,&tx,1);
-		read(fd2,&rx,1);
-		printf("fd2 r: %x\n",rx);
+		tx = 0xAA;
+		write(fd, &tx,1);
+		int k = 0;
+		for(k = 0; k<14; k++){
+			read(fd, rx_buff+k, 1);
+			//printf("fd1 r: %x\n",rx_buff[k]);
+		}
 
-		//sum += (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
-		//printf("took: %lf seconds\n", sum);
-		//clock_gettime(CLOCK_MONOTONIC, &ts2);
+
+		clock_gettime(CLOCK_MONOTONIC, &ts2);
+		sum = (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
+		printf("took: %lf seconds\n", sum);
+
+		crc_check = CRCCCITT(rx_buff,12,0);
+		printf("CRC: b-y-b:%x    %x\n", crc_check);
+		
+		for(k = 0; k<14; k++){
+			printf("fd1 r: %x\n",rx_buff[k]);
+		}
+		uint16_t correct_crc = (rx_buff[13]<<8) | (rx_buff[12]);
+
+		printf("correct crc: %x \n", correct_crc);
+		if(correct_crc == crc_check){
+			printf("YAY ERROR CHECKING worked\n");
+		}
 		//sum = 0;
 		//ct++;
 		//double final = (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
