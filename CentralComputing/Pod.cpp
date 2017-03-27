@@ -1,4 +1,5 @@
 #include "Pod.h"
+#include <assert.h>
 
 // TODO we should really consider adding EventData* as parameters to movement events as they could allow us to easily retrieve information on the Pod's operations
 
@@ -71,33 +72,30 @@ void Pod::brake() {
 
 
 // State Machine State functions
-void Pod::ST_Safe_Mode(EventData*) {
+void Pod::ST_Safe_Mode() {
 	std::cout << "Entering: Safe Mode" << std::endl;
-	
 	// TODO implement here
 }
 
-void ST_Functional_Test(EventData*) {
+void Pod::ST_Functional_Test() {
 	std::cout << "Entering: Functional Test" << std::endl;
-	
 	// TODO implement here
 }
 
-void ST_Flight_Accel(EventData*) {
+void Pod::ST_Flight_Accel() {
 	std::cout << "Entering: Flight Accel" << std::endl;
 
 	// TODO implement here
 }
 
-void ST_Flight_Coast(EventData*) {
+void Pod::ST_Flight_Coast() {
 	std::cout << "Entering: Flight Coast" << std::endl;
 	
 	// TODO implement here
 }
 
-void ST_Flight_Brake(EventData*) {
+void Pod::ST_Flight_Brake() {
 	std::cout << "Entering: Flight Brake" << std::endl;
 	
 	// TODO implement here
 }
-

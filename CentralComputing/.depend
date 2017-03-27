@@ -7,5 +7,7 @@ Motor.o: StateMachineCompact/Motor.cpp StateMachineCompact/Motor.h \
  StateMachineCompact/StateMachine.h
 StateMachine.o: StateMachineCompact/StateMachine.cpp \
  StateMachineCompact/StateMachine.h
-Sensor_Test.o: Sensor_Test.cpp Sensor.h
+Sensor_Test.o: Sensor_Test.cpp Sensor.h Pod.h \
+ StateMachineCompact/StateMachine.h StateMachineCompact/stdafx.h \
+ StateMachineCompact/targetver.h
 Thermocouple.o: Thermocouple.cpp Sensor.h

@@ -3,8 +3,15 @@
 
 #include "StateMachineCompact/StateMachine.h"
 #include <iostream>
+#include <string>
 
-
+struct PodData : public EventData
+{
+	std::string state;
+	PodData() {
+		state = "";
+	}
+};
 class Pod : public StateMachine {
 	public:	
 		/** 
@@ -28,11 +35,11 @@ class Pod : public StateMachine {
 
 	private:
 	
-		void ST_Safe_Mode(EventData*);
-		void ST_Functional_Test(EventData*);
-		void ST_Flight_Accel(EventData*);
-		void ST_Flight_Coast(EventData*);
-		void ST_Flight_Brake(EventData*);
+		void ST_Safe_Mode();
+		void ST_Functional_Test();
+		void ST_Flight_Accel();
+		void ST_Flight_Coast();
+		void ST_Flight_Brake();
 
 		BEGIN_STATE_MAP
 			STATE_MAP_ENTRY(&Pod::ST_Safe_Mode)
