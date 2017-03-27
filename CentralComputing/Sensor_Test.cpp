@@ -8,7 +8,9 @@
 #include <sstream>
 #include <algorithm>
 #include <vector>
+#include <stdlib.h>
 
+#include <time.h>
 
 using namespace std;
 
@@ -92,8 +94,35 @@ void manual(Pod& pod) {
 
 // monkey test
 void random(int num, Pod& pod) {
-	cout << "TODO needs to be added" << endl;
-	cout << "	This will be a monkey test" << endl;
+	srand(time(NULL));
+	cout << "random test for " << num << "cycles" << endl;
+	for(int i = 0; i < num; i++) {
+		int r = rand() % 6 +1;
+		if ( r == 1 ) {
+			cout << "~move_functinal_tests"<< endl;
+			pod.move_functional_tests();
+		}
+		else if ( r == 2 ) {
+			cout << "~move_safe_mode"<< endl;
+			pod.move_safe_mode();
+		}
+		else if ( r == 3 ) {
+			cout << "~move_flight_acceleration"<< endl;
+			pod.move_flight_acceleration();
+		}
+		else if ( r == 4 ) {
+			cout << "~emergency_brake"<< endl;
+			pod.emergency_brake();
+		}
+		else if ( r == 5 ) {
+			cout << "~coast"<< endl;
+			pod.coast();
+		}
+		else if ( r == 6 ) {
+			cout << "~brake"<< endl;
+			pod.brake();
+		}
+	}
 }
 
 void defaultTest(Pod& pod) {
@@ -123,8 +152,12 @@ int main(int argc, char** argv) {
 			manual(pod);
 		}
 		else if(args[1] == "random") {
-			
-			random(10,pod);
+			if(argc >= 3) {
+				random(std::stoi(args[2]), pod);
+			}
+			else {
+				random(10,pod);
+			}
 		}
 		else if(args[1] == "help" || args[1] == "-h") {
 			printHelp();
