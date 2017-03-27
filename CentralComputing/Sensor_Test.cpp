@@ -93,6 +93,7 @@ void manual(Pod& pod) {
 // monkey test
 void random(int num, Pod& pod) {
 	cout << "TODO needs to be added" << endl;
+	cout << "	This will be a monkey test" << endl;
 }
 
 void defaultTest(Pod& pod) {
