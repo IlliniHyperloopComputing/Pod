@@ -50,41 +50,46 @@ bool checkState(string word, Pod& pod) {
 	string arg = word.substr(start+1,end-1);
 	int state = pod.getCurrentState();
 
-	// negates the positive claim
+	// pos handles if (current_state == some_state) should return true or false
 	bool pos = true;
 	if(arg.front() == '!') {
+		// negates the positive claim
 		pos = false;
 		// removes ! from argument
 		arg = arg.substr(1);
 	}
 	
 	// switch case for all the different states
+	// uses
 	switch(state) {
-		case 0:
+		case Pod::ST_SAFE_MODE:
+			// if the arg matches for this case
 			if(arg == "SAFE_MODE" || arg == "S_M") {
+				// return whatever pos is
 				return pos;
 			}
+			// other wise return the negate of pos
 			return !pos;
 			break;
-		case 1:
+		case Pod::ST_FUNCTIONAL_TEST:
 			if(arg == "FUNCTIONAL_TESTS" || arg == "F_T") {
 				return pos;
 			}
 			return !pos;
 			break;
-		case 2:
+		case Pod::ST_FLIGHT_ACCEL:
 			if(arg == "FLIGHT_ACCEL" || arg == "F_A") {
 				return pos;
 			}
 			return !pos;
 			break;
-		case 3:
+		case Pod::ST_FLIGHT_COAST:
 			if(arg == "FLIGHT_COAST" || arg == "F_C") {
 				return pos;
 			}
 			return !pos;
 			break;
-		case 4:
+		case Pod::ST_FLIGHT_BRAKE:
 			if(arg == "FLIGHT_BRAKE" || arg == "F_B") {
 				return pos;
 			}
