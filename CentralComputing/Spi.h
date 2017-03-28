@@ -1,6 +1,7 @@
 #ifndef SPI_H 
 #define SPI_H 
 
+#include <stdint.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -18,36 +19,65 @@ enum Xmega_Request_t {
   X_STATE = 2,
   //Read All of the above at once
   X_ALL = 3,
-}
+};
+
+typedef struct Xmega_Request_{
+
+} Xmega_Request;
 
 typedef struct Xmega_Setup_{
-  //Spi file path
-  // "/dev/spidev1.0"
+  /**
+  * Spi file path
+  * "/dev/spidev1.0"
+  * "/dev/spidev1.1"
+  * This will likely be static memory
+  **/
   char * file_path;
   
   //Number of bytes to read when making sensor request 
   uint8_t sensor_request_num_bytes;
 
-  //number of data items. 
-  //if we were getting the values of 3 thermocouples,
-  //a distance value, and an ADC value, then
-  //num_items == 5
+  /**
+  * Number of data items. 
+  * Say the data to read from the Xmega contains
+  * 3 thermocouples, a distance value, and an ADC value, 
+  * then num_items == 5
+  **/
   uint8_t num_items;
-
 
   /**
   * An array of length num_items
-  * each index holds the number of bits that the corresponding
-  * data is. So, if the thermocouple data is 16 bits, then the
-  * correpsonding index is 16. 
+  * each index holds the number of bytes that the corresponding
+  * takes up in memory, even if the data doesn't use all bits. 
+  * For example, if the thermocouple data is 16 bits, then the 
+  * corresponding value is 2. 
+  * For example, if some ADC value is known to only be 10-bits,
+  * 2 bytes will still be used to represent this value. So the 
+  * corresponding value will be 2.
   * 
+  * Example: 
   * num_items = 4
-  * index        -> |   0    |      1      |     2      |     3      |
-  * xmega data   -> | thermo | ride height | 10-bit ADC | 12-bit ADC |
-  * bits_per_item-> |   16   |      16     |     10     |     16     |
+  * index         -> |       0       |         1        |     2      |     3      |
+  * xmega data    -> | 16-bit thermo | 8-bit rideheight | 10-bit ADC | 12-bit ADC |
+  * bytes_per_item-> |       2       |         1        |     2      |     2      |
+  *
+  * Question: Why pad the 10-bit values with "useless" bits to make up a byte? 
+  *           Why not just 'stack' them, crossing byte boundaries? 
+  *           Say we had three 10-bit values to send. 'stack'ing 
+  *           them requires a total of 30 bits, or 4 bytes. 
+  *           Not 'stack'ing them requires 6 bytes.
+  *           Wouldn't this save on transmission time? 
+  *
+  * Answer:   Yes. But its a pain to pull out each data item and is easily 
+  *           prone to error. Also, the savings on transmission for 20 bytes
+  *           is approximatly .5 milliseconds. So it only makes sense to
+  *           implement when there is ALOT of data that can be 'stack'ed
+  *           But it's probably just better to keep the code readable,
+  *           not to mention it's much easier to do on the Xmega without
+  *           'stack'ing.
   * 
   **/
-  uint8_t * bits_per_item;
+  uint8_t * bytes_per_item;
 
   //Speed in Hz. Should be 500000;
   uint32_t speed;
@@ -62,8 +92,8 @@ class Spi {
 
     /**
     * Construct an Spi object
-    * @param  Xmega #1 setup
-    * @param  Xmega #2 setup
+    * @param x1  Xmega #1 setup
+    * @param x2  Xmega #2 setup
     **/ 
     Spi(Xmega_Setup * x1, Xmega_Setup * x2);
 
@@ -76,11 +106,22 @@ class Spi {
     * Send/Recieve data from the Xmegas
     * Communications between each Xmega is interlaced
     * because of corruption issues experienced before
-    * @param Enum describing request type. 
+    * @param request_type   Xmega_Request describing request type from 
+    *                       each Xmega.
     **/
-    request(Xmega_Request request_type);
+    void request(Xmega_Request request_type);
 
-    get_data(uint8_t device, int idx);
+    /**
+    * Of the most recently recieved data, get the appropriate index
+    * Refer to the bytes_per_item member of the Xmega_Setup struct
+    * @param device  which Xmega's data? 
+    *                Value of 0 or 1
+    *
+    * @param idx     which index to pull? 
+    *                Max value of Xmega_Setup(device).num_items-1
+    *                
+    **/
+    uint32_t get_data(uint8_t device, int idx);
 
   private:
 
@@ -93,8 +134,6 @@ class Spi {
     char * x1_buff;
     char * x2_buff;
 
-}
-
-
+};
 
 #endif 
