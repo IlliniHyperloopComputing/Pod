@@ -5,20 +5,30 @@
 #include <iostream>
 #include <string>
 
-struct PodData : public EventData
-{
-	std::string state;
-	PodData() {
-		state = "";
-	}
-};
 class Pod : public StateMachine {
-	public:	
+	public:
+
+		enum E_States
+		{
+			ST_SAFE_MODE = 0,
+			ST_FUNCTIONAL_TEST,
+			ST_FLIGHT_ACCEL,
+			ST_FLIGHT_COAST,
+			ST_FLIGHT_BRAKE,
+			ST_MAX_STATES
+		};
+
 		/** 
 		* Constructs a pod state machine
 		**/
 		Pod() : StateMachine(ST_MAX_STATES) {}
 
+		// returns the current state as an enum
+		E_States getCurrentState();
+		
+		// returns the string name for current state
+		std::string get_current_state_string();
+		
 		/**
 		* User controlled movement events
 		**/
@@ -32,7 +42,7 @@ class Pod : public StateMachine {
 		**/
 		void coast();
 		void brake();
-
+		
 	private:
 	
 		void ST_Safe_Mode();
@@ -48,19 +58,6 @@ class Pod : public StateMachine {
 			STATE_MAP_ENTRY(&Pod::ST_Flight_Coast)
 			STATE_MAP_ENTRY(&Pod::ST_Flight_Brake)
 		END_STATE_MAP
-
-
-		enum E_States
-		{
-			ST_SAFE_MODE = 0,
-			ST_FUNCTIONAL_TEST,
-			ST_FLIGHT_ACCEL,
-			ST_FLIGHT_COAST,
-			ST_FLIGHT_BRAKE,
-			ST_MAX_STATES
-		};
-
-
 };
 
 #endif

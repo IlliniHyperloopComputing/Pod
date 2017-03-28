@@ -15,7 +15,8 @@ class StateMachine
 {
 public:
     StateMachine(unsigned char maxStates);
-    virtual ~StateMachine() {}
+    unsigned char getCurrentState();
+	virtual ~StateMachine() {}
 protected:
     enum { EVENT_IGNORED = 0xFE, CANNOT_HAPPEN };
     unsigned char currentState;

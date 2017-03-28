@@ -1,7 +1,23 @@
 #include "Pod.h"
 #include <assert.h>
 
-// TODO we should really consider adding EventData* as parameters to movement events as they could allow us to easily retrieve information on the Pod's operations
+// returns the current state as a E_States enum
+Pod::E_States Pod::getCurrentState() {
+	return (E_States)StateMachine::getCurrentState();
+}
+
+std::string Pod::get_current_state_string() {
+		std::string states[] =
+		{
+			"SAFE_MODE",
+			"FUNCTIONAL_TESTS",
+			"FLIGHT_ACCEL",
+			"FLIGHT_COAST",
+			"FLIGHT_BRAKE",
+			"NULL"
+		};
+		return states[(int)getCurrentState()];
+}
 
 /**
  * User controlled movement events
@@ -74,6 +90,7 @@ void Pod::brake() {
 // State Machine State functions
 void Pod::ST_Safe_Mode() {
 	std::cout << "Entering: Safe Mode" << std::endl;
+	//std::cout << GetCurrentState() << std::endl;
 	// TODO implement here
 }
 

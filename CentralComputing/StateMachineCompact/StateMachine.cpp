@@ -8,7 +8,10 @@ StateMachine::StateMachine(unsigned char maxStates) :
     _pEventData(NULL)
 {
 }    
- 
+// returns the current state of the StateMachine
+unsigned char StateMachine::getCurrentState() {
+	return currentState;
+}
 // generates an external event. called once per external event 
 // to start the state machine executing
 void StateMachine::ExternalEvent(unsigned char newState, 
