@@ -58,36 +58,37 @@ bool checkState(string word, Pod& pod) {
 		arg = arg.substr(1);
 	}
 	
+	// switch case for all the different states
 	switch(state) {
 		case 0:
 			if(arg == "SAFE_MODE" || arg == "S_M") {
-				return pos & true;
+				return pos;
 			}
-			return !pos & false;
+			return !pos;
 			break;
 		case 1:
 			if(arg == "FUNCTIONAL_TESTS" || arg == "F_T") {
-				return pos & true;
+				return pos;
 			}
-			return !pos & false;
+			return !pos;
 			break;
 		case 2:
 			if(arg == "FLIGHT_ACCEL" || arg == "F_A") {
-				return pos & true;
+				return pos;
 			}
-			return !pos & false;
+			return !pos;
 			break;
 		case 3:
 			if(arg == "FLIGHT_COAST" || arg == "F_C") {
-				return pos & true;
+				return pos;
 			}
-			return !pos & false;
+			return !pos;
 			break;
 		case 4:
 			if(arg == "FLIGHT_BRAKE" || arg == "F_B") {
-				return pos & true;
+				return pos;
 			}
-			return !pos & false;
+			return !pos;
 			break;
 		default:
 			return false;
