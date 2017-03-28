@@ -9,7 +9,11 @@
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
 
-//
+#include <string>
+
+using namespace std;
+
+
 enum Xmega_Request_t {
   //Read num bytes as described in Xmega_Setup
   X_SENSOR = 0,
@@ -32,7 +36,7 @@ typedef struct Xmega_Setup_{
   * "/dev/spidev1.1"
   * This will likely be static memory
   **/
-  char * file_path;
+  string file_path;
   
   //Number of bytes to read when making sensor request 
   uint8_t sensor_request_num_bytes;
@@ -84,6 +88,7 @@ typedef struct Xmega_Setup_{
 
   //Bits per word. 8
   uint32_t bits_per_word;
+
 } Xmega_Setup;
 
 class Spi {
@@ -126,8 +131,8 @@ class Spi {
   private:
 
     //Storage of setup details
-    Xmega_Setup x1;
-    Xmega_Setup x2;
+    Xmega_Setup * x1;
+    Xmega_Setup * x2;
 
     //storage of last read in stuff
     //dynamically allocated, acording to maximum message size + 2
