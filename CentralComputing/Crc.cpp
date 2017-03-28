@@ -1,5 +1,7 @@
 #include "Crc.h"
 
+//This mysterious table holds all of CRC calculations
+//So they do not need to be recomputed
 static uint16_t crc_table [256] = {
 
 0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5,
@@ -47,21 +49,31 @@ static uint16_t crc_table [256] = {
 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0
 };
 
+/**
+* The CRC algroithm used is the CRC-CCITT XModem
+* Why this one? Because the Xmega has hardware 
+* acceleration for this calculation 
+* Also, this version is only 16 bits, not 32.
+* This impacts transmission time, since a CRC
+* checksum will be sent following every message
+* is only 16 bits, as opposed to 32 bits. 
+*
+* @param data     array of bytes to be processed
+* @param length   length of data array
+* @param seed     initial CRC value. Should be 0 
+*                   to comply with XModem
+*
+**/
 uint16_t CRCCCITT(uint8_t *data, size_t length, uint16_t seed)
 { 
-
    size_t count;
    uint32_t crc = seed;
 
-   for (count = 0; count < length; ++count)
-   {
+   for (count = 0; count < length; ++count){
      crc = CRCCCITT_byte(crc, *data++);
-     //temp = (*data++ ^ (crc >> 8)) & 0xff;
-     //crc = crc_table[temp] ^ (crc << 8);
    }
 
    return (uint16_t)(crc);
-
 } 
 
 //seed = 0
