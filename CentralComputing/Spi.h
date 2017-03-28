@@ -130,14 +130,36 @@ class Spi {
 
   private:
 
-    //Storage of setup details
+    /**
+    * Setup SPI for each Xmega. Should only be called after 
+    * Xmega_Setup is stored
+    **/
+    void setup_spi();
+
+
+    //Storage of setup details 
     Xmega_Setup * x1;
     Xmega_Setup * x2;
 
-    //storage of last read in stuff
+    //storage of most recently read in data
     //dynamically allocated, acording to maximum message size + 2
-    char * x1_buff;
-    char * x2_buff;
+    uint8_t * x1_buff;
+    uint8_t * x2_buff;
+
+    /**
+    * To quickly find each data item, and to make the code simpler,
+    * this will hold forward calculations of all the offsets. 
+    *
+    * Example: 
+    * num_items = 4
+    * index         -> |       0       |         1        |     2      |     3      |
+    * xmega data    -> | 16-bit thermo | 8-bit rideheight | 10-bit ADC | 12-bit ADC |
+    * bytes_per_item-> |       2       |         1        |     2      |     2      |
+    * offset_lookup -> |       0       |         2        |     3      |     5      |
+    *
+    **/
+    uint8_t * x1_offset_lookup;
+    uint8_t * x2_offset_lookup;
 
 };
 
