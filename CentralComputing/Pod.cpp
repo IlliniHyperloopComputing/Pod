@@ -1,22 +1,8 @@
 #include "Pod.h"
-#include <assert.h>
 
 // returns the current state as a E_States enum
-Pod::E_States Pod::getCurrentState() {
+Pod::E_States Pod::get_current_state() {
 	return (E_States)StateMachine::getCurrentState();
-}
-
-std::string Pod::get_current_state_string() {
-		std::string states[] =
-		{
-			"SAFE_MODE",
-			"FUNCTIONAL_TESTS",
-			"FLIGHT_ACCEL",
-			"FLIGHT_COAST",
-			"FLIGHT_BRAKE",
-			"NULL"
-		};
-		return states[(int)getCurrentState()];
 }
 
 /**

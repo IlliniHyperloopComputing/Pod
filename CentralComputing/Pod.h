@@ -24,10 +24,21 @@ class Pod : public StateMachine {
 		Pod() : StateMachine(ST_MAX_STATES) {}
 
 		// returns the current state as an enum
-		E_States getCurrentState();
+		E_States get_current_state();
 		
 		// returns the string name for current state
-		std::string get_current_state_string();
+		std::string get_current_state_string() {
+			std::string states[] =
+			{
+				"SAFE_MODE",
+				"FUNCTIONAL_TESTS",
+				"FLIGHT_ACCEL",
+				"FLIGHT_COAST",
+				"FLIGHT_BRAKE",
+				"NULL"
+			};
+			return states[(int)getCurrentState()];
+		}
 		
 		/**
 		* User controlled movement events

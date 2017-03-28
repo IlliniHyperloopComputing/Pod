@@ -15,15 +15,16 @@
 using namespace std;
 
 // declaring function, implented later
-void printHelp();
-void printHelpInstr();
+void print_help();
+void print_help_instr();
 
 /**
 	brings out the best in all of us
 */
 void memes() {
 	srand(time(NULL));
-	int r = rand() % 4 +1;
+	int r = rand() % 5 +1;
+
 	cout << "MEME LORD IS HERE FOR YOU:" << endl;
 	if(r == 1) {
 		cout << "http://media.treehugger.com/assets/images/2013/08/elon-musk-hyperloop-good-guy-elon-musk-meme-chris-tackett.png.662x0_q70_crop-scale.png" << endl;
@@ -33,6 +34,8 @@ void memes() {
 		cout << "http://www.mememaker.net/static/images/memes/4284241.jpg" << endl;
 	} else if (r == 4) {
 		cout << "https://cdn.meme.am/cache/instances/folder695/63313695.jpg" << endl;
+	} else if (r == 5) {
+		cout << "https://s-media-cache-ak0.pinimg.com/736x/92/ab/3a/92ab3abea77d3f6a397fe8545993713e.jpg" << endl;
 	}
 	cout << endl;
 }
@@ -42,64 +45,52 @@ void memes() {
 	word: check state command to be executed
 	pod: reference of pod to be checked
 
-	return: whether the command returned true or false
+	return: if the current state is the same as in command
 */
-bool checkState(string word, Pod& pod) {
+bool assert_state_equals(string word, Pod& pod) {
 	size_t start = word.find("[");
 	size_t end = word.find("]");
 	string arg = word.substr(start+1,end-1);
-	int state = pod.getCurrentState();
-
-	// pos handles if (current_state == some_state) should return true or false
-	bool pos = true;
-	if(arg.front() == '!') {
-		// negates the positive claim
-		pos = false;
-		// removes ! from argument
-		arg = arg.substr(1);
-	}
+	int state = pod.get_current_state();
 	
 	// switch case for all the different states
 	// uses
 	switch(state) {
 		case Pod::ST_SAFE_MODE:
-			// if the arg matches for this case
-			if(arg == "SAFE_MODE" || arg == "S_M") {
-				// return whatever pos is
-				return pos;
-			}
-			// other wise return the negate of pos
-			return !pos;
+			return (arg == "SAFE_MODE" || arg == "S_M");
 			break;
 		case Pod::ST_FUNCTIONAL_TEST:
-			if(arg == "FUNCTIONAL_TESTS" || arg == "F_T") {
-				return pos;
-			}
-			return !pos;
+			return (arg == "FUNCTIONAL_TESTS" || arg == "F_T");
 			break;
 		case Pod::ST_FLIGHT_ACCEL:
-			if(arg == "FLIGHT_ACCEL" || arg == "F_A") {
-				return pos;
-			}
-			return !pos;
+			return (arg == "FLIGHT_ACCEL" || arg == "F_A");
 			break;
 		case Pod::ST_FLIGHT_COAST:
-			if(arg == "FLIGHT_COAST" || arg == "F_C") {
-				return pos;
-			}
-			return !pos;
+			return (arg == "FLIGHT_COAST" || arg == "F_C");
 			break;
 		case Pod::ST_FLIGHT_BRAKE:
-			if(arg == "FLIGHT_BRAKE" || arg == "F_B") {
-				return pos;
-			}
-			return !pos;
+			return (arg == "FLIGHT_BRAKE" || arg == "F_B");
 			break;
 		default:
 			return false;
 			break;
 	}
 }
+
+/**
+	checks if the current state of pod matches witht the check state command
+	word: check state command to be executed
+	pod: reference of pod to be checked
+
+	return: if the current state is not the same as in command
+*/
+bool assert_state_not_equals(string command, Pod& pod) {
+	// remove the ! from the command
+	command = "[" + command.substr(1);
+	
+	return !assert_state_equals(command, pod);
+}
+
 
 /**
 	Processes a line of code and executes on the pod object
@@ -137,7 +128,15 @@ bool process( string word, Pod& pod ) {
 		cout << pod.get_current_state_string() << endl;
 	}
 	else if ( word.substr(0,1) == "[") {
-		bool result = checkState(word, pod);
+		bool result = false;
+		if(word.substr(1,2) == "!") {	
+			result = assert_state_not_equals(word, pod);
+		}
+		else {
+			result = assert_state_equals(word, pod);
+		}
+		
+		// prints out if the assert fails, ignores otherwise
 		if(!result) {
 			cout << "warning: " << word << " failed!" << endl;
 			cout << "	current state: " << pod.get_current_state_string() << endl;
@@ -195,10 +194,10 @@ void manual(Pod& pod) {
 
 		// a few special instructions that process func doesn't include
 		if(line == "help" || line == "-h" ) {
-			printHelp();
+			print_help();
 		}
 		if(line == "help_instructions" || line == "-hi" ) {
-			printHelpInstr();
+			print_help_instr();
 		}
 		// exit condition for loop
 		else if(line == "end" || line == "exit" ) {
@@ -257,7 +256,7 @@ void random(int num, Pod& pod) {
 	A default test for the pod, for easy testing
 	pod: reference to pod object to be executed on
 */
-void defaultTest(Pod& pod) {
+void default_test(Pod& pod) {
 	cout << "doing default test here" << endl;
 	//pod.move_functional_tests();
 	cout << pod.get_current_state_string() << endl;
@@ -276,7 +275,7 @@ int main(int argc, char** argv) {
 		cout << "Enter Arguments...type help or -h" << endl;
 	}
 	else if (args[1] == "default") {
-		defaultTest(pod);
+		default_test(pod);
 	}
 	// complex commands
 	else {
@@ -301,10 +300,10 @@ int main(int argc, char** argv) {
 		}
 		// tutorial commands
 		else if(args[1] == "help" || args[1] == "-h") {
-			printHelp();
+			print_help();
 		}
 		else if(args[1] == "help_instructions" || args[1] == "-hi" ) {
-			printHelpInstr();
+			print_help_instr();
 		}
 		else if(args[1] == "memes") {
 			memes();
@@ -315,26 +314,13 @@ int main(int argc, char** argv) {
 		}
 	}
 		
-	/*Sensor_Configuration c;
-	c.type = THERMOCOUPLE;
-	c.simulation = 1;
-	c.count = 4;
-
-	vector<Sensor_Configuration> configs;
-	configs.push_back(c);
-
-	Sensor_Package p(configs);
-	usleep(200000);
-	p.update();
-	
-	cout << "Mostly works!" << endl;
-	*/
+	//usleep(200000);
 }
 
 /**
 	prints out all the commands that can be used
 */
-void printHelp() {
+void print_help() {
 	cout << "======================" << endl;
 	cout << "ILLINI HYPER LOOOP SIM" << endl;
 	cout << "======================" << endl;
@@ -355,7 +341,7 @@ void printHelp() {
 /**
 	prints out commands that can be used for scripting
 */
-void printHelpInstr() {
+void print_help_instr() {
 	cout << "________________________________________________" << endl;
 	cout << "List w/ explanations of instructions for testing" << endl;
 	cout << "	Can also be called with -hi" << endl;
