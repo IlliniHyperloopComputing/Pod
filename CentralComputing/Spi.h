@@ -5,11 +5,14 @@
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
+#include <fcntl.h>
 
 #include <linux/types.h>
 #include <linux/spi/spidev.h>
 
 #include <string>
+
+#include <cassert>
 
 using namespace std;
 
@@ -26,7 +29,12 @@ enum Xmega_Request_t {
 };
 
 typedef struct Xmega_Request_{
+  //What data are we requesting
+  enum Xmega_Request_t req1;
+  enum Xmega_Request_t req2;
 
+  
+  
 } Xmega_Request;
 
 typedef struct Xmega_Setup_{
@@ -34,9 +42,8 @@ typedef struct Xmega_Setup_{
   * Spi file path
   * "/dev/spidev1.0"
   * "/dev/spidev1.1"
-  * This will likely be static memory
   **/
-  string file_path;
+  char * file_path;
   
   //Number of bytes to read when making sensor request 
   uint8_t sensor_request_num_bytes;
@@ -110,11 +117,11 @@ class Spi {
     /**
     * Send/Recieve data from the Xmegas
     * Communications between each Xmega is interlaced
-    * because of corruption issues experienced before
+    * to fix corruption issues experienced before
     * @param request_type   Xmega_Request describing request type from 
     *                       each Xmega.
     **/
-    void request(Xmega_Request request_type);
+    void request(Xmega_Request &request_type);
 
     /**
     * Of the most recently recieved data, get the appropriate index
@@ -128,23 +135,52 @@ class Spi {
     **/
     uint32_t get_data(uint8_t device, int idx);
 
+    /**
+    * Getter function returning the most recent sensor status
+    * of the specified device.
+    * No Spi transfer happens here.
+    * @param device   which Xmega's data?
+    *                 Value of 0 or 1 
+    **/
+    uint8_t get_sensor_status(uint8_t device);
+
+    /**
+    * Getter function returning the most recent state of the 
+    * specified device.
+    * No Spi transfer happens here.
+    * @param device   which Xmega's data?
+    *                 Value of 0 or 1 
+    **/
+    uint8_t get_state(uint8_t device);
+
+
   private:
 
     /**
     * Setup SPI for each Xmega. Should only be called after 
-    * Xmega_Setup is stored
+    * Xmega_Setup is stored.
+    * @return integer describing sucess. 0==success, 1==failure
     **/
-    void setup_spi();
+    int setup_spi();
 
 
     //Storage of setup details 
     Xmega_Setup * x1;
     Xmega_Setup * x2;
 
+    //SPI file descriptors for each Xmega
+    int fd1;
+    int fd2;
+
     //storage of most recently read in data
     //dynamically allocated, acording to maximum message size + 2
     uint8_t * x1_buff;
     uint8_t * x2_buff;
+
+    //Number of total bytes used by data (not CRC, status, or state)
+    //in the x1/2_buff
+    uint8_t x1_num_bytes;
+    uint8_t x2_num_bytes;
 
     /**
     * To quickly find each data item, and to make the code simpler,
@@ -160,6 +196,18 @@ class Spi {
     **/
     uint8_t * x1_offset_lookup;
     uint8_t * x2_offset_lookup;
+
+    /**
+    * Storage for most recent byte describing Xmega sensor_status / state
+    * This information will be initially transfered into the x1/2_buff, 
+    * but moved here because sensor_status and state might not be 
+    * requested every time
+    **/
+    uint8_t x1_sensor_status;
+    uint8_t x1_state;
+
+    uint8_t x2_sensor_status;
+    uint8_t x2_state;
 
 };
 
