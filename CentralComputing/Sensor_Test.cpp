@@ -2,7 +2,6 @@
 #include <iostream>
 #include <unistd.h>
 #include "Pod.h"
-#include "StateMachineCompact/stdafx.h"
 #include <string>
 #include <fstream>
 #include <sstream>
