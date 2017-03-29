@@ -1,26 +1,60 @@
-#include "Sensor.h"
-#include <iostream>
-#include <unistd.h>
-#include "Pod.h"
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <algorithm>
-#include <vector>
-#include <stdlib.h>
+#include "Sensor_Test.h"
 
-#include <time.h>
+int Sensor_Test::start_test(int argc, char** argv) {
+	Pod pod;
+	// argument vector
+	vector<string> args(argv, argv + argc);
 
-using namespace std;
+	// too few arguments
+	if(argc == 1) {
+		cout << "Enter Arguments...type help or -h" << endl;
+	}
+	else if (args[1] == "default") {
+		default_test(pod);
+	}
+	// complex commands
+	else {
+		if(args[1] == "load") {
+			if(argc >= 3) {
+				read_file(args[2], pod);
+			}
+			else if(args[1] == "load" && argc < 3) {
+				cout << "Please enter a file name" << endl;
+			}
+		}
+		else if(args[1] == "manual") {
+			manual(pod);
+		}
+		else if(args[1] == "random") {
+			if(argc >= 3) {
+				random(std::stoi(args[2]), pod);
+			}
+			else {
+				random(10,pod);
+			}
+		}
+		// tutorial commands
+		else if(args[1] == "help" || args[1] == "-h") {
+			print_help();
+		}
+		else if(args[1] == "help_instructions" || args[1] == "-hi" ) {
+			print_help_instr();
+		}
+		else if(args[1] == "memes") {
+			memes();
+		}
+		// command failed to be recognized
+		else {
+			cout << "command unrecognized try again or type help" << endl;
+		}
+	}
+		
+  return 0;
+	//usleep(200000);
+}
 
-// declaring function, implented later
-void print_help();
-void print_help_instr();
 
-/**
-	brings out the best in all of us
-*/
-void memes() {
+void Sensor_Test::memes() {
 	srand(time(NULL));
 	int r = rand() % 5 +1;
 
@@ -39,14 +73,7 @@ void memes() {
 	cout << endl;
 }
 
-/**
-	checks if the current state of pod matches witht the check state command
-	word: check state command to be executed
-	pod: reference of pod to be checked
-
-	return: if the current state is the same as in command
-*/
-bool assert_state_equals(string word, Pod& pod) {
+bool Sensor_Test::assert_state_equals(string word, Pod& pod) {
 	size_t start = word.find("[");
 	size_t end = word.find("]");
 	string arg = word.substr(start+1,end-1);
@@ -75,30 +102,14 @@ bool assert_state_equals(string word, Pod& pod) {
 	}
 }
 
-/**
-	checks if the current state of pod matches witht the check state command
-	word: check state command to be executed
-	pod: reference of pod to be checked
-
-	return: if the current state is not the same as in command
-*/
-bool assert_state_not_equals(string command, Pod& pod) {
+bool Sensor_Test::assert_state_not_equals(string command, Pod& pod) {
 	// remove the ! from the command
 	command = "[" + command.substr(1);
 	
 	return !assert_state_equals(command, pod);
 }
 
-
-/**
-	Processes a line of code and executes on the pod object
-	word: the line of code to execute
-	pod: a reference to the pod object to be used
-
-	returns: a bool for the success of the process
-		Usually true
-*/
-bool process( string word, Pod& pod ) {
+bool Sensor_Test::process(string word, Pod& pod) {
 	std::transform(word.begin(), word.end(), word.begin(), ::toupper);
 	// TODO add other events like sensor readings, etc;
 	
@@ -154,14 +165,7 @@ bool process( string word, Pod& pod ) {
 	return true;
 }
 
-/**
-	Reads from a file and executes each command one by one
-	fileName: file to read in
-	pod: reference to pod object to be executed on
-	
-	prints at the end if the test was succesful
-*/
-void read_file( string fileName , Pod& pod) {
+void Sensor_Test::read_file(string fileName, Pod& pod) {
 	bool worked = true;
 	ifstream wordsFile(fileName);
 	string word;
@@ -176,11 +180,7 @@ void read_file( string fileName , Pod& pod) {
 	cout << "Test was successful = " << worked << endl;
 }
 
-/**
-	Reads from command line and executes user commands
-	pod: reference to pod object to be executed on
-*/
-void manual(Pod& pod) {
+void Sensor_Test::manual(Pod& pod) {
 	string line = "";
 	// loop until user types end or quit
 	while(true) {
@@ -208,12 +208,7 @@ void manual(Pod& pod) {
 	}
 }
 
-/**
-	Monkey test, does random functional calls to see if pod would break
-	num: the number of commands to run before terminating
-	pod: reference to pod object to be executed on
-*/
-void random(int num, Pod& pod) {
+void Sensor_Test::random(int num, Pod& pod) {
 	// sets seed for rng
 	srand(time(NULL));
 
@@ -250,75 +245,14 @@ void random(int num, Pod& pod) {
 	}
 }
 
-/**
-	A default test for the pod, for easy testing
-	pod: reference to pod object to be executed on
-*/
-void default_test(Pod& pod) {
+void Sensor_Test::default_test(Pod& pod) {
 	cout << "doing default test here" << endl;
 	//pod.move_functional_tests();
 	cout << pod.get_current_state_string() << endl;
 }
-/**
-	main function
-	param: an array of strings to be parsed into a command";
-*/
-int main(int argc, char** argv) {
-	Pod pod;
-	// argument vector
-	vector<string> args(argv, argv + argc);
 
-	// too few arguments
-	if(argc == 1) {
-		cout << "Enter Arguments...type help or -h" << endl;
-	}
-	else if (args[1] == "default") {
-		default_test(pod);
-	}
-	// complex commands
-	else {
-		if(args[1] == "load") {
-			if(argc >= 3) {
-				read_file(args[2], pod);
-			}
-			else if(args[1] == "load" && argc < 3) {
-				cout << "Please enter a file name" << endl;
-			}
-		}
-		else if(args[1] == "manual") {
-			manual(pod);
-		}
-		else if(args[1] == "random") {
-			if(argc >= 3) {
-				random(std::stoi(args[2]), pod);
-			}
-			else {
-				random(10,pod);
-			}
-		}
-		// tutorial commands
-		else if(args[1] == "help" || args[1] == "-h") {
-			print_help();
-		}
-		else if(args[1] == "help_instructions" || args[1] == "-hi" ) {
-			print_help_instr();
-		}
-		else if(args[1] == "memes") {
-			memes();
-		}
-		// command failed to be recognized
-		else {
-			cout << "command unrecognized try again or type help" << endl;
-		}
-	}
-		
-	//usleep(200000);
-}
 
-/**
-	prints out all the commands that can be used
-*/
-void print_help() {
+void Sensor_Test::print_help() {
 	cout << "======================" << endl;
 	cout << "ILLINI HYPER LOOOP SIM" << endl;
 	cout << "======================" << endl;
@@ -336,10 +270,7 @@ void print_help() {
 	cout << "memes" << endl;
 }
 
-/**
-	prints out commands that can be used for scripting
-*/
-void print_help_instr() {
+void Sensor_Test::print_help_instr() {
 	cout << "________________________________________________" << endl;
 	cout << "List w/ explanations of instructions for testing" << endl;
 	cout << "	Can also be called with -hi" << endl;
