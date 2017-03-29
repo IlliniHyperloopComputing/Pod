@@ -1,3 +1,5 @@
+# basic test
+ps
 [s_m]
 MV_F_T
 [f_t]

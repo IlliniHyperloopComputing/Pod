@@ -54,7 +54,6 @@ bool assert_state_equals(string word, Pod& pod) {
 	int state = pod.get_current_state();
 	
 	// switch case for all the different states
-	// uses
 	switch(state) {
 		case Pod::ST_SAFE_MODE:
 			return (arg == "SAFE_MODE" || arg == "S_M");
@@ -163,7 +162,7 @@ bool process( string word, Pod& pod ) {
 	
 	prints at the end if the test was succesful
 */
-void readFile( string fileName , Pod& pod) {
+void read_file( string fileName , Pod& pod) {
 	bool worked = true;
 	ifstream wordsFile(fileName);
 	string word;
@@ -281,7 +280,7 @@ int main(int argc, char** argv) {
 	else {
 		if(args[1] == "load") {
 			if(argc >= 3) {
-				readFile(args[2], pod);
+				read_file(args[2], pod);
 			}
 			else if(args[1] == "load" && argc < 3) {
 				cout << "Please enter a file name" << endl;
