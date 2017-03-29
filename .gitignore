@@ -103,3 +103,11 @@ target/
 *.exe
 *.out
 *.app
+build
+build_debug
+cross
+cross_debug
+
+# Other
+.depend
+*.swp

@@ -3,15 +3,43 @@
 
 #include "StateMachineCompact/StateMachine.h"
 #include <iostream>
-
+#include <string>
 
 class Pod : public StateMachine {
-	public:	
+	public:
+
+		enum E_States
+		{
+			ST_SAFE_MODE = 0,
+			ST_FUNCTIONAL_TEST,
+			ST_FLIGHT_ACCEL,
+			ST_FLIGHT_COAST,
+			ST_FLIGHT_BRAKE,
+			ST_MAX_STATES
+		};
+
 		/** 
 		* Constructs a pod state machine
 		**/
 		Pod() : StateMachine(ST_MAX_STATES) {}
 
+		// returns the current state as an enum
+		E_States get_current_state();
+		
+		// returns the string name for current state
+		std::string get_current_state_string() {
+			std::string states[] =
+			{
+				"SAFE_MODE",
+				"FUNCTIONAL_TESTS",
+				"FLIGHT_ACCEL",
+				"FLIGHT_COAST",
+				"FLIGHT_BRAKE",
+				"NULL"
+			};
+			return states[(int)getCurrentState()];
+		}
+		
 		/**
 		* User controlled movement events
 		**/
@@ -25,14 +53,14 @@ class Pod : public StateMachine {
 		**/
 		void coast();
 		void brake();
-
+		
 	private:
 	
-		void ST_Safe_Mode(EventData*);
-		void ST_Functional_Test(EventData*);
-		void ST_Flight_Accel(EventData*);
-		void ST_Flight_Coast(EventData*);
-		void ST_Flight_Brake(EventData*);
+		void ST_Safe_Mode();
+		void ST_Functional_Test();
+		void ST_Flight_Accel();
+		void ST_Flight_Coast();
+		void ST_Flight_Brake();
 
 		BEGIN_STATE_MAP
 			STATE_MAP_ENTRY(&Pod::ST_Safe_Mode)
@@ -41,19 +69,6 @@ class Pod : public StateMachine {
 			STATE_MAP_ENTRY(&Pod::ST_Flight_Coast)
 			STATE_MAP_ENTRY(&Pod::ST_Flight_Brake)
 		END_STATE_MAP
-
-
-		enum E_States
-		{
-			ST_SAFE_MODE = 0,
-			ST_FUNCTIONAL_TEST,
-			ST_FLIGHT_ACCEL,
-			ST_FLIGHT_COAST,
-			ST_FLIGHT_BRAKE,
-			ST_MAX_STATES
-		};
-
-
 };
 
 #endif
