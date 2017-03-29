@@ -40,7 +40,10 @@ Spi::Spi(Xmega_Setup * x1, Xmega_Setup * x2){
   this->x2_buff = new uint8_t [x2_num_bytes + 2 + 2];
 
   //Setup SPI on each Xmega
-  setup_spi();
+  if(setup_spi()){
+    print_debug("Failure setting up SPI\n");
+    assert(false);
+  }
 
   print_debug("Exiting SPI Constructor\n");
 
@@ -65,7 +68,8 @@ Spi::~Spi(){
 
 }
 
-void Spi::request(Xmega_Request &request_type){
+void Spi::transfer(Xmega_Transfer &request_type){
+  
 
 }
 

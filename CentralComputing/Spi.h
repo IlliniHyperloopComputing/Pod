@@ -1,7 +1,6 @@
 #ifndef SPI_H 
 #define SPI_H 
 
-#include <stdint.h>
 #include <sys/ioctl.h>
 #include <sys/types.h>
 #include <sys/stat.h>
@@ -11,31 +10,40 @@
 #include <linux/spi/spidev.h>
 
 #include <string>
-
+#include <cstdint>
 #include <cassert>
 
 using namespace std;
 
-
-enum Xmega_Request_t {
-  //Read num bytes as described in Xmega_Setup
-  X_SENSOR = 0,
-  //Read byte to determine if any Xmega sensor error
-  X_SENSOR_STATUS = 1,
-  //What state is the Xmega in. Reads a byte
-  X_STATE = 2,
-  //Read All of the above at once
-  X_ALL = 3,
+enum class Xmega_Command_t: uint8_t {
+  //No Command
+  X_C_NONE = 0,
+  //TODO: Add others as needed
 };
 
-typedef struct Xmega_Request_{
+enum class Xmega_Request_t: uint8_t {
+  //Read num bytes as described in Xmega_Setup
+  X_R_SENSOR = 0,
+  //Read byte to determine if any Xmega sensor error
+  X_R_SENSOR_STATUS = 1,
+  //What state is the Xmega in. Reads a byte
+  X_R_STATE = 2,
+  //Read All of the above at once
+  X_R_ALL = 3,
+  //None
+  X_R_NONE = 4,
+};
+
+typedef struct Xmega_Transfer_{
+  //What data are we sending/commanding
+  enum Xmega_Command_t cmd1;
+  enum Xmega_Command_t cmd2;
+
   //What data are we requesting
   enum Xmega_Request_t req1;
   enum Xmega_Request_t req2;
-
   
-  
-} Xmega_Request;
+} Xmega_Transfer;
 
 typedef struct Xmega_Setup_{
   /**
@@ -115,13 +123,90 @@ class Spi {
     ~Spi();
 
     /**
-    * Send/Recieve data from the Xmegas
-    * Communications between each Xmega is interlaced
-    * to fix corruption issues experienced before
-    * @param request_type   Xmega_Request describing request type from 
-    *                       each Xmega.
+    * Interesting notes about reading in data (and transfers in general)
+    * (Note: when I say Xmega, I mean the Xmega A1U Xplained Pro board)
+    *
+    * Speed: The BBB is capable of 24000000 Hz clock for SPI. That is 
+    * silly fast. That is at most 3 Mb/s, Realistically around 1 Mb/s.
+    * Damn. 
+    * Much time was spent banging my head against the Xmega until I 
+    * realized that the Maximum possible speed was 1000000 Hz on it. 
+    * But 1000000 is still a little too fast for some reason. In theory
+    * It should work on the Xmega, but emperical evidence shows otherwise.
+    * There is frequent corruption of the bytes recieved, with no identifiable 
+    * pattern. So I lowered the clock to 500000 Hz, and that is the sweet spot. 
+    *
+    * Read size: Currently the read()s are being made byte-by-byte using
+    * read(,,1). Why not use read(,,total_bytes_to_read)? Because after 
+    * the fourth hour of debugging _why the hell_ it wasn't working, using
+    * read(,,1) isn't so bad. And read(,,1) has not failed me yet. I did not
+    * have an oscilliscope on hand, and could not debug why exactly it was
+    * not working. I might try later, but the current strategy works. Also,
+    * the time savings are not that huge. Reading a total of 32 bytes, 
+    * 16 bytes from each Xmega, takes ~1.2 milliseconds. That is acceptable
+    * for me. 
+    * Might as well include this test I ran a while ago. These did not 
+    * account for any data corruption. 
+    * 500 kHZ clock
+    * ~ .000059 seconds for repeat write(), 1 byte
+    * ~ .000061 seconds for repeat read(), 1 byte
+    * ~ .000155 seconds for single write(), 1 byte
+    * ~ .000156 seconds for single read(), 1 byte
+    *     6410 bytes/second
+    *
+    * ~ .000106 seconds for repeat write(), 4 bytes
+    * ~ .000108 seconds for repeat read(), 4 bytes
+    * ~ .000207 seconds for single write(), 4 bytes
+    * ~ .000210 seconds for single read(), 4 bytes
+    *     19047 bytes/second
+    *
+    * ~ .000800 seconds for single read(), 32 bytes
+    * ~ .002000 seconds for single read(), 64 bytes
+    *     32000 bytes/second
+    *
+    * Sequential Read()s: I have not experienced this problem with sequential
+    * writes, but with sequential reads without enough time inbetween, 
+    * there tends to be corruption. This might just be a problem with the 
+    * code on the Xmega, since it is in an early stage. Here is how I 
+    * figured this one out: just a for{} loop only containing read()s and
+    * a fprintf() for debugging. This worked perfectly. As I remove the 
+    * print, it breaks. The version with fprintf() worked 99/100 times.
+    * The version without works 10/100 times. (That is, without corruption)
+    * Technically this works, as long as there is a CRC checksum, but it's
+    * pretty horrible. The average read (with printf) of 16 bytes took
+    * about .5 millisec. The average read (without printf) of 16 bytes took
+    * about 5 or 6 millisec. Horrible! (Sad!) 
+    * To solve this problem the reads for each Xmega are interlaced. That
+    * seems to do the trick. Using usleep() seems like it would also work.
+    *
+    *
+    *
+    * First, write the appropriate data.
+    * 1 start byte, 1 command byte, 1 request byte, and 2 bytes for CRC
+    * Using 0xAA as start byte. Why? Because command or request will never
+    * equal 0xAA. Also, 0xAA is easy to see on an Oscilliscope, and 
+    * less likely to appear by mistake than 0xFF or 0x00 ... at least
+    * I think so. Whatever. 
+    *
+    * A start byte is needed so the Xmega knows a transfer is about
+    * to happen, and can start pipelining the correct data. 
+    * 
+    * Need to send 5 bytes before reading
+    * Write -> | 0xAA | command | request | CRC | CRC |
+    * 
+    * Now onto reading. No writing will take place during this time, just
+    * need to get all of the data in. 
+    * Need to read amount depending on request type
+    * Read  -> | data | data | data ..... | CRC | CRC | 
+    *
+    * Note: None of the transfers are full duplex. They are all half duplex.
+    *       It is simpler this way. Full duplex is great when we have alot
+    *       to transfer from each side. In our situation we spend a majority
+    *       of the time reading, and thus half duplex is simpler.
+    *
+    * @param request_type   Xmega_Transfer describing transfer
     **/
-    void request(Xmega_Request &request_type);
+    void transfer(Xmega_Transfer &transfer);
 
     /**
     * Of the most recently recieved data, get the appropriate index
@@ -132,6 +217,7 @@ class Spi {
     * @param idx     which index to pull? 
     *                Max value of Xmega_Setup(device).num_items-1
     *                
+    * @return uint32 containing requested data. Largest data is 32 bits
     **/
     uint32_t get_data(uint8_t device, int idx);
 
@@ -162,7 +248,6 @@ class Spi {
     * @return integer describing sucess. 0==success, 1==failure
     **/
     int setup_spi();
-
 
     //Storage of setup details 
     Xmega_Setup * x1;
