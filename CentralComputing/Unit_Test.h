@@ -1,5 +1,5 @@
-#ifndef _SENSOR_TEST_H
-#define _SENSOR_TEST_H
+#ifndef _UNIT_TEST_H
+#define _UNIT_TEST_H
 
 #include "Sensor.h"
 #include "Pod.h"
@@ -15,7 +15,7 @@
 
 using namespace std;
 
-class Sensor_Test {
+class Unit_Test {
 
   public:
     /**

@@ -1,10 +1,10 @@
 #include "Spi.h"
-#include "Sensor_Test.h"
+#include "Unit_Test.h"
 
 int main(int argc, char** argv) {
 
   #ifdef TEST_POD
-    Sensor_Test::start_test(argc, argv);
+    Unit_Test::start_test(argc, argv);
     return 0;
   #else
     //Define normal run mode

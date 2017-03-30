@@ -1,6 +1,6 @@
-#include "Sensor_Test.h"
+#include "Unit_Test.h"
 
-int Sensor_Test::start_test(int argc, char** argv) {
+int Unit_Test::start_test(int argc, char** argv) {
 	Pod pod;
 	// argument vector
 	vector<string> args(argv, argv + argc);
@@ -54,7 +54,7 @@ int Sensor_Test::start_test(int argc, char** argv) {
 }
 
 
-void Sensor_Test::memes() {
+void Unit_Test::memes() {
 	srand(time(NULL));
 	int r = rand() % 5 +1;
 
@@ -73,7 +73,7 @@ void Sensor_Test::memes() {
 	cout << endl;
 }
 
-bool Sensor_Test::assert_state_equals(string word, Pod& pod) {
+bool Unit_Test::assert_state_equals(string word, Pod& pod) {
 	size_t start = word.find("[");
 	size_t end = word.find("]");
 	string arg = word.substr(start+1,end-1);
@@ -102,14 +102,14 @@ bool Sensor_Test::assert_state_equals(string word, Pod& pod) {
 	}
 }
 
-bool Sensor_Test::assert_state_not_equals(string command, Pod& pod) {
+bool Unit_Test::assert_state_not_equals(string command, Pod& pod) {
 	// remove the ! from the command
 	command = "[" + command.substr(1);
 	
 	return !assert_state_equals(command, pod);
 }
 
-bool Sensor_Test::process(string word, Pod& pod) {
+bool Unit_Test::process(string word, Pod& pod) {
 	std::transform(word.begin(), word.end(), word.begin(), ::toupper);
 	// TODO add other events like sensor readings, etc;
 	
@@ -165,7 +165,7 @@ bool Sensor_Test::process(string word, Pod& pod) {
 	return true;
 }
 
-void Sensor_Test::read_file(string fileName, Pod& pod) {
+void Unit_Test::read_file(string fileName, Pod& pod) {
 	bool worked = true;
 	ifstream wordsFile(fileName);
 	string word;
@@ -180,7 +180,7 @@ void Sensor_Test::read_file(string fileName, Pod& pod) {
 	cout << "Test was successful = " << worked << endl;
 }
 
-void Sensor_Test::manual(Pod& pod) {
+void Unit_Test::manual(Pod& pod) {
 	string line = "";
 	// loop until user types end or quit
 	while(true) {
@@ -208,7 +208,7 @@ void Sensor_Test::manual(Pod& pod) {
 	}
 }
 
-void Sensor_Test::random(int num, Pod& pod) {
+void Unit_Test::random(int num, Pod& pod) {
 	// sets seed for rng
 	srand(time(NULL));
 
@@ -245,14 +245,14 @@ void Sensor_Test::random(int num, Pod& pod) {
 	}
 }
 
-void Sensor_Test::default_test(Pod& pod) {
+void Unit_Test::default_test(Pod& pod) {
 	cout << "doing default test here" << endl;
 	//pod.move_functional_tests();
 	cout << pod.get_current_state_string() << endl;
 }
 
 
-void Sensor_Test::print_help() {
+void Unit_Test::print_help() {
 	cout << "==============================" << endl;
 	cout << "ILLINI HYPERLOOP TESTING SUITE " << endl;
 	cout << "==============================" << endl;
@@ -267,7 +267,7 @@ void Sensor_Test::print_help() {
 	cout << "\tmemes" << endl;
 }
 
-void Sensor_Test::print_script_instr() {
+void Unit_Test::print_script_instr() {
 	cout << "____________________________________________________" << endl;
 	cout << "Scripting instructions for testing" << endl;
 	cout << "Each line has instructions with abrv inside ()" << endl;
