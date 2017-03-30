@@ -96,7 +96,7 @@ class Sensor_Test {
     /**
     * Prints out scripting guide 
     **/
-    static void print_help_instr();
+    static void print_script_instr();
 
 };
 

@@ -37,8 +37,8 @@ int Sensor_Test::start_test(int argc, char** argv) {
 		else if(args[1] == "help" || args[1] == "-h") {
 			print_help();
 		}
-		else if(args[1] == "help_instructions" || args[1] == "-hi" ) {
-			print_help_instr();
+		else if(args[1] == "script_instructions" || args[1] == "-si" ) {
+			print_script_instr();
 		}
 		else if(args[1] == "memes") {
 			memes();
@@ -194,8 +194,8 @@ void Sensor_Test::manual(Pod& pod) {
 		if(line == "help" || line == "-h" ) {
 			print_help();
 		}
-		if(line == "help_instructions" || line == "-hi" ) {
-			print_help_instr();
+		if(line == "script_instructions" || line == "-si" ) {
+			print_script_instr();
 		}
 		// exit condition for loop
 		else if(line == "end" || line == "exit" ) {
@@ -253,31 +253,27 @@ void Sensor_Test::default_test(Pod& pod) {
 
 
 void Sensor_Test::print_help() {
-	cout << "======================" << endl;
-	cout << "ILLINI HYPER LOOOP SIM" << endl;
-	cout << "======================" << endl;
-	cout << "AUTHOR: ELON MUSK" << endl;
-	cout << "CREATED: 2017" << endl;
-	cout << "----------------------" << endl;
+	cout << "==============================" << endl;
+	cout << "ILLINI HYPERLOOP TESTING SUITE " << endl;
+	cout << "==============================" << endl;
 	cout << "Commands:" << endl;
-	cout << "help" << endl;
-	cout << "default" << endl;
-	cout << "load (file_name)" << endl;
-	cout << "manual" << endl;	
-	cout << "...end" << endl;	
-	cout << "random" << endl;
-	cout << "help_instructions" << endl;
-	cout << "memes" << endl;
+	cout << "\thelp, -h" << endl;
+	cout << "\tdefault" << endl;
+	cout << "\tload (file_name)" << endl;
+	cout << "\tmanual" << endl;	
+	cout << "\t...end" << endl;	
+	cout << "\trandom" << endl;
+	cout << "\tscript_instructions, -si" << endl;
+	cout << "\tmemes" << endl;
 }
 
-void Sensor_Test::print_help_instr() {
-	cout << "________________________________________________" << endl;
-	cout << "List w/ explanations of instructions for testing" << endl;
-	cout << "	Can also be called with -hi" << endl;
-	cout << "each line has instructions with abrv inside ()" << endl;
-	cout << "tests can be done with full instructs and abrv" << endl;
+void Sensor_Test::print_script_instr() {
+	cout << "____________________________________________________" << endl;
+	cout << "Scripting instructions for testing" << endl;
+	cout << "Each line has instructions with abrv inside ()" << endl;
+	cout << "Mix-and-match of full and abrv instructions allowed" << endl;
 	cout << "some functions like help can still be called" << endl;	
-	cout << "------------------------------------------------" << endl;
+	cout << "----------------------------------------------------" << endl;
 	cout << "MOVE_FUNCTIONAL_TESTS (MV_F_T)" << endl;
 	cout << "MOVE_SAFE_MODE (MV_S_M)" << endl;
 	cout << "MOVE_FLIGHT_ACCELERATION (MV_F_A)" << endl;
@@ -287,9 +283,8 @@ void Sensor_Test::print_help_instr() {
 	cout << "---utility---" <<endl;
 	cout << "PRINT_STATE (ps)" << endl;
 	cout << "---checker---" <<endl;
-	cout << "You can check for being in a state with []" << endl;
+	cout << "You can assert the current state with []" << endl;
 	cout << "ex: [STATE_NAME]" << endl;
-	cout << "You can also check for not being in a state" << endl;
 	cout << "ex: [!STATE_NAME]" << endl;
 	cout << "Here's a list of state names:" << endl;
 	cout << "	safe_mode (s_m)" << endl;
@@ -298,6 +293,6 @@ void Sensor_Test::print_help_instr() {
 	cout << "	flight_coast (f_c)" << endl;
 	cout << "	flight_brake (f_b)" << endl;
 	cout << endl;
-	cout << "Note: commenting out lines can be done with #" << endl;
-	cout << "Note: don't indent or start lines with spaces" << endl;
+	cout << "Note: Comment out lines with #" << endl;
+	cout << "Note: Don't indent or start lines with spaces" << endl;
 }
