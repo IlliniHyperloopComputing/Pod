@@ -1,8 +1,13 @@
-#ifndef _UNIT_TEST_H
-#define _UNIT_TEST_H
+//Create header guards
+#ifndef _STATEMACHINE_TEST_H
+#define _STATEMACHINE_TEST_H
 
-#include "Sensor.h"
+//Need to include Unit_Test in order to extend it
+#include "Unit_Test.h"
+
+//Any other dependencies 
 #include "Pod.h"
+#include "Sensor.h"
 #include <iostream>
 #include <unistd.h>
 #include <string>
@@ -13,25 +18,20 @@
 #include <stdlib.h>
 #include <time.h>
 
-using namespace std;
-
-class Unit_Test {
-
-  public:
+class StateMachine_Test : public Unit_Test {
+  public: 
     /**
-    *	Acts as main()
-    *	@param: an array of strings to be parsed into a command
+    * Implementing test() of virtual function
     **/
-    static int start_test(int argc, char** argv);
+    int test(int argc, char** argv);
 
     /**
-    * Edgy Memes
-    *	brings out the best in all of us
+    * Use the constructor to define name and cmd fields
     **/
-    static void memes();
+    StateMachine_Test();
 
+  //Can define Anything in private section
   private:
-
     /**
     *	Checks if the current state of pod matches with the check state command
     *	@param word  check state command to be executed
@@ -98,6 +98,11 @@ class Unit_Test {
     **/
     static void print_script_instr();
 
+    /**
+    * Edgy Memes
+    *	brings out the best in all of us
+    **/
+    static void memes();
 };
 
 #endif

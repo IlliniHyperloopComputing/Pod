@@ -1,6 +1,13 @@
-#include "Unit_Test.h"
+#include "StateMachine_Test.h"
 
-int Unit_Test::start_test(int argc, char** argv) {
+//Include any other dependencies 
+
+StateMachine_Test::StateMachine_Test(){
+  name = "State Machine Test";
+  cmd  = "smt";
+}
+
+int StateMachine_Test::test(int argc, char** argv) {
 	Pod pod;
 	// argument vector
 	vector<string> args(argv, argv + argc);
@@ -54,26 +61,8 @@ int Unit_Test::start_test(int argc, char** argv) {
 }
 
 
-void Unit_Test::memes() {
-	srand(time(NULL));
-	int r = rand() % 5 +1;
 
-	cout << "MEME LORD IS HERE FOR YOU:" << endl;
-	if(r == 1) {
-		cout << "http://media.treehugger.com/assets/images/2013/08/elon-musk-hyperloop-good-guy-elon-musk-meme-chris-tackett.png.662x0_q70_crop-scale.png" << endl;
-	} else if (r == 2) {
-		cout << "http://s2.quickmeme.com/img/e6/e6b0f2395a1b7168c30c19881f51e8d20e83d08bec4d0b2a67e69a0cd18b43b1.jpg" << endl;
-	} else if (r == 3) {	
-		cout << "http://www.mememaker.net/static/images/memes/4284241.jpg" << endl;
-	} else if (r == 4) {
-		cout << "https://cdn.meme.am/cache/instances/folder695/63313695.jpg" << endl;
-	} else if (r == 5) {
-		cout << "https://s-media-cache-ak0.pinimg.com/736x/92/ab/3a/92ab3abea77d3f6a397fe8545993713e.jpg" << endl;
-	}
-	cout << endl;
-}
-
-bool Unit_Test::assert_state_equals(string word, Pod& pod) {
+bool StateMachine_Test::assert_state_equals(string word, Pod& pod) {
 	size_t start = word.find("[");
 	size_t end = word.find("]");
 	string arg = word.substr(start+1,end-1);
@@ -102,14 +91,14 @@ bool Unit_Test::assert_state_equals(string word, Pod& pod) {
 	}
 }
 
-bool Unit_Test::assert_state_not_equals(string command, Pod& pod) {
+bool StateMachine_Test::assert_state_not_equals(string command, Pod& pod) {
 	// remove the ! from the command
 	command = "[" + command.substr(1);
 	
 	return !assert_state_equals(command, pod);
 }
 
-bool Unit_Test::process(string word, Pod& pod) {
+bool StateMachine_Test::process(string word, Pod& pod) {
 	std::transform(word.begin(), word.end(), word.begin(), ::toupper);
 	// TODO add other events like sensor readings, etc;
 	
@@ -165,7 +154,7 @@ bool Unit_Test::process(string word, Pod& pod) {
 	return true;
 }
 
-void Unit_Test::read_file(string fileName, Pod& pod) {
+void StateMachine_Test::read_file(string fileName, Pod& pod) {
 	bool worked = true;
 	ifstream wordsFile(fileName);
 	string word;
@@ -180,7 +169,7 @@ void Unit_Test::read_file(string fileName, Pod& pod) {
 	cout << "Test was successful = " << worked << endl;
 }
 
-void Unit_Test::manual(Pod& pod) {
+void StateMachine_Test::manual(Pod& pod) {
 	string line = "";
 	// loop until user types end or quit
 	while(true) {
@@ -208,7 +197,7 @@ void Unit_Test::manual(Pod& pod) {
 	}
 }
 
-void Unit_Test::random(int num, Pod& pod) {
+void StateMachine_Test::random(int num, Pod& pod) {
 	// sets seed for rng
 	srand(time(NULL));
 
@@ -245,16 +234,16 @@ void Unit_Test::random(int num, Pod& pod) {
 	}
 }
 
-void Unit_Test::default_test(Pod& pod) {
+void StateMachine_Test::default_test(Pod& pod) {
 	cout << "doing default test here" << endl;
 	//pod.move_functional_tests();
 	cout << pod.get_current_state_string() << endl;
 }
 
 
-void Unit_Test::print_help() {
+void StateMachine_Test::print_help() {
 	cout << "==============================" << endl;
-	cout << "ILLINI HYPERLOOP TESTING SUITE " << endl;
+	cout << "STATE MACHINE TESTING SUITE " << endl;
 	cout << "==============================" << endl;
 	cout << "Commands:" << endl;
 	cout << "\thelp, -h" << endl;
@@ -267,7 +256,7 @@ void Unit_Test::print_help() {
 	cout << "\tmemes" << endl;
 }
 
-void Unit_Test::print_script_instr() {
+void StateMachine_Test::print_script_instr() {
 	cout << "____________________________________________________" << endl;
 	cout << "Scripting instructions for testing" << endl;
 	cout << "Each line has instructions with abrv inside ()" << endl;
@@ -295,4 +284,23 @@ void Unit_Test::print_script_instr() {
 	cout << endl;
 	cout << "Note: Comment out lines with #" << endl;
 	cout << "Note: Don't indent or start lines with spaces" << endl;
+}
+
+void StateMachine_Test::memes() {
+	srand(time(NULL));
+	int r = rand() % 5 +1;
+
+	cout << "MEME LORD IS HERE FOR YOU:" << endl;
+	if(r == 1) {
+		cout << "http://media.treehugger.com/assets/images/2013/08/elon-musk-hyperloop-good-guy-elon-musk-meme-chris-tackett.png.662x0_q70_crop-scale.png" << endl;
+	} else if (r == 2) {
+		cout << "http://s2.quickmeme.com/img/e6/e6b0f2395a1b7168c30c19881f51e8d20e83d08bec4d0b2a67e69a0cd18b43b1.jpg" << endl;
+	} else if (r == 3) {	
+		cout << "http://www.mememaker.net/static/images/memes/4284241.jpg" << endl;
+	} else if (r == 4) {
+		cout << "https://cdn.meme.am/cache/instances/folder695/63313695.jpg" << endl;
+	} else if (r == 5) {
+		cout << "https://s-media-cache-ak0.pinimg.com/736x/92/ab/3a/92ab3abea77d3f6a397fe8545993713e.jpg" << endl;
+	}
+	cout << endl;
 }
