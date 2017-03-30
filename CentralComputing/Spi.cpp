@@ -138,6 +138,17 @@ uint8_t Spi::get_state(uint8_t device){
 }
 
 int Spi::setup_spi(){
+  
+  //Check if the device tree has been loaded
+  print_debug("Checking Device tree for SPI initialization\n");
+  int spi_device_tree = system("grep SPI < /sys/devices/platform/bone_capemgr/slots");
+  print_debug("Exit value from grep: %d\n",spi_device_tree);
+  if(spi_device_tree != 0){
+    print_debug("Echo-ing correct device tree setup\n");
+    system("echo BB-SPI-M-01 > /sys/devices/platform/bone_capemgr/slots");
+    print_debug("Sleeping for 2 seconds to make sure kernel has time complete setup\n");
+    usleep(2000000);
+  }
 
   //Open files
   print_debug("Opening Xmega1 file %s ... ",x1->file_path);
