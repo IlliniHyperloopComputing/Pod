@@ -10,8 +10,10 @@
 #include <linux/spi/spidev.h>
 
 #include <string>
+#include <cstdlib>
 #include <cstdint>
 #include <cassert>
+#include <unistd.h>
 
 using namespace std;
 
@@ -52,9 +54,6 @@ typedef struct Xmega_Setup_{
   * "/dev/spidev1.1"
   **/
   char * file_path;
-  
-  //Number of bytes to read when making sensor request 
-  uint8_t sensor_request_num_bytes;
 
   /**
   * Number of data items. 
