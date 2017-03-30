@@ -8,8 +8,8 @@ CXX_NORM	:= g++
 CXX_BBB 	:= arm-linux-gnueabihf-g++
 WARNINGS 	:= -Wall -Wextra 
 
-CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP -D_GNU_SOURCE -pthread -DDEBUG 
-CFLAGS_RELEASE 	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP -D_GNU_SOURCE -pthread -DNDEBUG
+CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP -IStateMachineCompact/ -IUnitTests/ -I. -D_GNU_SOURCE -pthread -DDEBUG 
+CFLAGS_RELEASE 	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP -IStateMachineCompact/ -IUnitTests/ -I. -D_GNU_SOURCE -pthread -DNDEBUG
 CFlAGS_T 				:= $(CFLAGS_DEBUG) -DTEST_POD
 
 # Set up linker
@@ -34,6 +34,7 @@ msg :
 mkdir_obj:
 	@mkdir -p $(OBJ_DIR)
 	@mkdir -p $(OBJ_DIR)/StateMachineCompact
+	@mkdir -p $(OBJ_DIR)/UnitTests
 
 #Setup specific build rules
 #This allows for one set of build rules
