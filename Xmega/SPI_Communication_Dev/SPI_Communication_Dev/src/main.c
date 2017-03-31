@@ -1,36 +1,4 @@
-/**
- * \file
- *
- * \brief Empty user application template
- *
- */
 
-/**
- * \mainpage User Application template doxygen documentation
- *
- * \par Empty user application template
- *
- * This is a bare minimum user application template.
- *
- * For documentation of the board, go \ref group_common_boards "here" for a link
- * to the board-specific documentation.
- *
- * \par Content
- *
- * -# Include the ASF header files (through asf.h)
- * -# Minimal main function that starts with a call to board_init()
- * -# Basic usage of on-board LED and button
- * -# "Insert application code here" comment
- *
- */
-
-/*
- * Include header files for all drivers that have been imported from
- * Atmel Software Framework (ASF).
- */
-/*
- * Support and FAQ: visit <a href="http://www.atmel.com/design-support/">Atmel Support</a>
- */
 #include <asf.h>
 #include <avr/interrupt.h>
 
@@ -38,7 +6,28 @@
 #include <stdbool.h>
 #include <assert.h>
 
+#define SPI_TX_START 0xAA
+
+//Used in SPI ISR
 volatile uint8_t rx_byte = 0x00;
+volatile uint8_t spic_flag = 0;
+
+//Incoming data
+#define CMD_DATA_SIZE 5
+uint8_t cmd_data[CMD_DATA_SIZE];
+uint8_t cmd_idx = 0;
+uint16_t received_crc = 0;
+uint16_t calculated_crc = 0;
+
+//Sending data
+
+
+//Sensor data storage
+uint8_t state = 0;
+uint8_t sensor_status = 0;
+#define SENSOR_DATA_SIZE 20
+uint8_t sensor_data[SENSOR_DATA_SIZE];
+
 volatile uint8_t tx_byte = 0xCC;
 volatile uint8_t isr_flag = 0;
 volatile uint8_t  i = 0;
@@ -59,10 +48,12 @@ ISR(SPIC_INT_vect) {
 	//if(SPIC.STATUS & 0x40)
 	//	ioport_set_pin_level(LED_0_PIN, LED_0_ACTIVE);
 	rx_byte = SPIC.DATA;
+	spic_flag = 1;
+	
+	/*isr_flag = 1;
 	if(rx_byte == 0xAA){
 		start_tx = 1;
 	}
-	
 	
 	if(start_tx){
 		//Send normal data
@@ -111,8 +102,6 @@ ISR(SPIC_INT_vect) {
 	
 }
 
-
-
 void setUpSPIC()
 {
 	PORTC.DIR = 0x40;		// MISO output; MOSI, SCK, SS inputs
@@ -130,14 +119,44 @@ int main (void)
 	PMIC.CTRL = 0x04; // enable high priority interrupts
 	sei();            // enable global interrupts
 	
-	uint8_t to_crc = 0xde;
-	
-	checksum = crc_io_checksum(rx_buff, 12, CRC_16BIT);
-	
-	
-	SPIC.DATA = 0xff;
 	
 	while (1) {
+		
+		//SPIC handler
+		//When this is true, it means we have just received a byte
+		//So, we need to pipeline the next byte to be sent out.
+		//Also, the most recently sent byte is in the rx_byte
+		if(spic_flag){
+			//Indicate start of incoming command
+			if(rx_byte == SPI_TX_START){
+				cmd_idx = CMD_DATA_SIZE;
+			}
+			
+			//If we are receiving command, store it appropriately
+			if(cmd_idx > 0){
+				cmd_data[CMD_DATA_SIZE-cmd_idx] = rx_byte;
+				cmd_idx--;
+				
+				//Finished last storage of incoming data
+				//Now check CRC
+				if(cmd_idx == 0){
+					received_crc =	(cmd_data[CMD_DATA_SIZE-1]<<8) | cmd_data[CMD_DATA_SIZE-2];
+					calculated_crc = crc_io_checksum(cmd_data, CMD_DATA_SIZE-2, CRC_16BIT);
+					if(calculated_crc == received_crc){
+						ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
+						SPIC.DATA = 0xAA;
+					}
+					else{
+						SPIC.DATA = 0xFF;
+					}
+				}				
+			}
+			
+			
+			
+			spic_flag = 0;
+		}
+		
 			
 	}
 }
