@@ -92,8 +92,8 @@ $(OBJ_DIR)/%.o : %.cpp
 	$(CXX) $? $(CFLAGS) -o $@
 
 clean:
-	rm -f $(OBJ_DIR)/*.o $(OBJ_DIR)/StateMachineCompact/*.o $(POD) $(POD_D) $(POD_T) $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)
+	rm -f $(OBJ_DIR)/*.o $(OBJ_DIR)/StateMachineCompact/*.o $(OBJ_DIR)/UnitTests/*.o $(POD) $(POD_D) $(POD_T) $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)
 
 push:
-	scp $(POD_CROSS_D) root@192.168.137.100:~/
+	scp $(POD_CROSS_T) root@192.168.137.100:~/
 
