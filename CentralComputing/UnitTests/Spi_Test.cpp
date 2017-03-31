@@ -7,6 +7,9 @@ int Spi_Test::test(int argc, char** argv){
   Xmega_Setup x2 = {"/dev/spidev1.1", 2, bpi, 500000, 8};
   Spi spi(&x1, &x2);
 
+  Xmega_Transfer xt;
+  spi.transfer(xt);
+
   return 0;
 }
 

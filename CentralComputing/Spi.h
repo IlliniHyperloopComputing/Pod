@@ -15,6 +15,8 @@
 #include <cassert>
 #include <unistd.h>
 
+#include "Crc.h"
+
 using namespace std;
 
 enum class Xmega_Command_t: uint8_t {

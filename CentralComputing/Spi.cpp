@@ -68,8 +68,34 @@ Spi::~Spi(){
 
 }
 
-void Spi::transfer(Xmega_Transfer &request_type){
-  
+void Spi::transfer(Xmega_Transfer &xt){
+
+  //Create command/transmission buffers
+  uint8_t tx1_buff[] = {0xAA, (uint8_t)xt.cmd1, (uint8_t)xt.req1, 0,0};
+  uint8_t tx2_buff[] = {0xAA, (uint8_t)xt.cmd2, (uint8_t)xt.req2, 0,0};
+
+  //Calculate CRC
+  uint16_t crc1 = Crc::CRCCCITT(tx1_buff, 3, 0);
+  uint16_t crc2 = Crc::CRCCCITT(tx2_buff, 3, 0);
+
+  //Store CRC
+  tx1_buff[3] = (uint8_t) crc1;
+  tx1_buff[4] = (uint8_t) (crc1>>8);
+  tx2_buff[3] = (uint8_t) crc2;
+  tx2_buff[4] = (uint8_t) (crc2>>8);
+
+  //transmit to Xmegas
+  for(int i = 0; i <5;i++){
+    write(fd1, tx1_buff + i, 1);
+    write(fd2, tx2_buff + i, 1);
+  }
+  uint8_t result1 = 0;
+  uint8_t result2 = 0;
+  read(fd1, &result1, 1);
+  read(fd2, &result2, 1);
+
+  print_debug("res1 %d\n", result1);
+  print_debug("res2 %d\n", result2);
 
 }
 

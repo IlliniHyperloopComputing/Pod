@@ -58,3 +58,8 @@ void Unit_Test::display_help(Unit_Test* test_list[], int len){
   }
 
 }
+
+//Destructor that does nothing
+Unit_Test::~Unit_Test(){
+
+}
