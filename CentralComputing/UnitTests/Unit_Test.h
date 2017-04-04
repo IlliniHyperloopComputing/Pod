@@ -40,7 +40,7 @@ class Unit_Test {
     virtual ~Unit_Test();
 
   private:
-    void display_help(Unit_Test* test_list[], int length);
+    void display_help(const vector<Unit_Test*> &test_list);
 };
 
 #endif

@@ -17,7 +17,7 @@ int Unit_Test::test(int argc, char** argv){
 	vector<string> args(argv, argv + argc);
 
   if(argc < 2 || args[1] == "help"){
-    display_help(test_list, length);
+    display_help(test_list);
     
     //clean up memory
     for(int j=0;j<length;j++){delete test_list[j];};
@@ -47,14 +47,14 @@ int Unit_Test::test(int argc, char** argv){
 }
 
 
-void Unit_Test::display_help(Unit_Test* test_list[], int len){
+void Unit_Test::display_help(const vector<Unit_Test*> &test_list){
 	cout << "==============================" << endl;
 	cout << "ILLINI HYPERLOOP TESTING SUITE " << endl;
 	cout << "==============================" << endl;
   cout << endl;
   cout << "Usage: ./exe command [optional arguments based on command]" << endl;
 	cout << "Commands:" << endl;
-  for(int i = 0; i< len; i++){
+  for(size_t i = 0; i< test_list.size(); i++){
     cout << "\t" << test_list[i]->cmd << ", "<< test_list[i]->name<< endl;
   }
 
