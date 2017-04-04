@@ -55,7 +55,7 @@ typedef struct Xmega_Setup_{
   * "/dev/spidev1.0"
   * "/dev/spidev1.1"
   **/
-  char * file_path;
+  const char * file_path;
 
   /**
   * Number of data items. 
