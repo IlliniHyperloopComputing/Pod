@@ -20,6 +20,19 @@ class Unit_Test {
     **/
     virtual int test(int argc, char** argv);
 
+    /**
+    * name and cmd are used when printing out help options in the testing suite,
+    * in order to easily identify which test does what. 
+    *
+    * cmd is tested against the input command. If they are equal, that unit test
+    * is run.
+    *
+    * These strings are defined here such that all subclasses have access to these
+    * variables. Each subclass should define the name and cmd in their constructor
+    *
+    * Please refer to Spi_Test.cpp, and the README file inside the UnitTest/ directory
+    *
+    **/
     string name = "Define Test name";
     string cmd  = "Define Test command";
 

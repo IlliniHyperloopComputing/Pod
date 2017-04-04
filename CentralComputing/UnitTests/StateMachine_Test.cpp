@@ -250,7 +250,6 @@ void StateMachine_Test::print_help() {
 	cout << "\tdefault" << endl;
 	cout << "\tload (file_name)" << endl;
 	cout << "\tmanual" << endl;	
-	cout << "\t...end" << endl;	
 	cout << "\trandom" << endl;
 	cout << "\tscript_instructions, -si" << endl;
 	cout << "\tmemes" << endl;
