@@ -1,3 +1,4 @@
+//Add your .h here
 #include "Unit_Test.h"
 #include "StateMachine_Test.h"
 #include "Spi_Test.h"
@@ -7,12 +8,12 @@ int Unit_Test::test(int argc, char** argv){
   //
   //ADD NEW TESTS HERE. FOLLOW SAME PATTERN
   //
-  Unit_Test* test_list[] = { new StateMachine_Test(), new Spi_Test() };
-  int length = 2;
+  const vector<Unit_Test*> test_list({ new StateMachine_Test(), new Spi_Test() });
   //
   //
 
 
+  int length = test_list.size();
 	vector<string> args(argv, argv + argc);
 
   if(argc < 2 || args[1] == "help"){
