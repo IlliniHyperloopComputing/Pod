@@ -1,0 +1,75 @@
+/dts-v1/;
+/plugin/;
+
+/ {
+  compatible = "ti,beaglebone", "ti,beaglebone-black";
+
+  /* identification */
+  part-number = "spimultiple";
+  version = "00A0";
+
+  fragment@0 {
+    target = <&am33xx_pinmux>;
+    __overlay__ {
+    bb_spi1_pins: pinmux_bb_spi1_pins {
+	pinctrl-single,pins = <
+	  0x190 0x33	/* mcasp0_aclkx.spi1_sclk, INPUT_PULLUP | MODE3 */
+	  0x194 0x33	/* mcasp0_fsx.spi1_d0, INPUT_PULLUP | MODE3 */
+	  0x198 0x13	/* mcasp0_axr0.spi1_d1, OUTPUT_PULLUP | MODE3 */
+	  0x19c 0x13	/* mcasp0_ahclkr.spi1_cs0, OUTPUT_PULLUP | MODE3 */
+	  0x164 0x12	/* eCAP0_in_PWM0_out.spi1_cs1 OUTPUT_PULLUP | MODE2 */
+	  >;
+      };
+
+    };
+  };
+  fragment@1 {
+      target = <&spi1>;
+      __overlay__ {
+
+           #address-cells = <1>;
+           #size-cells = <0>;
+           status = "okay";
+           pinctrl-names = "default";
+           pinctrl-0 = <&bb_spi1_pins>;
+	   
+           num-cs = <2>;
+
+           spidev@1 {
+               spi-max-frequency = <24000000>;
+               reg = <0>;
+               compatible = "linux,spidev";
+           };
+	   
+           spidev@2 {
+               spi-max-frequency = <24000000>;
+               reg = <1>;
+               compatible = "linux,spidev";
+           };
+	   
+	   /*
+	   spi1@0 {
+	     #address-cells = <1>;
+	     #size-cells = <0>;
+	     compatible = "linux,spidev";
+	     reg = <0>;
+	     spi-max-frequency = <16000000>;
+	     spi-cpol;
+	     spi-cpha;
+	   };
+
+	   spi1@1 {
+	     #address-cells = <1>;
+	     #size-cells = <0>;
+	     compatible = "linux,spidev";
+	     reg = <1>;
+	     spi-max-frequency = <16000000>;
+	     spi-cpol;
+	     spi-cpha;
+	   };
+           */
+           
+	   
+      };
+  };
+};
