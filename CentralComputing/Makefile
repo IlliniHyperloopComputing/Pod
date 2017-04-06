@@ -30,9 +30,8 @@ all : mkdir_obj msg $(POD_D)
 
 .PHONY: msg
 msg : 
-	$(info Usage: make [compile type]  build  build_debug build_test  cross cross_debug cross_test)
+	$(info Usage: make [compile type]  build  build-debug build-test     cross cross-debug cross-test)
 	$(info ======= making build_debug version =======)
-	echo $(OBJ)
 
 .PHONY: mkdir_obj
 mkdir_obj:
