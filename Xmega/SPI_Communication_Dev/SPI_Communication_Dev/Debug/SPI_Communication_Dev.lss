@@ -3,33 +3,33 @@ SPI_Communication_Dev.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         0000050a  00000000  00000000  00000074  2**1
+  0 .text         00000646  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000000  00802000  00802000  0000057e  2**0
+  1 .data         00000014  00802000  00000646  000006da  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          00000030  00802000  00802000  0000057e  2**0
+  2 .bss          0000002e  00802014  00802014  000006ee  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  0000057e  2**0
+  3 .comment      00000030  00000000  00000000  000006ee  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000005b0  2**2
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000720  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 000000d8  00000000  00000000  000005f0  2**0
+  5 .debug_aranges 000000d8  00000000  00000000  00000760  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   0000566b  00000000  00000000  000006c8  2**0
+  6 .debug_info   000054fd  00000000  00000000  00000838  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 000041f3  00000000  00000000  00005d33  2**0
+  7 .debug_abbrev 0000414a  00000000  00000000  00005d35  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00001c1c  00000000  00000000  00009f26  2**0
+  8 .debug_line   00001cfe  00000000  00000000  00009e7f  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  0000021c  00000000  00000000  0000bb44  2**2
+  9 .debug_frame  0000021c  00000000  00000000  0000bb80  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00031207  00000000  00000000  0000bd60  2**0
+ 10 .debug_str    00031390  00000000  00000000  0000bd9c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00000a7e  00000000  00000000  0003cf67  2**0
+ 11 .debug_loc    00000a55  00000000  00000000  0003d12c  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 000000c8  00000000  00000000  0003d9e5  2**0
+ 12 .debug_ranges 000000b0  00000000  00000000  0003db81  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_macro  00000dc3  00000000  00000000  0003daad  2**0
+ 13 .debug_macro  00000de7  00000000  00000000  0003dc31  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -308,21 +308,21 @@ Disassembly of section .text:
  214:	10 e2       	ldi	r17, 0x20	; 32
  216:	a0 e0       	ldi	r26, 0x00	; 0
  218:	b0 e2       	ldi	r27, 0x20	; 32
- 21a:	ea e0       	ldi	r30, 0x0A	; 10
- 21c:	f5 e0       	ldi	r31, 0x05	; 5
+ 21a:	e6 e4       	ldi	r30, 0x46	; 70
+ 21c:	f6 e0       	ldi	r31, 0x06	; 6
  21e:	00 e0       	ldi	r16, 0x00	; 0
  220:	0b bf       	out	0x3b, r16	; 59
  222:	02 c0       	rjmp	.+4      	; 0x228 <__do_copy_data+0x14>
  224:	07 90       	elpm	r0, Z+
  226:	0d 92       	st	X+, r0
- 228:	a0 30       	cpi	r26, 0x00	; 0
+ 228:	a4 31       	cpi	r26, 0x14	; 20
  22a:	b1 07       	cpc	r27, r17
  22c:	d9 f7       	brne	.-10     	; 0x224 <__do_copy_data+0x10>
  22e:	1b be       	out	0x3b, r1	; 59
 
 00000230 <__do_clear_bss>:
  230:	20 e2       	ldi	r18, 0x20	; 32
- 232:	a0 e0       	ldi	r26, 0x00	; 0
+ 232:	a4 e1       	ldi	r26, 0x14	; 20
  234:	b0 e2       	ldi	r27, 0x20	; 32
  236:	01 c0       	rjmp	.+2      	; 0x23a <.do_clear_bss_start>
 
@@ -330,11 +330,11 @@ Disassembly of section .text:
  238:	1d 92       	st	X+, r1
 
 0000023a <.do_clear_bss_start>:
- 23a:	a0 33       	cpi	r26, 0x30	; 48
+ 23a:	a2 34       	cpi	r26, 0x42	; 66
  23c:	b2 07       	cpc	r27, r18
  23e:	e1 f7       	brne	.-8      	; 0x238 <.do_clear_bss_loop>
  240:	fb d0       	rcall	.+502    	; 0x438 <main>
- 242:	61 c1       	rjmp	.+706    	; 0x506 <_exit>
+ 242:	ff c1       	rjmp	.+1022   	; 0x642 <_exit>
 
 00000244 <__bad_interrupt>:
  244:	dd ce       	rjmp	.-582    	; 0x0 <__vectors>
@@ -362,10 +362,10 @@ static inline void crc_reset(void)
 
 	// Set initial checksum value
 	CRC.CHECKSUM0 = crc_initial_value & 0xFF;
- 254:	40 91 00 20 	lds	r20, 0x2000	; 0x802000 <__data_end>
- 258:	50 91 01 20 	lds	r21, 0x2001	; 0x802001 <__data_end+0x1>
- 25c:	60 91 02 20 	lds	r22, 0x2002	; 0x802002 <__data_end+0x2>
- 260:	70 91 03 20 	lds	r23, 0x2003	; 0x802003 <__data_end+0x3>
+ 254:	40 91 14 20 	lds	r20, 0x2014	; 0x802014 <__data_end>
+ 258:	50 91 15 20 	lds	r21, 0x2015	; 0x802015 <__data_end+0x1>
+ 25c:	60 91 16 20 	lds	r22, 0x2016	; 0x802016 <__data_end+0x2>
+ 260:	70 91 17 20 	lds	r23, 0x2017	; 0x802017 <__data_end+0x3>
  264:	44 83       	std	Z+4, r20	; 0x04
 	CRC.CHECKSUM1 = (crc_initial_value >> 8) & 0xFF;
  266:	05 2f       	mov	r16, r21
@@ -386,10 +386,10 @@ static inline void crc_reset(void)
  280:	47 83       	std	Z+7, r20	; 0x07
 
 	crc_initial_value = 0;
- 282:	10 92 00 20 	sts	0x2000, r1	; 0x802000 <__data_end>
- 286:	10 92 01 20 	sts	0x2001, r1	; 0x802001 <__data_end+0x1>
- 28a:	10 92 02 20 	sts	0x2002, r1	; 0x802002 <__data_end+0x2>
- 28e:	10 92 03 20 	sts	0x2003, r1	; 0x802003 <__data_end+0x3>
+ 282:	10 92 14 20 	sts	0x2014, r1	; 0x802014 <__data_end>
+ 286:	10 92 15 20 	sts	0x2015, r1	; 0x802015 <__data_end+0x1>
+ 28a:	10 92 16 20 	sts	0x2016, r1	; 0x802016 <__data_end+0x2>
+ 28e:	10 92 17 20 	sts	0x2017, r1	; 0x802017 <__data_end+0x3>
 void crc_io_checksum_byte_start(enum crc_16_32_t crc_16_32)
 {
 	// Initialize CRC calculations on I/O interface
@@ -765,10 +765,10 @@ static inline void ioport_configure_pin(port_pin_t pin, port_pin_flags_t flags)
  3f4:	08 95       	ret
 
 000003f6 <__vector_24>:
-	
-uint8_t data_len = 12;
-uint8_t data_idx = 0;
-uint8_t start_tx = 0;
+uint16_t send_crc = 0;
+uint8_t send_crc_idx = 0;
+
+
 
 ISR(SPIC_INT_vect) {
  3f6:	1f 92       	push	r1
@@ -780,22 +780,12 @@ ISR(SPIC_INT_vect) {
  402:	0f 92       	push	r0
  404:	18 be       	out	0x38, r1	; 56
  406:	8f 93       	push	r24
-	//while(!(SPIC.STATUS & 0x80));
-	//SPIC.DATA = 0xEF;     // send back to the master
-	//isr_flag  = !isr_flag;
-	//if(SPIC.STATUS & 0x40)
-	//	ioport_set_pin_level(LED_0_PIN, LED_0_ACTIVE);
 	rx_byte = SPIC.DATA;
  408:	80 91 c3 08 	lds	r24, 0x08C3	; 0x8008c3 <__TEXT_REGION_LENGTH__+0x7008c3>
- 40c:	80 93 0a 20 	sts	0x200A, r24	; 0x80200a <rx_byte>
+ 40c:	80 93 26 20 	sts	0x2026, r24	; 0x802026 <rx_byte>
 	spic_flag = 1;
  410:	81 e0       	ldi	r24, 0x01	; 1
- 412:	80 93 09 20 	sts	0x2009, r24	; 0x802009 <spic_flag>
-		//i = 0;
-	}
-	*/
-	
-	
+ 412:	80 93 25 20 	sts	0x2025, r24	; 0x802025 <spic_flag>
 }
  416:	8f 91       	pop	r24
  418:	0f 90       	pop	r0
@@ -839,169 +829,374 @@ int main (void)
  43e:	80 93 a2 00 	sts	0x00A2, r24	; 0x8000a2 <__TEXT_REGION_LENGTH__+0x7000a2>
 	sei();            // enable global interrupts
  442:	78 94       	sei
+		//So, we need to pipeline the next byte to be sent out.
+		//Also, the most recently sent byte is in the rx_byte
+		if(spic_flag){
+			//Indicate start of incoming command
+			if(rx_byte == SPI_TX_START){
 				cmd_idx = CMD_DATA_SIZE;
+ 444:	0f 2e       	mov	r0, r31
+ 446:	f5 e0       	ldi	r31, 0x05	; 5
+ 448:	6f 2e       	mov	r6, r31
+ 44a:	f0 2d       	mov	r31, r0
+					}
+				}				
+			}
+			else if(cmd_finished){
+				//On next pass we will be start pipelining data
+				if(cmd_data[2] == 0){
+ 44c:	c7 e2       	ldi	r28, 0x27	; 39
+ 44e:	d0 e2       	ldi	r29, 0x20	; 32
+				else if(cmd_data[2] == 1 || cmd_data[2] == 2){
+					send_idx = 1;
+					send_crc_length = send_idx;
+				}
+				else{
+					memcpy(send_data,sensor_data,SENSOR_DATA_SIZE);
+ 450:	0f 2e       	mov	r0, r31
+ 452:	f4 e1       	ldi	r31, 0x14	; 20
+ 454:	7f 2e       	mov	r7, r31
+ 456:	f0 2d       	mov	r31, r0
+					send_data[SENSOR_DATA_SIZE] = state;
+					send_data[SENSOR_DATA_SIZE+1] = sensor_status;
+					send_idx = SENSOR_DATA_SIZE+2;
+ 458:	0f 2e       	mov	r0, r31
+ 45a:	f6 e1       	ldi	r31, 0x16	; 22
+ 45c:	5f 2e       	mov	r5, r31
+ 45e:	f0 2d       	mov	r31, r0
+					memcpy(send_data,sensor_data,SENSOR_DATA_SIZE);//TODO: determine if this takes too long
+					send_idx = SENSOR_DATA_SIZE;
+					send_crc_length = send_idx;
+				}
+				else if(cmd_data[2] == 1 || cmd_data[2] == 2){
+					send_idx = 1;
+ 460:	33 24       	eor	r3, r3
+ 462:	33 94       	inc	r3
+
 			}
 			
 			//If we are receiving command, store it appropriately
 			if(cmd_idx > 0){
 				cmd_data[CMD_DATA_SIZE-cmd_idx] = rx_byte;
- 444:	c5 e0       	ldi	r28, 0x05	; 5
- 446:	d0 e0       	ldi	r29, 0x00	; 0
-				cmd_idx--;
-				
-				//Finished last storage of incoming data
-				//Now check CRC
-				if(cmd_idx == 0){
-					received_crc =	(cmd_data[CMD_DATA_SIZE-1]<<8) | cmd_data[CMD_DATA_SIZE-2];
- 448:	0f 2e       	mov	r0, r31
- 44a:	ff e1       	ldi	r31, 0x1F	; 31
- 44c:	cf 2e       	mov	r12, r31
- 44e:	f0 e2       	ldi	r31, 0x20	; 32
- 450:	df 2e       	mov	r13, r31
- 452:	f0 2d       	mov	r31, r0
+ 464:	0f 2e       	mov	r0, r31
+ 466:	f5 e0       	ldi	r31, 0x05	; 5
+ 468:	ef 2e       	mov	r14, r31
+ 46a:	f1 2c       	mov	r15, r1
+ 46c:	f0 2d       	mov	r31, r0
 					if(calculated_crc == received_crc){
-						ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
-						SPIC.DATA = 0xAA;
+						SPIC.DATA = SPI_CRC_PASS;
+						cmd_finished = 1;
 					}
 					else{
-						SPIC.DATA = 0xFF;
- 454:	00 ec       	ldi	r16, 0xC0	; 192
- 456:	18 e0       	ldi	r17, 0x08	; 8
- 458:	aa 24       	eor	r10, r10
- 45a:	aa 94       	dec	r10
-	PORT_t *base = arch_ioport_pin_to_base(pin);
-
-	if (level) {
-		base->OUTSET = arch_ioport_pin_to_mask(pin);
-	} else {
-		base->OUTCLR = arch_ioport_pin_to_mask(pin);
- 45c:	0f 2e       	mov	r0, r31
- 45e:	f0 ec       	ldi	r31, 0xC0	; 192
- 460:	ef 2e       	mov	r14, r31
- 462:	f7 e0       	ldi	r31, 0x07	; 7
- 464:	ff 2e       	mov	r15, r31
- 466:	f0 2d       	mov	r31, r0
- 468:	68 94       	set
- 46a:	88 24       	eor	r8, r8
- 46c:	83 f8       	bld	r8, 3
-				if(cmd_idx == 0){
-					received_crc =	(cmd_data[CMD_DATA_SIZE-1]<<8) | cmd_data[CMD_DATA_SIZE-2];
-					calculated_crc = crc_io_checksum(cmd_data, CMD_DATA_SIZE-2, CRC_16BIT);
-					if(calculated_crc == received_crc){
-						ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
-						SPIC.DATA = 0xAA;
- 46e:	0f 2e       	mov	r0, r31
- 470:	fa ea       	ldi	r31, 0xAA	; 170
- 472:	9f 2e       	mov	r9, r31
- 474:	f0 2d       	mov	r31, r0
+						SPIC.DATA = SPI_CRC_FAIL;
+ 46e:	00 ec       	ldi	r16, 0xC0	; 192
+ 470:	18 e0       	ldi	r17, 0x08	; 8
+ 472:	22 24       	eor	r2, r2
+ 474:	2a 94       	dec	r2
+					send_crc_idx = 2;
+				}
+				
 			}
-			
-			//If we are receiving command, store it appropriately
-			if(cmd_idx > 0){
-				cmd_data[CMD_DATA_SIZE-cmd_idx] = rx_byte;
-				cmd_idx--;
+			else if(send_crc_idx > 0){
+				SPIC.DATA = send_crc >> ((2-send_crc_idx)*8);
  476:	68 94       	set
- 478:	bb 24       	eor	r11, r11
- 47a:	b2 f8       	bld	r11, 2
+ 478:	aa 24       	eor	r10, r10
+ 47a:	a1 f8       	bld	r10, 1
+ 47c:	b1 2c       	mov	r11, r1
+				send_idx--;
+				
+				//Calculate CRC
+				if(send_idx == 0){
+					send_crc = crc_io_checksum(send_data, send_crc_length, CRC_16BIT);
+					send_crc_idx = 2;
+ 47e:	68 94       	set
+ 480:	44 24       	eor	r4, r4
+ 482:	41 f8       	bld	r4, 1
+				}
+				else if(cmd_data[2] == 2){//send only sensor_status data
+					SPIC.DATA = sensor_status;
+				}
+				else{//send all
+					SPIC.DATA = send_data[SENSOR_DATA_SIZE+2-send_idx];
+ 484:	0f 2e       	mov	r0, r31
+ 486:	f6 e1       	ldi	r31, 0x16	; 22
+ 488:	8f 2e       	mov	r8, r31
+ 48a:	91 2c       	mov	r9, r1
+ 48c:	f0 2d       	mov	r31, r0
+			
+			
+			if(send_idx > 0){
+				
+				if(cmd_data[2] == 0){//Send only sensor data
+					SPIC.DATA = send_data[SENSOR_DATA_SIZE-send_idx];
+ 48e:	0f 2e       	mov	r0, r31
+ 490:	f4 e1       	ldi	r31, 0x14	; 20
+ 492:	cf 2e       	mov	r12, r31
+ 494:	d1 2c       	mov	r13, r1
+ 496:	f0 2d       	mov	r31, r0
 		
 		//SPIC handler
 		//When this is true, it means we have just received a byte
 		//So, we need to pipeline the next byte to be sent out.
 		//Also, the most recently sent byte is in the rx_byte
 		if(spic_flag){
- 47c:	90 91 09 20 	lds	r25, 0x2009	; 0x802009 <spic_flag>
- 480:	99 23       	and	r25, r25
- 482:	e1 f3       	breq	.-8      	; 0x47c <main+0x44>
+ 498:	80 91 25 20 	lds	r24, 0x2025	; 0x802025 <spic_flag>
+ 49c:	88 23       	and	r24, r24
+ 49e:	e1 f3       	breq	.-8      	; 0x498 <main+0x60>
 			//Indicate start of incoming command
 			if(rx_byte == SPI_TX_START){
- 484:	80 91 0a 20 	lds	r24, 0x200A	; 0x80200a <rx_byte>
- 488:	8a 3a       	cpi	r24, 0xAA	; 170
- 48a:	39 f4       	brne	.+14     	; 0x49a <main+0x62>
+ 4a0:	80 91 26 20 	lds	r24, 0x2026	; 0x802026 <rx_byte>
+ 4a4:	8a 3a       	cpi	r24, 0xAA	; 170
+ 4a6:	71 f4       	brne	.+28     	; 0x4c4 <main+0x8c>
 				cmd_idx = CMD_DATA_SIZE;
+ 4a8:	60 92 24 20 	sts	0x2024, r6	; 0x802024 <cmd_idx>
+				//Reset all the send variables/tmp storage
+				cmd_finished = 0;
+ 4ac:	10 92 1d 20 	sts	0x201D, r1	; 0x80201d <cmd_finished>
+				send_idx = 0;
+ 4b0:	10 92 1c 20 	sts	0x201C, r1	; 0x80201c <send_idx>
+				send_crc_length = 0;
+ 4b4:	10 92 1b 20 	sts	0x201B, r1	; 0x80201b <send_crc_length>
+				send_crc = 0;
+ 4b8:	10 92 19 20 	sts	0x2019, r1	; 0x802019 <send_crc>
+ 4bc:	10 92 1a 20 	sts	0x201A, r1	; 0x80201a <send_crc+0x1>
+				send_crc_idx = 0;
+ 4c0:	10 92 18 20 	sts	0x2018, r1	; 0x802018 <send_crc_idx>
+
 			}
 			
 			//If we are receiving command, store it appropriately
 			if(cmd_idx > 0){
+ 4c4:	80 91 24 20 	lds	r24, 0x2024	; 0x802024 <cmd_idx>
+ 4c8:	88 23       	and	r24, r24
+ 4ca:	81 f1       	breq	.+96     	; 0x52c <main+0xf4>
 				cmd_data[CMD_DATA_SIZE-cmd_idx] = rx_byte;
- 48c:	80 91 0a 20 	lds	r24, 0x200A	; 0x80200a <rx_byte>
- 490:	f6 01       	movw	r30, r12
- 492:	80 83       	st	Z, r24
+ 4cc:	90 91 26 20 	lds	r25, 0x2026	; 0x802026 <rx_byte>
+ 4d0:	f7 01       	movw	r30, r14
+ 4d2:	e8 1b       	sub	r30, r24
+ 4d4:	f1 09       	sbc	r31, r1
+ 4d6:	e9 5d       	subi	r30, 0xD9	; 217
+ 4d8:	ff 4d       	sbci	r31, 0xDF	; 223
+ 4da:	90 83       	st	Z, r25
 				cmd_idx--;
- 494:	b0 92 08 20 	sts	0x2008, r11	; 0x802008 <cmd_idx>
- 498:	33 c0       	rjmp	.+102    	; 0x500 <main+0xc8>
-			if(rx_byte == SPI_TX_START){
-				cmd_idx = CMD_DATA_SIZE;
-			}
-			
-			//If we are receiving command, store it appropriately
-			if(cmd_idx > 0){
- 49a:	90 91 08 20 	lds	r25, 0x2008	; 0x802008 <cmd_idx>
- 49e:	99 23       	and	r25, r25
- 4a0:	79 f1       	breq	.+94     	; 0x500 <main+0xc8>
-				cmd_data[CMD_DATA_SIZE-cmd_idx] = rx_byte;
- 4a2:	80 91 0a 20 	lds	r24, 0x200A	; 0x80200a <rx_byte>
- 4a6:	fe 01       	movw	r30, r28
- 4a8:	e9 1b       	sub	r30, r25
- 4aa:	f1 09       	sbc	r31, r1
- 4ac:	e1 5e       	subi	r30, 0xE1	; 225
- 4ae:	ff 4d       	sbci	r31, 0xDF	; 223
- 4b0:	80 83       	st	Z, r24
-				cmd_idx--;
- 4b2:	91 50       	subi	r25, 0x01	; 1
- 4b4:	90 93 08 20 	sts	0x2008, r25	; 0x802008 <cmd_idx>
+ 4dc:	81 50       	subi	r24, 0x01	; 1
+ 4de:	80 93 24 20 	sts	0x2024, r24	; 0x802024 <cmd_idx>
 				
 				//Finished last storage of incoming data
-				//Now check CRC
 				if(cmd_idx == 0){
- 4b8:	91 11       	cpse	r25, r1
- 4ba:	22 c0       	rjmp	.+68     	; 0x500 <main+0xc8>
+ 4e2:	81 11       	cpse	r24, r1
+ 4e4:	57 c0       	rjmp	.+174    	; 0x594 <main+0x15c>
+					//Check recieved_crc against calculated CRC
 					received_crc =	(cmd_data[CMD_DATA_SIZE-1]<<8) | cmd_data[CMD_DATA_SIZE-2];
- 4bc:	f6 01       	movw	r30, r12
- 4be:	84 81       	ldd	r24, Z+4	; 0x04
- 4c0:	90 e0       	ldi	r25, 0x00	; 0
- 4c2:	98 2f       	mov	r25, r24
- 4c4:	88 27       	eor	r24, r24
- 4c6:	23 81       	ldd	r18, Z+3	; 0x03
- 4c8:	82 2b       	or	r24, r18
- 4ca:	80 93 06 20 	sts	0x2006, r24	; 0x802006 <received_crc>
- 4ce:	90 93 07 20 	sts	0x2007, r25	; 0x802007 <received_crc+0x1>
+ 4e6:	8c 81       	ldd	r24, Y+4	; 0x04
+ 4e8:	90 e0       	ldi	r25, 0x00	; 0
+ 4ea:	98 2f       	mov	r25, r24
+ 4ec:	88 27       	eor	r24, r24
+ 4ee:	2b 81       	ldd	r18, Y+3	; 0x03
+ 4f0:	82 2b       	or	r24, r18
+ 4f2:	80 93 22 20 	sts	0x2022, r24	; 0x802022 <received_crc>
+ 4f6:	90 93 23 20 	sts	0x2023, r25	; 0x802023 <received_crc+0x1>
 					calculated_crc = crc_io_checksum(cmd_data, CMD_DATA_SIZE-2, CRC_16BIT);
- 4d2:	40 e0       	ldi	r20, 0x00	; 0
- 4d4:	63 e0       	ldi	r22, 0x03	; 3
- 4d6:	70 e0       	ldi	r23, 0x00	; 0
- 4d8:	c6 01       	movw	r24, r12
- 4da:	3d df       	rcall	.-390    	; 0x356 <crc_io_checksum>
- 4dc:	60 93 04 20 	sts	0x2004, r22	; 0x802004 <calculated_crc>
- 4e0:	70 93 05 20 	sts	0x2005, r23	; 0x802005 <calculated_crc+0x1>
+ 4fa:	40 e0       	ldi	r20, 0x00	; 0
+ 4fc:	63 e0       	ldi	r22, 0x03	; 3
+ 4fe:	70 e0       	ldi	r23, 0x00	; 0
+ 500:	ce 01       	movw	r24, r28
+ 502:	29 df       	rcall	.-430    	; 0x356 <crc_io_checksum>
+ 504:	60 93 20 20 	sts	0x2020, r22	; 0x802020 <calculated_crc>
+ 508:	70 93 21 20 	sts	0x2021, r23	; 0x802021 <calculated_crc+0x1>
+					//Send appropriate signal if passed/failed
 					if(calculated_crc == received_crc){
- 4e4:	20 91 06 20 	lds	r18, 0x2006	; 0x802006 <received_crc>
- 4e8:	30 91 07 20 	lds	r19, 0x2007	; 0x802007 <received_crc+0x1>
- 4ec:	26 17       	cp	r18, r22
- 4ee:	37 07       	cpc	r19, r23
- 4f0:	29 f4       	brne	.+10     	; 0x4fc <main+0xc4>
- 4f2:	f7 01       	movw	r30, r14
- 4f4:	86 82       	std	Z+6, r8	; 0x06
-						ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
-						SPIC.DATA = 0xAA;
- 4f6:	f8 01       	movw	r30, r16
- 4f8:	93 82       	std	Z+3, r9	; 0x03
- 4fa:	02 c0       	rjmp	.+4      	; 0x500 <main+0xc8>
+ 50c:	20 91 22 20 	lds	r18, 0x2022	; 0x802022 <received_crc>
+ 510:	30 91 23 20 	lds	r19, 0x2023	; 0x802023 <received_crc+0x1>
+ 514:	26 17       	cp	r18, r22
+ 516:	37 07       	cpc	r19, r23
+ 518:	31 f4       	brne	.+12     	; 0x526 <main+0xee>
+						SPIC.DATA = SPI_CRC_PASS;
+ 51a:	8a ea       	ldi	r24, 0xAA	; 170
+ 51c:	f8 01       	movw	r30, r16
+ 51e:	83 83       	std	Z+3, r24	; 0x03
+						cmd_finished = 1;
+ 520:	30 92 1d 20 	sts	0x201D, r3	; 0x80201d <cmd_finished>
+ 524:	37 c0       	rjmp	.+110    	; 0x594 <main+0x15c>
 					}
 					else{
-						SPIC.DATA = 0xFF;
- 4fc:	f8 01       	movw	r30, r16
- 4fe:	a3 82       	std	Z+3, r10	; 0x03
+						SPIC.DATA = SPI_CRC_FAIL;
+ 526:	f8 01       	movw	r30, r16
+ 528:	23 82       	std	Z+3, r2	; 0x03
+ 52a:	34 c0       	rjmp	.+104    	; 0x594 <main+0x15c>
+					}
 				}				
+			}
+			else if(cmd_finished){
+ 52c:	80 91 1d 20 	lds	r24, 0x201D	; 0x80201d <cmd_finished>
+ 530:	88 23       	and	r24, r24
+ 532:	81 f1       	breq	.+96     	; 0x594 <main+0x15c>
+				//On next pass we will be start pipelining data
+				if(cmd_data[2] == 0){
+ 534:	8a 81       	ldd	r24, Y+2	; 0x02
+ 536:	81 11       	cpse	r24, r1
+ 538:	0e c0       	rjmp	.+28     	; 0x556 <main+0x11e>
+					memcpy(send_data,sensor_data,SENSOR_DATA_SIZE);//TODO: determine if this takes too long
+ 53a:	e0 e0       	ldi	r30, 0x00	; 0
+ 53c:	f0 e2       	ldi	r31, 0x20	; 32
+ 53e:	ac e2       	ldi	r26, 0x2C	; 44
+ 540:	b0 e2       	ldi	r27, 0x20	; 32
+ 542:	87 2d       	mov	r24, r7
+ 544:	01 90       	ld	r0, Z+
+ 546:	0d 92       	st	X+, r0
+ 548:	8a 95       	dec	r24
+ 54a:	e1 f7       	brne	.-8      	; 0x544 <main+0x10c>
+					send_idx = SENSOR_DATA_SIZE;
+ 54c:	70 92 1c 20 	sts	0x201C, r7	; 0x80201c <send_idx>
+					send_crc_length = send_idx;
+ 550:	70 92 1b 20 	sts	0x201B, r7	; 0x80201b <send_crc_length>
+ 554:	1d c0       	rjmp	.+58     	; 0x590 <main+0x158>
+				}
+				else if(cmd_data[2] == 1 || cmd_data[2] == 2){
+ 556:	81 50       	subi	r24, 0x01	; 1
+ 558:	82 30       	cpi	r24, 0x02	; 2
+ 55a:	28 f4       	brcc	.+10     	; 0x566 <main+0x12e>
+					send_idx = 1;
+ 55c:	30 92 1c 20 	sts	0x201C, r3	; 0x80201c <send_idx>
+					send_crc_length = send_idx;
+ 560:	30 92 1b 20 	sts	0x201B, r3	; 0x80201b <send_crc_length>
+ 564:	15 c0       	rjmp	.+42     	; 0x590 <main+0x158>
+				}
+				else{
+					memcpy(send_data,sensor_data,SENSOR_DATA_SIZE);
+ 566:	e0 e0       	ldi	r30, 0x00	; 0
+ 568:	f0 e2       	ldi	r31, 0x20	; 32
+ 56a:	ac e2       	ldi	r26, 0x2C	; 44
+ 56c:	b0 e2       	ldi	r27, 0x20	; 32
+ 56e:	87 2d       	mov	r24, r7
+ 570:	01 90       	ld	r0, Z+
+ 572:	0d 92       	st	X+, r0
+ 574:	8a 95       	dec	r24
+ 576:	e1 f7       	brne	.-8      	; 0x570 <main+0x138>
+					send_data[SENSOR_DATA_SIZE] = state;
+ 578:	ec e2       	ldi	r30, 0x2C	; 44
+ 57a:	f0 e2       	ldi	r31, 0x20	; 32
+ 57c:	80 91 1f 20 	lds	r24, 0x201F	; 0x80201f <state>
+ 580:	84 8b       	std	Z+20, r24	; 0x14
+					send_data[SENSOR_DATA_SIZE+1] = sensor_status;
+ 582:	80 91 1e 20 	lds	r24, 0x201E	; 0x80201e <sensor_status>
+ 586:	85 8b       	std	Z+21, r24	; 0x15
+					send_idx = SENSOR_DATA_SIZE+2;
+ 588:	50 92 1c 20 	sts	0x201C, r5	; 0x80201c <send_idx>
+					send_crc_length = send_idx;
+ 58c:	50 92 1b 20 	sts	0x201B, r5	; 0x80201b <send_crc_length>
+				}
+				cmd_finished = 0;
+ 590:	10 92 1d 20 	sts	0x201D, r1	; 0x80201d <cmd_finished>
 			}
 			
 			
+			if(send_idx > 0){
+ 594:	80 91 1c 20 	lds	r24, 0x201C	; 0x80201c <send_idx>
+ 598:	88 23       	and	r24, r24
+ 59a:	a9 f1       	breq	.+106    	; 0x606 <main+0x1ce>
+				
+				if(cmd_data[2] == 0){//Send only sensor data
+ 59c:	9a 81       	ldd	r25, Y+2	; 0x02
+ 59e:	91 11       	cpse	r25, r1
+ 5a0:	09 c0       	rjmp	.+18     	; 0x5b4 <main+0x17c>
+					SPIC.DATA = send_data[SENSOR_DATA_SIZE-send_idx];
+ 5a2:	f6 01       	movw	r30, r12
+ 5a4:	e8 1b       	sub	r30, r24
+ 5a6:	f1 09       	sbc	r31, r1
+ 5a8:	e4 5d       	subi	r30, 0xD4	; 212
+ 5aa:	ff 4d       	sbci	r31, 0xDF	; 223
+ 5ac:	90 81       	ld	r25, Z
+ 5ae:	f8 01       	movw	r30, r16
+ 5b0:	93 83       	std	Z+3, r25	; 0x03
+ 5b2:	16 c0       	rjmp	.+44     	; 0x5e0 <main+0x1a8>
+				}
+				else if(cmd_data[2] == 1){//send only state data
+ 5b4:	91 30       	cpi	r25, 0x01	; 1
+ 5b6:	29 f4       	brne	.+10     	; 0x5c2 <main+0x18a>
+					SPIC.DATA = state;
+ 5b8:	90 91 1f 20 	lds	r25, 0x201F	; 0x80201f <state>
+ 5bc:	f8 01       	movw	r30, r16
+ 5be:	93 83       	std	Z+3, r25	; 0x03
+ 5c0:	0f c0       	rjmp	.+30     	; 0x5e0 <main+0x1a8>
+				}
+				else if(cmd_data[2] == 2){//send only sensor_status data
+ 5c2:	92 30       	cpi	r25, 0x02	; 2
+ 5c4:	29 f4       	brne	.+10     	; 0x5d0 <main+0x198>
+					SPIC.DATA = sensor_status;
+ 5c6:	90 91 1e 20 	lds	r25, 0x201E	; 0x80201e <sensor_status>
+ 5ca:	f8 01       	movw	r30, r16
+ 5cc:	93 83       	std	Z+3, r25	; 0x03
+ 5ce:	08 c0       	rjmp	.+16     	; 0x5e0 <main+0x1a8>
+				}
+				else{//send all
+					SPIC.DATA = send_data[SENSOR_DATA_SIZE+2-send_idx];
+ 5d0:	f4 01       	movw	r30, r8
+ 5d2:	e8 1b       	sub	r30, r24
+ 5d4:	f1 09       	sbc	r31, r1
+ 5d6:	e4 5d       	subi	r30, 0xD4	; 212
+ 5d8:	ff 4d       	sbci	r31, 0xDF	; 223
+ 5da:	90 81       	ld	r25, Z
+ 5dc:	f8 01       	movw	r30, r16
+ 5de:	93 83       	std	Z+3, r25	; 0x03
+				}				
+				send_idx--;
+ 5e0:	81 50       	subi	r24, 0x01	; 1
+ 5e2:	80 93 1c 20 	sts	0x201C, r24	; 0x80201c <send_idx>
+				
+				//Calculate CRC
+				if(send_idx == 0){
+ 5e6:	81 11       	cpse	r24, r1
+ 5e8:	29 c0       	rjmp	.+82     	; 0x63c <main+0x204>
+					send_crc = crc_io_checksum(send_data, send_crc_length, CRC_16BIT);
+ 5ea:	60 91 1b 20 	lds	r22, 0x201B	; 0x80201b <send_crc_length>
+ 5ee:	70 e0       	ldi	r23, 0x00	; 0
+ 5f0:	40 e0       	ldi	r20, 0x00	; 0
+ 5f2:	8c e2       	ldi	r24, 0x2C	; 44
+ 5f4:	90 e2       	ldi	r25, 0x20	; 32
+ 5f6:	af de       	rcall	.-674    	; 0x356 <crc_io_checksum>
+ 5f8:	60 93 19 20 	sts	0x2019, r22	; 0x802019 <send_crc>
+ 5fc:	70 93 1a 20 	sts	0x201A, r23	; 0x80201a <send_crc+0x1>
+					send_crc_idx = 2;
+ 600:	40 92 18 20 	sts	0x2018, r4	; 0x802018 <send_crc_idx>
+ 604:	1b c0       	rjmp	.+54     	; 0x63c <main+0x204>
+				}
+				
+			}
+			else if(send_crc_idx > 0){
+ 606:	40 91 18 20 	lds	r20, 0x2018	; 0x802018 <send_crc_idx>
+ 60a:	44 23       	and	r20, r20
+ 60c:	b9 f0       	breq	.+46     	; 0x63c <main+0x204>
+				SPIC.DATA = send_crc >> ((2-send_crc_idx)*8);
+ 60e:	95 01       	movw	r18, r10
+ 610:	24 1b       	sub	r18, r20
+ 612:	31 09       	sbc	r19, r1
+ 614:	22 0f       	add	r18, r18
+ 616:	33 1f       	adc	r19, r19
+ 618:	22 0f       	add	r18, r18
+ 61a:	33 1f       	adc	r19, r19
+ 61c:	22 0f       	add	r18, r18
+ 61e:	33 1f       	adc	r19, r19
+ 620:	80 91 19 20 	lds	r24, 0x2019	; 0x802019 <send_crc>
+ 624:	90 91 1a 20 	lds	r25, 0x201A	; 0x80201a <send_crc+0x1>
+ 628:	02 c0       	rjmp	.+4      	; 0x62e <main+0x1f6>
+ 62a:	96 95       	lsr	r25
+ 62c:	87 95       	ror	r24
+ 62e:	2a 95       	dec	r18
+ 630:	e2 f7       	brpl	.-8      	; 0x62a <main+0x1f2>
+ 632:	f8 01       	movw	r30, r16
+ 634:	83 83       	std	Z+3, r24	; 0x03
+				send_crc_idx--;
+ 636:	41 50       	subi	r20, 0x01	; 1
+ 638:	40 93 18 20 	sts	0x2018, r20	; 0x802018 <send_crc_idx>
+			}
 			
 			spic_flag = 0;
- 500:	10 92 09 20 	sts	0x2009, r1	; 0x802009 <spic_flag>
- 504:	bb cf       	rjmp	.-138    	; 0x47c <main+0x44>
+ 63c:	10 92 25 20 	sts	0x2025, r1	; 0x802025 <spic_flag>
+ 640:	2b cf       	rjmp	.-426    	; 0x498 <main+0x60>
 
-00000506 <_exit>:
- 506:	f8 94       	cli
+00000642 <_exit>:
+ 642:	f8 94       	cli
 
-00000508 <__stop_program>:
- 508:	ff cf       	rjmp	.-2      	; 0x508 <__stop_program>
+00000644 <__stop_program>:
+ 644:	ff cf       	rjmp	.-2      	; 0x644 <__stop_program>
