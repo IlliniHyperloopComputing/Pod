@@ -11,6 +11,7 @@
 
 #include <string>
 #include <cstdlib>
+#include <cstring>
 #include <cstdint>
 #include <cassert>
 #include <unistd.h>
@@ -19,13 +20,22 @@
 
 using namespace std;
 
-enum class Xmega_Command_t: uint8_t {
+enum Xmega_Transmission_Failure_t: uint8_t {
+  //No error
+  X_TF_NONE = 0,
+  //Error sending data
+  X_TF_SEND = 1,
+  //Error recieving data
+  X_TF_RECIEVE =2,
+};
+
+enum Xmega_Command_t: uint8_t {
   //No Command
   X_C_NONE = 0,
   //TODO: Add others as needed
 };
 
-enum class Xmega_Request_t: uint8_t {
+enum Xmega_Request_t: uint8_t {
   //Read num bytes as described in Xmega_Setup
   X_R_SENSOR = 0,
   //Read byte to determine if any Xmega sensor error
@@ -259,12 +269,12 @@ class Spi {
     int fd2;
 
     //storage of most recently read in data
-    //dynamically allocated, acording to maximum message size + 2
+    //dynamically allocated, according to maximum message size + 2
     uint8_t * x1_buff;
     uint8_t * x2_buff;
 
     //Number of total bytes used by data (not CRC, status, or state)
-    //in the x1/2_buff
+    //in the x1_buff and x2_buff
     uint8_t x1_num_bytes;
     uint8_t x2_num_bytes;
 
@@ -294,6 +304,9 @@ class Spi {
 
     uint8_t x2_sensor_status;
     uint8_t x2_state;
+
+    enum Xmega_Transmission_Failure_t x1_transmission_failure;
+    enum Xmega_Transmission_Failure_t x2_transmission_failure;
 
 };
 
