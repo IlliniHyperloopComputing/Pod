@@ -19,7 +19,7 @@ Spi::Spi(Xmega_Setup * x1, Xmega_Setup * x2){
   x1_offset_lookup[0] = 0;
   for(int i=1; i<x1->num_items; i++){
     assert(x1->bytes_per_item[i] <= 4); //Assert bytes_per_index is at most 4
-    x1_num_bytes = x1->bytes_per_item[i];
+    x1_num_bytes += x1->bytes_per_item[i];
     x1_offset_lookup[i] = x1_offset_lookup[i-1] + x1->bytes_per_item[i-1];
   }
 
@@ -28,7 +28,7 @@ Spi::Spi(Xmega_Setup * x1, Xmega_Setup * x2){
   x2_offset_lookup[0] = 0;
   for(int i=1; i<x2->num_items; i++){
     assert(x2->bytes_per_item[i] <= 4); //Assert bytes_per_index is at most 4
-    x2_num_bytes = x2->bytes_per_item[i];
+    x2_num_bytes += x2->bytes_per_item[i];
     x2_offset_lookup[i] = x2_offset_lookup[i-1] + x2->bytes_per_item[i-1];
   }
 
@@ -93,8 +93,9 @@ void Spi::transfer(Xmega_Transfer &xt){
   int max_passes = 2;
   int passes = 0;
   while(!sent_properly && passes < max_passes){
+    print_debug("Send Loop: pass #%d, send_type: %d\n",passes,send_type);
     //send to Xmegas
-    for(int i = 0; i <5;i++){
+    for(int i = 0; i < 5;i++){
       //Why equal 0 or 3? check below where send_type is set
       if(send_type == 0 || send_type == 0b11){
         write(fd1, tx1_buff + i, 1);
@@ -110,7 +111,7 @@ void Spi::transfer(Xmega_Transfer &xt){
       }
     }
 
-    //read CRC from Xmegas to confirm sent data properly
+    //read ACK or NACK from Xmegas to confirm sent data properly
     if(send_type == 0){
       read(fd1, &result1, 1);
       read(fd2, &result2, 1);
@@ -123,13 +124,13 @@ void Spi::transfer(Xmega_Transfer &xt){
     }
 
     //Determine if another attempt is needed
-    sent_properly = (result1 == crc1) && (result2 == crc2);
+    sent_properly = (result1 == CRC_PASS) && (result2 == CRC_PASS);
     //send_type is used to say which one we will try to resend.
     //0b01 => resend xmega1, 0b10 => resend xmega2, 0b11 => resend xmega2
-    send_type = (result1 != crc1) | ((result2 != crc2) << 1);
+    send_type = (result1 != CRC_PASS) | ((result2 != CRC_PASS) << 1);
     
-    print_debug("res1 %d\n", result1);
-    print_debug("res2 %d\n", result2);
+    print_debug("Send Loop: result1: %d\n", result1);
+    print_debug("Send Loop: result2: %d\n", result2);
     passes++;
   }
   
@@ -142,9 +143,11 @@ void Spi::transfer(Xmega_Transfer &xt){
   //Set appropriate error messages
   if(!sent_properly){
     if((send_type & 0b01)){
+      print_debug("Transmission_failure in X1 when sending \n");
       x1_transmission_failure = X_TF_SEND;
     }
     if((send_type & 0b10)){
+      print_debug("Transmission_failure in X2 when sending \n");
       x2_transmission_failure = X_TF_SEND;
     }
     sending_errors = send_type;
@@ -169,6 +172,8 @@ void Spi::transfer(Xmega_Transfer &xt){
     bytes_to_read1 = 0;
   }
 
+  print_debug("Bytes_to_read1: %d\n", bytes_to_read1);
+
   if(xt.req2 == 0){
     bytes_to_read2 = x2_num_bytes;
   }
@@ -181,6 +186,7 @@ void Spi::transfer(Xmega_Transfer &xt){
   else{
     bytes_to_read2 = 0;
   }
+  print_debug("Bytes_to_read2: %d\n", bytes_to_read2);
 
   //Create buffers that are big enough for size of incoming data
   uint8_t rx1_buff[bytes_to_read1+2];
@@ -198,6 +204,7 @@ void Spi::transfer(Xmega_Transfer &xt){
   int recieved_properly = 0;
   int recieve_type = sending_errors;
   while(!recieved_properly && passes < 2){
+    print_debug("Recieve Loop: pass #%d, recieve_type: %d\n",passes,recieve_type);
 
     //Why separate loops for reading data and crc?
     //Why not just one loop that goes two extra times?
@@ -213,45 +220,60 @@ void Spi::transfer(Xmega_Transfer &xt){
       if((idx1 < bytes_to_read1 && idx2 < bytes_to_read2) && (recieve_type == 0 || recieve_type == 3)){ //read both
         read(fd1, rx1_buff+idx1, 1);
         read(fd2, rx2_buff+idx2, 1);
+        print_debug("Recieved x1: idx: %d, data: %d\n", idx1, rx1_buff[idx1] );
+        print_debug("Recieved x2: idx: %d, data: %d\n", idx2, rx2_buff[idx2] );
       }
       else if((idx1 < bytes_to_read1) && recieve_type != 2){//read fd1
         read(fd1, rx1_buff+idx1, 1);
+        print_debug("Recieved x1: idx: %d, data: %d\n", idx1, rx1_buff[idx1] );
         usleep(10);
       }
       else if((idx2 < bytes_to_read2) && recieve_type != 1){//read fd2
         read(fd2, rx2_buff+idx2, 1);
+        print_debug("Recieved x2: idx: %d, data: %d\n", idx2, rx2_buff[idx2] );
         usleep(10);
       }
       idx1++;
       idx2++;
     }
 
+    calc_crc1 = Crc::CRCCCITT(rx1_buff, bytes_to_read1, 0);
+    calc_crc2 = Crc::CRCCCITT(rx1_buff, bytes_to_read2, 0);
+    print_debug("Calc x1 crc: data: 0x%x\n", calc_crc1);
+    print_debug("Calc x2 crc: data: 0x%x\n", calc_crc2);
+
     //Read CRC
     uint8_t idx_crc1 = 0;
     uint8_t idx_crc2 = 0;
+    rx_crc1 = 0;
+    rx_crc2 = 0;
     while(idx_crc1 < 2 || idx_crc2 < 2){
       if((bytes_to_read1 != 0 && bytes_to_read2 != 0) && (recieve_type == 0 || recieve_type == 3)){
         read(fd1, rx1_buff+ bytes_to_read1 + idx_crc1, 1);
         read(fd2, rx2_buff+ bytes_to_read2 + idx_crc2, 1);
-        rx_crc1 = rx1_buff[bytes_to_read1 + idx_crc1] << (idx_crc1 * 8);
-        rx_crc2 = rx2_buff[bytes_to_read2 + idx_crc2] << (idx_crc2 * 8);
+        rx_crc1 |= rx1_buff[bytes_to_read1 + idx_crc1] << (idx_crc1 * 8);
+        rx_crc2 |= rx2_buff[bytes_to_read2 + idx_crc2] << (idx_crc2 * 8);
+        print_debug("Recieved x1 crc: data: 0x%x\n", rx1_buff[idx1+idx_crc1]);
+        print_debug("Recieved x2 crc: data: 0x%x\n", rx2_buff[idx2+idx_crc2]);
       }
       else if(bytes_to_read1 != 0 && recieve_type != 2){
         read(fd1, rx1_buff+ bytes_to_read1 + idx_crc1, 1);
-        rx_crc1 = rx1_buff[bytes_to_read1 + idx_crc1] << (idx_crc1 * 8);
+        rx_crc1 |= rx1_buff[bytes_to_read1 + idx_crc1] << (idx_crc1 * 8);
+        print_debug("Recieved x1 crc: data: 0x%x\n", rx1_buff[idx1+idx_crc1]);
         usleep(10);
       }
       else if(bytes_to_read2 != 0 && recieve_type != 1){
         read(fd2, rx2_buff+ bytes_to_read2 + idx_crc2, 1);
-        rx_crc2 = rx2_buff[bytes_to_read2 + idx_crc2] << (idx_crc2 * 8);
+        rx_crc2 |= rx2_buff[bytes_to_read2 + idx_crc2] << (idx_crc2 * 8);
+        print_debug("Recieved x2 crc: data: 0x%x\n", rx2_buff[idx2+idx_crc2]);
         usleep(10);
       }
       idx_crc1++;
       idx_crc2++;
     }
 
-    calc_crc1 = Crc::CRCCCITT(rx1_buff, bytes_to_read1, 0);
-    calc_crc2 = Crc::CRCCCITT(rx1_buff, bytes_to_read2, 0);
+    print_debug("Rec x1 crc: data: 0x%x\n", rx_crc1);
+    print_debug("Rec x2 crc: data: 0x%x\n", rx_crc2);
 
     //Determine if another attempt is needed
     recieved_properly = (calc_crc1 == rx_crc1) && (calc_crc2 == rx_crc2);
@@ -264,9 +286,11 @@ void Spi::transfer(Xmega_Transfer &xt){
   if(!recieved_properly){
     if((recieve_type & 0b01) && x1_transmission_failure == 0){
       x1_transmission_failure = X_TF_RECIEVE;
+      print_debug("Transmission_failure in X1 when recieving \n");
     }
     if((send_type & 0b10) && x2_transmission_failure == 0){
       x2_transmission_failure = X_TF_RECIEVE;
+      print_debug("Transmission_failure in X2 when recieving \n");
     }
     return;
   }
@@ -327,9 +351,6 @@ void Spi::transfer(Xmega_Transfer &xt){
       x1_state = rx1_buff[bytes_to_read1+1];
     }
   }
-
-
-
 }
 
 uint32_t Spi::get_data(uint8_t device, int idx){

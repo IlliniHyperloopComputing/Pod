@@ -18,6 +18,8 @@
 
 #include "Crc.h"
 
+#define CRC_PASS 0xAA
+
 using namespace std;
 
 enum Xmega_Transmission_Failure_t: uint8_t {
