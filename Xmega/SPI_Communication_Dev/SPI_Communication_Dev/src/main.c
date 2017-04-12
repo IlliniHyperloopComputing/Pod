@@ -2,11 +2,16 @@
 #include <asf.h>
 #include <avr/interrupt.h>
 
+//For memcpy
+#include <string.h>
+
 //Using crc-ccitt
 #include <stdbool.h>
 #include <assert.h>
 
 #define SPI_TX_START 0xAA
+#define SPI_CRC_PASS 0xAA
+#define SPI_CRC_FAIL 0xFF
 
 //Used in SPI ISR
 volatile uint8_t rx_byte = 0x00;
@@ -19,87 +24,25 @@ uint8_t cmd_idx = 0;
 uint16_t received_crc = 0;
 uint16_t calculated_crc = 0;
 
-//Sending data
-
-
 //Sensor data storage
 uint8_t state = 0;
 uint8_t sensor_status = 0;
 #define SENSOR_DATA_SIZE 20
-uint8_t sensor_data[SENSOR_DATA_SIZE];
+uint8_t sensor_data[SENSOR_DATA_SIZE] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
 
-volatile uint8_t tx_byte = 0xCC;
-volatile uint8_t isr_flag = 0;
-volatile uint8_t  i = 0;
-uint16_t checksum = 0xFFFF;
-uint8_t rx_buff[12] = {0xAB,0xB,0xC,0xF,0xE,0x55,0x66,0x77,0x88,0x99,0xbb,0xaa};
-uint8_t sent_buff[12];
-	
-uint8_t data_len = 12;
-uint8_t data_idx = 0;
-uint8_t start_tx = 0;
+//Sending data
+uint8_t cmd_finished = 0;
+uint8_t send_data[SENSOR_DATA_SIZE+2];
+uint8_t send_idx = 0;
+uint8_t send_crc_length = 0;//set equal to maximum value of send_idx
+uint16_t send_crc = 0;
+uint8_t send_crc_idx = 0;
+
+
 
 ISR(SPIC_INT_vect) {
-	//isr_flag = !isr_flag;
-	//ioport_set_pin_level(LED_0_PIN,!isr_flag );
-	//while(!(SPIC.STATUS & 0x80));
-	//SPIC.DATA = 0xEF;     // send back to the master
-	//isr_flag  = !isr_flag;
-	//if(SPIC.STATUS & 0x40)
-	//	ioport_set_pin_level(LED_0_PIN, LED_0_ACTIVE);
 	rx_byte = SPIC.DATA;
 	spic_flag = 1;
-	
-	/*isr_flag = 1;
-	if(rx_byte == 0xAA){
-		start_tx = 1;
-	}
-	
-	if(start_tx){
-		//Send normal data
-		if(data_idx<data_len){
-			sent_buff[data_idx] = rx_buff[data_idx];
-			SPIC.DATA = rx_buff[data_idx];
-		}
-		else if(data_idx<data_len+2){//Send checksum
-			//ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE );
-			if(data_idx == data_len){//Compute checksum
-				//checksum = crc_io_checksum(sent_buff, data_len, CRC_16BIT);
-			}
-			//Send checksum byte by byte
-			SPIC.DATA = (uint8_t)(checksum>> (8 * (data_idx-data_len)));
-			
-		}
-		else{//Send data and checksum, done with transfer
-			start_tx = 0; //reset
-			data_idx = 0; //reset
-			SPIC.DATA = 0x00;//Send 0
-			return;
-		}
-		
-		
-		data_idx++;
-	}
-	//if(rx_byte == 0xde){
-	
-	
-	/*if(isr_flag){
-		SPIC.DATA = 0xAA;//(uint8_t)(checksum >> (8*i));
-		//i++;
-		//i &=1;
-	}else{
-		SPIC.DATA = 0xBB;//(uint8_t)(checksum >> (8*i));
-		while(!(SPIC.STATUS & 0x80));
-		SPIC.DATA = 0xCC;//(uint8_t)(checksum >> (8*i));
-		while(!(SPIC.STATUS & 0x80));
-		SPIC.DATA = 0xDD;//(uint8_t)(checksum >> (8*i));
-		//i++;
-		//i &=1;
-		//i = 0;
-	}
-	*/
-	
-	
 }
 
 void setUpSPIC()
@@ -130,6 +73,13 @@ int main (void)
 			//Indicate start of incoming command
 			if(rx_byte == SPI_TX_START){
 				cmd_idx = CMD_DATA_SIZE;
+				//Reset all the send variables/tmp storage
+				cmd_finished = 0;
+				send_idx = 0;
+				send_crc_length = 0;
+				send_crc = 0;
+				send_crc_idx = 0;
+
 			}
 			
 			//If we are receiving command, store it appropriately
@@ -138,25 +88,71 @@ int main (void)
 				cmd_idx--;
 				
 				//Finished last storage of incoming data
-				//Now check CRC
 				if(cmd_idx == 0){
+					//Check recieved_crc against calculated CRC
 					received_crc =	(cmd_data[CMD_DATA_SIZE-1]<<8) | cmd_data[CMD_DATA_SIZE-2];
 					calculated_crc = crc_io_checksum(cmd_data, CMD_DATA_SIZE-2, CRC_16BIT);
+					//Send appropriate signal if passed/failed
 					if(calculated_crc == received_crc){
-						ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
-						SPIC.DATA = 0xAA;
+						SPIC.DATA = SPI_CRC_PASS;
+						cmd_finished = 1;
 					}
 					else{
-						SPIC.DATA = 0xFF;
+						SPIC.DATA = SPI_CRC_FAIL;
 					}
 				}				
 			}
+			else if(cmd_finished){
+				//On next pass we will be start pipelining data
+				if(cmd_data[2] == 0){
+					memcpy(send_data,sensor_data,SENSOR_DATA_SIZE);//TODO: determine if this takes too long
+					send_idx = SENSOR_DATA_SIZE;
+					send_crc_length = send_idx;
+				}
+				else if(cmd_data[2] == 1 || cmd_data[2] == 2){
+					send_idx = 1;
+					send_crc_length = send_idx;
+				}
+				else{
+					memcpy(send_data,sensor_data,SENSOR_DATA_SIZE);
+					send_data[SENSOR_DATA_SIZE] = state;
+					send_data[SENSOR_DATA_SIZE+1] = sensor_status;
+					send_idx = SENSOR_DATA_SIZE+2;
+					send_crc_length = send_idx;
+				}
+				cmd_finished = 0;
+			}
 			
 			
+			if(send_idx > 0){
+				
+				if(cmd_data[2] == 0){//Send only sensor data
+					SPIC.DATA = send_data[SENSOR_DATA_SIZE-send_idx];
+				}
+				else if(cmd_data[2] == 1){//send only state data
+					SPIC.DATA = state;
+				}
+				else if(cmd_data[2] == 2){//send only sensor_status data
+					SPIC.DATA = sensor_status;
+				}
+				else{//send all
+					SPIC.DATA = send_data[SENSOR_DATA_SIZE+2-send_idx];
+				}				
+				send_idx--;
+				
+				//Calculate CRC
+				if(send_idx == 0){
+					send_crc = crc_io_checksum(send_data, send_crc_length, CRC_16BIT);
+					send_crc_idx = 2;
+				}
+				
+			}
+			else if(send_crc_idx > 0){
+				SPIC.DATA = send_crc >> ((2-send_crc_idx)*8);
+				send_crc_idx--;
+			}
 			
 			spic_flag = 0;
 		}
-		
-			
 	}
 }
