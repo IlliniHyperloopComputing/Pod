@@ -90,7 +90,7 @@ int Spi::transfer(Xmega_Transfer &xt){
 
   int sent_properly = 0;
   int send_type = 0;
-  int max_passes = 2;
+  int max_passes = 3;
   int passes = 0;
   while(!sent_properly && passes < max_passes){
     //print_test("Send Loop: pass #%d, send_type: %d\n",passes,send_type);
@@ -99,7 +99,6 @@ int Spi::transfer(Xmega_Transfer &xt){
       //Why equal 0 or 3? check below where send_type is set
       if(send_type == 0 || send_type == 0b11){
         write(fd1, tx1_buff + i, 1);
-        usleep(SLEEP_TIME);
         write(fd2, tx2_buff + i, 1);
       }
       else if(send_type == 1){
