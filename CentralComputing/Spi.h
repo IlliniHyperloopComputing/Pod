@@ -19,6 +19,7 @@
 #include "Crc.h"
 
 #define CRC_PASS 0xAA
+const uint8_t RESEND_DATA = 0xAA;
 
 using namespace std;
 
