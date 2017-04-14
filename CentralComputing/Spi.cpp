@@ -68,7 +68,7 @@ Spi::~Spi(){
 
 }
 
-void Spi::transfer(Xmega_Transfer &xt){
+int Spi::transfer(Xmega_Transfer &xt){
 
   //Create command/transmission buffers
   uint8_t tx1_buff[] = {0xAA, (uint8_t)xt.cmd1, (uint8_t)xt.req1, 0,0};
@@ -99,31 +99,32 @@ void Spi::transfer(Xmega_Transfer &xt){
       //Why equal 0 or 3? check below where send_type is set
       if(send_type == 0 || send_type == 0b11){
         write(fd1, tx1_buff + i, 1);
+        usleep(SLEEP_TIME);
         write(fd2, tx2_buff + i, 1);
       }
       else if(send_type == 1){
         write(fd1, tx1_buff + i, 1);
-        usleep(10);
+        usleep(SLEEP_TIME);
       }
       else{
         write(fd2, tx2_buff + i, 1);
-        usleep(10);
+        usleep(SLEEP_TIME);
       }
     }
 
     //read ACK or NACK from Xmegas to confirm sent data properly
     if(send_type == 0){
-      usleep(10);
+      usleep(SLEEP_TIME);
       read(fd1, &result1, 1);
-      usleep(10);
+      usleep(SLEEP_TIME);
       read(fd2, &result2, 1);
     }
     else if(send_type == 1){
-      usleep(10);
+      usleep(SLEEP_TIME);
       read(fd1, &result1, 1);
     }
     else{
-      usleep(10);
+      usleep(SLEEP_TIME);
       read(fd2, &result2, 1);
     }
 
@@ -138,31 +139,27 @@ void Spi::transfer(Xmega_Transfer &xt){
     passes++;
   }
   
-  //used to set up recieve_type in data loops below
-  //This way, we can continue to read in X1 even if
-  //X2 has already failed. We just skip X2
-  //Look for the initialization of recieve_type
-  int sending_errors = 0; 
-
+  int errors = 0;
   //Set appropriate error messages
   if(!sent_properly){
     if((send_type & 0b01)){
-      print_test("Transmission_failure in X1 when sending \n");
+      //print_test("Transmission_failure in X1 when sending \n");
       x1_transmission_failure = X_TF_SEND;
+      errors |= 0b1;
     }
     if((send_type & 0b10)){
-      print_test("Transmission_failure in X2 when sending \n");
+      //print_test("Transmission_failure in X2 when sending \n");
       x2_transmission_failure = X_TF_SEND;
+      errors |= 0b10;
     }
-    sending_errors = send_type;
   }
 
-  if(sending_errors == 3){
-    print_test("Transmission failed. Data sent not confirmed\n");
-    return;
+  //exit early if complete failure
+  if(errors == 3){
+    //print_test("Transmission failed. Data sent not confirmed\n");
+    return errors;
   }
 
-  //Now to read in all data
   
   //Setup size of data to read in
   uint8_t bytes_to_read1 = 0;
@@ -194,177 +191,103 @@ void Spi::transfer(Xmega_Transfer &xt){
     bytes_to_read2 = 0;
   }
 
+  //Read data
+  //Reading happens once. If it fails, then it failes
+
+  //Why separate loops for reading data and crc?
+  //Why not just one loop that goes two extra times?
+  //Because NONE is a request option, and NO data should be read
+  //To implement the one loop solution, just increment
+  //bytes_to_read* +2 and there you go. 
+  //However, I think its simpler to just have two loops
+
   //Create buffers that are big enough for size of incoming data
   uint8_t rx1_buff[bytes_to_read1+2];
   uint8_t rx2_buff[bytes_to_read2+2];
   memset(&rx1_buff, 0, bytes_to_read1+2);
   memset(&rx2_buff, 0, bytes_to_read2+2);
+  uint8_t idx1 = 0;
+  uint8_t idx2 = 0;
+  while(idx1 < bytes_to_read1 || idx2 < bytes_to_read2 ){
+    if((idx1 < bytes_to_read1 && idx2 < bytes_to_read2) && errors == 0){ //read both
+      usleep(SLEEP_TIME);
+      read(fd1, rx1_buff+idx1, 1);
+      usleep(SLEEP_TIME);
+      read(fd2, rx2_buff+idx2, 1);
+      //print_test("Recieved x1: idx: %d, data: %d\n", idx1, rx1_buff[idx1] );
+      //print_test("Recieved x2: idx: %d, data: %d\n", idx2, rx2_buff[idx2] );
+    }
+    else if((idx1 < bytes_to_read1) && (errors == 0b10 || errors == 0) ){//read fd1
+      usleep(SLEEP_TIME);
+      read(fd1, rx1_buff+idx1, 1);
+      //print_test("Recieved x1: idx: %d, data: %d\n", idx1, rx1_buff[idx1] );
+    }
+    else if((idx2 < bytes_to_read2) && (errors == 0b01 || errors == 0) ){//read fd2
+      usleep(SLEEP_TIME);
+      read(fd2, rx2_buff+idx2, 1);
+      //print_test("Recieved x2: idx: %d, data: %d\n", idx2, rx2_buff[idx2] );
+    }
+    idx1++;
+    idx2++;
+  }
+
+  //Calculate CRC
+  uint16_t calc_crc1 = 0; 
+  uint16_t calc_crc2 = 0; 
+  calc_crc1 = Crc::CRCCCITT(rx1_buff, bytes_to_read1, 0);
+  calc_crc2 = Crc::CRCCCITT(rx1_buff, bytes_to_read2, 0);
+  //print_test("Calc x1 crc: data: 0x%x\n", calc_crc1);
+  //print_test("Calc x2 crc: data: 0x%x\n", calc_crc2);
+
   //Used to store CRC calculation 
   uint16_t rx_crc1 = 0;
   uint16_t rx_crc2 = 0;
-  uint16_t calc_crc1 = 0; 
-  uint16_t calc_crc2 = 0; 
+  uint8_t idx_crc1 = 0;
+  uint8_t idx_crc2 = 0;
+  rx_crc1 = 0;
+  rx_crc2 = 0;
 
-  //Used for retry purposes
-  passes = 0;
-  int recieved_properly = 0;
-  int recieve_type = 0;
-  while(!recieved_properly && passes < 2){
-    //print_test("Recieve Loop: pass #%d, recieve_type: %d\n",passes,recieve_type);
-
-    //Tell the Xmega that we need to re-request data
-    if(recieve_type == 1 ){
-      //print_test("Re-requesting data from X1\n");
-      write(fd1,&RESEND_DATA, 1);
-      usleep(10);
+  //Read CRC
+  while(idx_crc1 < 2) {
+    if((bytes_to_read1 != 0 && bytes_to_read2 != 0) && errors == 0){
+      usleep(SLEEP_TIME);
+      read(fd1, rx1_buff+ bytes_to_read1 + idx_crc1, 1);
+      usleep(SLEEP_TIME);
+      read(fd2, rx2_buff+ bytes_to_read2 + idx_crc2, 1);
+      rx_crc1 |= rx1_buff[bytes_to_read1 + idx_crc1] << (idx_crc1 * 8);
+      rx_crc2 |= rx2_buff[bytes_to_read2 + idx_crc2] << (idx_crc2 * 8);
+      //print_test("Recieved x1 crc: data: 0x%x\n", rx1_buff[idx1+idx_crc1]);
+      //print_test("Recieved x2 crc: data: 0x%x\n", rx2_buff[idx2+idx_crc2]);
     }
-    else if(recieve_type == 2 ){
-      //print_test("Re-requesting data from X2\n");
-      write(fd2,&RESEND_DATA, 1);
-      usleep(10);
-
+    else if(bytes_to_read1 != 0 && (errors == 0b10 || errors == 0)){
+      usleep(SLEEP_TIME);
+      read(fd1, rx1_buff+ bytes_to_read1 + idx_crc1, 1);
+      rx_crc1 |= rx1_buff[bytes_to_read1 + idx_crc1] << (idx_crc1 * 8);
+      //print_test("Recieved x1 crc: data: 0x%x\n", rx1_buff[idx1+idx_crc1]);
     }
-    else if(recieve_type == 3){
-      //print_test("Re-requesting data from X1\n");
-      //print_test("Re-requesting data from X2\n");
-      write(fd1,&RESEND_DATA, 1);
-      write(fd2,&RESEND_DATA, 1);
+    else if(bytes_to_read2 != 0 && (errors == 0b01 || errors == 0)){
+      usleep(SLEEP_TIME);
+      read(fd2, rx2_buff+ bytes_to_read2 + idx_crc2, 1);
+      rx_crc2 |= rx2_buff[bytes_to_read2 + idx_crc2] << (idx_crc2 * 8);
+      //print_test("Recieved x2 crc: data: 0x%x\n", rx2_buff[idx2+idx_crc2]);
     }
-
-    //Why separate loops for reading data and crc?
-    //Why not just one loop that goes two extra times?
-    //Because NONE is a request option, and NO data should be read
-    //To implement the one loop solution, just increment
-    //bytes_to_read* +2 and there you go. 
-    //However, I think its simpler to just have two loops
-
-    //Read data
-    uint8_t idx1 = 0;
-    uint8_t idx2 = 0;
-    while(idx1 < bytes_to_read1 || idx2 < bytes_to_read2 ){
-      if((idx1 < bytes_to_read1 && idx2 < bytes_to_read2) && (recieve_type == 0 || recieve_type == 3) && (sending_errors == 0)){ //read both
-        read(fd1, rx1_buff+idx1, 1);
-        read(fd2, rx2_buff+idx2, 1);
-        //print_test("Recieved x1: idx: %d, data: %d\n", idx1, rx1_buff[idx1] );
-        //print_test("Recieved x2: idx: %d, data: %d\n", idx2, rx2_buff[idx2] );
-      }
-      else if((idx1 < bytes_to_read1) && (recieve_type != 2 && (sending_errors == 2 || sending_errors == 0) )){//read fd1
-        read(fd1, rx1_buff+idx1, 1);
-        //print_test("Recieved x1: idx: %d, data: %d\n", idx1, rx1_buff[idx1] );
-        usleep(10);
-      }
-      else if((idx2 < bytes_to_read2) && (recieve_type != 1 && (sending_errors == 1 || sending_errors == 0) )){//read fd2
-        read(fd2, rx2_buff+idx2, 1);
-        //print_test("Recieved x2: idx: %d, data: %d\n", idx2, rx2_buff[idx2] );
-        usleep(10);
-      }
-      idx1++;
-      idx2++;
-    }
-
-    calc_crc1 = Crc::CRCCCITT(rx1_buff, bytes_to_read1, 0);
-    calc_crc2 = Crc::CRCCCITT(rx1_buff, bytes_to_read2, 0);
-    //print_test("Calc x1 crc: data: 0x%x\n", calc_crc1);
-    //print_test("Calc x2 crc: data: 0x%x\n", calc_crc2);
-
-    //Read CRC
-    uint8_t idx_crc1 = 0;
-    uint8_t idx_crc2 = 0;
-    rx_crc1 = 0;
-    rx_crc2 = 0;
-
-    
-    while(idx_crc1 < 2 || idx_crc2 < 2){
-      if((bytes_to_read1 != 0 && bytes_to_read2 != 0) && (recieve_type == 0 || recieve_type == 3) && sending_errors == 0){
-        read(fd1, rx1_buff+ bytes_to_read1 + idx_crc1, 1);
-        read(fd2, rx2_buff+ bytes_to_read2 + idx_crc2, 1);
-        rx_crc1 |= rx1_buff[bytes_to_read1 + idx_crc1] << (idx_crc1 * 8);
-        rx_crc2 |= rx2_buff[bytes_to_read2 + idx_crc2] << (idx_crc2 * 8);
-        //print_test("Recieved x1 crc: data: 0x%x\n", rx1_buff[idx1+idx_crc1]);
-        //print_test("Recieved x2 crc: data: 0x%x\n", rx2_buff[idx2+idx_crc2]);
-      }
-      else if(bytes_to_read1 != 0 && (recieve_type != 2 && (sending_errors == 2 || sending_errors == 0))){
-        read(fd1, rx1_buff+ bytes_to_read1 + idx_crc1, 1);
-        rx_crc1 |= rx1_buff[bytes_to_read1 + idx_crc1] << (idx_crc1 * 8);
-        //print_test("Recieved x1 crc: data: 0x%x\n", rx1_buff[idx1+idx_crc1]);
-        usleep(10);
-      }
-      else if(bytes_to_read2 != 0 && (recieve_type != 1 && (sending_errors == 1 || sending_errors == 0))){
-        read(fd2, rx2_buff+ bytes_to_read2 + idx_crc2, 1);
-        rx_crc2 |= rx2_buff[bytes_to_read2 + idx_crc2] << (idx_crc2 * 8);
-        //print_test("Recieved x2 crc: data: 0x%x\n", rx2_buff[idx2+idx_crc2]);
-        usleep(10);
-      }
-      idx_crc1++;
-      idx_crc2++;
-    }
-
-    //print_test("Rec x1 crc: data: 0x%x\n", rx_crc1);
-    //print_test("Rec x2 crc: data: 0x%x\n", rx_crc2);
-
-    //Determine if another attempt is needed
-    recieved_properly = (calc_crc1 == rx_crc1 || sending_errors == 1) && (calc_crc2 == rx_crc2 || sending_errors == 2);
-    //recieve_type is used to say which one we will try to re-recieve
-    //works like above send_type
-    recieve_type = (calc_crc1 != rx_crc1) | ((calc_crc2 != rx_crc2) << 1);
-    passes++;
+    idx_crc1++;
+    idx_crc2++;
   }
 
-  if(!recieved_properly){
-    if((recieve_type & 0b01) && x1_transmission_failure == 0){
-      x1_transmission_failure = X_TF_RECIEVE;
-      print_test("Transmission_failure in X1 when recieving \n");
-    }
-    if((send_type & 0b10) && x2_transmission_failure == 0){
-      x2_transmission_failure = X_TF_RECIEVE;
-      print_test("Transmission_failure in X2 when recieving \n");
-    }
-    return;
-  }
+  //print_test("Rec x1 crc: data: 0x%x\n", rx_crc1);
+  //print_test("Rec x2 crc: data: 0x%x\n", rx_crc2);
 
-  //Copy recieved data!
-  if(recieve_type == 0){
-    memcpy(x1_buff, &rx1_buff, bytes_to_read1);
-    memcpy(x2_buff, &rx2_buff, bytes_to_read2);
-    //Set appropriate sensor_state or state
-    if(xt.req1 == 1){
-      x1_sensor_status = rx1_buff[bytes_to_read1];
-    }
-    else if(xt.req1 ==2){
-      x1_state = rx1_buff[bytes_to_read1];
-    }
-    else{
-      x1_sensor_status = rx1_buff[bytes_to_read1];
-      x1_state = rx1_buff[bytes_to_read1+1];
-    }
-
-    //Set appropriate sensor_state or state
-    if(xt.req2 == 1){
-      x2_sensor_status = rx2_buff[bytes_to_read2];
-    }
-    else if(xt.req2 ==2){
-      x2_state = rx2_buff[bytes_to_read2];
-    }
-    else{
-      x2_sensor_status = rx2_buff[bytes_to_read2];
-      x2_state = rx2_buff[bytes_to_read2+1];
-    }
+  //Set transmission failure if: 
+  //CRC comparison failed or CRC == 0
+  //AND there was not already a sending error for this device
+  if((calc_crc1 != rx_crc1 || calc_crc1 == 0) && !(errors & 0b01)){
+    x1_transmission_failure = X_TF_RECIEVE;
+    errors |= 0b0100;
+    //print_test("Transmission_failure in X1 when recieving \n");
   }
-  else if(recieve_type == 1){//Xmega1 failed. 
-    memcpy(x2_buff, &rx2_buff, bytes_to_read2);
-    //Set appropriate sensor_state or state
-    if(xt.req2 == 1){
-      x2_sensor_status = rx2_buff[bytes_to_read2];
-    }
-    else if(xt.req2 ==2){
-      x2_state = rx2_buff[bytes_to_read2];
-    }
-    else{
-      x2_sensor_status = rx2_buff[bytes_to_read2];
-      x2_state = rx2_buff[bytes_to_read2+1];
-    }
-  }
-  else if(recieve_type == 2){//Xmega2 failed.
+  //Otherwise... copy the data! we succeded
+  //else{
     memcpy(x1_buff, &rx1_buff, bytes_to_read1);
     //Set appropriate sensor_state or state
     if(xt.req1 == 1){
@@ -377,7 +300,34 @@ void Spi::transfer(Xmega_Transfer &xt){
       x1_sensor_status = rx1_buff[bytes_to_read1];
       x1_state = rx1_buff[bytes_to_read1+1];
     }
+  //}
+
+  //Set transmission failure if: 
+  //CRC comparison failed or CRC == 0
+  //AND there was not already a sending error for this device
+  if((calc_crc2 != rx_crc2) && (calc_crc2 != 0) && !(errors & 0b10)){
+    x2_transmission_failure = X_TF_RECIEVE;
+    errors |= 0b1000;
+    //print_test("Transmission_failure in X2 when recieving \n");
   }
+  //Otherwise... copy the data!
+  //else{
+    //Xmega1 failed or both succedded
+    memcpy(x2_buff, &rx2_buff, bytes_to_read2);
+    //Set appropriate sensor_state or state
+    if(xt.req2 == 1){
+      x2_sensor_status = rx2_buff[bytes_to_read2];
+    }
+    else if(xt.req2 ==2){
+      x2_state = rx2_buff[bytes_to_read2];
+    }
+    else{
+      x2_sensor_status = rx2_buff[bytes_to_read2];
+      x2_state = rx2_buff[bytes_to_read2+1];
+    }
+  //}
+
+  return errors;
 }
 
 uint32_t Spi::get_data(uint8_t device, int idx){

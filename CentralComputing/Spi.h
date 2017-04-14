@@ -19,7 +19,7 @@
 #include "Crc.h"
 
 #define CRC_PASS 0xAA
-const uint8_t RESEND_DATA = 0xAA;
+#define SLEEP_TIME 5
 
 using namespace std;
 
@@ -219,8 +219,16 @@ class Spi {
     *       of the time reading, and thus half duplex is simpler.
     *
     * @param request_type   Xmega_Transfer describing transfer
+    * @return failure mode   0b00000000 == no failure
+    *                        0b00000001 == x1 send failure
+    *                        0b00000010 == x2 send failure
+    *                        0b00000100 == x1 recieve failure
+    *                        0b00001000 == x2 recieve failure
+    *                        These codes are bitwise ORed together
+    *                        Send/Recieve errors from the same board are exclusive
+    * 
     **/
-    void transfer(Xmega_Transfer &transfer);
+    int transfer(Xmega_Transfer &transfer);
 
     /**
     * Of the most recently recieved data, get the appropriate index
