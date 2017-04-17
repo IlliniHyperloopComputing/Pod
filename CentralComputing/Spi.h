@@ -19,7 +19,7 @@
 #include "Crc.h"
 
 #define CRC_PASS 0xAA
-#define SLEEP_TIME 5
+#define SLEEP_TIME 4
 
 using namespace std;
 
@@ -52,13 +52,12 @@ enum Xmega_Request_t: uint8_t {
 };
 
 typedef struct Xmega_Transfer_{
+  //Which device? 0 or 1
+  int device;
   //What data are we sending/commanding
-  enum Xmega_Command_t cmd1;
-  enum Xmega_Command_t cmd2;
-
+  enum Xmega_Command_t cmd;
   //What data are we requesting
-  enum Xmega_Request_t req1;
-  enum Xmega_Request_t req2;
+  enum Xmega_Request_t req;
   
 } Xmega_Transfer;
 
@@ -119,6 +118,44 @@ typedef struct Xmega_Setup_{
   uint32_t bits_per_word;
 
 } Xmega_Setup;
+
+typedef struct Xmega_Data_ {
+
+  //SPI file descriptors for each Xmega
+  int fd;
+
+  //storage of most recently read in data
+  //dynamically allocated, according to maximum message size + 2
+  uint8_t * buff;
+
+  //Number of total bytes used by data (not CRC, status, or state)
+  //in buff
+  uint8_t num_bytes;
+
+  /**
+  * To quickly find each data item, and to make the code simpler,
+  * this will hold forward calculations of all the offsets. 
+  *
+  * Example: 
+  * num_items = 4
+  * index         -> |       0       |         1        |     2      |     3      |
+  * xmega data    -> | 16-bit thermo | 8-bit rideheight | 10-bit ADC | 12-bit ADC |
+  * bytes_per_item-> |       2       |         1        |     2      |     2      |
+  * offset_lookup -> |       0       |         2        |     3      |     5      |
+  *
+  **/
+  uint8_t * offset_lookup;
+
+  /**
+  * Storage for most recent byte describing Xmega sensor_status / state
+  * This information will be initially transfered into the buffer, 
+  * but moved here because sensor_status and state might not be 
+  * requested every time
+  **/
+  uint8_t sensor_status;
+  uint8_t state;
+
+} Xmega_Data;
 
 class Spi {
   
@@ -261,7 +298,6 @@ class Spi {
     **/
     uint8_t get_state(uint8_t device);
 
-
   private:
 
     /**
@@ -271,53 +307,20 @@ class Spi {
     **/
     int setup_spi();
 
+    /**
+    * Used to setup the offset field that is part of each xmega data
+    * struct. Really it just makes the constructor cleaner
+    *
+    **/
+    void setup_offset(Xmega_Data * xd, Xmega_Setup * xs);
+
     //Storage of setup details 
-    Xmega_Setup * x1;
-    Xmega_Setup * x2;
+    Xmega_Setup * x1_setup;
+    Xmega_Setup * x2_setup;
 
-    //SPI file descriptors for each Xmega
-    int fd1;
-    int fd2;
-
-    //storage of most recently read in data
-    //dynamically allocated, according to maximum message size + 2
-    uint8_t * x1_buff;
-    uint8_t * x2_buff;
-
-    //Number of total bytes used by data (not CRC, status, or state)
-    //in the x1_buff and x2_buff
-    uint8_t x1_num_bytes;
-    uint8_t x2_num_bytes;
-
-    /**
-    * To quickly find each data item, and to make the code simpler,
-    * this will hold forward calculations of all the offsets. 
-    *
-    * Example: 
-    * num_items = 4
-    * index         -> |       0       |         1        |     2      |     3      |
-    * xmega data    -> | 16-bit thermo | 8-bit rideheight | 10-bit ADC | 12-bit ADC |
-    * bytes_per_item-> |       2       |         1        |     2      |     2      |
-    * offset_lookup -> |       0       |         2        |     3      |     5      |
-    *
-    **/
-    uint8_t * x1_offset_lookup;
-    uint8_t * x2_offset_lookup;
-
-    /**
-    * Storage for most recent byte describing Xmega sensor_status / state
-    * This information will be initially transfered into the x1/2_buff, 
-    * but moved here because sensor_status and state might not be 
-    * requested every time
-    **/
-    uint8_t x1_sensor_status;
-    uint8_t x1_state;
-
-    uint8_t x2_sensor_status;
-    uint8_t x2_state;
-
-    enum Xmega_Transmission_Failure_t x1_transmission_failure;
-    enum Xmega_Transmission_Failure_t x2_transmission_failure;
+    //Storage of all data that isn't data
+    Xmega_Data * x1;
+    Xmega_Data * x2;
 
 };
 
