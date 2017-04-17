@@ -208,6 +208,7 @@ int Spi::transfer(Xmega_Transfer &xt){
   uint8_t idx1 = 0;
   uint8_t idx2 = 0;
   while(idx1 < bytes_to_read1 || idx2 < bytes_to_read2 ){
+    //print_test("inside read while: idx1:%d\tidx2:%d\t\tbtr1:%d btr2:%d\n",idx1, idx2, bytes_to_read1, bytes_to_read2);
     if((idx1 < bytes_to_read1 && idx2 < bytes_to_read2) && errors == 0){ //read both
       usleep(SLEEP_TIME);
       read(fd1, rx1_buff+idx1, 1);
@@ -234,7 +235,7 @@ int Spi::transfer(Xmega_Transfer &xt){
   uint16_t calc_crc1 = 0; 
   uint16_t calc_crc2 = 0; 
   calc_crc1 = Crc::CRCCCITT(rx1_buff, bytes_to_read1, 0);
-  calc_crc2 = Crc::CRCCCITT(rx1_buff, bytes_to_read2, 0);
+  calc_crc2 = Crc::CRCCCITT(rx2_buff, bytes_to_read2, 0);
   //print_test("Calc x1 crc: data: 0x%x\n", calc_crc1);
   //print_test("Calc x2 crc: data: 0x%x\n", calc_crc2);
 
