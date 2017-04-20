@@ -86,13 +86,19 @@ int Spi::transfer(Xmega_Transfer &xt){
   int max_passes = 3;
   int passes = 0;
   while(!sent_properly && passes < max_passes){
+    print_debug("Sending to Xmega: passes: %d send_properly: %d\n", passes, sent_properly);
     //send to Xmegas
+    print_debug("wval: \t");
     for(int i = 0; i < 5;i++){
-      write(xd->fd, tx_buff + i, 1);
+      usleep(SLEEP_TIME);
+      int wval = write(xd->fd, tx_buff + i, 1);
+      print_debug("%d, tx: %x\t", wval, tx_buff[i]);
     }
+    print_debug("\n");
 
     //read ACK or NACK from Xmegas to confirm sent data properly
-    usleep(SLEEP_TIME);
+    usleep(SLEEP_TIME*10);
+    //read(x1->fd, &send_result, 1);
     read(xd->fd, &send_result, 1);
 
     //Determine if another attempt is needed
@@ -110,13 +116,13 @@ int Spi::transfer(Xmega_Transfer &xt){
   uint8_t bytes_to_read = 0;
   
   if(xt.req == 0){
-    bytes_to_read = x1->num_bytes;
+    bytes_to_read = xd->num_bytes;
   }
   else if(xt.req == 1 || xt.req ==2){
     bytes_to_read = 1;
   }
   else if(xt.req == 3){
-    bytes_to_read = x1->num_bytes+2;
+    bytes_to_read = xd->num_bytes+2;
   }
   else{
     bytes_to_read = 0;
@@ -139,6 +145,7 @@ int Spi::transfer(Xmega_Transfer &xt){
   while(idx < bytes_to_read ){
     usleep(SLEEP_TIME);
     read(xd->fd, rx_buff+idx, 1);
+    print_debug("Reading: idx:%d\t, rx_buff: %x\n",idx, rx_buff[idx]);
     idx++;
   }
 
