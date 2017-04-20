@@ -12,10 +12,12 @@ WARNINGS 	:= -Wall -Wextra
 
 CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP -IStateMachineCompact/ -IUnitTests/ -I. -D_GNU_SOURCE -pthread -DDEBUG 
 CFLAGS_RELEASE 	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP -IStateMachineCompact/ -IUnitTests/ -I. -D_GNU_SOURCE -pthread -DNDEBUG
-CFlAGS_T 				:= $(CFLAGS_DEBUG) -DTEST_POD
+CFlAGS_T 				:= $(CFLAGS_RELEASE) -DTEST_POD
 
 # Set up linker
 LDFLAGS := -pthread
+LD_NORM := $(CXX_NORM)
+LD_BBB  := $(CXX_BBB)
 
 # Define all executables
 POD 				= build
@@ -38,7 +40,8 @@ mkdir_obj:
 	@mkdir -p $(OBJ_DIR)
 	@mkdir -p $(OBJ_DIR)/StateMachineCompact
 	@mkdir -p $(OBJ_DIR)/UnitTests
-
+	@echo $(OBJ:%.o=$(OBJ_DIR)/%-build-debug.o)
+ 
 ####
 # All Build Rules are similar, except for different names and slightly different paths. 
 # Instead of having just two rules (as I did before), this new system - while more complicated
@@ -51,12 +54,12 @@ mkdir_obj:
 $(POD) : CXX 		 	= $(CXX_NORM)
 $(POD) : CFLAGS  	= $(CFLAGS_RELEASE)
 $(POD) : LD  			= $(LD_NORM)
-$(POD) : EXENAME	= $(POD)
-$(POD) : $(OBJ:%.o=$(OBJ_DIR)/%-rbuild.o)
-	$(CXX) $? $(LDFLAGS) -o $@
+$(POD) : build-$(POD)
+build-$(POD) : $(OBJ:%.o=$(OBJ_DIR)/%-build.o)
+	$(CXX) $? $(LDFLAGS) -o $(POD)
 
-$(OBJ_DIR)/%-rbuild.o : %.cpp
-	$(CXX) $? $(CFLAGS) -o $@
+$(OBJ_DIR)/%-build.o : %.cpp
+	$(LD) $? $(CFLAGS) -o $@
 
 #####
 # build-debug
@@ -64,13 +67,12 @@ $(OBJ_DIR)/%-rbuild.o : %.cpp
 $(POD_D) : CXX 		 	= $(CXX_NORM)
 $(POD_D) : CFLAGS  	= $(CFLAGS_DEBUG)
 $(POD_D) : LD  			= $(LD_NORM)
-$(POD_D) : EXENAME	= $(POD_D)
-$(POD_D) : $(OBJ:%.o=$(OBJ_DIR)/%-xx.o)
-	$(CXX) $^ $(LDFLAGS) -o $@
+$(POD_D) : build-$(POD_D)
+build-$(POD_D) : $(OBJ:%.o=$(OBJ_DIR)/%-build-debug.o)
+	$(CXX) $? $(LDFLAGS) -o $(POD_D)
 
-$(OBJ_DIR)/%-xx.o : %.cpp
-	$(CXX) $< $(CFLAGS) -o $@
-
+$(OBJ_DIR)/%-build-debug.o : %.cpp
+	$(LD) $? $(CFLAGS) -o $@
 
 #####
 # build-test
@@ -78,12 +80,12 @@ $(OBJ_DIR)/%-xx.o : %.cpp
 $(POD_T) : CXX 		 	= $(CXX_NORM)
 $(POD_T) : CFLAGS  	= $(CFlAGS_T)
 $(POD_T) : LD  			= $(LD_NORM)
-$(POD_T) : EXENAME	= $(POD_T)
-$(POD_T) : $(OBJ:%.o=$(OBJ_DIR)/%-build-test.o)
-	$(CXX) $? $(LDFLAGS) -o $@
+$(POD_T) : build-$(POD_T)
+build-$(POD_T) : $(OBJ:%.o=$(OBJ_DIR)/%-build-test.o)
+	$(CXX) $? $(LDFLAGS) -o $(POD_T)
 
 $(OBJ_DIR)/%-build-test.o : %.cpp
-	$(CXX) $? $(CFLAGS) -o $@
+	$(LD) $? $(CFLAGS) -o $@
 
 #####
 # cross
@@ -91,12 +93,12 @@ $(OBJ_DIR)/%-build-test.o : %.cpp
 $(POD_CROSS) : CXX 		 	= $(CXX_BBB)
 $(POD_CROSS) : CFLAGS  	= $(CFLAGS_RELEASE)
 $(POD_CROSS) : LD  			= $(LD_BBB)
-$(POD_CROSS) : EXENAME	= $(POD_CROSS)
-$(POD_CROSS) : $(OBJ:%.o=$(OBJ_DIR)/%-cross.o)
-	$(CXX) $? $(LDFLAGS) -o $@
+$(POD_CROSS) : build-$(POD_CROSS)
+build-$(POD_CROSS) : $(OBJ:%.o=$(OBJ_DIR)/%-cross.o)
+	$(CXX) $? $(LDFLAGS) -o $(POD_CROSS)
 
 $(OBJ_DIR)/%-cross.o : %.cpp
-	$(CXX) $? $(CFLAGS) -o $@
+	$(LD) $? $(CFLAGS) -o $@
 
 #####
 # cross-debug
@@ -104,12 +106,12 @@ $(OBJ_DIR)/%-cross.o : %.cpp
 $(POD_CROSS_D) : CXX 		 	= $(CXX_BBB)
 $(POD_CROSS_D) : CFLAGS  	= $(CFLAGS_DEBUG)
 $(POD_CROSS_D) : LD  			= $(LD_BBB)
-$(POD_CROSS_D) : EXENAME	= $(POD_CROSS_D)
-$(POD_CROSS_D) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-debug.o)
-	$(CXX) $? $(LDFLAGS) -o $@
+$(POD_CROSS_D) : build-$(POD_CROSS_D)
+build-$(POD_CROSS_D) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-debug.o)
+	$(CXX) $? $(LDFLAGS) -o $(POD_CROSS_D)
 
 $(OBJ_DIR)/%-cross-debug.o : %.cpp
-	$(CXX) $? $(CFLAGS) -o $@
+	$(LD) $? $(CFLAGS) -o $@
 
 #####
 # cross-test
@@ -117,16 +119,17 @@ $(OBJ_DIR)/%-cross-debug.o : %.cpp
 $(POD_CROSS_T) : CXX 		 	= $(CXX_BBB)
 $(POD_CROSS_T) : CFLAGS  	= $(CFlAGS_T)
 $(POD_CROSS_T) : LD  			= $(LD_BBB)
-$(POD_CROSS_T) : EXENAME	= $(POD_CROSS_T)
-$(POD_CROSS_T) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-test.o)
-	$(CXX) $? $(LDFLAGS) -o $@
+$(POD_CROSS_T) : build-$(POD_CROSS_T)
+build-$(POD_CROSS_T) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-test.o)
+	$(CXX) $? $(LDFLAGS) -o $(POD_CROSS_T)
 
 $(OBJ_DIR)/%-cross-test.o : %.cpp
-	$(CXX) $? $(CFLAGS) -o $@
+	$(LD) $? $(CFLAGS) -o $@
 
 .PHONY: clean
 clean:
 	rm -f $(OBJ_DIR)/*.o $(OBJ_DIR)/StateMachineCompact/*.o $(OBJ_DIR)/UnitTests/*.o $(POD) $(POD_D) $(POD_T) $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)
+	rm -f $(OBJ_DIR)/*.d $(OBJ_DIR)/StateMachineCompact/*.d $(OBJ_DIR)/UnitTests/*.d
 
 .PHONY: push
 push: $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)
