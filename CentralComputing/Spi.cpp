@@ -86,7 +86,9 @@ int Spi::transfer(Xmega_Transfer &xt){
   int max_passes = 3;
   int passes = 0;
   while(!sent_properly && passes < max_passes){
-    print_debug("Sending to Xmega: passes: %d send_properly: %d\n", passes, sent_properly);
+    if(passes > 0){
+      print_debug("Sending to Xmega: passes: %d send_properly: %d\n", passes, sent_properly);
+    }
     //send to Xmegas
     print_debug("wval: \t");
     for(int i = 0; i < 5;i++){
@@ -148,6 +150,8 @@ int Spi::transfer(Xmega_Transfer &xt){
     print_debug("Reading: idx:%d\t, rx_buff: %x\n",idx, rx_buff[idx]);
     idx++;
   }
+
+  //usleep(SLEEP_TIME *10);
 
   //Calculate CRC
   uint16_t calc_crc = 0; 

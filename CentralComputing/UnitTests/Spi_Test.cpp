@@ -16,22 +16,27 @@ int Spi_Test::test(int argc, char** argv){
     Xmega_Transfer xt = {1,X_C_NONE, X_R_SENSOR};
 
     double elapsed = 0;
-    int err = 0;
+    int err1 = 0;
+    int err2 = 0;
     struct timespec ts, ts2;
     int iters = 1000;
     for(int i = 0; i< iters; i++){
       clock_gettime(CLOCK_MONOTONIC,&ts);
       int result = spi.transfer(xt);
       clock_gettime(CLOCK_MONOTONIC, &ts2);
-      if( result != 0) err++;
-      usleep(10);
+      if(result & 0b01) err1++;
+      if(result & 0b10) err2++;
+      usleep(4000);
       elapsed += (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
     }
     print_test("time elapsed: %lf\t Average time: %lf\n",elapsed, elapsed/iters);
-    print_test("err: %d\n", err);
+    print_test("err1: %d\t err2:%d\n", err1,err2);
     for(int i = 0; i < 3; i++){
       print_test("got data: idx: %x\t data:%x\tdata:%x\n",i, spi.get_data(0,i), spi.get_data(1,i));
     }
+
+    int16_t adc1 = spi.get_data(1,0);
+    print_test("Got idx0: %d\n", adc1);
 
   }
   else{
