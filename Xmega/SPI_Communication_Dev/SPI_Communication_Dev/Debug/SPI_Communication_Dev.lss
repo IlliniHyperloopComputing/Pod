@@ -3,33 +3,33 @@ SPI_Communication_Dev.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000c5e  00000000  00000000  00000094  2**1
+  0 .text         00000c66  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000006  00802000  00000c5e  00000cf2  2**0
+  1 .data         00000006  00802000  00000c66  00000cfa  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          0000002c  00802006  00802006  00000cf8  2**0
+  2 .bss          0000002c  00802006  00802006  00000d00  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  00000cf8  2**0
+  3 .comment      00000030  00000000  00000000  00000d00  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000d28  2**2
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000d30  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 00000170  00000000  00000000  00000d68  2**0
+  5 .debug_aranges 00000190  00000000  00000000  00000d70  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00008805  00000000  00000000  00000ed8  2**0
+  6 .debug_info   000089b9  00000000  00000000  00000f00  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 000047f0  00000000  00000000  000096dd  2**0
+  7 .debug_abbrev 0000491a  00000000  00000000  000098b9  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00002bb6  00000000  00000000  0000decd  2**0
+  8 .debug_line   000032d7  00000000  00000000  0000e1d3  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  000004e4  00000000  00000000  00010a84  2**2
+  9 .debug_frame  00000508  00000000  00000000  000114ac  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    00032429  00000000  00000000  00010f68  2**0
+ 10 .debug_str    00032464  00000000  00000000  000119b4  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00001490  00000000  00000000  00043391  2**0
+ 11 .debug_loc    00001490  00000000  00000000  00043e18  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000170  00000000  00000000  00044821  2**0
+ 12 .debug_ranges 00000180  00000000  00000000  000452a8  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_macro  0000b2ea  00000000  00000000  00044991  2**0
+ 13 .debug_macro  0000b5d9  00000000  00000000  00045428  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -61,7 +61,7 @@ Disassembly of section .text:
   2e:	00 00       	nop
   30:	09 c1       	rjmp	.+530    	; 0x244 <__bad_interrupt>
   32:	00 00       	nop
-  34:	8d c2       	rjmp	.+1306   	; 0x550 <__vector_13>
+  34:	8e c3       	rjmp	.+1820   	; 0x752 <__vector_13>
   36:	00 00       	nop
   38:	05 c1       	rjmp	.+522    	; 0x244 <__bad_interrupt>
   3a:	00 00       	nop
@@ -83,7 +83,7 @@ Disassembly of section .text:
   5a:	00 00       	nop
   5c:	f3 c0       	rjmp	.+486    	; 0x244 <__bad_interrupt>
   5e:	00 00       	nop
-  60:	b1 c3       	rjmp	.+1890   	; 0x7c4 <__vector_24>
+  60:	f2 c0       	rjmp	.+484    	; 0x246 <__vector_24>
   62:	00 00       	nop
   64:	ef c0       	rjmp	.+478    	; 0x244 <__bad_interrupt>
   66:	00 00       	nop
@@ -127,7 +127,7 @@ Disassembly of section .text:
   b2:	00 00       	nop
   b4:	c7 c0       	rjmp	.+398    	; 0x244 <__bad_interrupt>
   b6:	00 00       	nop
-  b8:	af c2       	rjmp	.+1374   	; 0x618 <__vector_46>
+  b8:	b0 c3       	rjmp	.+1888   	; 0x81a <__vector_46>
   ba:	00 00       	nop
   bc:	c3 c0       	rjmp	.+390    	; 0x244 <__bad_interrupt>
   be:	00 00       	nop
@@ -187,7 +187,7 @@ Disassembly of section .text:
  12a:	00 00       	nop
  12c:	8b c0       	rjmp	.+278    	; 0x244 <__bad_interrupt>
  12e:	00 00       	nop
- 130:	41 c2       	rjmp	.+1154   	; 0x5b4 <__vector_76>
+ 130:	42 c3       	rjmp	.+1668   	; 0x7b6 <__vector_76>
  132:	00 00       	nop
  134:	87 c0       	rjmp	.+270    	; 0x244 <__bad_interrupt>
  136:	00 00       	nop
@@ -249,7 +249,7 @@ Disassembly of section .text:
  1a6:	00 00       	nop
  1a8:	4d c0       	rjmp	.+154    	; 0x244 <__bad_interrupt>
  1aa:	00 00       	nop
- 1ac:	67 c2       	rjmp	.+1230   	; 0x67c <__vector_107>
+ 1ac:	68 c3       	rjmp	.+1744   	; 0x87e <__vector_107>
  1ae:	00 00       	nop
  1b0:	49 c0       	rjmp	.+146    	; 0x244 <__bad_interrupt>
  1b2:	00 00       	nop
@@ -308,7 +308,7 @@ Disassembly of section .text:
  214:	10 e2       	ldi	r17, 0x20	; 32
  216:	a0 e0       	ldi	r26, 0x00	; 0
  218:	b0 e2       	ldi	r27, 0x20	; 32
- 21a:	ee e5       	ldi	r30, 0x5E	; 94
+ 21a:	e6 e6       	ldi	r30, 0x66	; 102
  21c:	fc e0       	ldi	r31, 0x0C	; 12
  21e:	00 e0       	ldi	r16, 0x00	; 0
  220:	0b bf       	out	0x3b, r16	; 59
@@ -333,2005 +333,1999 @@ Disassembly of section .text:
  23a:	a2 33       	cpi	r26, 0x32	; 50
  23c:	b2 07       	cpc	r27, r18
  23e:	e1 f7       	brne	.-8      	; 0x238 <.do_clear_bss_loop>
- 240:	c3 d3       	rcall	.+1926   	; 0x9c8 <main>
- 242:	0b c5       	rjmp	.+2582   	; 0xc5a <_exit>
+ 240:	a0 d4       	rcall	.+2368   	; 0xb82 <main>
+ 242:	0f c5       	rjmp	.+2590   	; 0xc62 <_exit>
 
 00000244 <__bad_interrupt>:
  244:	dd ce       	rjmp	.-582    	; 0x0 <__vectors>
 
-00000246 <sysclk_enable_module>:
+00000246 <__vector_24>:
+uint8_t send_idx = 0;
+uint8_t send_crc_length = 0;//set equal to maximum value of send_idx
+uint16_t send_crc = 0;
+uint8_t send_crc_idx = 0;
+
+ISR(SPIC_INT_vect) {
+ 246:	1f 92       	push	r1
+ 248:	0f 92       	push	r0
+ 24a:	0f b6       	in	r0, 0x3f	; 63
+ 24c:	0f 92       	push	r0
+ 24e:	11 24       	eor	r1, r1
+ 250:	08 b6       	in	r0, 0x38	; 56
+ 252:	0f 92       	push	r0
+ 254:	18 be       	out	0x38, r1	; 56
+ 256:	8f 93       	push	r24
+	rx_byte = SPIC.DATA;
+ 258:	80 91 c3 08 	lds	r24, 0x08C3	; 0x8008c3 <__TEXT_REGION_LENGTH__+0x7008c3>
+ 25c:	80 93 12 20 	sts	0x2012, r24	; 0x802012 <rx_byte>
+	spic_flag = 1;
+ 260:	81 e0       	ldi	r24, 0x01	; 1
+ 262:	80 93 11 20 	sts	0x2011, r24	; 0x802011 <spic_flag>
+}
+ 266:	8f 91       	pop	r24
+ 268:	0f 90       	pop	r0
+ 26a:	08 be       	out	0x38, r0	; 56
+ 26c:	0f 90       	pop	r0
+ 26e:	0f be       	out	0x3f, r0	; 63
+ 270:	0f 90       	pop	r0
+ 272:	1f 90       	pop	r1
+ 274:	18 95       	reti
+
+00000276 <init_spi_to_bbb>:
+
+void init_spi_to_bbb(){
+	PORTC.DIR = 0x40;		// MISO output; MOSI, SCK, SS inputs
+ 276:	80 e4       	ldi	r24, 0x40	; 64
+ 278:	80 93 40 06 	sts	0x0640, r24	; 0x800640 <__TEXT_REGION_LENGTH__+0x700640>
+	SPIC.CTRL = 0x40;		// slave mode, mode 0
+ 27c:	e0 ec       	ldi	r30, 0xC0	; 192
+ 27e:	f8 e0       	ldi	r31, 0x08	; 8
+ 280:	80 83       	st	Z, r24
+	SPIC.INTCTRL = 0x03;	// enable interrupts
+ 282:	83 e0       	ldi	r24, 0x03	; 3
+ 284:	81 83       	std	Z+1, r24	; 0x01
+	PMIC.CTRL = 0x04; // enable high priority interrupts
+ 286:	84 e0       	ldi	r24, 0x04	; 4
+ 288:	80 93 a2 00 	sts	0x00A2, r24	; 0x8000a2 <__TEXT_REGION_LENGTH__+0x7000a2>
+ 28c:	08 95       	ret
+
+0000028e <handle_spi_to_bbb>:
+	
+}
+
+void handle_spi_to_bbb(){
+	if(spic_flag){
+ 28e:	80 91 11 20 	lds	r24, 0x2011	; 0x802011 <spic_flag>
+ 292:	88 23       	and	r24, r24
+ 294:	09 f4       	brne	.+2      	; 0x298 <handle_spi_to_bbb+0xa>
+ 296:	d7 c0       	rjmp	.+430    	; 0x446 <__LOCK_REGION_LENGTH__+0x46>
+		//Indicate start of incoming command
+		if(rx_byte == SPI_TX_START){
+ 298:	80 91 12 20 	lds	r24, 0x2012	; 0x802012 <rx_byte>
+ 29c:	8a 3a       	cpi	r24, 0xAA	; 170
+ 29e:	91 f4       	brne	.+36     	; 0x2c4 <handle_spi_to_bbb+0x36>
+		
+			cmd_idx = CMD_DATA_SIZE;
+ 2a0:	85 e0       	ldi	r24, 0x05	; 5
+ 2a2:	80 93 10 20 	sts	0x2010, r24	; 0x802010 <cmd_idx>
+			//Reset all the send variables/tmp storage
+			cmd_finished = 0;
+ 2a6:	10 92 0b 20 	sts	0x200B, r1	; 0x80200b <cmd_finished>
+			send_idx = 0;
+ 2aa:	10 92 0a 20 	sts	0x200A, r1	; 0x80200a <send_idx>
+			send_crc_length = 0;
+ 2ae:	10 92 09 20 	sts	0x2009, r1	; 0x802009 <send_crc_length>
+			send_crc = 0;
+ 2b2:	10 92 07 20 	sts	0x2007, r1	; 0x802007 <send_crc>
+ 2b6:	10 92 08 20 	sts	0x2008, r1	; 0x802008 <send_crc+0x1>
+			send_crc_idx = 0;
+ 2ba:	10 92 06 20 	sts	0x2006, r1	; 0x802006 <__data_end>
+			lock = 1;
+ 2be:	81 e0       	ldi	r24, 0x01	; 1
+ 2c0:	80 93 22 20 	sts	0x2022, r24	; 0x802022 <lock>
+
+		}
+	
+		//If we are receiving command, store it appropriately
+		if(cmd_idx > 0){
+ 2c4:	80 91 10 20 	lds	r24, 0x2010	; 0x802010 <cmd_idx>
+ 2c8:	88 23       	and	r24, r24
+ 2ca:	a9 f1       	breq	.+106    	; 0x336 <handle_spi_to_bbb+0xa8>
+		
+			cmd_data[CMD_DATA_SIZE-cmd_idx] = rx_byte;
+ 2cc:	90 91 12 20 	lds	r25, 0x2012	; 0x802012 <rx_byte>
+ 2d0:	e5 e0       	ldi	r30, 0x05	; 5
+ 2d2:	f0 e0       	ldi	r31, 0x00	; 0
+ 2d4:	e8 1b       	sub	r30, r24
+ 2d6:	f1 09       	sbc	r31, r1
+ 2d8:	eb 5d       	subi	r30, 0xDB	; 219
+ 2da:	ff 4d       	sbci	r31, 0xDF	; 223
+ 2dc:	90 83       	st	Z, r25
+			cmd_idx--;
+ 2de:	81 50       	subi	r24, 0x01	; 1
+ 2e0:	80 93 10 20 	sts	0x2010, r24	; 0x802010 <cmd_idx>
+			//Finished last storage of incoming data
+			if(cmd_idx == 0){
+ 2e4:	81 11       	cpse	r24, r1
+ 2e6:	6b c0       	rjmp	.+214    	; 0x3be <handle_spi_to_bbb+0x130>
+				//Check recieved_crc against calculated CRC
+				received_crc =	(cmd_data[CMD_DATA_SIZE-1]<<8) | cmd_data[CMD_DATA_SIZE-2];
+ 2e8:	e5 e2       	ldi	r30, 0x25	; 37
+ 2ea:	f0 e2       	ldi	r31, 0x20	; 32
+ 2ec:	84 81       	ldd	r24, Z+4	; 0x04
+ 2ee:	90 e0       	ldi	r25, 0x00	; 0
+ 2f0:	98 2f       	mov	r25, r24
+ 2f2:	88 27       	eor	r24, r24
+ 2f4:	23 81       	ldd	r18, Z+3	; 0x03
+ 2f6:	82 2b       	or	r24, r18
+ 2f8:	80 93 0e 20 	sts	0x200E, r24	; 0x80200e <received_crc>
+ 2fc:	90 93 0f 20 	sts	0x200F, r25	; 0x80200f <received_crc+0x1>
+				calculated_crc = crc_io_checksum(cmd_data, CMD_DATA_SIZE-2, CRC_16BIT);
+ 300:	40 e0       	ldi	r20, 0x00	; 0
+ 302:	63 e0       	ldi	r22, 0x03	; 3
+ 304:	70 e0       	ldi	r23, 0x00	; 0
+ 306:	cf 01       	movw	r24, r30
+ 308:	3d d1       	rcall	.+634    	; 0x584 <crc_io_checksum>
+ 30a:	60 93 0c 20 	sts	0x200C, r22	; 0x80200c <calculated_crc>
+ 30e:	70 93 0d 20 	sts	0x200D, r23	; 0x80200d <calculated_crc+0x1>
+				//Send appropriate signal if passed/failed
+			
+				if(calculated_crc == received_crc){
+ 312:	20 91 0e 20 	lds	r18, 0x200E	; 0x80200e <received_crc>
+ 316:	30 91 0f 20 	lds	r19, 0x200F	; 0x80200f <received_crc+0x1>
+ 31a:	26 17       	cp	r18, r22
+ 31c:	37 07       	cpc	r19, r23
+ 31e:	39 f4       	brne	.+14     	; 0x32e <handle_spi_to_bbb+0xa0>
+					SPIC.DATA = SPI_CRC_PASS;
+ 320:	8a ea       	ldi	r24, 0xAA	; 170
+ 322:	80 93 c3 08 	sts	0x08C3, r24	; 0x8008c3 <__TEXT_REGION_LENGTH__+0x7008c3>
+					cmd_finished = 1;
+ 326:	81 e0       	ldi	r24, 0x01	; 1
+ 328:	80 93 0b 20 	sts	0x200B, r24	; 0x80200b <cmd_finished>
+ 32c:	48 c0       	rjmp	.+144    	; 0x3be <handle_spi_to_bbb+0x130>
+				}
+				else{
+					SPIC.DATA = SPI_CRC_FAIL;
+ 32e:	8f ef       	ldi	r24, 0xFF	; 255
+ 330:	80 93 c3 08 	sts	0x08C3, r24	; 0x8008c3 <__TEXT_REGION_LENGTH__+0x7008c3>
+ 334:	44 c0       	rjmp	.+136    	; 0x3be <handle_spi_to_bbb+0x130>
+				}
+			}
+		}
+		else if(cmd_finished){
+ 336:	80 91 0b 20 	lds	r24, 0x200B	; 0x80200b <cmd_finished>
+ 33a:	88 23       	and	r24, r24
+ 33c:	09 f4       	brne	.+2      	; 0x340 <handle_spi_to_bbb+0xb2>
+ 33e:	3f c0       	rjmp	.+126    	; 0x3be <handle_spi_to_bbb+0x130>
+			//On next pass we will be start pipelining data
+			if(cmd_data[2] == 0){
+ 340:	80 91 27 20 	lds	r24, 0x2027	; 0x802027 <cmd_data+0x2>
+ 344:	81 11       	cpse	r24, r1
+ 346:	0d c0       	rjmp	.+26     	; 0x362 <handle_spi_to_bbb+0xd4>
+				memcpy(send_data,sensor_data,SENSOR_DATA_SIZE);//TODO: determine if this takes too long
+ 348:	86 e0       	ldi	r24, 0x06	; 6
+ 34a:	e0 e0       	ldi	r30, 0x00	; 0
+ 34c:	f0 e2       	ldi	r31, 0x20	; 32
+ 34e:	aa e2       	ldi	r26, 0x2A	; 42
+ 350:	b0 e2       	ldi	r27, 0x20	; 32
+ 352:	01 90       	ld	r0, Z+
+ 354:	0d 92       	st	X+, r0
+ 356:	8a 95       	dec	r24
+ 358:	e1 f7       	brne	.-8      	; 0x352 <handle_spi_to_bbb+0xc4>
+				send_idx = SENSOR_DATA_SIZE;
+ 35a:	86 e0       	ldi	r24, 0x06	; 6
+ 35c:	80 93 0a 20 	sts	0x200A, r24	; 0x80200a <send_idx>
+ 360:	28 c0       	rjmp	.+80     	; 0x3b2 <handle_spi_to_bbb+0x124>
+			}
+			else if(cmd_data[2] == 1){
+ 362:	81 30       	cpi	r24, 0x01	; 1
+ 364:	41 f4       	brne	.+16     	; 0x376 <handle_spi_to_bbb+0xe8>
+				//ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
+				send_data[0] = sensor_status;
+ 366:	80 91 23 20 	lds	r24, 0x2023	; 0x802023 <sensor_status>
+ 36a:	80 93 2a 20 	sts	0x202A, r24	; 0x80202a <send_data>
+				send_idx = 1;
+ 36e:	81 e0       	ldi	r24, 0x01	; 1
+ 370:	80 93 0a 20 	sts	0x200A, r24	; 0x80200a <send_idx>
+ 374:	1e c0       	rjmp	.+60     	; 0x3b2 <handle_spi_to_bbb+0x124>
+			}
+			else if(cmd_data[2] == 2){
+ 376:	82 30       	cpi	r24, 0x02	; 2
+ 378:	41 f4       	brne	.+16     	; 0x38a <handle_spi_to_bbb+0xfc>
+				send_data[0] = state;
+ 37a:	80 91 24 20 	lds	r24, 0x2024	; 0x802024 <state>
+ 37e:	80 93 2a 20 	sts	0x202A, r24	; 0x80202a <send_data>
+				send_idx = 1;
+ 382:	81 e0       	ldi	r24, 0x01	; 1
+ 384:	80 93 0a 20 	sts	0x200A, r24	; 0x80200a <send_idx>
+ 388:	14 c0       	rjmp	.+40     	; 0x3b2 <handle_spi_to_bbb+0x124>
+			}
+			else{
+				memcpy(send_data,sensor_data,SENSOR_DATA_SIZE);
+ 38a:	86 e0       	ldi	r24, 0x06	; 6
+ 38c:	e0 e0       	ldi	r30, 0x00	; 0
+ 38e:	f0 e2       	ldi	r31, 0x20	; 32
+ 390:	aa e2       	ldi	r26, 0x2A	; 42
+ 392:	b0 e2       	ldi	r27, 0x20	; 32
+ 394:	01 90       	ld	r0, Z+
+ 396:	0d 92       	st	X+, r0
+ 398:	8a 95       	dec	r24
+ 39a:	e1 f7       	brne	.-8      	; 0x394 <handle_spi_to_bbb+0x106>
+				send_data[SENSOR_DATA_SIZE] = sensor_status;
+ 39c:	ea e2       	ldi	r30, 0x2A	; 42
+ 39e:	f0 e2       	ldi	r31, 0x20	; 32
+ 3a0:	80 91 23 20 	lds	r24, 0x2023	; 0x802023 <sensor_status>
+ 3a4:	86 83       	std	Z+6, r24	; 0x06
+				send_data[SENSOR_DATA_SIZE+1] = state;
+ 3a6:	80 91 24 20 	lds	r24, 0x2024	; 0x802024 <state>
+ 3aa:	87 83       	std	Z+7, r24	; 0x07
+				send_idx = SENSOR_DATA_SIZE+2;
+ 3ac:	88 e0       	ldi	r24, 0x08	; 8
+ 3ae:	80 93 0a 20 	sts	0x200A, r24	; 0x80200a <send_idx>
+			}
+			send_crc_length = send_idx;
+ 3b2:	80 91 0a 20 	lds	r24, 0x200A	; 0x80200a <send_idx>
+ 3b6:	80 93 09 20 	sts	0x2009, r24	; 0x802009 <send_crc_length>
+			cmd_finished = 0;
+ 3ba:	10 92 0b 20 	sts	0x200B, r1	; 0x80200b <cmd_finished>
+		}
+	
+	
+		if(send_idx > 0){
+ 3be:	80 91 0a 20 	lds	r24, 0x200A	; 0x80200a <send_idx>
+ 3c2:	88 23       	and	r24, r24
+ 3c4:	e9 f0       	breq	.+58     	; 0x400 <__LOCK_REGION_LENGTH__>
+			SPIC.DATA = send_data[send_crc_length-send_idx];
+ 3c6:	60 91 09 20 	lds	r22, 0x2009	; 0x802009 <send_crc_length>
+ 3ca:	e6 2f       	mov	r30, r22
+ 3cc:	f0 e0       	ldi	r31, 0x00	; 0
+ 3ce:	e8 1b       	sub	r30, r24
+ 3d0:	f1 09       	sbc	r31, r1
+ 3d2:	e6 5d       	subi	r30, 0xD6	; 214
+ 3d4:	ff 4d       	sbci	r31, 0xDF	; 223
+ 3d6:	90 81       	ld	r25, Z
+ 3d8:	90 93 c3 08 	sts	0x08C3, r25	; 0x8008c3 <__TEXT_REGION_LENGTH__+0x7008c3>
+			send_idx--;
+ 3dc:	81 50       	subi	r24, 0x01	; 1
+ 3de:	80 93 0a 20 	sts	0x200A, r24	; 0x80200a <send_idx>
+		
+			//Calculate CRC
+			if(send_idx == 0){
+ 3e2:	81 11       	cpse	r24, r1
+ 3e4:	2e c0       	rjmp	.+92     	; 0x442 <__LOCK_REGION_LENGTH__+0x42>
+				send_crc = crc_io_checksum(send_data, send_crc_length, CRC_16BIT);
+ 3e6:	70 e0       	ldi	r23, 0x00	; 0
+ 3e8:	40 e0       	ldi	r20, 0x00	; 0
+ 3ea:	8a e2       	ldi	r24, 0x2A	; 42
+ 3ec:	90 e2       	ldi	r25, 0x20	; 32
+ 3ee:	ca d0       	rcall	.+404    	; 0x584 <crc_io_checksum>
+ 3f0:	60 93 07 20 	sts	0x2007, r22	; 0x802007 <send_crc>
+ 3f4:	70 93 08 20 	sts	0x2008, r23	; 0x802008 <send_crc+0x1>
+				send_crc_idx = 2;
+ 3f8:	82 e0       	ldi	r24, 0x02	; 2
+ 3fa:	80 93 06 20 	sts	0x2006, r24	; 0x802006 <__data_end>
+ 3fe:	21 c0       	rjmp	.+66     	; 0x442 <__LOCK_REGION_LENGTH__+0x42>
+			}
+		
+		}
+		else if(send_crc_idx > 0){
+ 400:	80 91 06 20 	lds	r24, 0x2006	; 0x802006 <__data_end>
+ 404:	88 23       	and	r24, r24
+ 406:	e9 f0       	breq	.+58     	; 0x442 <__LOCK_REGION_LENGTH__+0x42>
+		
+			SPIC.DATA = send_crc >> ((2-send_crc_idx)*8);
+ 408:	22 e0       	ldi	r18, 0x02	; 2
+ 40a:	30 e0       	ldi	r19, 0x00	; 0
+ 40c:	28 1b       	sub	r18, r24
+ 40e:	31 09       	sbc	r19, r1
+ 410:	22 0f       	add	r18, r18
+ 412:	33 1f       	adc	r19, r19
+ 414:	22 0f       	add	r18, r18
+ 416:	33 1f       	adc	r19, r19
+ 418:	22 0f       	add	r18, r18
+ 41a:	33 1f       	adc	r19, r19
+ 41c:	40 91 07 20 	lds	r20, 0x2007	; 0x802007 <send_crc>
+ 420:	50 91 08 20 	lds	r21, 0x2008	; 0x802008 <send_crc+0x1>
+ 424:	ba 01       	movw	r22, r20
+ 426:	02 c0       	rjmp	.+4      	; 0x42c <__LOCK_REGION_LENGTH__+0x2c>
+ 428:	76 95       	lsr	r23
+ 42a:	67 95       	ror	r22
+ 42c:	2a 95       	dec	r18
+ 42e:	e2 f7       	brpl	.-8      	; 0x428 <__LOCK_REGION_LENGTH__+0x28>
+ 430:	60 93 c3 08 	sts	0x08C3, r22	; 0x8008c3 <__TEXT_REGION_LENGTH__+0x7008c3>
+			send_crc_idx--;
+ 434:	81 50       	subi	r24, 0x01	; 1
+ 436:	80 93 06 20 	sts	0x2006, r24	; 0x802006 <__data_end>
+			if(send_crc_idx == 0) lock = 0;
+ 43a:	81 11       	cpse	r24, r1
+ 43c:	02 c0       	rjmp	.+4      	; 0x442 <__LOCK_REGION_LENGTH__+0x42>
+ 43e:	10 92 22 20 	sts	0x2022, r1	; 0x802022 <lock>
+		}
+	
+		spic_flag = 0;
+ 442:	10 92 11 20 	sts	0x2011, r1	; 0x802011 <spic_flag>
+ 446:	08 95       	ret
+
+00000448 <sysclk_enable_module>:
 	sysclk_rtcsrc_enable(CONFIG_RTC_SOURCE);
 #endif
 }
 
 void sysclk_enable_module(enum sysclk_port_id port, uint8_t id)
 {
- 246:	cf 93       	push	r28
- 248:	df 93       	push	r29
- 24a:	1f 92       	push	r1
- 24c:	cd b7       	in	r28, 0x3d	; 61
- 24e:	de b7       	in	r29, 0x3e	; 62
+ 448:	cf 93       	push	r28
+ 44a:	df 93       	push	r29
+ 44c:	1f 92       	push	r1
+ 44e:	cd b7       	in	r28, 0x3d	; 61
+ 450:	de b7       	in	r29, 0x3e	; 62
 
 typedef uint8_t irqflags_t;
 
 static inline irqflags_t cpu_irq_save(void)
 {
 	volatile irqflags_t flags = SREG;
- 250:	9f b7       	in	r25, 0x3f	; 63
- 252:	99 83       	std	Y+1, r25	; 0x01
+ 452:	9f b7       	in	r25, 0x3f	; 63
+ 454:	99 83       	std	Y+1, r25	; 0x01
 	cpu_irq_disable();
- 254:	f8 94       	cli
+ 456:	f8 94       	cli
 	return flags;
- 256:	99 81       	ldd	r25, Y+1	; 0x01
+ 458:	99 81       	ldd	r25, Y+1	; 0x01
 	irqflags_t flags = cpu_irq_save();
 
 	*((uint8_t *)&PR.PRGEN + port) &= ~id;
- 258:	e8 2f       	mov	r30, r24
- 25a:	f0 e0       	ldi	r31, 0x00	; 0
- 25c:	e0 59       	subi	r30, 0x90	; 144
- 25e:	ff 4f       	sbci	r31, 0xFF	; 255
- 260:	60 95       	com	r22
- 262:	80 81       	ld	r24, Z
- 264:	68 23       	and	r22, r24
- 266:	60 83       	st	Z, r22
+ 45a:	e8 2f       	mov	r30, r24
+ 45c:	f0 e0       	ldi	r31, 0x00	; 0
+ 45e:	e0 59       	subi	r30, 0x90	; 144
+ 460:	ff 4f       	sbci	r31, 0xFF	; 255
+ 462:	60 95       	com	r22
+ 464:	80 81       	ld	r24, Z
+ 466:	68 23       	and	r22, r24
+ 468:	60 83       	st	Z, r22
 }
 
 static inline void cpu_irq_restore(irqflags_t flags)
 {
 	barrier();
 	SREG = flags;
- 268:	9f bf       	out	0x3f, r25	; 63
+ 46a:	9f bf       	out	0x3f, r25	; 63
 
 	cpu_irq_restore(flags);
 }
- 26a:	0f 90       	pop	r0
- 26c:	df 91       	pop	r29
- 26e:	cf 91       	pop	r28
- 270:	08 95       	ret
+ 46c:	0f 90       	pop	r0
+ 46e:	df 91       	pop	r29
+ 470:	cf 91       	pop	r28
+ 472:	08 95       	ret
 
-00000272 <crc_io_checksum_byte_start>:
+00000474 <crc_io_checksum_byte_start>:
  * the module and get the calculated checksum.
  *
  * \param crc_16_32     enum to indicate whether CRC-32 or CRC-16 shall be used
  */
 void crc_io_checksum_byte_start(enum crc_16_32_t crc_16_32)
 {
- 272:	0f 93       	push	r16
- 274:	1f 93       	push	r17
+ 474:	0f 93       	push	r16
+ 476:	1f 93       	push	r17
  *
  */
 static inline void crc_reset(void)
 {
 	// Reset module
 	CRC_CTRL |= CRC_RESET_RESET0_gc;
- 276:	e0 ed       	ldi	r30, 0xD0	; 208
- 278:	f0 e0       	ldi	r31, 0x00	; 0
- 27a:	90 81       	ld	r25, Z
- 27c:	90 68       	ori	r25, 0x80	; 128
- 27e:	90 83       	st	Z, r25
+ 478:	e0 ed       	ldi	r30, 0xD0	; 208
+ 47a:	f0 e0       	ldi	r31, 0x00	; 0
+ 47c:	90 81       	ld	r25, Z
+ 47e:	90 68       	ori	r25, 0x80	; 128
+ 480:	90 83       	st	Z, r25
 
 	// Set initial checksum value
 	CRC.CHECKSUM0 = crc_initial_value & 0xFF;
- 280:	40 91 06 20 	lds	r20, 0x2006	; 0x802006 <__data_end>
- 284:	50 91 07 20 	lds	r21, 0x2007	; 0x802007 <__data_end+0x1>
- 288:	60 91 08 20 	lds	r22, 0x2008	; 0x802008 <__data_end+0x2>
- 28c:	70 91 09 20 	lds	r23, 0x2009	; 0x802009 <__data_end+0x3>
- 290:	44 83       	std	Z+4, r20	; 0x04
+ 482:	40 91 13 20 	lds	r20, 0x2013	; 0x802013 <crc_initial_value>
+ 486:	50 91 14 20 	lds	r21, 0x2014	; 0x802014 <crc_initial_value+0x1>
+ 48a:	60 91 15 20 	lds	r22, 0x2015	; 0x802015 <crc_initial_value+0x2>
+ 48e:	70 91 16 20 	lds	r23, 0x2016	; 0x802016 <crc_initial_value+0x3>
+ 492:	44 83       	std	Z+4, r20	; 0x04
 	CRC.CHECKSUM1 = (crc_initial_value >> 8) & 0xFF;
- 292:	05 2f       	mov	r16, r21
- 294:	16 2f       	mov	r17, r22
- 296:	27 2f       	mov	r18, r23
- 298:	33 27       	eor	r19, r19
- 29a:	05 83       	std	Z+5, r16	; 0x05
+ 494:	05 2f       	mov	r16, r21
+ 496:	16 2f       	mov	r17, r22
+ 498:	27 2f       	mov	r18, r23
+ 49a:	33 27       	eor	r19, r19
+ 49c:	05 83       	std	Z+5, r16	; 0x05
 	CRC.CHECKSUM2 = (crc_initial_value >> 16) & 0xFF;
- 29c:	8b 01       	movw	r16, r22
- 29e:	22 27       	eor	r18, r18
- 2a0:	33 27       	eor	r19, r19
- 2a2:	06 83       	std	Z+6, r16	; 0x06
+ 49e:	8b 01       	movw	r16, r22
+ 4a0:	22 27       	eor	r18, r18
+ 4a2:	33 27       	eor	r19, r19
+ 4a4:	06 83       	std	Z+6, r16	; 0x06
 	CRC.CHECKSUM3 = (crc_initial_value >> 24) & 0xFF;
- 2a4:	47 2f       	mov	r20, r23
- 2a6:	55 27       	eor	r21, r21
- 2a8:	66 27       	eor	r22, r22
- 2aa:	77 27       	eor	r23, r23
- 2ac:	47 83       	std	Z+7, r20	; 0x07
+ 4a6:	47 2f       	mov	r20, r23
+ 4a8:	55 27       	eor	r21, r21
+ 4aa:	66 27       	eor	r22, r22
+ 4ac:	77 27       	eor	r23, r23
+ 4ae:	47 83       	std	Z+7, r20	; 0x07
 
 	crc_initial_value = 0;
- 2ae:	10 92 06 20 	sts	0x2006, r1	; 0x802006 <__data_end>
- 2b2:	10 92 07 20 	sts	0x2007, r1	; 0x802007 <__data_end+0x1>
- 2b6:	10 92 08 20 	sts	0x2008, r1	; 0x802008 <__data_end+0x2>
- 2ba:	10 92 09 20 	sts	0x2009, r1	; 0x802009 <__data_end+0x3>
+ 4b0:	10 92 13 20 	sts	0x2013, r1	; 0x802013 <crc_initial_value>
+ 4b4:	10 92 14 20 	sts	0x2014, r1	; 0x802014 <crc_initial_value+0x1>
+ 4b8:	10 92 15 20 	sts	0x2015, r1	; 0x802015 <crc_initial_value+0x2>
+ 4bc:	10 92 16 20 	sts	0x2016, r1	; 0x802016 <crc_initial_value+0x3>
 void crc_io_checksum_byte_start(enum crc_16_32_t crc_16_32)
 {
 	// Initialize CRC calculations on I/O interface
 	crc_reset();
 	// Enable CRC-32 if chosen
 	if (crc_16_32 == CRC_32BIT) {
- 2be:	81 30       	cpi	r24, 0x01	; 1
- 2c0:	19 f4       	brne	.+6      	; 0x2c8 <crc_io_checksum_byte_start+0x56>
+ 4c0:	81 30       	cpi	r24, 0x01	; 1
+ 4c2:	19 f4       	brne	.+6      	; 0x4ca <crc_io_checksum_byte_start+0x56>
  * \note This cannot be changed while the busy flag is set.
  *
  */
 static inline void crc_32_enable(void)
 {
 	CRC_CTRL |= CRC_CRC32_bm;
- 2c2:	80 81       	ld	r24, Z
- 2c4:	80 62       	ori	r24, 0x20	; 32
- 2c6:	80 83       	st	Z, r24
+ 4c4:	80 81       	ld	r24, Z
+ 4c6:	80 62       	ori	r24, 0x20	; 32
+ 4c8:	80 83       	st	Z, r24
  *
  * \param source the data source for the CRC module
  */
 static inline void crc_set_source(CRC_SOURCE_t source)
 {
 	CRC_CTRL &= ~CRC_SOURCE_gm;
- 2c8:	e0 ed       	ldi	r30, 0xD0	; 208
- 2ca:	f0 e0       	ldi	r31, 0x00	; 0
- 2cc:	80 81       	ld	r24, Z
- 2ce:	80 7f       	andi	r24, 0xF0	; 240
- 2d0:	80 83       	st	Z, r24
+ 4ca:	e0 ed       	ldi	r30, 0xD0	; 208
+ 4cc:	f0 e0       	ldi	r31, 0x00	; 0
+ 4ce:	80 81       	ld	r24, Z
+ 4d0:	80 7f       	andi	r24, 0xF0	; 240
+ 4d2:	80 83       	st	Z, r24
 	CRC_CTRL |= source;
- 2d2:	80 81       	ld	r24, Z
- 2d4:	81 60       	ori	r24, 0x01	; 1
- 2d6:	80 83       	st	Z, r24
+ 4d4:	80 81       	ld	r24, Z
+ 4d6:	81 60       	ori	r24, 0x01	; 1
+ 4d8:	80 83       	st	Z, r24
 	if (crc_16_32 == CRC_32BIT) {
 		crc_32_enable();
 	}
 	// Enable CRC module using the I/O interface
 	crc_set_source(CRC_SOURCE_IO_gc);
 }
- 2d8:	1f 91       	pop	r17
- 2da:	0f 91       	pop	r16
- 2dc:	08 95       	ret
+ 4da:	1f 91       	pop	r17
+ 4dc:	0f 91       	pop	r16
+ 4de:	08 95       	ret
 
-000002de <crc_io_checksum_byte_stop>:
+000004e0 <crc_io_checksum_byte_stop>:
  *
  * \retval checksum checksum
  *
  */
 uint32_t crc_io_checksum_byte_stop(void)
 {
- 2de:	cf 92       	push	r12
- 2e0:	df 92       	push	r13
- 2e2:	ef 92       	push	r14
- 2e4:	ff 92       	push	r15
+ 4e0:	cf 92       	push	r12
+ 4e2:	df 92       	push	r13
+ 4e4:	ef 92       	push	r14
+ 4e6:	ff 92       	push	r15
 	// Signal CRC complete
 	CRC_STATUS |= CRC_BUSY_bm;
- 2e6:	e1 ed       	ldi	r30, 0xD1	; 209
- 2e8:	f0 e0       	ldi	r31, 0x00	; 0
- 2ea:	80 81       	ld	r24, Z
- 2ec:	81 60       	ori	r24, 0x01	; 1
- 2ee:	80 83       	st	Z, r24
+ 4e8:	e1 ed       	ldi	r30, 0xD1	; 209
+ 4ea:	f0 e0       	ldi	r31, 0x00	; 0
+ 4ec:	80 81       	ld	r24, Z
+ 4ee:	81 60       	ori	r24, 0x01	; 1
+ 4f0:	80 83       	st	Z, r24
  * \retval false if module is not busy
  *
  */
 static inline bool crc_is_busy(void)
 {
 	return ((CRC_STATUS & CRC_BUSY_bm) == CRC_BUSY_bm);
- 2f0:	80 81       	ld	r24, Z
+ 4f2:	80 81       	ld	r24, Z
  * \return checksum checksum value
  */
 static inline uint32_t crc_checksum_read(void)
 {
 	// Wait until the CRC conversion is finished
 	while (crc_is_busy()) {
- 2f2:	80 fd       	sbrc	r24, 0
- 2f4:	fd cf       	rjmp	.-6      	; 0x2f0 <crc_io_checksum_byte_stop+0x12>
+ 4f4:	80 fd       	sbrc	r24, 0
+ 4f6:	fd cf       	rjmp	.-6      	; 0x4f2 <crc_io_checksum_byte_stop+0x12>
 		// Do nothing
 	}
 
 	// Check if we have a 32 or 16 bit checksum and return the correct one
 	if ((CRC_CTRL & CRC_CRC32_bm) == CRC_CRC32_bm) {
- 2f6:	80 91 d0 00 	lds	r24, 0x00D0	; 0x8000d0 <__TEXT_REGION_LENGTH__+0x7000d0>
- 2fa:	85 ff       	sbrs	r24, 5
- 2fc:	2e c0       	rjmp	.+92     	; 0x35a <crc_io_checksum_byte_stop+0x7c>
+ 4f8:	80 91 d0 00 	lds	r24, 0x00D0	; 0x8000d0 <__TEXT_REGION_LENGTH__+0x7000d0>
+ 4fc:	85 ff       	sbrs	r24, 5
+ 4fe:	2e c0       	rjmp	.+92     	; 0x55c <crc_io_checksum_byte_stop+0x7c>
  */
 static inline uint32_t crc32_checksum_read(void)
 {
 	uint32_t checksum;
 
 	checksum = ((uint32_t)CRC_CHECKSUM0 & 0x000000FF);
- 2fe:	40 91 d4 00 	lds	r20, 0x00D4	; 0x8000d4 <__TEXT_REGION_LENGTH__+0x7000d4>
+ 500:	40 91 d4 00 	lds	r20, 0x00D4	; 0x8000d4 <__TEXT_REGION_LENGTH__+0x7000d4>
 	checksum |= (((uint32_t)CRC_CHECKSUM1 << 8) & 0x0000FF00);
- 302:	90 91 d5 00 	lds	r25, 0x00D5	; 0x8000d5 <__TEXT_REGION_LENGTH__+0x7000d5>
+ 504:	90 91 d5 00 	lds	r25, 0x00D5	; 0x8000d5 <__TEXT_REGION_LENGTH__+0x7000d5>
 	checksum |= (((uint32_t)CRC_CHECKSUM2 << 16) & 0x00FF0000);
- 306:	80 91 d6 00 	lds	r24, 0x00D6	; 0x8000d6 <__TEXT_REGION_LENGTH__+0x7000d6>
+ 508:	80 91 d6 00 	lds	r24, 0x00D6	; 0x8000d6 <__TEXT_REGION_LENGTH__+0x7000d6>
 	checksum |= (((uint32_t)CRC_CHECKSUM3 << 24) & 0xFF000000);
- 30a:	20 91 d7 00 	lds	r18, 0x00D7	; 0x8000d7 <__TEXT_REGION_LENGTH__+0x7000d7>
- 30e:	50 e0       	ldi	r21, 0x00	; 0
- 310:	60 e0       	ldi	r22, 0x00	; 0
- 312:	70 e0       	ldi	r23, 0x00	; 0
- 314:	72 2b       	or	r23, r18
- 316:	59 2b       	or	r21, r25
- 318:	68 2b       	or	r22, r24
- 31a:	20 e2       	ldi	r18, 0x20	; 32
+ 50c:	20 91 d7 00 	lds	r18, 0x00D7	; 0x8000d7 <__TEXT_REGION_LENGTH__+0x7000d7>
+ 510:	50 e0       	ldi	r21, 0x00	; 0
+ 512:	60 e0       	ldi	r22, 0x00	; 0
+ 514:	70 e0       	ldi	r23, 0x00	; 0
+ 516:	72 2b       	or	r23, r18
+ 518:	59 2b       	or	r21, r25
+ 51a:	68 2b       	or	r22, r24
+ 51c:	20 e2       	ldi	r18, 0x20	; 32
 static inline uint32_t crc_bit_revert(uint32_t value)
 {
 	uint32_t result;
 	uint8_t i;
 
 	for (result = i = 0; i < 32; i++) {
- 31c:	80 e0       	ldi	r24, 0x00	; 0
- 31e:	90 e0       	ldi	r25, 0x00	; 0
- 320:	dc 01       	movw	r26, r24
+ 51e:	80 e0       	ldi	r24, 0x00	; 0
+ 520:	90 e0       	ldi	r25, 0x00	; 0
+ 522:	dc 01       	movw	r26, r24
 		result = (result << 1) + (value & 1);
- 322:	88 0f       	add	r24, r24
- 324:	99 1f       	adc	r25, r25
- 326:	aa 1f       	adc	r26, r26
- 328:	bb 1f       	adc	r27, r27
- 32a:	6a 01       	movw	r12, r20
- 32c:	7b 01       	movw	r14, r22
- 32e:	31 e0       	ldi	r19, 0x01	; 1
- 330:	c3 22       	and	r12, r19
- 332:	dd 24       	eor	r13, r13
- 334:	ee 24       	eor	r14, r14
- 336:	ff 24       	eor	r15, r15
- 338:	8c 0d       	add	r24, r12
- 33a:	9d 1d       	adc	r25, r13
- 33c:	ae 1d       	adc	r26, r14
- 33e:	bf 1d       	adc	r27, r15
+ 524:	88 0f       	add	r24, r24
+ 526:	99 1f       	adc	r25, r25
+ 528:	aa 1f       	adc	r26, r26
+ 52a:	bb 1f       	adc	r27, r27
+ 52c:	6a 01       	movw	r12, r20
+ 52e:	7b 01       	movw	r14, r22
+ 530:	31 e0       	ldi	r19, 0x01	; 1
+ 532:	c3 22       	and	r12, r19
+ 534:	dd 24       	eor	r13, r13
+ 536:	ee 24       	eor	r14, r14
+ 538:	ff 24       	eor	r15, r15
+ 53a:	8c 0d       	add	r24, r12
+ 53c:	9d 1d       	adc	r25, r13
+ 53e:	ae 1d       	adc	r26, r14
+ 540:	bf 1d       	adc	r27, r15
 		value >>= 1;
- 340:	76 95       	lsr	r23
- 342:	67 95       	ror	r22
- 344:	57 95       	ror	r21
- 346:	47 95       	ror	r20
- 348:	21 50       	subi	r18, 0x01	; 1
+ 542:	76 95       	lsr	r23
+ 544:	67 95       	ror	r22
+ 546:	57 95       	ror	r21
+ 548:	47 95       	ror	r20
+ 54a:	21 50       	subi	r18, 0x01	; 1
 static inline uint32_t crc_bit_revert(uint32_t value)
 {
 	uint32_t result;
 	uint8_t i;
 
 	for (result = i = 0; i < 32; i++) {
- 34a:	59 f7       	brne	.-42     	; 0x322 <crc_io_checksum_byte_stop+0x44>
+ 54c:	59 f7       	brne	.-42     	; 0x524 <crc_io_checksum_byte_stop+0x44>
 
 	// Bit reverse the result (to comply with IEEE 802.3 CRC-32)
 	checksum = crc_bit_revert(checksum);
 
 	// Complement the result (to comply with IEEE 802.3 CRC-32)
 	checksum = ~checksum;
- 34c:	bc 01       	movw	r22, r24
- 34e:	cd 01       	movw	r24, r26
- 350:	60 95       	com	r22
- 352:	70 95       	com	r23
- 354:	80 95       	com	r24
- 356:	90 95       	com	r25
- 358:	08 c0       	rjmp	.+16     	; 0x36a <crc_io_checksum_byte_stop+0x8c>
+ 54e:	bc 01       	movw	r22, r24
+ 550:	cd 01       	movw	r24, r26
+ 552:	60 95       	com	r22
+ 554:	70 95       	com	r23
+ 556:	80 95       	com	r24
+ 558:	90 95       	com	r25
+ 55a:	08 c0       	rjmp	.+16     	; 0x56c <crc_io_checksum_byte_stop+0x8c>
  */
 static inline uint16_t crc16_checksum_read(void)
 {
 	uint16_t checksum;
 	checksum = 0;
 	checksum = ((uint16_t)CRC_CHECKSUM0 & 0x00FF);
- 35a:	60 91 d4 00 	lds	r22, 0x00D4	; 0x8000d4 <__TEXT_REGION_LENGTH__+0x7000d4>
+ 55c:	60 91 d4 00 	lds	r22, 0x00D4	; 0x8000d4 <__TEXT_REGION_LENGTH__+0x7000d4>
 	checksum |= (((uint16_t)CRC_CHECKSUM1 << 8) & 0xFF00);
- 35e:	80 91 d5 00 	lds	r24, 0x00D5	; 0x8000d5 <__TEXT_REGION_LENGTH__+0x7000d5>
- 362:	70 e0       	ldi	r23, 0x00	; 0
- 364:	78 2b       	or	r23, r24
+ 560:	80 91 d5 00 	lds	r24, 0x00D5	; 0x8000d5 <__TEXT_REGION_LENGTH__+0x7000d5>
+ 564:	70 e0       	ldi	r23, 0x00	; 0
+ 566:	78 2b       	or	r23, r24
 
 	// Check if we have a 32 or 16 bit checksum and return the correct one
 	if ((CRC_CTRL & CRC_CRC32_bm) == CRC_CRC32_bm) {
 		return crc32_checksum_read();
 	} else {
 		return crc16_checksum_read();
- 366:	80 e0       	ldi	r24, 0x00	; 0
- 368:	90 e0       	ldi	r25, 0x00	; 0
+ 568:	80 e0       	ldi	r24, 0x00	; 0
+ 56a:	90 e0       	ldi	r25, 0x00	; 0
  *
  * \param source the data source for the CRC module
  */
 static inline void crc_set_source(CRC_SOURCE_t source)
 {
 	CRC_CTRL &= ~CRC_SOURCE_gm;
- 36a:	e0 ed       	ldi	r30, 0xD0	; 208
- 36c:	f0 e0       	ldi	r31, 0x00	; 0
- 36e:	20 81       	ld	r18, Z
- 370:	20 7f       	andi	r18, 0xF0	; 240
- 372:	20 83       	st	Z, r18
+ 56c:	e0 ed       	ldi	r30, 0xD0	; 208
+ 56e:	f0 e0       	ldi	r31, 0x00	; 0
+ 570:	20 81       	ld	r18, Z
+ 572:	20 7f       	andi	r18, 0xF0	; 240
+ 574:	20 83       	st	Z, r18
 	CRC_CTRL |= source;
- 374:	20 81       	ld	r18, Z
- 376:	20 83       	st	Z, r18
+ 576:	20 81       	ld	r18, Z
+ 578:	20 83       	st	Z, r18
 	// Signal CRC complete
 	CRC_STATUS |= CRC_BUSY_bm;
 
 	// Stop CRC and return checksum
 	return crc_checksum_complete();
 }
- 378:	ff 90       	pop	r15
- 37a:	ef 90       	pop	r14
- 37c:	df 90       	pop	r13
- 37e:	cf 90       	pop	r12
- 380:	08 95       	ret
+ 57a:	ff 90       	pop	r15
+ 57c:	ef 90       	pop	r14
+ 57e:	df 90       	pop	r13
+ 580:	cf 90       	pop	r12
+ 582:	08 95       	ret
 
-00000382 <crc_io_checksum>:
+00000584 <crc_io_checksum>:
  * \param crc_16_32     enum to indicate whether CRC-32 or CRC-16 shall be used
  *
  * \return checksum checksum
  */
 uint32_t crc_io_checksum(void *data, uint16_t len, enum crc_16_32_t crc_16_32)
 {
- 382:	0f 93       	push	r16
- 384:	1f 93       	push	r17
- 386:	cf 93       	push	r28
- 388:	df 93       	push	r29
- 38a:	ec 01       	movw	r28, r24
- 38c:	8b 01       	movw	r16, r22
- 38e:	84 2f       	mov	r24, r20
+ 584:	0f 93       	push	r16
+ 586:	1f 93       	push	r17
+ 588:	cf 93       	push	r28
+ 58a:	df 93       	push	r29
+ 58c:	ec 01       	movw	r28, r24
+ 58e:	8b 01       	movw	r16, r22
+ 590:	84 2f       	mov	r24, r20
 	// Initialize CRC calculations on I/O interface
 	crc_io_checksum_byte_start(crc_16_32);
- 390:	70 df       	rcall	.-288    	; 0x272 <crc_io_checksum_byte_start>
+ 592:	70 df       	rcall	.-288    	; 0x474 <crc_io_checksum_byte_start>
 
 	// Write data to DATAIN register
 	while (len--) {
- 392:	01 15       	cp	r16, r1
- 394:	11 05       	cpc	r17, r1
- 396:	51 f0       	breq	.+20     	; 0x3ac <crc_io_checksum+0x2a>
- 398:	be 01       	movw	r22, r28
- 39a:	60 0f       	add	r22, r16
- 39c:	71 1f       	adc	r23, r17
+ 594:	01 15       	cp	r16, r1
+ 596:	11 05       	cpc	r17, r1
+ 598:	51 f0       	breq	.+20     	; 0x5ae <crc_io_checksum+0x2a>
+ 59a:	be 01       	movw	r22, r28
+ 59c:	60 0f       	add	r22, r16
+ 59e:	71 1f       	adc	r23, r17
  * \param data  data to perform CRC on
  *
  */
 void crc_io_checksum_byte_add(uint8_t data)
 {
 	CRC_DATAIN = data;
- 39e:	e3 ed       	ldi	r30, 0xD3	; 211
- 3a0:	f0 e0       	ldi	r31, 0x00	; 0
+ 5a0:	e3 ed       	ldi	r30, 0xD3	; 211
+ 5a2:	f0 e0       	ldi	r31, 0x00	; 0
 	// Initialize CRC calculations on I/O interface
 	crc_io_checksum_byte_start(crc_16_32);
 
 	// Write data to DATAIN register
 	while (len--) {
 		crc_io_checksum_byte_add(*(uint8_t*)data);
- 3a2:	89 91       	ld	r24, Y+
+ 5a4:	89 91       	ld	r24, Y+
  * \param data  data to perform CRC on
  *
  */
 void crc_io_checksum_byte_add(uint8_t data)
 {
 	CRC_DATAIN = data;
- 3a4:	80 83       	st	Z, r24
+ 5a6:	80 83       	st	Z, r24
 {
 	// Initialize CRC calculations on I/O interface
 	crc_io_checksum_byte_start(crc_16_32);
 
 	// Write data to DATAIN register
 	while (len--) {
- 3a6:	c6 17       	cp	r28, r22
- 3a8:	d7 07       	cpc	r29, r23
- 3aa:	d9 f7       	brne	.-10     	; 0x3a2 <crc_io_checksum+0x20>
+ 5a8:	c6 17       	cp	r28, r22
+ 5aa:	d7 07       	cpc	r29, r23
+ 5ac:	d9 f7       	brne	.-10     	; 0x5a4 <crc_io_checksum+0x20>
 		crc_io_checksum_byte_add(*(uint8_t*)data);
 		data = (uint8_t*)data + 1;
 	}
 
 	// Return checksum
 	return crc_io_checksum_byte_stop();
- 3ac:	98 df       	rcall	.-208    	; 0x2de <crc_io_checksum_byte_stop>
+ 5ae:	98 df       	rcall	.-208    	; 0x4e0 <crc_io_checksum_byte_stop>
 }
- 3ae:	df 91       	pop	r29
- 3b0:	cf 91       	pop	r28
- 3b2:	1f 91       	pop	r17
- 3b4:	0f 91       	pop	r16
- 3b6:	08 95       	ret
+ 5b0:	df 91       	pop	r29
+ 5b2:	cf 91       	pop	r28
+ 5b4:	1f 91       	pop	r17
+ 5b6:	0f 91       	pop	r16
+ 5b8:	08 95       	ret
 
-000003b8 <ioport_configure_port_pin>:
+000005ba <ioport_configure_port_pin>:
 #include "ioport_compat.h"
 
 #if defined(IOPORT_XMEGA_COMPAT)
 void ioport_configure_port_pin(void *port, pin_mask_t pin_mask,
 		port_pin_flags_t flags)
 {
- 3b8:	cf 93       	push	r28
- 3ba:	df 93       	push	r29
- 3bc:	fc 01       	movw	r30, r24
- 3be:	70 96       	adiw	r30, 0x10	; 16
+ 5ba:	cf 93       	push	r28
+ 5bc:	df 93       	push	r29
+ 5be:	fc 01       	movw	r30, r24
+ 5c0:	70 96       	adiw	r30, 0x10	; 16
 	uint8_t pin;
 
 	for (pin = 0; pin < 8; pin++) {
 		if (pin_mask & (1 << pin)) {
 			*((uint8_t *)port + PORT_PIN0CTRL + pin) = flags >> 8;
- 3c0:	20 e0       	ldi	r18, 0x00	; 0
- 3c2:	30 e0       	ldi	r19, 0x00	; 0
+ 5c2:	20 e0       	ldi	r18, 0x00	; 0
+ 5c4:	30 e0       	ldi	r19, 0x00	; 0
 		port_pin_flags_t flags)
 {
 	uint8_t pin;
 
 	for (pin = 0; pin < 8; pin++) {
 		if (pin_mask & (1 << pin)) {
- 3c4:	c6 2f       	mov	r28, r22
- 3c6:	d0 e0       	ldi	r29, 0x00	; 0
- 3c8:	de 01       	movw	r26, r28
- 3ca:	02 2e       	mov	r0, r18
- 3cc:	02 c0       	rjmp	.+4      	; 0x3d2 <ioport_configure_port_pin+0x1a>
- 3ce:	b5 95       	asr	r27
- 3d0:	a7 95       	ror	r26
- 3d2:	0a 94       	dec	r0
- 3d4:	e2 f7       	brpl	.-8      	; 0x3ce <ioport_configure_port_pin+0x16>
- 3d6:	a0 fd       	sbrc	r26, 0
+ 5c6:	c6 2f       	mov	r28, r22
+ 5c8:	d0 e0       	ldi	r29, 0x00	; 0
+ 5ca:	de 01       	movw	r26, r28
+ 5cc:	02 2e       	mov	r0, r18
+ 5ce:	02 c0       	rjmp	.+4      	; 0x5d4 <ioport_configure_port_pin+0x1a>
+ 5d0:	b5 95       	asr	r27
+ 5d2:	a7 95       	ror	r26
+ 5d4:	0a 94       	dec	r0
+ 5d6:	e2 f7       	brpl	.-8      	; 0x5d0 <ioport_configure_port_pin+0x16>
+ 5d8:	a0 fd       	sbrc	r26, 0
 			*((uint8_t *)port + PORT_PIN0CTRL + pin) = flags >> 8;
- 3d8:	50 83       	st	Z, r21
- 3da:	2f 5f       	subi	r18, 0xFF	; 255
- 3dc:	3f 4f       	sbci	r19, 0xFF	; 255
- 3de:	31 96       	adiw	r30, 0x01	; 1
+ 5da:	50 83       	st	Z, r21
+ 5dc:	2f 5f       	subi	r18, 0xFF	; 255
+ 5de:	3f 4f       	sbci	r19, 0xFF	; 255
+ 5e0:	31 96       	adiw	r30, 0x01	; 1
 void ioport_configure_port_pin(void *port, pin_mask_t pin_mask,
 		port_pin_flags_t flags)
 {
 	uint8_t pin;
 
 	for (pin = 0; pin < 8; pin++) {
- 3e0:	28 30       	cpi	r18, 0x08	; 8
- 3e2:	31 05       	cpc	r19, r1
- 3e4:	89 f7       	brne	.-30     	; 0x3c8 <ioport_configure_port_pin+0x10>
+ 5e2:	28 30       	cpi	r18, 0x08	; 8
+ 5e4:	31 05       	cpc	r19, r1
+ 5e6:	89 f7       	brne	.-30     	; 0x5ca <ioport_configure_port_pin+0x10>
 		if (pin_mask & (1 << pin)) {
 			*((uint8_t *)port + PORT_PIN0CTRL + pin) = flags >> 8;
 		}
 	}
 	/* Select direction and initial pin state */
 	if (flags & IOPORT_DIR_OUTPUT) {
- 3e6:	40 ff       	sbrs	r20, 0
- 3e8:	0a c0       	rjmp	.+20     	; 0x3fe <ioport_configure_port_pin+0x46>
+ 5e8:	40 ff       	sbrs	r20, 0
+ 5ea:	0a c0       	rjmp	.+20     	; 0x600 <ioport_configure_port_pin+0x46>
 		if (flags & IOPORT_INIT_HIGH) {
- 3ea:	41 ff       	sbrs	r20, 1
- 3ec:	03 c0       	rjmp	.+6      	; 0x3f4 <ioport_configure_port_pin+0x3c>
+ 5ec:	41 ff       	sbrs	r20, 1
+ 5ee:	03 c0       	rjmp	.+6      	; 0x5f6 <ioport_configure_port_pin+0x3c>
 			*((uint8_t *)port + PORT_OUTSET) = pin_mask;
- 3ee:	fc 01       	movw	r30, r24
- 3f0:	65 83       	std	Z+5, r22	; 0x05
- 3f2:	02 c0       	rjmp	.+4      	; 0x3f8 <ioport_configure_port_pin+0x40>
+ 5f0:	fc 01       	movw	r30, r24
+ 5f2:	65 83       	std	Z+5, r22	; 0x05
+ 5f4:	02 c0       	rjmp	.+4      	; 0x5fa <ioport_configure_port_pin+0x40>
 		} else {
 			*((uint8_t *)port + PORT_OUTCLR) = pin_mask;
- 3f4:	fc 01       	movw	r30, r24
- 3f6:	66 83       	std	Z+6, r22	; 0x06
+ 5f6:	fc 01       	movw	r30, r24
+ 5f8:	66 83       	std	Z+6, r22	; 0x06
 		}
 
 		*((uint8_t *)port + PORT_DIRSET) = pin_mask;
- 3f8:	fc 01       	movw	r30, r24
- 3fa:	61 83       	std	Z+1, r22	; 0x01
- 3fc:	02 c0       	rjmp	.+4      	; 0x402 <__LOCK_REGION_LENGTH__+0x2>
+ 5fa:	fc 01       	movw	r30, r24
+ 5fc:	61 83       	std	Z+1, r22	; 0x01
+ 5fe:	02 c0       	rjmp	.+4      	; 0x604 <ioport_configure_port_pin+0x4a>
 	} else {
 		*((uint8_t *)port + PORT_DIRCLR) = pin_mask;
- 3fe:	fc 01       	movw	r30, r24
- 400:	62 83       	std	Z+2, r22	; 0x02
+ 600:	fc 01       	movw	r30, r24
+ 602:	62 83       	std	Z+2, r22	; 0x02
 	}
 }
- 402:	df 91       	pop	r29
- 404:	cf 91       	pop	r28
- 406:	08 95       	ret
+ 604:	df 91       	pop	r29
+ 606:	cf 91       	pop	r28
+ 608:	08 95       	ret
 
-00000408 <board_init>:
+0000060a <board_init>:
  * \param flags Bitmask of flags specifying additional configuration
  * parameters.
  */
 static inline void ioport_configure_pin(port_pin_t pin, port_pin_flags_t flags)
 {
 	ioport_configure_port_pin(arch_ioport_pin_to_base(pin),
- 408:	43 e0       	ldi	r20, 0x03	; 3
- 40a:	50 e0       	ldi	r21, 0x00	; 0
- 40c:	68 e0       	ldi	r22, 0x08	; 8
- 40e:	80 ec       	ldi	r24, 0xC0	; 192
- 410:	97 e0       	ldi	r25, 0x07	; 7
- 412:	d2 df       	rcall	.-92     	; 0x3b8 <ioport_configure_port_pin>
- 414:	40 e0       	ldi	r20, 0x00	; 0
- 416:	58 e1       	ldi	r21, 0x18	; 24
- 418:	64 e0       	ldi	r22, 0x04	; 4
- 41a:	80 ec       	ldi	r24, 0xC0	; 192
- 41c:	97 e0       	ldi	r25, 0x07	; 7
- 41e:	cc cf       	rjmp	.-104    	; 0x3b8 <ioport_configure_port_pin>
- 420:	08 95       	ret
+ 60a:	43 e0       	ldi	r20, 0x03	; 3
+ 60c:	50 e0       	ldi	r21, 0x00	; 0
+ 60e:	68 e0       	ldi	r22, 0x08	; 8
+ 610:	80 ec       	ldi	r24, 0xC0	; 192
+ 612:	97 e0       	ldi	r25, 0x07	; 7
+ 614:	d2 df       	rcall	.-92     	; 0x5ba <ioport_configure_port_pin>
+ 616:	40 e0       	ldi	r20, 0x00	; 0
+ 618:	58 e1       	ldi	r21, 0x18	; 24
+ 61a:	64 e0       	ldi	r22, 0x04	; 4
+ 61c:	80 ec       	ldi	r24, 0xC0	; 192
+ 61e:	97 e0       	ldi	r25, 0x07	; 7
+ 620:	cc cf       	rjmp	.-104    	; 0x5ba <ioport_configure_port_pin>
+ 622:	08 95       	ret
 
-00000422 <twim_interrupt_handler>:
+00000624 <twim_interrupt_handler>:
  * \brief Common TWI master interrupt service routine.
  *
  *  Check current status and calls the appropriate handler.
  */
 static void twim_interrupt_handler(void)
 {
- 422:	cf 93       	push	r28
- 424:	df 93       	push	r29
+ 624:	cf 93       	push	r28
+ 626:	df 93       	push	r29
 	uint8_t const master_status = transfer.bus->MASTER.STATUS;
- 426:	e0 91 0a 20 	lds	r30, 0x200A	; 0x80200a <transfer>
- 42a:	f0 91 0b 20 	lds	r31, 0x200B	; 0x80200b <transfer+0x1>
- 42e:	84 81       	ldd	r24, Z+4	; 0x04
+ 628:	e0 91 17 20 	lds	r30, 0x2017	; 0x802017 <transfer>
+ 62c:	f0 91 18 20 	lds	r31, 0x2018	; 0x802018 <transfer+0x1>
+ 630:	84 81       	ldd	r24, Z+4	; 0x04
 
 	if (master_status & TWI_MASTER_ARBLOST_bm) {
- 430:	83 ff       	sbrs	r24, 3
- 432:	08 c0       	rjmp	.+16     	; 0x444 <twim_interrupt_handler+0x22>
+ 632:	83 ff       	sbrs	r24, 3
+ 634:	08 c0       	rjmp	.+16     	; 0x646 <twim_interrupt_handler+0x22>
 
 		transfer.bus->MASTER.STATUS = master_status | TWI_MASTER_ARBLOST_bm;
- 434:	88 60       	ori	r24, 0x08	; 8
- 436:	84 83       	std	Z+4, r24	; 0x04
+ 636:	88 60       	ori	r24, 0x08	; 8
+ 638:	84 83       	std	Z+4, r24	; 0x04
 		transfer.bus->MASTER.CTRLC  = TWI_MASTER_CMD_STOP_gc;
- 438:	83 e0       	ldi	r24, 0x03	; 3
- 43a:	83 83       	std	Z+3, r24	; 0x03
+ 63a:	83 e0       	ldi	r24, 0x03	; 3
+ 63c:	83 83       	std	Z+3, r24	; 0x03
 		transfer.status = ERR_BUSY;
- 43c:	86 ef       	ldi	r24, 0xF6	; 246
- 43e:	80 93 14 20 	sts	0x2014, r24	; 0x802014 <transfer+0xa>
- 442:	83 c0       	rjmp	.+262    	; 0x54a <twim_interrupt_handler+0x128>
- 444:	98 2f       	mov	r25, r24
- 446:	94 71       	andi	r25, 0x14	; 20
+ 63e:	86 ef       	ldi	r24, 0xF6	; 246
+ 640:	80 93 21 20 	sts	0x2021, r24	; 0x802021 <transfer+0xa>
+ 644:	83 c0       	rjmp	.+262    	; 0x74c <twim_interrupt_handler+0x128>
+ 646:	98 2f       	mov	r25, r24
+ 648:	94 71       	andi	r25, 0x14	; 20
 
 	} else if ((master_status & TWI_MASTER_BUSERR_bm) ||
- 448:	31 f0       	breq	.+12     	; 0x456 <twim_interrupt_handler+0x34>
+ 64a:	31 f0       	breq	.+12     	; 0x658 <twim_interrupt_handler+0x34>
 		(master_status & TWI_MASTER_RXACK_bm)) {
 
 		transfer.bus->MASTER.CTRLC = TWI_MASTER_CMD_STOP_gc;
- 44a:	83 e0       	ldi	r24, 0x03	; 3
- 44c:	83 83       	std	Z+3, r24	; 0x03
+ 64c:	83 e0       	ldi	r24, 0x03	; 3
+ 64e:	83 83       	std	Z+3, r24	; 0x03
 		transfer.status = ERR_IO_ERROR;
- 44e:	8f ef       	ldi	r24, 0xFF	; 255
- 450:	80 93 14 20 	sts	0x2014, r24	; 0x802014 <transfer+0xa>
- 454:	7a c0       	rjmp	.+244    	; 0x54a <twim_interrupt_handler+0x128>
+ 650:	8f ef       	ldi	r24, 0xFF	; 255
+ 652:	80 93 21 20 	sts	0x2021, r24	; 0x802021 <transfer+0xa>
+ 656:	7a c0       	rjmp	.+244    	; 0x74c <twim_interrupt_handler+0x128>
 
 	} else if (master_status & TWI_MASTER_WIF_bm) {
- 456:	86 ff       	sbrs	r24, 6
- 458:	43 c0       	rjmp	.+134    	; 0x4e0 <twim_interrupt_handler+0xbe>
+ 658:	86 ff       	sbrs	r24, 6
+ 65a:	43 c0       	rjmp	.+134    	; 0x6e2 <twim_interrupt_handler+0xbe>
  *  Handles TWI transactions (master write) and responses to (N)ACK.
  */
 static inline void twim_write_handler(void)
 {
 	TWI_t * const         bus = transfer.bus;
 	twi_package_t * const pkg = transfer.pkg;
- 45a:	ca e0       	ldi	r28, 0x0A	; 10
- 45c:	d0 e2       	ldi	r29, 0x20	; 32
- 45e:	aa 81       	ldd	r26, Y+2	; 0x02
- 460:	bb 81       	ldd	r27, Y+3	; 0x03
+ 65c:	c7 e1       	ldi	r28, 0x17	; 23
+ 65e:	d0 e2       	ldi	r29, 0x20	; 32
+ 660:	aa 81       	ldd	r26, Y+2	; 0x02
+ 662:	bb 81       	ldd	r27, Y+3	; 0x03
 
 	if (transfer.addr_count < pkg->addr_length) {
- 462:	8c 81       	ldd	r24, Y+4	; 0x04
- 464:	9d 81       	ldd	r25, Y+5	; 0x05
- 466:	14 96       	adiw	r26, 0x04	; 4
- 468:	2d 91       	ld	r18, X+
- 46a:	3c 91       	ld	r19, X
- 46c:	15 97       	sbiw	r26, 0x05	; 5
- 46e:	82 17       	cp	r24, r18
- 470:	93 07       	cpc	r25, r19
- 472:	6c f4       	brge	.+26     	; 0x48e <twim_interrupt_handler+0x6c>
+ 664:	8c 81       	ldd	r24, Y+4	; 0x04
+ 666:	9d 81       	ldd	r25, Y+5	; 0x05
+ 668:	14 96       	adiw	r26, 0x04	; 4
+ 66a:	2d 91       	ld	r18, X+
+ 66c:	3c 91       	ld	r19, X
+ 66e:	15 97       	sbiw	r26, 0x05	; 5
+ 670:	82 17       	cp	r24, r18
+ 672:	93 07       	cpc	r25, r19
+ 674:	6c f4       	brge	.+26     	; 0x690 <twim_interrupt_handler+0x6c>
 
 		const uint8_t * const data = pkg->addr;
 		bus->MASTER.DATA = data[transfer.addr_count++];
- 474:	9c 01       	movw	r18, r24
- 476:	2f 5f       	subi	r18, 0xFF	; 255
- 478:	3f 4f       	sbci	r19, 0xFF	; 255
- 47a:	20 93 0e 20 	sts	0x200E, r18	; 0x80200e <transfer+0x4>
- 47e:	30 93 0f 20 	sts	0x200F, r19	; 0x80200f <transfer+0x5>
- 482:	a8 0f       	add	r26, r24
- 484:	b9 1f       	adc	r27, r25
- 486:	11 96       	adiw	r26, 0x01	; 1
- 488:	8c 91       	ld	r24, X
- 48a:	87 83       	std	Z+7, r24	; 0x07
- 48c:	5e c0       	rjmp	.+188    	; 0x54a <twim_interrupt_handler+0x128>
+ 676:	9c 01       	movw	r18, r24
+ 678:	2f 5f       	subi	r18, 0xFF	; 255
+ 67a:	3f 4f       	sbci	r19, 0xFF	; 255
+ 67c:	20 93 1b 20 	sts	0x201B, r18	; 0x80201b <transfer+0x4>
+ 680:	30 93 1c 20 	sts	0x201C, r19	; 0x80201c <transfer+0x5>
+ 684:	a8 0f       	add	r26, r24
+ 686:	b9 1f       	adc	r27, r25
+ 688:	11 96       	adiw	r26, 0x01	; 1
+ 68a:	8c 91       	ld	r24, X
+ 68c:	87 83       	std	Z+7, r24	; 0x07
+ 68e:	5e c0       	rjmp	.+188    	; 0x74c <twim_interrupt_handler+0x128>
 
 	} else if (transfer.data_count < pkg->length) {
- 48e:	80 91 10 20 	lds	r24, 0x2010	; 0x802010 <transfer+0x6>
- 492:	90 91 11 20 	lds	r25, 0x2011	; 0x802011 <transfer+0x7>
- 496:	18 96       	adiw	r26, 0x08	; 8
- 498:	2d 91       	ld	r18, X+
- 49a:	3c 91       	ld	r19, X
- 49c:	19 97       	sbiw	r26, 0x09	; 9
- 49e:	82 17       	cp	r24, r18
- 4a0:	93 07       	cpc	r25, r19
- 4a2:	c8 f4       	brcc	.+50     	; 0x4d6 <twim_interrupt_handler+0xb4>
+ 690:	80 91 1d 20 	lds	r24, 0x201D	; 0x80201d <transfer+0x6>
+ 694:	90 91 1e 20 	lds	r25, 0x201E	; 0x80201e <transfer+0x7>
+ 698:	18 96       	adiw	r26, 0x08	; 8
+ 69a:	2d 91       	ld	r18, X+
+ 69c:	3c 91       	ld	r19, X
+ 69e:	19 97       	sbiw	r26, 0x09	; 9
+ 6a0:	82 17       	cp	r24, r18
+ 6a2:	93 07       	cpc	r25, r19
+ 6a4:	c8 f4       	brcc	.+50     	; 0x6d8 <twim_interrupt_handler+0xb4>
 
 		if (transfer.read) {
- 4a4:	20 91 12 20 	lds	r18, 0x2012	; 0x802012 <transfer+0x8>
- 4a8:	22 23       	and	r18, r18
- 4aa:	21 f0       	breq	.+8      	; 0x4b4 <twim_interrupt_handler+0x92>
+ 6a6:	20 91 1f 20 	lds	r18, 0x201F	; 0x80201f <transfer+0x8>
+ 6aa:	22 23       	and	r18, r18
+ 6ac:	21 f0       	breq	.+8      	; 0x6b6 <twim_interrupt_handler+0x92>
 
 			/* Send repeated START condition (Address|R/W=1). */
 
 			bus->MASTER.ADDR |= 0x01;
- 4ac:	86 81       	ldd	r24, Z+6	; 0x06
- 4ae:	81 60       	ori	r24, 0x01	; 1
- 4b0:	86 83       	std	Z+6, r24	; 0x06
- 4b2:	4b c0       	rjmp	.+150    	; 0x54a <twim_interrupt_handler+0x128>
+ 6ae:	86 81       	ldd	r24, Z+6	; 0x06
+ 6b0:	81 60       	ori	r24, 0x01	; 1
+ 6b2:	86 83       	std	Z+6, r24	; 0x06
+ 6b4:	4b c0       	rjmp	.+150    	; 0x74c <twim_interrupt_handler+0x128>
 
 		} else {
 			const uint8_t * const data = pkg->buffer;
- 4b4:	16 96       	adiw	r26, 0x06	; 6
- 4b6:	2d 91       	ld	r18, X+
- 4b8:	3c 91       	ld	r19, X
- 4ba:	17 97       	sbiw	r26, 0x07	; 7
+ 6b6:	16 96       	adiw	r26, 0x06	; 6
+ 6b8:	2d 91       	ld	r18, X+
+ 6ba:	3c 91       	ld	r19, X
+ 6bc:	17 97       	sbiw	r26, 0x07	; 7
 			bus->MASTER.DATA = data[transfer.data_count++];
- 4bc:	ac 01       	movw	r20, r24
- 4be:	4f 5f       	subi	r20, 0xFF	; 255
- 4c0:	5f 4f       	sbci	r21, 0xFF	; 255
- 4c2:	40 93 10 20 	sts	0x2010, r20	; 0x802010 <transfer+0x6>
- 4c6:	50 93 11 20 	sts	0x2011, r21	; 0x802011 <transfer+0x7>
- 4ca:	d9 01       	movw	r26, r18
- 4cc:	a8 0f       	add	r26, r24
- 4ce:	b9 1f       	adc	r27, r25
- 4d0:	8c 91       	ld	r24, X
- 4d2:	87 83       	std	Z+7, r24	; 0x07
- 4d4:	3a c0       	rjmp	.+116    	; 0x54a <twim_interrupt_handler+0x128>
+ 6be:	ac 01       	movw	r20, r24
+ 6c0:	4f 5f       	subi	r20, 0xFF	; 255
+ 6c2:	5f 4f       	sbci	r21, 0xFF	; 255
+ 6c4:	40 93 1d 20 	sts	0x201D, r20	; 0x80201d <transfer+0x6>
+ 6c8:	50 93 1e 20 	sts	0x201E, r21	; 0x80201e <transfer+0x7>
+ 6cc:	d9 01       	movw	r26, r18
+ 6ce:	a8 0f       	add	r26, r24
+ 6d0:	b9 1f       	adc	r27, r25
+ 6d2:	8c 91       	ld	r24, X
+ 6d4:	87 83       	std	Z+7, r24	; 0x07
+ 6d6:	3a c0       	rjmp	.+116    	; 0x74c <twim_interrupt_handler+0x128>
 
 	} else {
 
 		/* Send STOP condition to complete the transaction. */
 
 		bus->MASTER.CTRLC = TWI_MASTER_CMD_STOP_gc;
- 4d6:	83 e0       	ldi	r24, 0x03	; 3
- 4d8:	83 83       	std	Z+3, r24	; 0x03
+ 6d8:	83 e0       	ldi	r24, 0x03	; 3
+ 6da:	83 83       	std	Z+3, r24	; 0x03
 		transfer.status = STATUS_OK;
- 4da:	10 92 14 20 	sts	0x2014, r1	; 0x802014 <transfer+0xa>
- 4de:	35 c0       	rjmp	.+106    	; 0x54a <twim_interrupt_handler+0x128>
+ 6dc:	10 92 21 20 	sts	0x2021, r1	; 0x802021 <transfer+0xa>
+ 6e0:	35 c0       	rjmp	.+106    	; 0x74c <twim_interrupt_handler+0x128>
 
 	} else if (master_status & TWI_MASTER_WIF_bm) {
 
 		twim_write_handler();
 
 	} else if (master_status & TWI_MASTER_RIF_bm) {
- 4e0:	88 23       	and	r24, r24
- 4e2:	84 f5       	brge	.+96     	; 0x544 <twim_interrupt_handler+0x122>
+ 6e2:	88 23       	and	r24, r24
+ 6e4:	84 f5       	brge	.+96     	; 0x746 <twim_interrupt_handler+0x122>
  *  reading bytes from the TWI slave.
  */
 static inline void twim_read_handler(void)
 {
 	TWI_t * const         bus = transfer.bus;
 	twi_package_t * const pkg = transfer.pkg;
- 4e4:	aa e0       	ldi	r26, 0x0A	; 10
- 4e6:	b0 e2       	ldi	r27, 0x20	; 32
- 4e8:	12 96       	adiw	r26, 0x02	; 2
- 4ea:	cd 91       	ld	r28, X+
- 4ec:	dc 91       	ld	r29, X
- 4ee:	13 97       	sbiw	r26, 0x03	; 3
+ 6e6:	a7 e1       	ldi	r26, 0x17	; 23
+ 6e8:	b0 e2       	ldi	r27, 0x20	; 32
+ 6ea:	12 96       	adiw	r26, 0x02	; 2
+ 6ec:	cd 91       	ld	r28, X+
+ 6ee:	dc 91       	ld	r29, X
+ 6f0:	13 97       	sbiw	r26, 0x03	; 3
 
 	if (transfer.data_count < pkg->length) {
- 4f0:	16 96       	adiw	r26, 0x06	; 6
- 4f2:	8d 91       	ld	r24, X+
- 4f4:	9c 91       	ld	r25, X
- 4f6:	17 97       	sbiw	r26, 0x07	; 7
- 4f8:	28 85       	ldd	r18, Y+8	; 0x08
- 4fa:	39 85       	ldd	r19, Y+9	; 0x09
- 4fc:	82 17       	cp	r24, r18
- 4fe:	93 07       	cpc	r25, r19
- 500:	d8 f4       	brcc	.+54     	; 0x538 <twim_interrupt_handler+0x116>
+ 6f2:	16 96       	adiw	r26, 0x06	; 6
+ 6f4:	8d 91       	ld	r24, X+
+ 6f6:	9c 91       	ld	r25, X
+ 6f8:	17 97       	sbiw	r26, 0x07	; 7
+ 6fa:	28 85       	ldd	r18, Y+8	; 0x08
+ 6fc:	39 85       	ldd	r19, Y+9	; 0x09
+ 6fe:	82 17       	cp	r24, r18
+ 700:	93 07       	cpc	r25, r19
+ 702:	d8 f4       	brcc	.+54     	; 0x73a <twim_interrupt_handler+0x116>
 
 		uint8_t * const data = pkg->buffer;
- 502:	6e 81       	ldd	r22, Y+6	; 0x06
- 504:	7f 81       	ldd	r23, Y+7	; 0x07
+ 704:	6e 81       	ldd	r22, Y+6	; 0x06
+ 706:	7f 81       	ldd	r23, Y+7	; 0x07
 		data[transfer.data_count++] = bus->MASTER.DATA;
- 506:	9c 01       	movw	r18, r24
- 508:	2f 5f       	subi	r18, 0xFF	; 255
- 50a:	3f 4f       	sbci	r19, 0xFF	; 255
- 50c:	20 93 10 20 	sts	0x2010, r18	; 0x802010 <transfer+0x6>
- 510:	30 93 11 20 	sts	0x2011, r19	; 0x802011 <transfer+0x7>
- 514:	47 81       	ldd	r20, Z+7	; 0x07
- 516:	db 01       	movw	r26, r22
- 518:	a8 0f       	add	r26, r24
- 51a:	b9 1f       	adc	r27, r25
- 51c:	4c 93       	st	X, r20
+ 708:	9c 01       	movw	r18, r24
+ 70a:	2f 5f       	subi	r18, 0xFF	; 255
+ 70c:	3f 4f       	sbci	r19, 0xFF	; 255
+ 70e:	20 93 1d 20 	sts	0x201D, r18	; 0x80201d <transfer+0x6>
+ 712:	30 93 1e 20 	sts	0x201E, r19	; 0x80201e <transfer+0x7>
+ 716:	47 81       	ldd	r20, Z+7	; 0x07
+ 718:	db 01       	movw	r26, r22
+ 71a:	a8 0f       	add	r26, r24
+ 71c:	b9 1f       	adc	r27, r25
+ 71e:	4c 93       	st	X, r20
 
 		/* If there is more to read, issue ACK and start a byte read.
 		 * Otherwise, issue NACK and STOP to complete the transaction.
 		 */
 		if (transfer.data_count < pkg->length) {
- 51e:	88 85       	ldd	r24, Y+8	; 0x08
- 520:	99 85       	ldd	r25, Y+9	; 0x09
- 522:	28 17       	cp	r18, r24
- 524:	39 07       	cpc	r19, r25
- 526:	18 f4       	brcc	.+6      	; 0x52e <twim_interrupt_handler+0x10c>
+ 720:	88 85       	ldd	r24, Y+8	; 0x08
+ 722:	99 85       	ldd	r25, Y+9	; 0x09
+ 724:	28 17       	cp	r18, r24
+ 726:	39 07       	cpc	r19, r25
+ 728:	18 f4       	brcc	.+6      	; 0x730 <twim_interrupt_handler+0x10c>
 
 			bus->MASTER.CTRLC = TWI_MASTER_CMD_RECVTRANS_gc;
- 528:	82 e0       	ldi	r24, 0x02	; 2
- 52a:	83 83       	std	Z+3, r24	; 0x03
- 52c:	0e c0       	rjmp	.+28     	; 0x54a <twim_interrupt_handler+0x128>
+ 72a:	82 e0       	ldi	r24, 0x02	; 2
+ 72c:	83 83       	std	Z+3, r24	; 0x03
+ 72e:	0e c0       	rjmp	.+28     	; 0x74c <twim_interrupt_handler+0x128>
 
 		} else {
 
 			bus->MASTER.CTRLC = TWI_MASTER_ACKACT_bm | TWI_MASTER_CMD_STOP_gc;
- 52e:	87 e0       	ldi	r24, 0x07	; 7
- 530:	83 83       	std	Z+3, r24	; 0x03
+ 730:	87 e0       	ldi	r24, 0x07	; 7
+ 732:	83 83       	std	Z+3, r24	; 0x03
 			transfer.status = STATUS_OK;
- 532:	10 92 14 20 	sts	0x2014, r1	; 0x802014 <transfer+0xa>
- 536:	09 c0       	rjmp	.+18     	; 0x54a <twim_interrupt_handler+0x128>
+ 734:	10 92 21 20 	sts	0x2021, r1	; 0x802021 <transfer+0xa>
+ 738:	09 c0       	rjmp	.+18     	; 0x74c <twim_interrupt_handler+0x128>
 
 	} else {
 
 		/* Issue STOP and buffer overflow condition. */
 
 		bus->MASTER.CTRLC = TWI_MASTER_CMD_STOP_gc;
- 538:	83 e0       	ldi	r24, 0x03	; 3
- 53a:	83 83       	std	Z+3, r24	; 0x03
+ 73a:	83 e0       	ldi	r24, 0x03	; 3
+ 73c:	83 83       	std	Z+3, r24	; 0x03
 		transfer.status = ERR_NO_MEMORY;
- 53c:	89 ef       	ldi	r24, 0xF9	; 249
- 53e:	80 93 14 20 	sts	0x2014, r24	; 0x802014 <transfer+0xa>
- 542:	03 c0       	rjmp	.+6      	; 0x54a <twim_interrupt_handler+0x128>
+ 73e:	89 ef       	ldi	r24, 0xF9	; 249
+ 740:	80 93 21 20 	sts	0x2021, r24	; 0x802021 <transfer+0xa>
+ 744:	03 c0       	rjmp	.+6      	; 0x74c <twim_interrupt_handler+0x128>
 
 		twim_read_handler();
 
 	} else {
 
 		transfer.status = ERR_PROTOCOL;
- 544:	8b ef       	ldi	r24, 0xFB	; 251
- 546:	80 93 14 20 	sts	0x2014, r24	; 0x802014 <transfer+0xa>
+ 746:	8b ef       	ldi	r24, 0xFB	; 251
+ 748:	80 93 21 20 	sts	0x2021, r24	; 0x802021 <transfer+0xa>
 	}
 }
- 54a:	df 91       	pop	r29
- 54c:	cf 91       	pop	r28
- 54e:	08 95       	ret
+ 74c:	df 91       	pop	r29
+ 74e:	cf 91       	pop	r28
+ 750:	08 95       	ret
 
-00000550 <__vector_13>:
+00000752 <__vector_13>:
  * parameters specified in the global \c transfer structure.
  */
 static void twim_interrupt_handler(void);
 
 #ifdef TWIC
 ISR(TWIC_TWIM_vect) { twim_interrupt_handler(); }
- 550:	1f 92       	push	r1
- 552:	0f 92       	push	r0
- 554:	0f b6       	in	r0, 0x3f	; 63
- 556:	0f 92       	push	r0
- 558:	11 24       	eor	r1, r1
- 55a:	08 b6       	in	r0, 0x38	; 56
- 55c:	0f 92       	push	r0
- 55e:	18 be       	out	0x38, r1	; 56
- 560:	09 b6       	in	r0, 0x39	; 57
- 562:	0f 92       	push	r0
- 564:	19 be       	out	0x39, r1	; 57
- 566:	0b b6       	in	r0, 0x3b	; 59
- 568:	0f 92       	push	r0
- 56a:	1b be       	out	0x3b, r1	; 59
- 56c:	2f 93       	push	r18
- 56e:	3f 93       	push	r19
- 570:	4f 93       	push	r20
- 572:	5f 93       	push	r21
- 574:	6f 93       	push	r22
- 576:	7f 93       	push	r23
- 578:	8f 93       	push	r24
- 57a:	9f 93       	push	r25
- 57c:	af 93       	push	r26
- 57e:	bf 93       	push	r27
- 580:	ef 93       	push	r30
- 582:	ff 93       	push	r31
- 584:	4e df       	rcall	.-356    	; 0x422 <twim_interrupt_handler>
- 586:	ff 91       	pop	r31
- 588:	ef 91       	pop	r30
- 58a:	bf 91       	pop	r27
- 58c:	af 91       	pop	r26
- 58e:	9f 91       	pop	r25
- 590:	8f 91       	pop	r24
- 592:	7f 91       	pop	r23
- 594:	6f 91       	pop	r22
- 596:	5f 91       	pop	r21
- 598:	4f 91       	pop	r20
- 59a:	3f 91       	pop	r19
- 59c:	2f 91       	pop	r18
- 59e:	0f 90       	pop	r0
- 5a0:	0b be       	out	0x3b, r0	; 59
- 5a2:	0f 90       	pop	r0
- 5a4:	09 be       	out	0x39, r0	; 57
- 5a6:	0f 90       	pop	r0
- 5a8:	08 be       	out	0x38, r0	; 56
- 5aa:	0f 90       	pop	r0
- 5ac:	0f be       	out	0x3f, r0	; 63
- 5ae:	0f 90       	pop	r0
- 5b0:	1f 90       	pop	r1
- 5b2:	18 95       	reti
+ 752:	1f 92       	push	r1
+ 754:	0f 92       	push	r0
+ 756:	0f b6       	in	r0, 0x3f	; 63
+ 758:	0f 92       	push	r0
+ 75a:	11 24       	eor	r1, r1
+ 75c:	08 b6       	in	r0, 0x38	; 56
+ 75e:	0f 92       	push	r0
+ 760:	18 be       	out	0x38, r1	; 56
+ 762:	09 b6       	in	r0, 0x39	; 57
+ 764:	0f 92       	push	r0
+ 766:	19 be       	out	0x39, r1	; 57
+ 768:	0b b6       	in	r0, 0x3b	; 59
+ 76a:	0f 92       	push	r0
+ 76c:	1b be       	out	0x3b, r1	; 59
+ 76e:	2f 93       	push	r18
+ 770:	3f 93       	push	r19
+ 772:	4f 93       	push	r20
+ 774:	5f 93       	push	r21
+ 776:	6f 93       	push	r22
+ 778:	7f 93       	push	r23
+ 77a:	8f 93       	push	r24
+ 77c:	9f 93       	push	r25
+ 77e:	af 93       	push	r26
+ 780:	bf 93       	push	r27
+ 782:	ef 93       	push	r30
+ 784:	ff 93       	push	r31
+ 786:	4e df       	rcall	.-356    	; 0x624 <twim_interrupt_handler>
+ 788:	ff 91       	pop	r31
+ 78a:	ef 91       	pop	r30
+ 78c:	bf 91       	pop	r27
+ 78e:	af 91       	pop	r26
+ 790:	9f 91       	pop	r25
+ 792:	8f 91       	pop	r24
+ 794:	7f 91       	pop	r23
+ 796:	6f 91       	pop	r22
+ 798:	5f 91       	pop	r21
+ 79a:	4f 91       	pop	r20
+ 79c:	3f 91       	pop	r19
+ 79e:	2f 91       	pop	r18
+ 7a0:	0f 90       	pop	r0
+ 7a2:	0b be       	out	0x3b, r0	; 59
+ 7a4:	0f 90       	pop	r0
+ 7a6:	09 be       	out	0x39, r0	; 57
+ 7a8:	0f 90       	pop	r0
+ 7aa:	08 be       	out	0x38, r0	; 56
+ 7ac:	0f 90       	pop	r0
+ 7ae:	0f be       	out	0x3f, r0	; 63
+ 7b0:	0f 90       	pop	r0
+ 7b2:	1f 90       	pop	r1
+ 7b4:	18 95       	reti
 
-000005b4 <__vector_76>:
+000007b6 <__vector_76>:
 #endif
 #ifdef TWID
 ISR(TWID_TWIM_vect) { twim_interrupt_handler(); }
- 5b4:	1f 92       	push	r1
- 5b6:	0f 92       	push	r0
- 5b8:	0f b6       	in	r0, 0x3f	; 63
- 5ba:	0f 92       	push	r0
- 5bc:	11 24       	eor	r1, r1
- 5be:	08 b6       	in	r0, 0x38	; 56
- 5c0:	0f 92       	push	r0
- 5c2:	18 be       	out	0x38, r1	; 56
- 5c4:	09 b6       	in	r0, 0x39	; 57
- 5c6:	0f 92       	push	r0
- 5c8:	19 be       	out	0x39, r1	; 57
- 5ca:	0b b6       	in	r0, 0x3b	; 59
- 5cc:	0f 92       	push	r0
- 5ce:	1b be       	out	0x3b, r1	; 59
- 5d0:	2f 93       	push	r18
- 5d2:	3f 93       	push	r19
- 5d4:	4f 93       	push	r20
- 5d6:	5f 93       	push	r21
- 5d8:	6f 93       	push	r22
- 5da:	7f 93       	push	r23
- 5dc:	8f 93       	push	r24
- 5de:	9f 93       	push	r25
- 5e0:	af 93       	push	r26
- 5e2:	bf 93       	push	r27
- 5e4:	ef 93       	push	r30
- 5e6:	ff 93       	push	r31
- 5e8:	1c df       	rcall	.-456    	; 0x422 <twim_interrupt_handler>
- 5ea:	ff 91       	pop	r31
- 5ec:	ef 91       	pop	r30
- 5ee:	bf 91       	pop	r27
- 5f0:	af 91       	pop	r26
- 5f2:	9f 91       	pop	r25
- 5f4:	8f 91       	pop	r24
- 5f6:	7f 91       	pop	r23
- 5f8:	6f 91       	pop	r22
- 5fa:	5f 91       	pop	r21
- 5fc:	4f 91       	pop	r20
- 5fe:	3f 91       	pop	r19
- 600:	2f 91       	pop	r18
- 602:	0f 90       	pop	r0
- 604:	0b be       	out	0x3b, r0	; 59
- 606:	0f 90       	pop	r0
- 608:	09 be       	out	0x39, r0	; 57
- 60a:	0f 90       	pop	r0
- 60c:	08 be       	out	0x38, r0	; 56
- 60e:	0f 90       	pop	r0
- 610:	0f be       	out	0x3f, r0	; 63
- 612:	0f 90       	pop	r0
- 614:	1f 90       	pop	r1
- 616:	18 95       	reti
+ 7b6:	1f 92       	push	r1
+ 7b8:	0f 92       	push	r0
+ 7ba:	0f b6       	in	r0, 0x3f	; 63
+ 7bc:	0f 92       	push	r0
+ 7be:	11 24       	eor	r1, r1
+ 7c0:	08 b6       	in	r0, 0x38	; 56
+ 7c2:	0f 92       	push	r0
+ 7c4:	18 be       	out	0x38, r1	; 56
+ 7c6:	09 b6       	in	r0, 0x39	; 57
+ 7c8:	0f 92       	push	r0
+ 7ca:	19 be       	out	0x39, r1	; 57
+ 7cc:	0b b6       	in	r0, 0x3b	; 59
+ 7ce:	0f 92       	push	r0
+ 7d0:	1b be       	out	0x3b, r1	; 59
+ 7d2:	2f 93       	push	r18
+ 7d4:	3f 93       	push	r19
+ 7d6:	4f 93       	push	r20
+ 7d8:	5f 93       	push	r21
+ 7da:	6f 93       	push	r22
+ 7dc:	7f 93       	push	r23
+ 7de:	8f 93       	push	r24
+ 7e0:	9f 93       	push	r25
+ 7e2:	af 93       	push	r26
+ 7e4:	bf 93       	push	r27
+ 7e6:	ef 93       	push	r30
+ 7e8:	ff 93       	push	r31
+ 7ea:	1c df       	rcall	.-456    	; 0x624 <twim_interrupt_handler>
+ 7ec:	ff 91       	pop	r31
+ 7ee:	ef 91       	pop	r30
+ 7f0:	bf 91       	pop	r27
+ 7f2:	af 91       	pop	r26
+ 7f4:	9f 91       	pop	r25
+ 7f6:	8f 91       	pop	r24
+ 7f8:	7f 91       	pop	r23
+ 7fa:	6f 91       	pop	r22
+ 7fc:	5f 91       	pop	r21
+ 7fe:	4f 91       	pop	r20
+ 800:	3f 91       	pop	r19
+ 802:	2f 91       	pop	r18
+ 804:	0f 90       	pop	r0
+ 806:	0b be       	out	0x3b, r0	; 59
+ 808:	0f 90       	pop	r0
+ 80a:	09 be       	out	0x39, r0	; 57
+ 80c:	0f 90       	pop	r0
+ 80e:	08 be       	out	0x38, r0	; 56
+ 810:	0f 90       	pop	r0
+ 812:	0f be       	out	0x3f, r0	; 63
+ 814:	0f 90       	pop	r0
+ 816:	1f 90       	pop	r1
+ 818:	18 95       	reti
 
-00000618 <__vector_46>:
+0000081a <__vector_46>:
 #endif
 #ifdef TWIE
 ISR(TWIE_TWIM_vect) { twim_interrupt_handler(); }
- 618:	1f 92       	push	r1
- 61a:	0f 92       	push	r0
- 61c:	0f b6       	in	r0, 0x3f	; 63
- 61e:	0f 92       	push	r0
- 620:	11 24       	eor	r1, r1
- 622:	08 b6       	in	r0, 0x38	; 56
- 624:	0f 92       	push	r0
- 626:	18 be       	out	0x38, r1	; 56
- 628:	09 b6       	in	r0, 0x39	; 57
- 62a:	0f 92       	push	r0
- 62c:	19 be       	out	0x39, r1	; 57
- 62e:	0b b6       	in	r0, 0x3b	; 59
- 630:	0f 92       	push	r0
- 632:	1b be       	out	0x3b, r1	; 59
- 634:	2f 93       	push	r18
- 636:	3f 93       	push	r19
- 638:	4f 93       	push	r20
- 63a:	5f 93       	push	r21
- 63c:	6f 93       	push	r22
- 63e:	7f 93       	push	r23
- 640:	8f 93       	push	r24
- 642:	9f 93       	push	r25
- 644:	af 93       	push	r26
- 646:	bf 93       	push	r27
- 648:	ef 93       	push	r30
- 64a:	ff 93       	push	r31
- 64c:	ea de       	rcall	.-556    	; 0x422 <twim_interrupt_handler>
- 64e:	ff 91       	pop	r31
- 650:	ef 91       	pop	r30
- 652:	bf 91       	pop	r27
- 654:	af 91       	pop	r26
- 656:	9f 91       	pop	r25
- 658:	8f 91       	pop	r24
- 65a:	7f 91       	pop	r23
- 65c:	6f 91       	pop	r22
- 65e:	5f 91       	pop	r21
- 660:	4f 91       	pop	r20
- 662:	3f 91       	pop	r19
- 664:	2f 91       	pop	r18
- 666:	0f 90       	pop	r0
- 668:	0b be       	out	0x3b, r0	; 59
- 66a:	0f 90       	pop	r0
- 66c:	09 be       	out	0x39, r0	; 57
- 66e:	0f 90       	pop	r0
- 670:	08 be       	out	0x38, r0	; 56
- 672:	0f 90       	pop	r0
- 674:	0f be       	out	0x3f, r0	; 63
- 676:	0f 90       	pop	r0
- 678:	1f 90       	pop	r1
- 67a:	18 95       	reti
+ 81a:	1f 92       	push	r1
+ 81c:	0f 92       	push	r0
+ 81e:	0f b6       	in	r0, 0x3f	; 63
+ 820:	0f 92       	push	r0
+ 822:	11 24       	eor	r1, r1
+ 824:	08 b6       	in	r0, 0x38	; 56
+ 826:	0f 92       	push	r0
+ 828:	18 be       	out	0x38, r1	; 56
+ 82a:	09 b6       	in	r0, 0x39	; 57
+ 82c:	0f 92       	push	r0
+ 82e:	19 be       	out	0x39, r1	; 57
+ 830:	0b b6       	in	r0, 0x3b	; 59
+ 832:	0f 92       	push	r0
+ 834:	1b be       	out	0x3b, r1	; 59
+ 836:	2f 93       	push	r18
+ 838:	3f 93       	push	r19
+ 83a:	4f 93       	push	r20
+ 83c:	5f 93       	push	r21
+ 83e:	6f 93       	push	r22
+ 840:	7f 93       	push	r23
+ 842:	8f 93       	push	r24
+ 844:	9f 93       	push	r25
+ 846:	af 93       	push	r26
+ 848:	bf 93       	push	r27
+ 84a:	ef 93       	push	r30
+ 84c:	ff 93       	push	r31
+ 84e:	ea de       	rcall	.-556    	; 0x624 <twim_interrupt_handler>
+ 850:	ff 91       	pop	r31
+ 852:	ef 91       	pop	r30
+ 854:	bf 91       	pop	r27
+ 856:	af 91       	pop	r26
+ 858:	9f 91       	pop	r25
+ 85a:	8f 91       	pop	r24
+ 85c:	7f 91       	pop	r23
+ 85e:	6f 91       	pop	r22
+ 860:	5f 91       	pop	r21
+ 862:	4f 91       	pop	r20
+ 864:	3f 91       	pop	r19
+ 866:	2f 91       	pop	r18
+ 868:	0f 90       	pop	r0
+ 86a:	0b be       	out	0x3b, r0	; 59
+ 86c:	0f 90       	pop	r0
+ 86e:	09 be       	out	0x39, r0	; 57
+ 870:	0f 90       	pop	r0
+ 872:	08 be       	out	0x38, r0	; 56
+ 874:	0f 90       	pop	r0
+ 876:	0f be       	out	0x3f, r0	; 63
+ 878:	0f 90       	pop	r0
+ 87a:	1f 90       	pop	r1
+ 87c:	18 95       	reti
 
-0000067c <__vector_107>:
+0000087e <__vector_107>:
 #endif
 #ifdef TWIF
 ISR(TWIF_TWIM_vect) { twim_interrupt_handler(); }
- 67c:	1f 92       	push	r1
- 67e:	0f 92       	push	r0
- 680:	0f b6       	in	r0, 0x3f	; 63
- 682:	0f 92       	push	r0
- 684:	11 24       	eor	r1, r1
- 686:	08 b6       	in	r0, 0x38	; 56
- 688:	0f 92       	push	r0
- 68a:	18 be       	out	0x38, r1	; 56
- 68c:	09 b6       	in	r0, 0x39	; 57
- 68e:	0f 92       	push	r0
- 690:	19 be       	out	0x39, r1	; 57
- 692:	0b b6       	in	r0, 0x3b	; 59
- 694:	0f 92       	push	r0
- 696:	1b be       	out	0x3b, r1	; 59
- 698:	2f 93       	push	r18
- 69a:	3f 93       	push	r19
- 69c:	4f 93       	push	r20
- 69e:	5f 93       	push	r21
- 6a0:	6f 93       	push	r22
- 6a2:	7f 93       	push	r23
- 6a4:	8f 93       	push	r24
- 6a6:	9f 93       	push	r25
- 6a8:	af 93       	push	r26
- 6aa:	bf 93       	push	r27
- 6ac:	ef 93       	push	r30
- 6ae:	ff 93       	push	r31
- 6b0:	b8 de       	rcall	.-656    	; 0x422 <twim_interrupt_handler>
- 6b2:	ff 91       	pop	r31
- 6b4:	ef 91       	pop	r30
- 6b6:	bf 91       	pop	r27
- 6b8:	af 91       	pop	r26
- 6ba:	9f 91       	pop	r25
- 6bc:	8f 91       	pop	r24
- 6be:	7f 91       	pop	r23
- 6c0:	6f 91       	pop	r22
- 6c2:	5f 91       	pop	r21
- 6c4:	4f 91       	pop	r20
- 6c6:	3f 91       	pop	r19
- 6c8:	2f 91       	pop	r18
- 6ca:	0f 90       	pop	r0
- 6cc:	0b be       	out	0x3b, r0	; 59
- 6ce:	0f 90       	pop	r0
- 6d0:	09 be       	out	0x39, r0	; 57
- 6d2:	0f 90       	pop	r0
- 6d4:	08 be       	out	0x38, r0	; 56
- 6d6:	0f 90       	pop	r0
- 6d8:	0f be       	out	0x3f, r0	; 63
- 6da:	0f 90       	pop	r0
- 6dc:	1f 90       	pop	r1
- 6de:	18 95       	reti
+ 87e:	1f 92       	push	r1
+ 880:	0f 92       	push	r0
+ 882:	0f b6       	in	r0, 0x3f	; 63
+ 884:	0f 92       	push	r0
+ 886:	11 24       	eor	r1, r1
+ 888:	08 b6       	in	r0, 0x38	; 56
+ 88a:	0f 92       	push	r0
+ 88c:	18 be       	out	0x38, r1	; 56
+ 88e:	09 b6       	in	r0, 0x39	; 57
+ 890:	0f 92       	push	r0
+ 892:	19 be       	out	0x39, r1	; 57
+ 894:	0b b6       	in	r0, 0x3b	; 59
+ 896:	0f 92       	push	r0
+ 898:	1b be       	out	0x3b, r1	; 59
+ 89a:	2f 93       	push	r18
+ 89c:	3f 93       	push	r19
+ 89e:	4f 93       	push	r20
+ 8a0:	5f 93       	push	r21
+ 8a2:	6f 93       	push	r22
+ 8a4:	7f 93       	push	r23
+ 8a6:	8f 93       	push	r24
+ 8a8:	9f 93       	push	r25
+ 8aa:	af 93       	push	r26
+ 8ac:	bf 93       	push	r27
+ 8ae:	ef 93       	push	r30
+ 8b0:	ff 93       	push	r31
+ 8b2:	b8 de       	rcall	.-656    	; 0x624 <twim_interrupt_handler>
+ 8b4:	ff 91       	pop	r31
+ 8b6:	ef 91       	pop	r30
+ 8b8:	bf 91       	pop	r27
+ 8ba:	af 91       	pop	r26
+ 8bc:	9f 91       	pop	r25
+ 8be:	8f 91       	pop	r24
+ 8c0:	7f 91       	pop	r23
+ 8c2:	6f 91       	pop	r22
+ 8c4:	5f 91       	pop	r21
+ 8c6:	4f 91       	pop	r20
+ 8c8:	3f 91       	pop	r19
+ 8ca:	2f 91       	pop	r18
+ 8cc:	0f 90       	pop	r0
+ 8ce:	0b be       	out	0x3b, r0	; 59
+ 8d0:	0f 90       	pop	r0
+ 8d2:	09 be       	out	0x39, r0	; 57
+ 8d4:	0f 90       	pop	r0
+ 8d6:	08 be       	out	0x38, r0	; 56
+ 8d8:	0f 90       	pop	r0
+ 8da:	0f be       	out	0x3f, r0	; 63
+ 8dc:	0f 90       	pop	r0
+ 8de:	1f 90       	pop	r1
+ 8e0:	18 95       	reti
 
-000006e0 <twi_master_init>:
+000008e2 <twi_master_init>:
  *                  (see \ref twi_options_t)
  * \retval STATUS_OK        Transaction is successful
  * \retval ERR_INVALID_ARG  Invalid arguments in \c opt.
  */
 status_code_t twi_master_init(TWI_t *twi, const twi_options_t *opt)
 {
- 6e0:	fc 01       	movw	r30, r24
+ 8e2:	fc 01       	movw	r30, r24
 	uint8_t const ctrla = CONF_TWIM_INTLVL | TWI_MASTER_RIEN_bm |
 		TWI_MASTER_WIEN_bm | TWI_MASTER_ENABLE_bm;
 
 	twi->MASTER.BAUD   = opt->speed_reg;
- 6e2:	db 01       	movw	r26, r22
- 6e4:	14 96       	adiw	r26, 0x04	; 4
- 6e6:	8c 91       	ld	r24, X
- 6e8:	85 83       	std	Z+5, r24	; 0x05
+ 8e4:	db 01       	movw	r26, r22
+ 8e6:	14 96       	adiw	r26, 0x04	; 4
+ 8e8:	8c 91       	ld	r24, X
+ 8ea:	85 83       	std	Z+5, r24	; 0x05
 	twi->MASTER.CTRLA  = ctrla;
- 6ea:	88 eb       	ldi	r24, 0xB8	; 184
- 6ec:	81 83       	std	Z+1, r24	; 0x01
+ 8ec:	88 eb       	ldi	r24, 0xB8	; 184
+ 8ee:	81 83       	std	Z+1, r24	; 0x01
 	twi->MASTER.STATUS = TWI_MASTER_BUSSTATE_IDLE_gc;
- 6ee:	81 e0       	ldi	r24, 0x01	; 1
- 6f0:	84 83       	std	Z+4, r24	; 0x04
+ 8f0:	81 e0       	ldi	r24, 0x01	; 1
+ 8f2:	84 83       	std	Z+4, r24	; 0x04
 
 	transfer.locked    = false;
- 6f2:	ea e0       	ldi	r30, 0x0A	; 10
- 6f4:	f0 e2       	ldi	r31, 0x20	; 32
- 6f6:	11 86       	std	Z+9, r1	; 0x09
+ 8f4:	e7 e1       	ldi	r30, 0x17	; 23
+ 8f6:	f0 e2       	ldi	r31, 0x20	; 32
+ 8f8:	11 86       	std	Z+9, r1	; 0x09
 	transfer.status    = STATUS_OK;
- 6f8:	12 86       	std	Z+10, r1	; 0x0a
+ 8fa:	12 86       	std	Z+10, r1	; 0x0a
 
 	/* Enable configured PMIC interrupt level. */
 
 	PMIC.CTRL |= CONF_PMIC_INTLVL;
- 6fa:	e0 ea       	ldi	r30, 0xA0	; 160
- 6fc:	f0 e0       	ldi	r31, 0x00	; 0
- 6fe:	82 81       	ldd	r24, Z+2	; 0x02
- 700:	82 60       	ori	r24, 0x02	; 2
- 702:	82 83       	std	Z+2, r24	; 0x02
+ 8fc:	e0 ea       	ldi	r30, 0xA0	; 160
+ 8fe:	f0 e0       	ldi	r31, 0x00	; 0
+ 900:	82 81       	ldd	r24, Z+2	; 0x02
+ 902:	82 60       	ori	r24, 0x02	; 2
+ 904:	82 83       	std	Z+2, r24	; 0x02
 
 	cpu_irq_enable();
- 704:	78 94       	sei
+ 906:	78 94       	sei
 
 	return STATUS_OK;
 }
- 706:	80 e0       	ldi	r24, 0x00	; 0
- 708:	08 95       	ret
+ 908:	80 e0       	ldi	r24, 0x00	; 0
+ 90a:	08 95       	ret
 
-0000070a <twi_master_transfer>:
+0000090c <twi_master_transfer>:
  *      - ERR_PROTOCOL to indicate an unexpected bus state
  *      - ERR_INVALID_ARG to indicate invalid arguments.
  */
 status_code_t twi_master_transfer(TWI_t *twi,
 		const twi_package_t *package, bool read)
 {
- 70a:	cf 93       	push	r28
- 70c:	df 93       	push	r29
- 70e:	1f 92       	push	r1
- 710:	cd b7       	in	r28, 0x3d	; 61
- 712:	de b7       	in	r29, 0x3e	; 62
- 714:	dc 01       	movw	r26, r24
+ 90c:	cf 93       	push	r28
+ 90e:	df 93       	push	r29
+ 910:	1f 92       	push	r1
+ 912:	cd b7       	in	r28, 0x3d	; 61
+ 914:	de b7       	in	r29, 0x3e	; 62
+ 916:	dc 01       	movw	r26, r24
 	/* Do a sanity check on the arguments. */
 
 	if ((twi == NULL) || (package == NULL)) {
- 716:	89 2b       	or	r24, r25
- 718:	09 f4       	brne	.+2      	; 0x71c <twi_master_transfer+0x12>
- 71a:	4b c0       	rjmp	.+150    	; 0x7b2 <twi_master_transfer+0xa8>
- 71c:	61 15       	cp	r22, r1
- 71e:	71 05       	cpc	r23, r1
- 720:	09 f4       	brne	.+2      	; 0x724 <twi_master_transfer+0x1a>
- 722:	49 c0       	rjmp	.+146    	; 0x7b6 <twi_master_transfer+0xac>
+ 918:	89 2b       	or	r24, r25
+ 91a:	09 f4       	brne	.+2      	; 0x91e <twi_master_transfer+0x12>
+ 91c:	4b c0       	rjmp	.+150    	; 0x9b4 <twi_master_transfer+0xa8>
+ 91e:	61 15       	cp	r22, r1
+ 920:	71 05       	cpc	r23, r1
+ 922:	09 f4       	brne	.+2      	; 0x926 <twi_master_transfer+0x1a>
+ 924:	49 c0       	rjmp	.+146    	; 0x9b8 <twi_master_transfer+0xac>
 		return ERR_INVALID_ARG;
 	}
 
 	/* Initiate a transaction when the bus is ready. */
 
 	status_code_t status = twim_acquire(package->no_wait);
- 724:	fb 01       	movw	r30, r22
- 726:	92 85       	ldd	r25, Z+10	; 0x0a
+ 926:	fb 01       	movw	r30, r22
+ 928:	92 85       	ldd	r25, Z+10	; 0x0a
  *
  * \return STATUS_OK if the bus is acquired, else ERR_BUSY.
  */
 static inline status_code_t twim_acquire(bool no_wait)
 {
 	while (transfer.locked) {
- 728:	80 91 13 20 	lds	r24, 0x2013	; 0x802013 <transfer+0x9>
- 72c:	88 23       	and	r24, r24
- 72e:	19 f0       	breq	.+6      	; 0x736 <twi_master_transfer+0x2c>
+ 92a:	80 91 20 20 	lds	r24, 0x2020	; 0x802020 <transfer+0x9>
+ 92e:	88 23       	and	r24, r24
+ 930:	19 f0       	breq	.+6      	; 0x938 <twi_master_transfer+0x2c>
 
 		if (no_wait) { return ERR_BUSY; }
- 730:	99 23       	and	r25, r25
- 732:	f1 f3       	breq	.-4      	; 0x730 <twi_master_transfer+0x26>
- 734:	42 c0       	rjmp	.+132    	; 0x7ba <twi_master_transfer+0xb0>
+ 932:	99 23       	and	r25, r25
+ 934:	f1 f3       	breq	.-4      	; 0x932 <twi_master_transfer+0x26>
+ 936:	42 c0       	rjmp	.+132    	; 0x9bc <twi_master_transfer+0xb0>
 
 typedef uint8_t irqflags_t;
 
 static inline irqflags_t cpu_irq_save(void)
 {
 	volatile irqflags_t flags = SREG;
- 736:	8f b7       	in	r24, 0x3f	; 63
- 738:	89 83       	std	Y+1, r24	; 0x01
+ 938:	8f b7       	in	r24, 0x3f	; 63
+ 93a:	89 83       	std	Y+1, r24	; 0x01
 	cpu_irq_disable();
- 73a:	f8 94       	cli
+ 93c:	f8 94       	cli
 	return flags;
- 73c:	89 81       	ldd	r24, Y+1	; 0x01
+ 93e:	89 81       	ldd	r24, Y+1	; 0x01
 	}
 
 	irqflags_t const flags = cpu_irq_save ();
 
 	transfer.locked = true;
- 73e:	ea e0       	ldi	r30, 0x0A	; 10
- 740:	f0 e2       	ldi	r31, 0x20	; 32
- 742:	91 e0       	ldi	r25, 0x01	; 1
- 744:	91 87       	std	Z+9, r25	; 0x09
+ 940:	e7 e1       	ldi	r30, 0x17	; 23
+ 942:	f0 e2       	ldi	r31, 0x20	; 32
+ 944:	91 e0       	ldi	r25, 0x01	; 1
+ 946:	91 87       	std	Z+9, r25	; 0x09
 	transfer.status = OPERATION_IN_PROGRESS;
- 746:	90 e8       	ldi	r25, 0x80	; 128
- 748:	92 87       	std	Z+10, r25	; 0x0a
+ 948:	90 e8       	ldi	r25, 0x80	; 128
+ 94a:	92 87       	std	Z+10, r25	; 0x0a
 }
 
 static inline void cpu_irq_restore(irqflags_t flags)
 {
 	barrier();
 	SREG = flags;
- 74a:	8f bf       	out	0x3f, r24	; 63
+ 94c:	8f bf       	out	0x3f, r24	; 63
 	/* Initiate a transaction when the bus is ready. */
 
 	status_code_t status = twim_acquire(package->no_wait);
 
 	if (STATUS_OK == status) {
 		transfer.bus         = (TWI_t *) twi;
- 74c:	a0 83       	st	Z, r26
- 74e:	b1 83       	std	Z+1, r27	; 0x01
+ 94e:	a0 83       	st	Z, r26
+ 950:	b1 83       	std	Z+1, r27	; 0x01
 		transfer.pkg         = (twi_package_t *) package;
- 750:	62 83       	std	Z+2, r22	; 0x02
- 752:	73 83       	std	Z+3, r23	; 0x03
+ 952:	62 83       	std	Z+2, r22	; 0x02
+ 954:	73 83       	std	Z+3, r23	; 0x03
 		transfer.addr_count  = 0;
- 754:	14 82       	std	Z+4, r1	; 0x04
- 756:	15 82       	std	Z+5, r1	; 0x05
+ 956:	14 82       	std	Z+4, r1	; 0x04
+ 958:	15 82       	std	Z+5, r1	; 0x05
 		transfer.data_count  = 0;
- 758:	16 82       	std	Z+6, r1	; 0x06
- 75a:	17 82       	std	Z+7, r1	; 0x07
+ 95a:	16 82       	std	Z+6, r1	; 0x06
+ 95c:	17 82       	std	Z+7, r1	; 0x07
 		transfer.read        = read;
- 75c:	40 87       	std	Z+8, r20	; 0x08
+ 95e:	40 87       	std	Z+8, r20	; 0x08
 
 		uint8_t const chip = (package->chip) << 1;
- 75e:	fb 01       	movw	r30, r22
- 760:	80 81       	ld	r24, Z
- 762:	88 0f       	add	r24, r24
+ 960:	fb 01       	movw	r30, r22
+ 962:	80 81       	ld	r24, Z
+ 964:	88 0f       	add	r24, r24
 
 		if (package->addr_length || (false == read)) {
- 764:	24 81       	ldd	r18, Z+4	; 0x04
- 766:	35 81       	ldd	r19, Z+5	; 0x05
- 768:	23 2b       	or	r18, r19
- 76a:	11 f4       	brne	.+4      	; 0x770 <twi_master_transfer+0x66>
- 76c:	41 11       	cpse	r20, r1
- 76e:	03 c0       	rjmp	.+6      	; 0x776 <twi_master_transfer+0x6c>
+ 966:	24 81       	ldd	r18, Z+4	; 0x04
+ 968:	35 81       	ldd	r19, Z+5	; 0x05
+ 96a:	23 2b       	or	r18, r19
+ 96c:	11 f4       	brne	.+4      	; 0x972 <twi_master_transfer+0x66>
+ 96e:	41 11       	cpse	r20, r1
+ 970:	03 c0       	rjmp	.+6      	; 0x978 <twi_master_transfer+0x6c>
 			transfer.bus->MASTER.ADDR = chip;
- 770:	16 96       	adiw	r26, 0x06	; 6
- 772:	8c 93       	st	X, r24
- 774:	03 c0       	rjmp	.+6      	; 0x77c <twi_master_transfer+0x72>
+ 972:	16 96       	adiw	r26, 0x06	; 6
+ 974:	8c 93       	st	X, r24
+ 976:	03 c0       	rjmp	.+6      	; 0x97e <twi_master_transfer+0x72>
 		} else if (read) {
 			transfer.bus->MASTER.ADDR = chip | 0x01;
- 776:	81 60       	ori	r24, 0x01	; 1
- 778:	16 96       	adiw	r26, 0x06	; 6
- 77a:	8c 93       	st	X, r24
+ 978:	81 60       	ori	r24, 0x01	; 1
+ 97a:	16 96       	adiw	r26, 0x06	; 6
+ 97c:	8c 93       	st	X, r24
 {
 	/* First wait for the driver event handler to indicate something
 	 * other than a transfer in-progress, then test the bus interface
 	 * for an Idle bus state.
 	 */
 	while (OPERATION_IN_PROGRESS == transfer.status);
- 77c:	ea e0       	ldi	r30, 0x0A	; 10
- 77e:	f0 e2       	ldi	r31, 0x20	; 32
- 780:	82 85       	ldd	r24, Z+10	; 0x0a
- 782:	80 38       	cpi	r24, 0x80	; 128
- 784:	e9 f3       	breq	.-6      	; 0x780 <twi_master_transfer+0x76>
+ 97e:	e7 e1       	ldi	r30, 0x17	; 23
+ 980:	f0 e2       	ldi	r31, 0x20	; 32
+ 982:	82 85       	ldd	r24, Z+10	; 0x0a
+ 984:	80 38       	cpi	r24, 0x80	; 128
+ 986:	e9 f3       	breq	.-6      	; 0x982 <twi_master_transfer+0x76>
 
 	while (! twim_idle(transfer.bus)) { barrier(); }
- 786:	e0 91 0a 20 	lds	r30, 0x200A	; 0x80200a <transfer>
- 78a:	f0 91 0b 20 	lds	r31, 0x200B	; 0x80200b <transfer+0x1>
+ 988:	e0 91 17 20 	lds	r30, 0x2017	; 0x802017 <transfer>
+ 98c:	f0 91 18 20 	lds	r31, 0x2018	; 0x802018 <transfer+0x1>
  * \retval  false   The bus is currently busy.
  */
 static inline bool twim_idle (const TWI_t * twi)
 {
 
 	return ((twi->MASTER.STATUS & TWI_MASTER_BUSSTATE_gm)
- 78e:	84 81       	ldd	r24, Z+4	; 0x04
- 790:	83 70       	andi	r24, 0x03	; 3
+ 990:	84 81       	ldd	r24, Z+4	; 0x04
+ 992:	83 70       	andi	r24, 0x03	; 3
 	 * other than a transfer in-progress, then test the bus interface
 	 * for an Idle bus state.
 	 */
 	while (OPERATION_IN_PROGRESS == transfer.status);
 
 	while (! twim_idle(transfer.bus)) { barrier(); }
- 792:	81 30       	cpi	r24, 0x01	; 1
- 794:	49 f0       	breq	.+18     	; 0x7a8 <twi_master_transfer+0x9e>
- 796:	aa e0       	ldi	r26, 0x0A	; 10
- 798:	b0 e2       	ldi	r27, 0x20	; 32
- 79a:	ed 91       	ld	r30, X+
- 79c:	fc 91       	ld	r31, X
- 79e:	11 97       	sbiw	r26, 0x01	; 1
+ 994:	81 30       	cpi	r24, 0x01	; 1
+ 996:	49 f0       	breq	.+18     	; 0x9aa <twi_master_transfer+0x9e>
+ 998:	a7 e1       	ldi	r26, 0x17	; 23
+ 99a:	b0 e2       	ldi	r27, 0x20	; 32
+ 99c:	ed 91       	ld	r30, X+
+ 99e:	fc 91       	ld	r31, X
+ 9a0:	11 97       	sbiw	r26, 0x01	; 1
  * \retval  false   The bus is currently busy.
  */
 static inline bool twim_idle (const TWI_t * twi)
 {
 
 	return ((twi->MASTER.STATUS & TWI_MASTER_BUSSTATE_gm)
- 7a0:	84 81       	ldd	r24, Z+4	; 0x04
- 7a2:	83 70       	andi	r24, 0x03	; 3
+ 9a2:	84 81       	ldd	r24, Z+4	; 0x04
+ 9a4:	83 70       	andi	r24, 0x03	; 3
 	 * other than a transfer in-progress, then test the bus interface
 	 * for an Idle bus state.
 	 */
 	while (OPERATION_IN_PROGRESS == transfer.status);
 
 	while (! twim_idle(transfer.bus)) { barrier(); }
- 7a4:	81 30       	cpi	r24, 0x01	; 1
- 7a6:	c9 f7       	brne	.-14     	; 0x79a <twi_master_transfer+0x90>
+ 9a6:	81 30       	cpi	r24, 0x01	; 1
+ 9a8:	c9 f7       	brne	.-14     	; 0x99c <twi_master_transfer+0x90>
 
 	status_code_t const status = transfer.status;
- 7a8:	ea e0       	ldi	r30, 0x0A	; 10
- 7aa:	f0 e2       	ldi	r31, 0x20	; 32
- 7ac:	82 85       	ldd	r24, Z+10	; 0x0a
+ 9aa:	e7 e1       	ldi	r30, 0x17	; 23
+ 9ac:	f0 e2       	ldi	r31, 0x20	; 32
+ 9ae:	82 85       	ldd	r24, Z+10	; 0x0a
 
 	transfer.locked = false;
- 7ae:	11 86       	std	Z+9, r1	; 0x09
- 7b0:	05 c0       	rjmp	.+10     	; 0x7bc <twi_master_transfer+0xb2>
+ 9b0:	11 86       	std	Z+9, r1	; 0x09
+ 9b2:	05 c0       	rjmp	.+10     	; 0x9be <twi_master_transfer+0xb2>
 		const twi_package_t *package, bool read)
 {
 	/* Do a sanity check on the arguments. */
 
 	if ((twi == NULL) || (package == NULL)) {
 		return ERR_INVALID_ARG;
- 7b2:	88 ef       	ldi	r24, 0xF8	; 248
- 7b4:	03 c0       	rjmp	.+6      	; 0x7bc <twi_master_transfer+0xb2>
- 7b6:	88 ef       	ldi	r24, 0xF8	; 248
- 7b8:	01 c0       	rjmp	.+2      	; 0x7bc <twi_master_transfer+0xb2>
+ 9b4:	88 ef       	ldi	r24, 0xF8	; 248
+ 9b6:	03 c0       	rjmp	.+6      	; 0x9be <twi_master_transfer+0xb2>
+ 9b8:	88 ef       	ldi	r24, 0xF8	; 248
+ 9ba:	01 c0       	rjmp	.+2      	; 0x9be <twi_master_transfer+0xb2>
  */
 static inline status_code_t twim_acquire(bool no_wait)
 {
 	while (transfer.locked) {
 
 		if (no_wait) { return ERR_BUSY; }
- 7ba:	86 ef       	ldi	r24, 0xF6	; 246
+ 9bc:	86 ef       	ldi	r24, 0xF6	; 246
 
 		status = twim_release();
 	}
 
 	return status;
 }
- 7bc:	0f 90       	pop	r0
- 7be:	df 91       	pop	r29
- 7c0:	cf 91       	pop	r28
- 7c2:	08 95       	ret
+ 9be:	0f 90       	pop	r0
+ 9c0:	df 91       	pop	r29
+ 9c2:	cf 91       	pop	r28
+ 9c4:	08 95       	ret
 
-000007c4 <__vector_24>:
-
+000009c6 <setUpI2C>:
 //lock
 uint8_t lock = 0;
 
 
-ISR(SPIC_INT_vect) {
- 7c4:	1f 92       	push	r1
- 7c6:	0f 92       	push	r0
- 7c8:	0f b6       	in	r0, 0x3f	; 63
- 7ca:	0f 92       	push	r0
- 7cc:	11 24       	eor	r1, r1
- 7ce:	08 b6       	in	r0, 0x38	; 56
- 7d0:	0f 92       	push	r0
- 7d2:	18 be       	out	0x38, r1	; 56
- 7d4:	8f 93       	push	r24
-	rx_byte = SPIC.DATA;
- 7d6:	80 91 c3 08 	lds	r24, 0x08C3	; 0x8008c3 <__TEXT_REGION_LENGTH__+0x7008c3>
- 7da:	80 93 24 20 	sts	0x2024, r24	; 0x802024 <rx_byte>
-	spic_flag = 1;
- 7de:	81 e0       	ldi	r24, 0x01	; 1
- 7e0:	80 93 23 20 	sts	0x2023, r24	; 0x802023 <spic_flag>
-}
- 7e4:	8f 91       	pop	r24
- 7e6:	0f 90       	pop	r0
- 7e8:	08 be       	out	0x38, r0	; 56
- 7ea:	0f 90       	pop	r0
- 7ec:	0f be       	out	0x3f, r0	; 63
- 7ee:	0f 90       	pop	r0
- 7f0:	1f 90       	pop	r1
- 7f2:	18 95       	reti
-
-000007f4 <setUpSPIC>:
-
-void setUpSPIC()
-{
-	PORTC.DIR = 0x40;		// MISO output; MOSI, SCK, SS inputs
- 7f4:	80 e4       	ldi	r24, 0x40	; 64
- 7f6:	80 93 40 06 	sts	0x0640, r24	; 0x800640 <__TEXT_REGION_LENGTH__+0x700640>
-	SPIC.CTRL = 0x40;		// slave mode, mode 0
- 7fa:	e0 ec       	ldi	r30, 0xC0	; 192
- 7fc:	f8 e0       	ldi	r31, 0x08	; 8
- 7fe:	80 83       	st	Z, r24
-	SPIC.INTCTRL = 0x03;	// enable interrupts
- 800:	83 e0       	ldi	r24, 0x03	; 3
- 802:	81 83       	std	Z+1, r24	; 0x01
-	PMIC.CTRL = 0x04; // enable high priority interrupts
- 804:	84 e0       	ldi	r24, 0x04	; 4
- 806:	80 93 a2 00 	sts	0x00A2, r24	; 0x8000a2 <__TEXT_REGION_LENGTH__+0x7000a2>
- 80a:	08 95       	ret
-
-0000080c <setUpI2C>:
-}
-
 void setUpI2C()
 {
- 80c:	5f 92       	push	r5
- 80e:	6f 92       	push	r6
- 810:	7f 92       	push	r7
- 812:	8f 92       	push	r8
- 814:	9f 92       	push	r9
- 816:	af 92       	push	r10
- 818:	bf 92       	push	r11
- 81a:	cf 92       	push	r12
- 81c:	df 92       	push	r13
- 81e:	ef 92       	push	r14
- 820:	ff 92       	push	r15
- 822:	0f 93       	push	r16
- 824:	1f 93       	push	r17
- 826:	cf 93       	push	r28
- 828:	df 93       	push	r29
- 82a:	cd b7       	in	r28, 0x3d	; 61
- 82c:	de b7       	in	r29, 0x3e	; 62
- 82e:	ee 97       	sbiw	r28, 0x3e	; 62
- 830:	cd bf       	out	0x3d, r28	; 61
- 832:	de bf       	out	0x3e, r29	; 62
+ 9c6:	5f 92       	push	r5
+ 9c8:	6f 92       	push	r6
+ 9ca:	7f 92       	push	r7
+ 9cc:	8f 92       	push	r8
+ 9ce:	9f 92       	push	r9
+ 9d0:	af 92       	push	r10
+ 9d2:	bf 92       	push	r11
+ 9d4:	cf 92       	push	r12
+ 9d6:	df 92       	push	r13
+ 9d8:	ef 92       	push	r14
+ 9da:	ff 92       	push	r15
+ 9dc:	0f 93       	push	r16
+ 9de:	1f 93       	push	r17
+ 9e0:	cf 93       	push	r28
+ 9e2:	df 93       	push	r29
+ 9e4:	cd b7       	in	r28, 0x3d	; 61
+ 9e6:	de b7       	in	r29, 0x3e	; 62
+ 9e8:	ee 97       	sbiw	r28, 0x3e	; 62
+ 9ea:	cd bf       	out	0x3d, r28	; 61
+ 9ec:	de bf       	out	0x3e, r29	; 62
 	twi_master_options_t opt48 = {
- 834:	0f 2e       	mov	r0, r31
- 836:	f9 e0       	ldi	r31, 0x09	; 9
- 838:	7f 2e       	mov	r7, r31
- 83a:	f0 2d       	mov	r31, r0
- 83c:	8e 01       	movw	r16, r28
- 83e:	0f 5f       	subi	r16, 0xFF	; 255
- 840:	1f 4f       	sbci	r17, 0xFF	; 255
- 842:	d8 01       	movw	r26, r16
- 844:	e7 2d       	mov	r30, r7
- 846:	1d 92       	st	X+, r1
- 848:	ea 95       	dec	r30
- 84a:	e9 f7       	brne	.-6      	; 0x846 <setUpI2C+0x3a>
- 84c:	0f 2e       	mov	r0, r31
- 84e:	f0 ea       	ldi	r31, 0xA0	; 160
- 850:	8f 2e       	mov	r8, r31
- 852:	f6 e8       	ldi	r31, 0x86	; 134
- 854:	9f 2e       	mov	r9, r31
- 856:	aa 24       	eor	r10, r10
- 858:	a3 94       	inc	r10
- 85a:	b1 2c       	mov	r11, r1
- 85c:	f0 2d       	mov	r31, r0
- 85e:	89 82       	std	Y+1, r8	; 0x01
- 860:	9a 82       	std	Y+2, r9	; 0x02
- 862:	ab 82       	std	Y+3, r10	; 0x03
- 864:	bc 82       	std	Y+4, r11	; 0x04
- 866:	0f 2e       	mov	r0, r31
- 868:	f8 e4       	ldi	r31, 0x48	; 72
- 86a:	6f 2e       	mov	r6, r31
- 86c:	f0 2d       	mov	r31, r0
- 86e:	69 86       	std	Y+9, r6	; 0x09
+ 9ee:	0f 2e       	mov	r0, r31
+ 9f0:	f9 e0       	ldi	r31, 0x09	; 9
+ 9f2:	7f 2e       	mov	r7, r31
+ 9f4:	f0 2d       	mov	r31, r0
+ 9f6:	8e 01       	movw	r16, r28
+ 9f8:	0f 5f       	subi	r16, 0xFF	; 255
+ 9fa:	1f 4f       	sbci	r17, 0xFF	; 255
+ 9fc:	d8 01       	movw	r26, r16
+ 9fe:	e7 2d       	mov	r30, r7
+ a00:	1d 92       	st	X+, r1
+ a02:	ea 95       	dec	r30
+ a04:	e9 f7       	brne	.-6      	; 0xa00 <setUpI2C+0x3a>
+ a06:	0f 2e       	mov	r0, r31
+ a08:	f0 ea       	ldi	r31, 0xA0	; 160
+ a0a:	8f 2e       	mov	r8, r31
+ a0c:	f6 e8       	ldi	r31, 0x86	; 134
+ a0e:	9f 2e       	mov	r9, r31
+ a10:	aa 24       	eor	r10, r10
+ a12:	a3 94       	inc	r10
+ a14:	b1 2c       	mov	r11, r1
+ a16:	f0 2d       	mov	r31, r0
+ a18:	89 82       	std	Y+1, r8	; 0x01
+ a1a:	9a 82       	std	Y+2, r9	; 0x02
+ a1c:	ab 82       	std	Y+3, r10	; 0x03
+ a1e:	bc 82       	std	Y+4, r11	; 0x04
+ a20:	0f 2e       	mov	r0, r31
+ a22:	f8 e4       	ldi	r31, 0x48	; 72
+ a24:	6f 2e       	mov	r6, r31
+ a26:	f0 2d       	mov	r31, r0
+ a28:	69 86       	std	Y+9, r6	; 0x09
 typedef TWI_t *twi_master_t;
 typedef twi_options_t twi_master_options_t;
 
 static inline int twi_master_setup(twi_master_t twi, twi_master_options_t *opt)
 {
 	opt->speed_reg = TWI_BAUD(sysclk_get_cpu_hz(),opt->speed);
- 870:	0f 2e       	mov	r0, r31
- 872:	f5 e0       	ldi	r31, 0x05	; 5
- 874:	cf 2e       	mov	r12, r31
- 876:	d1 2c       	mov	r13, r1
- 878:	e1 2c       	mov	r14, r1
- 87a:	f1 2c       	mov	r15, r1
- 87c:	f0 2d       	mov	r31, r0
- 87e:	cd 82       	std	Y+5, r12	; 0x05
- 880:	de 82       	std	Y+6, r13	; 0x06
- 882:	ef 82       	std	Y+7, r14	; 0x07
- 884:	f8 86       	std	Y+8, r15	; 0x08
+ a2a:	0f 2e       	mov	r0, r31
+ a2c:	f5 e0       	ldi	r31, 0x05	; 5
+ a2e:	cf 2e       	mov	r12, r31
+ a30:	d1 2c       	mov	r13, r1
+ a32:	e1 2c       	mov	r14, r1
+ a34:	f1 2c       	mov	r15, r1
+ a36:	f0 2d       	mov	r31, r0
+ a38:	cd 82       	std	Y+5, r12	; 0x05
+ a3a:	de 82       	std	Y+6, r13	; 0x06
+ a3c:	ef 82       	std	Y+7, r14	; 0x07
+ a3e:	f8 86       	std	Y+8, r15	; 0x08
 		sysclk_enable_module(SYSCLK_PORT_E, SYSCLK_TWI);
 	}
 #endif
 #ifdef TWIF
 	else if (module == &TWIF) {
 		sysclk_enable_module(SYSCLK_PORT_F, SYSCLK_TWI);
- 886:	60 e4       	ldi	r22, 0x40	; 64
- 888:	86 e0       	ldi	r24, 0x06	; 6
- 88a:	dd dc       	rcall	.-1606   	; 0x246 <sysclk_enable_module>
+ a40:	60 e4       	ldi	r22, 0x40	; 64
+ a42:	86 e0       	ldi	r24, 0x06	; 6
+ a44:	01 dd       	rcall	.-1534   	; 0x448 <sysclk_enable_module>
 
 	sysclk_enable_peripheral_clock(twi);
 
 	return twi_master_init(twi,opt);
- 88c:	b8 01       	movw	r22, r16
- 88e:	80 eb       	ldi	r24, 0xB0	; 176
- 890:	94 e0       	ldi	r25, 0x04	; 4
- 892:	26 df       	rcall	.-436    	; 0x6e0 <twi_master_init>
+ a46:	b8 01       	movw	r22, r16
+ a48:	80 eb       	ldi	r24, 0xB0	; 176
+ a4a:	94 e0       	ldi	r25, 0x04	; 4
+ a4c:	4a df       	rcall	.-364    	; 0x8e2 <twi_master_init>
 		.speed = 100000,
 		.chip = 0x48
 	};
 	twi_master_setup(&TWIF, &opt48);
 	
 	twi_master_options_t opt49 = {
- 894:	07 5f       	subi	r16, 0xF7	; 247
- 896:	1f 4f       	sbci	r17, 0xFF	; 255
- 898:	d8 01       	movw	r26, r16
- 89a:	e7 2d       	mov	r30, r7
- 89c:	1d 92       	st	X+, r1
- 89e:	ea 95       	dec	r30
- 8a0:	e9 f7       	brne	.-6      	; 0x89c <setUpI2C+0x90>
- 8a2:	8a 86       	std	Y+10, r8	; 0x0a
- 8a4:	9b 86       	std	Y+11, r9	; 0x0b
- 8a6:	ac 86       	std	Y+12, r10	; 0x0c
- 8a8:	bd 86       	std	Y+13, r11	; 0x0d
- 8aa:	0f 2e       	mov	r0, r31
- 8ac:	f9 e4       	ldi	r31, 0x49	; 73
- 8ae:	5f 2e       	mov	r5, r31
- 8b0:	f0 2d       	mov	r31, r0
- 8b2:	5a 8a       	std	Y+18, r5	; 0x12
+ a4e:	07 5f       	subi	r16, 0xF7	; 247
+ a50:	1f 4f       	sbci	r17, 0xFF	; 255
+ a52:	d8 01       	movw	r26, r16
+ a54:	e7 2d       	mov	r30, r7
+ a56:	1d 92       	st	X+, r1
+ a58:	ea 95       	dec	r30
+ a5a:	e9 f7       	brne	.-6      	; 0xa56 <setUpI2C+0x90>
+ a5c:	8a 86       	std	Y+10, r8	; 0x0a
+ a5e:	9b 86       	std	Y+11, r9	; 0x0b
+ a60:	ac 86       	std	Y+12, r10	; 0x0c
+ a62:	bd 86       	std	Y+13, r11	; 0x0d
+ a64:	0f 2e       	mov	r0, r31
+ a66:	f9 e4       	ldi	r31, 0x49	; 73
+ a68:	5f 2e       	mov	r5, r31
+ a6a:	f0 2d       	mov	r31, r0
+ a6c:	5a 8a       	std	Y+18, r5	; 0x12
 typedef TWI_t *twi_master_t;
 typedef twi_options_t twi_master_options_t;
 
 static inline int twi_master_setup(twi_master_t twi, twi_master_options_t *opt)
 {
 	opt->speed_reg = TWI_BAUD(sysclk_get_cpu_hz(),opt->speed);
- 8b4:	ce 86       	std	Y+14, r12	; 0x0e
- 8b6:	df 86       	std	Y+15, r13	; 0x0f
- 8b8:	e8 8a       	std	Y+16, r14	; 0x10
- 8ba:	f9 8a       	std	Y+17, r15	; 0x11
- 8bc:	60 e4       	ldi	r22, 0x40	; 64
- 8be:	86 e0       	ldi	r24, 0x06	; 6
- 8c0:	c2 dc       	rcall	.-1660   	; 0x246 <sysclk_enable_module>
+ a6e:	ce 86       	std	Y+14, r12	; 0x0e
+ a70:	df 86       	std	Y+15, r13	; 0x0f
+ a72:	e8 8a       	std	Y+16, r14	; 0x10
+ a74:	f9 8a       	std	Y+17, r15	; 0x11
+ a76:	60 e4       	ldi	r22, 0x40	; 64
+ a78:	86 e0       	ldi	r24, 0x06	; 6
+ a7a:	e6 dc       	rcall	.-1588   	; 0x448 <sysclk_enable_module>
 
 	sysclk_enable_peripheral_clock(twi);
 
 	return twi_master_init(twi,opt);
- 8c2:	b8 01       	movw	r22, r16
- 8c4:	80 eb       	ldi	r24, 0xB0	; 176
- 8c6:	94 e0       	ldi	r25, 0x04	; 4
- 8c8:	0b df       	rcall	.-490    	; 0x6e0 <twi_master_init>
+ a7c:	b8 01       	movw	r22, r16
+ a7e:	80 eb       	ldi	r24, 0xB0	; 176
+ a80:	94 e0       	ldi	r25, 0x04	; 4
+ a82:	2f df       	rcall	.-418    	; 0x8e2 <twi_master_init>
 		.speed = 100000,
 		.chip = 0x49
 	};
 	twi_master_setup(&TWIF, &opt49);
 	
 	twi_master_options_t opt4A = {
- 8ca:	07 5f       	subi	r16, 0xF7	; 247
- 8cc:	1f 4f       	sbci	r17, 0xFF	; 255
- 8ce:	d8 01       	movw	r26, r16
- 8d0:	1d 92       	st	X+, r1
- 8d2:	7a 94       	dec	r7
- 8d4:	e9 f7       	brne	.-6      	; 0x8d0 <setUpI2C+0xc4>
- 8d6:	8b 8a       	std	Y+19, r8	; 0x13
- 8d8:	9c 8a       	std	Y+20, r9	; 0x14
- 8da:	ad 8a       	std	Y+21, r10	; 0x15
- 8dc:	be 8a       	std	Y+22, r11	; 0x16
- 8de:	0f 2e       	mov	r0, r31
- 8e0:	fa e4       	ldi	r31, 0x4A	; 74
- 8e2:	bf 2e       	mov	r11, r31
- 8e4:	f0 2d       	mov	r31, r0
- 8e6:	bb 8e       	std	Y+27, r11	; 0x1b
+ a84:	07 5f       	subi	r16, 0xF7	; 247
+ a86:	1f 4f       	sbci	r17, 0xFF	; 255
+ a88:	d8 01       	movw	r26, r16
+ a8a:	1d 92       	st	X+, r1
+ a8c:	7a 94       	dec	r7
+ a8e:	e9 f7       	brne	.-6      	; 0xa8a <setUpI2C+0xc4>
+ a90:	8b 8a       	std	Y+19, r8	; 0x13
+ a92:	9c 8a       	std	Y+20, r9	; 0x14
+ a94:	ad 8a       	std	Y+21, r10	; 0x15
+ a96:	be 8a       	std	Y+22, r11	; 0x16
+ a98:	0f 2e       	mov	r0, r31
+ a9a:	fa e4       	ldi	r31, 0x4A	; 74
+ a9c:	bf 2e       	mov	r11, r31
+ a9e:	f0 2d       	mov	r31, r0
+ aa0:	bb 8e       	std	Y+27, r11	; 0x1b
 typedef TWI_t *twi_master_t;
 typedef twi_options_t twi_master_options_t;
 
 static inline int twi_master_setup(twi_master_t twi, twi_master_options_t *opt)
 {
 	opt->speed_reg = TWI_BAUD(sysclk_get_cpu_hz(),opt->speed);
- 8e8:	cf 8a       	std	Y+23, r12	; 0x17
- 8ea:	d8 8e       	std	Y+24, r13	; 0x18
- 8ec:	e9 8e       	std	Y+25, r14	; 0x19
- 8ee:	fa 8e       	std	Y+26, r15	; 0x1a
- 8f0:	60 e4       	ldi	r22, 0x40	; 64
- 8f2:	86 e0       	ldi	r24, 0x06	; 6
- 8f4:	a8 dc       	rcall	.-1712   	; 0x246 <sysclk_enable_module>
+ aa2:	cf 8a       	std	Y+23, r12	; 0x17
+ aa4:	d8 8e       	std	Y+24, r13	; 0x18
+ aa6:	e9 8e       	std	Y+25, r14	; 0x19
+ aa8:	fa 8e       	std	Y+26, r15	; 0x1a
+ aaa:	60 e4       	ldi	r22, 0x40	; 64
+ aac:	86 e0       	ldi	r24, 0x06	; 6
+ aae:	cc dc       	rcall	.-1640   	; 0x448 <sysclk_enable_module>
 
 	sysclk_enable_peripheral_clock(twi);
 
 	return twi_master_init(twi,opt);
- 8f6:	b8 01       	movw	r22, r16
- 8f8:	80 eb       	ldi	r24, 0xB0	; 176
- 8fa:	94 e0       	ldi	r25, 0x04	; 4
- 8fc:	f1 de       	rcall	.-542    	; 0x6e0 <twi_master_init>
+ ab0:	b8 01       	movw	r22, r16
+ ab2:	80 eb       	ldi	r24, 0xB0	; 176
+ ab4:	94 e0       	ldi	r25, 0x04	; 4
+ ab6:	15 df       	rcall	.-470    	; 0x8e2 <twi_master_init>
 		.speed = 100000,
 		.chip = 0x4A
 	};
 	twi_master_setup(&TWIF, &opt4A);
 	
 	const uint8_t adc_setup_bytes[] = {0x42, 0x83};
- 8fe:	82 e4       	ldi	r24, 0x42	; 66
- 900:	8c 8f       	std	Y+28, r24	; 0x1c
- 902:	83 e8       	ldi	r24, 0x83	; 131
- 904:	8d 8f       	std	Y+29, r24	; 0x1d
+ ab8:	82 e4       	ldi	r24, 0x42	; 66
+ aba:	8c 8f       	std	Y+28, r24	; 0x1c
+ abc:	83 e8       	ldi	r24, 0x83	; 131
+ abe:	8d 8f       	std	Y+29, r24	; 0x1d
 	twi_package_t adc_setup_48 = {
- 906:	7b e0       	ldi	r23, 0x0B	; 11
- 908:	fe 01       	movw	r30, r28
- 90a:	7e 96       	adiw	r30, 0x1e	; 30
- 90c:	df 01       	movw	r26, r30
- 90e:	17 2f       	mov	r17, r23
- 910:	1d 92       	st	X+, r1
- 912:	1a 95       	dec	r17
- 914:	e9 f7       	brne	.-6      	; 0x910 <setUpI2C+0x104>
- 916:	6e 8e       	std	Y+30, r6	; 0x1e
- 918:	61 e0       	ldi	r22, 0x01	; 1
- 91a:	6f 8f       	std	Y+31, r22	; 0x1f
- 91c:	41 e0       	ldi	r20, 0x01	; 1
- 91e:	50 e0       	ldi	r21, 0x00	; 0
- 920:	4a a3       	std	Y+34, r20	; 0x22
- 922:	5b a3       	std	Y+35, r21	; 0x23
- 924:	9e 01       	movw	r18, r28
- 926:	24 5e       	subi	r18, 0xE4	; 228
- 928:	3f 4f       	sbci	r19, 0xFF	; 255
- 92a:	2c a3       	std	Y+36, r18	; 0x24
- 92c:	3d a3       	std	Y+37, r19	; 0x25
- 92e:	82 e0       	ldi	r24, 0x02	; 2
- 930:	90 e0       	ldi	r25, 0x00	; 0
- 932:	8e a3       	std	Y+38, r24	; 0x26
- 934:	9f a3       	std	Y+39, r25	; 0x27
+ ac0:	7b e0       	ldi	r23, 0x0B	; 11
+ ac2:	fe 01       	movw	r30, r28
+ ac4:	7e 96       	adiw	r30, 0x1e	; 30
+ ac6:	df 01       	movw	r26, r30
+ ac8:	17 2f       	mov	r17, r23
+ aca:	1d 92       	st	X+, r1
+ acc:	1a 95       	dec	r17
+ ace:	e9 f7       	brne	.-6      	; 0xaca <setUpI2C+0x104>
+ ad0:	6e 8e       	std	Y+30, r6	; 0x1e
+ ad2:	61 e0       	ldi	r22, 0x01	; 1
+ ad4:	6f 8f       	std	Y+31, r22	; 0x1f
+ ad6:	41 e0       	ldi	r20, 0x01	; 1
+ ad8:	50 e0       	ldi	r21, 0x00	; 0
+ ada:	4a a3       	std	Y+34, r20	; 0x22
+ adc:	5b a3       	std	Y+35, r21	; 0x23
+ ade:	9e 01       	movw	r18, r28
+ ae0:	24 5e       	subi	r18, 0xE4	; 228
+ ae2:	3f 4f       	sbci	r19, 0xFF	; 255
+ ae4:	2c a3       	std	Y+36, r18	; 0x24
+ ae6:	3d a3       	std	Y+37, r19	; 0x25
+ ae8:	82 e0       	ldi	r24, 0x02	; 2
+ aea:	90 e0       	ldi	r25, 0x00	; 0
+ aec:	8e a3       	std	Y+38, r24	; 0x26
+ aee:	9f a3       	std	Y+39, r25	; 0x27
 		.addr_length	= sizeof(uint8_t),
 		.chip			= 0x48,
 		.buffer			= (void *)adc_setup_bytes,
 		.length			= sizeof(adc_setup_bytes)
 	};
 	twi_package_t adc_setup_49 = {
- 936:	3b 96       	adiw	r30, 0x0b	; 11
- 938:	df 01       	movw	r26, r30
- 93a:	17 2f       	mov	r17, r23
- 93c:	1d 92       	st	X+, r1
- 93e:	1a 95       	dec	r17
- 940:	e9 f7       	brne	.-6      	; 0x93c <setUpI2C+0x130>
- 942:	59 a6       	std	Y+41, r5	; 0x29
- 944:	6a a7       	std	Y+42, r22	; 0x2a
- 946:	4d a7       	std	Y+45, r20	; 0x2d
- 948:	5e a7       	std	Y+46, r21	; 0x2e
- 94a:	2f a7       	std	Y+47, r18	; 0x2f
- 94c:	38 ab       	std	Y+48, r19	; 0x30
- 94e:	89 ab       	std	Y+49, r24	; 0x31
- 950:	9a ab       	std	Y+50, r25	; 0x32
+ af0:	3b 96       	adiw	r30, 0x0b	; 11
+ af2:	df 01       	movw	r26, r30
+ af4:	17 2f       	mov	r17, r23
+ af6:	1d 92       	st	X+, r1
+ af8:	1a 95       	dec	r17
+ afa:	e9 f7       	brne	.-6      	; 0xaf6 <setUpI2C+0x130>
+ afc:	59 a6       	std	Y+41, r5	; 0x29
+ afe:	6a a7       	std	Y+42, r22	; 0x2a
+ b00:	4d a7       	std	Y+45, r20	; 0x2d
+ b02:	5e a7       	std	Y+46, r21	; 0x2e
+ b04:	2f a7       	std	Y+47, r18	; 0x2f
+ b06:	38 ab       	std	Y+48, r19	; 0x30
+ b08:	89 ab       	std	Y+49, r24	; 0x31
+ b0a:	9a ab       	std	Y+50, r25	; 0x32
 		.addr_length	= sizeof(uint8_t),
 		.chip			= 0x49,
 		.buffer			= (void *)adc_setup_bytes,
 		.length			= sizeof(adc_setup_bytes)
 	};
 	twi_package_t adc_setup_4A = {
- 952:	3b 96       	adiw	r30, 0x0b	; 11
- 954:	df 01       	movw	r26, r30
- 956:	1d 92       	st	X+, r1
- 958:	7a 95       	dec	r23
- 95a:	e9 f7       	brne	.-6      	; 0x956 <setUpI2C+0x14a>
- 95c:	bc aa       	std	Y+52, r11	; 0x34
- 95e:	6d ab       	std	Y+53, r22	; 0x35
- 960:	48 af       	std	Y+56, r20	; 0x38
- 962:	59 af       	std	Y+57, r21	; 0x39
- 964:	2a af       	std	Y+58, r18	; 0x3a
- 966:	3b af       	std	Y+59, r19	; 0x3b
- 968:	8c af       	std	Y+60, r24	; 0x3c
- 96a:	9d af       	std	Y+61, r25	; 0x3d
+ b0c:	3b 96       	adiw	r30, 0x0b	; 11
+ b0e:	df 01       	movw	r26, r30
+ b10:	1d 92       	st	X+, r1
+ b12:	7a 95       	dec	r23
+ b14:	e9 f7       	brne	.-6      	; 0xb10 <setUpI2C+0x14a>
+ b16:	bc aa       	std	Y+52, r11	; 0x34
+ b18:	6d ab       	std	Y+53, r22	; 0x35
+ b1a:	48 af       	std	Y+56, r20	; 0x38
+ b1c:	59 af       	std	Y+57, r21	; 0x39
+ b1e:	2a af       	std	Y+58, r18	; 0x3a
+ b20:	3b af       	std	Y+59, r19	; 0x3b
+ b22:	8c af       	std	Y+60, r24	; 0x3c
+ b24:	9d af       	std	Y+61, r25	; 0x3d
  * \return STATUS_OK   If all bytes were written, error code otherwise
  */
 static inline status_code_t twi_master_write(TWI_t *twi,
 		const twi_package_t *package)
 {
 	return twi_master_transfer (twi, package, false);
- 96c:	40 e0       	ldi	r20, 0x00	; 0
- 96e:	be 01       	movw	r22, r28
- 970:	62 5e       	subi	r22, 0xE2	; 226
- 972:	7f 4f       	sbci	r23, 0xFF	; 255
- 974:	80 eb       	ldi	r24, 0xB0	; 176
- 976:	94 e0       	ldi	r25, 0x04	; 4
- 978:	c8 de       	rcall	.-624    	; 0x70a <twi_master_transfer>
+ b26:	40 e0       	ldi	r20, 0x00	; 0
+ b28:	be 01       	movw	r22, r28
+ b2a:	62 5e       	subi	r22, 0xE2	; 226
+ b2c:	7f 4f       	sbci	r23, 0xFF	; 255
+ b2e:	80 eb       	ldi	r24, 0xB0	; 176
+ b30:	94 e0       	ldi	r25, 0x04	; 4
+ b32:	ec de       	rcall	.-552    	; 0x90c <twi_master_transfer>
 		.buffer			= (void *)adc_setup_bytes,
 		.length			= sizeof(adc_setup_bytes)
 	};
 	
 	
 	while(twi_master_write(&TWIF, &adc_setup_48) != TWI_SUCCESS);
- 97a:	81 11       	cpse	r24, r1
- 97c:	f7 cf       	rjmp	.-18     	; 0x96c <setUpI2C+0x160>
- 97e:	40 e0       	ldi	r20, 0x00	; 0
- 980:	be 01       	movw	r22, r28
- 982:	67 5d       	subi	r22, 0xD7	; 215
- 984:	7f 4f       	sbci	r23, 0xFF	; 255
- 986:	80 eb       	ldi	r24, 0xB0	; 176
- 988:	94 e0       	ldi	r25, 0x04	; 4
- 98a:	bf de       	rcall	.-642    	; 0x70a <twi_master_transfer>
+ b34:	81 11       	cpse	r24, r1
+ b36:	f7 cf       	rjmp	.-18     	; 0xb26 <setUpI2C+0x160>
+ b38:	40 e0       	ldi	r20, 0x00	; 0
+ b3a:	be 01       	movw	r22, r28
+ b3c:	67 5d       	subi	r22, 0xD7	; 215
+ b3e:	7f 4f       	sbci	r23, 0xFF	; 255
+ b40:	80 eb       	ldi	r24, 0xB0	; 176
+ b42:	94 e0       	ldi	r25, 0x04	; 4
+ b44:	e3 de       	rcall	.-570    	; 0x90c <twi_master_transfer>
 	while(twi_master_write(&TWIF, &adc_setup_49) != TWI_SUCCESS);
- 98c:	81 11       	cpse	r24, r1
- 98e:	f7 cf       	rjmp	.-18     	; 0x97e <setUpI2C+0x172>
- 990:	40 e0       	ldi	r20, 0x00	; 0
- 992:	be 01       	movw	r22, r28
- 994:	6c 5c       	subi	r22, 0xCC	; 204
- 996:	7f 4f       	sbci	r23, 0xFF	; 255
- 998:	80 eb       	ldi	r24, 0xB0	; 176
- 99a:	94 e0       	ldi	r25, 0x04	; 4
- 99c:	b6 de       	rcall	.-660    	; 0x70a <twi_master_transfer>
+ b46:	81 11       	cpse	r24, r1
+ b48:	f7 cf       	rjmp	.-18     	; 0xb38 <setUpI2C+0x172>
+ b4a:	40 e0       	ldi	r20, 0x00	; 0
+ b4c:	be 01       	movw	r22, r28
+ b4e:	6c 5c       	subi	r22, 0xCC	; 204
+ b50:	7f 4f       	sbci	r23, 0xFF	; 255
+ b52:	80 eb       	ldi	r24, 0xB0	; 176
+ b54:	94 e0       	ldi	r25, 0x04	; 4
+ b56:	da de       	rcall	.-588    	; 0x90c <twi_master_transfer>
 	while(twi_master_write(&TWIF, &adc_setup_4A) != TWI_SUCCESS);
- 99e:	81 11       	cpse	r24, r1
- 9a0:	f7 cf       	rjmp	.-18     	; 0x990 <setUpI2C+0x184>
+ b58:	81 11       	cpse	r24, r1
+ b5a:	f7 cf       	rjmp	.-18     	; 0xb4a <setUpI2C+0x184>
 	
 }
- 9a2:	ee 96       	adiw	r28, 0x3e	; 62
- 9a4:	cd bf       	out	0x3d, r28	; 61
- 9a6:	de bf       	out	0x3e, r29	; 62
- 9a8:	df 91       	pop	r29
- 9aa:	cf 91       	pop	r28
- 9ac:	1f 91       	pop	r17
- 9ae:	0f 91       	pop	r16
- 9b0:	ff 90       	pop	r15
- 9b2:	ef 90       	pop	r14
- 9b4:	df 90       	pop	r13
- 9b6:	cf 90       	pop	r12
- 9b8:	bf 90       	pop	r11
- 9ba:	af 90       	pop	r10
- 9bc:	9f 90       	pop	r9
- 9be:	8f 90       	pop	r8
- 9c0:	7f 90       	pop	r7
- 9c2:	6f 90       	pop	r6
- 9c4:	5f 90       	pop	r5
- 9c6:	08 95       	ret
+ b5c:	ee 96       	adiw	r28, 0x3e	; 62
+ b5e:	cd bf       	out	0x3d, r28	; 61
+ b60:	de bf       	out	0x3e, r29	; 62
+ b62:	df 91       	pop	r29
+ b64:	cf 91       	pop	r28
+ b66:	1f 91       	pop	r17
+ b68:	0f 91       	pop	r16
+ b6a:	ff 90       	pop	r15
+ b6c:	ef 90       	pop	r14
+ b6e:	df 90       	pop	r13
+ b70:	cf 90       	pop	r12
+ b72:	bf 90       	pop	r11
+ b74:	af 90       	pop	r10
+ b76:	9f 90       	pop	r9
+ b78:	8f 90       	pop	r8
+ b7a:	7f 90       	pop	r7
+ b7c:	6f 90       	pop	r6
+ b7e:	5f 90       	pop	r5
+ b80:	08 95       	ret
 
-000009c8 <main>:
+00000b82 <main>:
 
 
 int main (void)
 {
- 9c8:	cf 93       	push	r28
- 9ca:	df 93       	push	r29
- 9cc:	cd b7       	in	r28, 0x3d	; 61
- 9ce:	de b7       	in	r29, 0x3e	; 62
- 9d0:	2d 97       	sbiw	r28, 0x0d	; 13
- 9d2:	cd bf       	out	0x3d, r28	; 61
- 9d4:	de bf       	out	0x3e, r29	; 62
+ b82:	cf 93       	push	r28
+ b84:	df 93       	push	r29
+ b86:	cd b7       	in	r28, 0x3d	; 61
+ b88:	de b7       	in	r29, 0x3e	; 62
+ b8a:	2d 97       	sbiw	r28, 0x0d	; 13
+ b8c:	cd bf       	out	0x3d, r28	; 61
+ b8e:	de bf       	out	0x3e, r29	; 62
 	board_init();	//Init board
- 9d6:	18 dd       	rcall	.-1488   	; 0x408 <board_init>
-	setUpSPIC();	//Setup SPI on Port C
- 9d8:	0d df       	rcall	.-486    	; 0x7f4 <setUpSPIC>
+ b90:	3c dd       	rcall	.-1416   	; 0x60a <board_init>
+	init_spi_to_bbb();	//Setup SPI on Port C
+ b92:	71 db       	rcall	.-2334   	; 0x276 <init_spi_to_bbb>
 	setUpI2C();
- 9da:	18 df       	rcall	.-464    	; 0x80c <setUpI2C>
+ b94:	18 df       	rcall	.-464    	; 0x9c6 <setUpI2C>
 	state = 1;
- 9dc:	81 e0       	ldi	r24, 0x01	; 1
- 9de:	80 93 1d 20 	sts	0x201D, r24	; 0x80201d <state>
+ b96:	81 e0       	ldi	r24, 0x01	; 1
+ b98:	80 93 24 20 	sts	0x2024, r24	; 0x802024 <state>
 	sensor_status = 52;
- 9e2:	84 e3       	ldi	r24, 0x34	; 52
- 9e4:	80 93 1c 20 	sts	0x201C, r24	; 0x80201c <sensor_status>
+ b9c:	84 e3       	ldi	r24, 0x34	; 52
+ b9e:	80 93 23 20 	sts	0x2023, r24	; 0x802023 <sensor_status>
 	
 	sei();            // enable global interrupts
- 9e8:	78 94       	sei
-			
-			spic_flag = 0;
-		}
-		else if(lock == 0){//Do anything that is not SPI related
+ ba2:	78 94       	sei
+		
+		handle_spi_to_bbb();
+		
+		if(lock == 0){//Do anything that is not SPI related
 			uint8_t recieved_data[2];
 			twi_package_t packet_read = {
- 9ea:	8e 01       	movw	r16, r28
- 9ec:	0f 5f       	subi	r16, 0xFF	; 255
- 9ee:	1f 4f       	sbci	r17, 0xFF	; 255
- 9f0:	44 24       	eor	r4, r4
- 9f2:	43 94       	inc	r4
- 9f4:	51 2c       	mov	r5, r1
- 9f6:	1e 01       	movw	r2, r28
- 9f8:	8c e0       	ldi	r24, 0x0C	; 12
- 9fa:	28 0e       	add	r2, r24
- 9fc:	31 1c       	adc	r3, r1
- 9fe:	68 94       	set
- a00:	aa 24       	eor	r10, r10
- a02:	a1 f8       	bld	r10, 1
- a04:	b1 2c       	mov	r11, r1
+ ba4:	0f 2e       	mov	r0, r31
+ ba6:	fb e0       	ldi	r31, 0x0B	; 11
+ ba8:	4f 2e       	mov	r4, r31
+ baa:	f0 2d       	mov	r31, r0
+ bac:	8e 01       	movw	r16, r28
+ bae:	0f 5f       	subi	r16, 0xFF	; 255
+ bb0:	1f 4f       	sbci	r17, 0xFF	; 255
+ bb2:	0f 2e       	mov	r0, r31
+ bb4:	f8 e4       	ldi	r31, 0x48	; 72
+ bb6:	5f 2e       	mov	r5, r31
+ bb8:	f0 2d       	mov	r31, r0
+ bba:	88 24       	eor	r8, r8
+ bbc:	83 94       	inc	r8
+ bbe:	91 2c       	mov	r9, r1
+ bc0:	5e 01       	movw	r10, r28
+ bc2:	8c e0       	ldi	r24, 0x0C	; 12
+ bc4:	a8 0e       	add	r10, r24
+ bc6:	b1 1c       	adc	r11, r1
+ bc8:	68 94       	set
+ bca:	cc 24       	eor	r12, r12
+ bcc:	c1 f8       	bld	r12, 1
+ bce:	d1 2c       	mov	r13, r1
+				.length			= 2
+				
+			};
+			
+			if(twi_master_read(&TWIF, &packet_read) == TWI_SUCCESS){
+				sensor_data[0] = recieved_data[1];
+ bd0:	0f 2e       	mov	r0, r31
+ bd2:	f0 e0       	ldi	r31, 0x00	; 0
+ bd4:	ef 2e       	mov	r14, r31
+ bd6:	f0 e2       	ldi	r31, 0x20	; 32
+ bd8:	ff 2e       	mov	r15, r31
+ bda:	f0 2d       	mov	r31, r0
+				sensor_data[1] = recieved_data[0];
+			}
+			
+			packet_read.chip = 0x49;
+ bdc:	0f 2e       	mov	r0, r31
+ bde:	f9 e4       	ldi	r31, 0x49	; 73
+ be0:	6f 2e       	mov	r6, r31
+ be2:	f0 2d       	mov	r31, r0
+			if(twi_master_read(&TWIF,  &packet_read) ==TWI_SUCCESS){
+				sensor_data[2] = recieved_data[1];
 				sensor_data[3] = recieved_data[0];
 			}
 			
 			packet_read.chip = 0x4A;
-			if(twi_master_read(&TWIF,  &packet_read) ==TWI_SUCCESS){
-				sensor_data[4] = recieved_data[1];
- a06:	0f 2e       	mov	r0, r31
- a08:	f0 e0       	ldi	r31, 0x00	; 0
- a0a:	ef 2e       	mov	r14, r31
- a0c:	f0 e2       	ldi	r31, 0x20	; 32
- a0e:	ff 2e       	mov	r15, r31
- a10:	f0 2d       	mov	r31, r0
-				}
-				
-			}
-			else if(send_crc_idx > 0){
-				
-				SPIC.DATA = send_crc >> ((2-send_crc_idx)*8);
- a12:	0f 2e       	mov	r0, r31
- a14:	f0 ec       	ldi	r31, 0xC0	; 192
- a16:	cf 2e       	mov	r12, r31
- a18:	f8 e0       	ldi	r31, 0x08	; 8
- a1a:	df 2e       	mov	r13, r31
- a1c:	f0 2d       	mov	r31, r0
-					}
-				}				
-			}
-			else if(cmd_finished){
-				//On next pass we will be start pipelining data
-				if(cmd_data[2] == 0){
- a1e:	0f 2e       	mov	r0, r31
- a20:	f5 e2       	ldi	r31, 0x25	; 37
- a22:	6f 2e       	mov	r6, r31
- a24:	f0 e2       	ldi	r31, 0x20	; 32
- a26:	7f 2e       	mov	r7, r31
- a28:	f0 2d       	mov	r31, r0
-			}
-			
-			//If we are receiving command, store it appropriately
-			if(cmd_idx > 0){
-				
-				cmd_data[CMD_DATA_SIZE-cmd_idx] = rx_byte;
- a2a:	0f 2e       	mov	r0, r31
- a2c:	f5 e0       	ldi	r31, 0x05	; 5
- a2e:	8f 2e       	mov	r8, r31
- a30:	91 2c       	mov	r9, r1
- a32:	f0 2d       	mov	r31, r0
-		
+ be4:	0f 2e       	mov	r0, r31
+ be6:	fa e4       	ldi	r31, 0x4A	; 74
+ be8:	7f 2e       	mov	r7, r31
+ bea:	f0 2d       	mov	r31, r0
 		//SPIC handler
 		//When this is true, it means we have just received a byte
 		//So, we need to pipeline the next byte to be sent out.
 		//Also, the most recently sent byte is in the rx_byte
-		if(spic_flag){
- a34:	80 91 23 20 	lds	r24, 0x2023	; 0x802023 <spic_flag>
- a38:	88 23       	and	r24, r24
- a3a:	09 f4       	brne	.+2      	; 0xa3e <main+0x76>
- a3c:	d1 c0       	rjmp	.+418    	; 0xbe0 <main+0x218>
-			//Indicate start of incoming command
-			if(rx_byte == SPI_TX_START){
- a3e:	80 91 24 20 	lds	r24, 0x2024	; 0x802024 <rx_byte>
- a42:	8a 3a       	cpi	r24, 0xAA	; 170
- a44:	91 f4       	brne	.+36     	; 0xa6a <main+0xa2>
-				
-				cmd_idx = CMD_DATA_SIZE;
- a46:	85 e0       	ldi	r24, 0x05	; 5
- a48:	80 93 22 20 	sts	0x2022, r24	; 0x802022 <cmd_idx>
-				//Reset all the send variables/tmp storage
-				cmd_finished = 0;
- a4c:	10 92 1b 20 	sts	0x201B, r1	; 0x80201b <cmd_finished>
-				send_idx = 0;
- a50:	10 92 1a 20 	sts	0x201A, r1	; 0x80201a <send_idx>
-				send_crc_length = 0;
- a54:	10 92 19 20 	sts	0x2019, r1	; 0x802019 <send_crc_length>
-				send_crc = 0;
- a58:	10 92 17 20 	sts	0x2017, r1	; 0x802017 <send_crc>
- a5c:	10 92 18 20 	sts	0x2018, r1	; 0x802018 <send_crc+0x1>
-				send_crc_idx = 0;
- a60:	10 92 16 20 	sts	0x2016, r1	; 0x802016 <send_crc_idx>
-				lock = 1;
- a64:	81 e0       	ldi	r24, 0x01	; 1
- a66:	80 93 15 20 	sts	0x2015, r24	; 0x802015 <lock>
-
-			}
-			
-			//If we are receiving command, store it appropriately
-			if(cmd_idx > 0){
- a6a:	80 91 22 20 	lds	r24, 0x2022	; 0x802022 <cmd_idx>
- a6e:	88 23       	and	r24, r24
- a70:	99 f1       	breq	.+102    	; 0xad8 <main+0x110>
-				
-				cmd_data[CMD_DATA_SIZE-cmd_idx] = rx_byte;
- a72:	90 91 24 20 	lds	r25, 0x2024	; 0x802024 <rx_byte>
- a76:	f4 01       	movw	r30, r8
- a78:	e8 1b       	sub	r30, r24
- a7a:	f1 09       	sbc	r31, r1
- a7c:	eb 5d       	subi	r30, 0xDB	; 219
- a7e:	ff 4d       	sbci	r31, 0xDF	; 223
- a80:	90 83       	st	Z, r25
-				cmd_idx--;
- a82:	81 50       	subi	r24, 0x01	; 1
- a84:	80 93 22 20 	sts	0x2022, r24	; 0x802022 <cmd_idx>
-				//Finished last storage of incoming data
-				if(cmd_idx == 0){
- a88:	81 11       	cpse	r24, r1
- a8a:	67 c0       	rjmp	.+206    	; 0xb5a <main+0x192>
-					//Check recieved_crc against calculated CRC
-					received_crc =	(cmd_data[CMD_DATA_SIZE-1]<<8) | cmd_data[CMD_DATA_SIZE-2];
- a8c:	f3 01       	movw	r30, r6
- a8e:	84 81       	ldd	r24, Z+4	; 0x04
- a90:	90 e0       	ldi	r25, 0x00	; 0
- a92:	98 2f       	mov	r25, r24
- a94:	88 27       	eor	r24, r24
- a96:	23 81       	ldd	r18, Z+3	; 0x03
- a98:	82 2b       	or	r24, r18
- a9a:	80 93 20 20 	sts	0x2020, r24	; 0x802020 <received_crc>
- a9e:	90 93 21 20 	sts	0x2021, r25	; 0x802021 <received_crc+0x1>
-					calculated_crc = crc_io_checksum(cmd_data, CMD_DATA_SIZE-2, CRC_16BIT);
- aa2:	40 e0       	ldi	r20, 0x00	; 0
- aa4:	63 e0       	ldi	r22, 0x03	; 3
- aa6:	70 e0       	ldi	r23, 0x00	; 0
- aa8:	c3 01       	movw	r24, r6
- aaa:	6b dc       	rcall	.-1834   	; 0x382 <crc_io_checksum>
- aac:	60 93 1e 20 	sts	0x201E, r22	; 0x80201e <calculated_crc>
- ab0:	70 93 1f 20 	sts	0x201F, r23	; 0x80201f <calculated_crc+0x1>
-					//Send appropriate signal if passed/failed
-					
-					if(calculated_crc == received_crc){
- ab4:	20 91 20 20 	lds	r18, 0x2020	; 0x802020 <received_crc>
- ab8:	30 91 21 20 	lds	r19, 0x2021	; 0x802021 <received_crc+0x1>
- abc:	26 17       	cp	r18, r22
- abe:	37 07       	cpc	r19, r23
- ac0:	39 f4       	brne	.+14     	; 0xad0 <main+0x108>
-						SPIC.DATA = SPI_CRC_PASS;
- ac2:	8a ea       	ldi	r24, 0xAA	; 170
- ac4:	f6 01       	movw	r30, r12
- ac6:	83 83       	std	Z+3, r24	; 0x03
-						cmd_finished = 1;
- ac8:	81 e0       	ldi	r24, 0x01	; 1
- aca:	80 93 1b 20 	sts	0x201B, r24	; 0x80201b <cmd_finished>
- ace:	45 c0       	rjmp	.+138    	; 0xb5a <main+0x192>
-					}
-					else{
-						SPIC.DATA = SPI_CRC_FAIL;
- ad0:	8f ef       	ldi	r24, 0xFF	; 255
- ad2:	f6 01       	movw	r30, r12
- ad4:	83 83       	std	Z+3, r24	; 0x03
- ad6:	41 c0       	rjmp	.+130    	; 0xb5a <main+0x192>
-					}
-				}				
-			}
-			else if(cmd_finished){
- ad8:	80 91 1b 20 	lds	r24, 0x201B	; 0x80201b <cmd_finished>
- adc:	88 23       	and	r24, r24
- ade:	e9 f1       	breq	.+122    	; 0xb5a <main+0x192>
-				//On next pass we will be start pipelining data
-				if(cmd_data[2] == 0){
- ae0:	f3 01       	movw	r30, r6
- ae2:	82 81       	ldd	r24, Z+2	; 0x02
- ae4:	81 11       	cpse	r24, r1
- ae6:	0c c0       	rjmp	.+24     	; 0xb00 <main+0x138>
-					memcpy(send_data,sensor_data,SENSOR_DATA_SIZE);//TODO: determine if this takes too long
- ae8:	86 e0       	ldi	r24, 0x06	; 6
- aea:	f7 01       	movw	r30, r14
- aec:	aa e2       	ldi	r26, 0x2A	; 42
- aee:	b0 e2       	ldi	r27, 0x20	; 32
- af0:	01 90       	ld	r0, Z+
- af2:	0d 92       	st	X+, r0
- af4:	8a 95       	dec	r24
- af6:	e1 f7       	brne	.-8      	; 0xaf0 <main+0x128>
-					send_idx = SENSOR_DATA_SIZE;
- af8:	86 e0       	ldi	r24, 0x06	; 6
- afa:	80 93 1a 20 	sts	0x201A, r24	; 0x80201a <send_idx>
- afe:	27 c0       	rjmp	.+78     	; 0xb4e <main+0x186>
-				}
-				else if(cmd_data[2] == 1){
- b00:	81 30       	cpi	r24, 0x01	; 1
- b02:	41 f4       	brne	.+16     	; 0xb14 <main+0x14c>
-					//ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
-					send_data[0] = sensor_status;
- b04:	80 91 1c 20 	lds	r24, 0x201C	; 0x80201c <sensor_status>
- b08:	80 93 2a 20 	sts	0x202A, r24	; 0x80202a <send_data>
-					send_idx = 1;
- b0c:	81 e0       	ldi	r24, 0x01	; 1
- b0e:	80 93 1a 20 	sts	0x201A, r24	; 0x80201a <send_idx>
- b12:	1d c0       	rjmp	.+58     	; 0xb4e <main+0x186>
-				}
-				else if(cmd_data[2] == 2){
- b14:	82 30       	cpi	r24, 0x02	; 2
- b16:	41 f4       	brne	.+16     	; 0xb28 <main+0x160>
-					send_data[0] = state;
- b18:	80 91 1d 20 	lds	r24, 0x201D	; 0x80201d <state>
- b1c:	80 93 2a 20 	sts	0x202A, r24	; 0x80202a <send_data>
-					send_idx = 1;
- b20:	81 e0       	ldi	r24, 0x01	; 1
- b22:	80 93 1a 20 	sts	0x201A, r24	; 0x80201a <send_idx>
- b26:	13 c0       	rjmp	.+38     	; 0xb4e <main+0x186>
-				}
-				else{
-					memcpy(send_data,sensor_data,SENSOR_DATA_SIZE);
- b28:	86 e0       	ldi	r24, 0x06	; 6
- b2a:	f7 01       	movw	r30, r14
- b2c:	aa e2       	ldi	r26, 0x2A	; 42
- b2e:	b0 e2       	ldi	r27, 0x20	; 32
- b30:	01 90       	ld	r0, Z+
- b32:	0d 92       	st	X+, r0
- b34:	8a 95       	dec	r24
- b36:	e1 f7       	brne	.-8      	; 0xb30 <main+0x168>
-					send_data[SENSOR_DATA_SIZE] = sensor_status;
- b38:	ea e2       	ldi	r30, 0x2A	; 42
- b3a:	f0 e2       	ldi	r31, 0x20	; 32
- b3c:	80 91 1c 20 	lds	r24, 0x201C	; 0x80201c <sensor_status>
- b40:	86 83       	std	Z+6, r24	; 0x06
-					send_data[SENSOR_DATA_SIZE+1] = state;
- b42:	80 91 1d 20 	lds	r24, 0x201D	; 0x80201d <state>
- b46:	87 83       	std	Z+7, r24	; 0x07
-					send_idx = SENSOR_DATA_SIZE+2;
- b48:	88 e0       	ldi	r24, 0x08	; 8
- b4a:	80 93 1a 20 	sts	0x201A, r24	; 0x80201a <send_idx>
-				}
-				send_crc_length = send_idx;
- b4e:	80 91 1a 20 	lds	r24, 0x201A	; 0x80201a <send_idx>
- b52:	80 93 19 20 	sts	0x2019, r24	; 0x802019 <send_crc_length>
-				cmd_finished = 0;
- b56:	10 92 1b 20 	sts	0x201B, r1	; 0x80201b <cmd_finished>
-			}
-			
-			
-			if(send_idx > 0){
- b5a:	80 91 1a 20 	lds	r24, 0x201A	; 0x80201a <send_idx>
- b5e:	88 23       	and	r24, r24
- b60:	e9 f0       	breq	.+58     	; 0xb9c <main+0x1d4>
-				SPIC.DATA = send_data[send_crc_length-send_idx];
- b62:	60 91 19 20 	lds	r22, 0x2019	; 0x802019 <send_crc_length>
- b66:	e6 2f       	mov	r30, r22
- b68:	f0 e0       	ldi	r31, 0x00	; 0
- b6a:	e8 1b       	sub	r30, r24
- b6c:	f1 09       	sbc	r31, r1
- b6e:	e6 5d       	subi	r30, 0xD6	; 214
- b70:	ff 4d       	sbci	r31, 0xDF	; 223
- b72:	90 81       	ld	r25, Z
- b74:	f6 01       	movw	r30, r12
- b76:	93 83       	std	Z+3, r25	; 0x03
-					ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
-				}
-				else{//send all
-					SPIC.DATA = send_data[SENSOR_DATA_SIZE+2-send_idx];
-				}	*/			
-				send_idx--;
- b78:	81 50       	subi	r24, 0x01	; 1
- b7a:	80 93 1a 20 	sts	0x201A, r24	; 0x80201a <send_idx>
-				
-				//Calculate CRC
-				if(send_idx == 0){
- b7e:	81 11       	cpse	r24, r1
- b80:	2c c0       	rjmp	.+88     	; 0xbda <main+0x212>
-					send_crc = crc_io_checksum(send_data, send_crc_length, CRC_16BIT);
- b82:	70 e0       	ldi	r23, 0x00	; 0
- b84:	40 e0       	ldi	r20, 0x00	; 0
- b86:	8a e2       	ldi	r24, 0x2A	; 42
- b88:	90 e2       	ldi	r25, 0x20	; 32
- b8a:	fb db       	rcall	.-2058   	; 0x382 <crc_io_checksum>
- b8c:	60 93 17 20 	sts	0x2017, r22	; 0x802017 <send_crc>
- b90:	70 93 18 20 	sts	0x2018, r23	; 0x802018 <send_crc+0x1>
-					send_crc_idx = 2;
- b94:	f2 e0       	ldi	r31, 0x02	; 2
- b96:	f0 93 16 20 	sts	0x2016, r31	; 0x802016 <send_crc_idx>
- b9a:	1f c0       	rjmp	.+62     	; 0xbda <main+0x212>
-				}
-				
-			}
-			else if(send_crc_idx > 0){
- b9c:	80 91 16 20 	lds	r24, 0x2016	; 0x802016 <send_crc_idx>
- ba0:	88 23       	and	r24, r24
- ba2:	d9 f0       	breq	.+54     	; 0xbda <main+0x212>
-				
-				SPIC.DATA = send_crc >> ((2-send_crc_idx)*8);
- ba4:	a5 01       	movw	r20, r10
- ba6:	48 1b       	sub	r20, r24
- ba8:	51 09       	sbc	r21, r1
- baa:	44 0f       	add	r20, r20
- bac:	55 1f       	adc	r21, r21
- bae:	44 0f       	add	r20, r20
- bb0:	55 1f       	adc	r21, r21
- bb2:	44 0f       	add	r20, r20
- bb4:	55 1f       	adc	r21, r21
- bb6:	20 91 17 20 	lds	r18, 0x2017	; 0x802017 <send_crc>
- bba:	30 91 18 20 	lds	r19, 0x2018	; 0x802018 <send_crc+0x1>
- bbe:	02 c0       	rjmp	.+4      	; 0xbc4 <main+0x1fc>
- bc0:	36 95       	lsr	r19
- bc2:	27 95       	ror	r18
- bc4:	4a 95       	dec	r20
- bc6:	e2 f7       	brpl	.-8      	; 0xbc0 <main+0x1f8>
- bc8:	f6 01       	movw	r30, r12
- bca:	23 83       	std	Z+3, r18	; 0x03
-				send_crc_idx--;
- bcc:	81 50       	subi	r24, 0x01	; 1
- bce:	80 93 16 20 	sts	0x2016, r24	; 0x802016 <send_crc_idx>
-				if(send_crc_idx == 0) lock = 0;
- bd2:	81 11       	cpse	r24, r1
- bd4:	02 c0       	rjmp	.+4      	; 0xbda <main+0x212>
- bd6:	10 92 15 20 	sts	0x2015, r1	; 0x802015 <lock>
-			}
-			
-			spic_flag = 0;
- bda:	10 92 23 20 	sts	0x2023, r1	; 0x802023 <spic_flag>
- bde:	2a cf       	rjmp	.-428    	; 0xa34 <main+0x6c>
-		}
-		else if(lock == 0){//Do anything that is not SPI related
- be0:	80 91 15 20 	lds	r24, 0x2015	; 0x802015 <lock>
- be4:	81 11       	cpse	r24, r1
- be6:	26 cf       	rjmp	.-436    	; 0xa34 <main+0x6c>
+		
+		handle_spi_to_bbb();
+ bec:	50 db       	rcall	.-2400   	; 0x28e <handle_spi_to_bbb>
+		
+		if(lock == 0){//Do anything that is not SPI related
+ bee:	80 91 22 20 	lds	r24, 0x2022	; 0x802022 <lock>
+ bf2:	81 11       	cpse	r24, r1
+ bf4:	fb cf       	rjmp	.-10     	; 0xbec <main+0x6a>
 			uint8_t recieved_data[2];
 			twi_package_t packet_read = {
- be8:	f8 01       	movw	r30, r16
- bea:	8b e0       	ldi	r24, 0x0B	; 11
- bec:	11 92       	st	Z+, r1
- bee:	8a 95       	dec	r24
- bf0:	e9 f7       	brne	.-6      	; 0xbec <main+0x224>
- bf2:	e8 e4       	ldi	r30, 0x48	; 72
- bf4:	e9 83       	std	Y+1, r30	; 0x01
- bf6:	4d 82       	std	Y+5, r4	; 0x05
- bf8:	5e 82       	std	Y+6, r5	; 0x06
- bfa:	2f 82       	std	Y+7, r2	; 0x07
- bfc:	38 86       	std	Y+8, r3	; 0x08
- bfe:	a9 86       	std	Y+9, r10	; 0x09
- c00:	ba 86       	std	Y+10, r11	; 0x0a
+ bf6:	f8 01       	movw	r30, r16
+ bf8:	84 2d       	mov	r24, r4
+ bfa:	11 92       	st	Z+, r1
+ bfc:	8a 95       	dec	r24
+ bfe:	e9 f7       	brne	.-6      	; 0xbfa <main+0x78>
+ c00:	59 82       	std	Y+1, r5	; 0x01
+ c02:	8d 82       	std	Y+5, r8	; 0x05
+ c04:	9e 82       	std	Y+6, r9	; 0x06
+ c06:	af 82       	std	Y+7, r10	; 0x07
+ c08:	b8 86       	std	Y+8, r11	; 0x08
+ c0a:	c9 86       	std	Y+9, r12	; 0x09
+ c0c:	da 86       	std	Y+10, r13	; 0x0a
  * \return STATUS_OK   If all bytes were read, error code otherwise
  */
 static inline status_code_t twi_master_read(TWI_t *twi,
 		const twi_package_t *package)
 {
 	return twi_master_transfer (twi, package, true);
- c02:	41 e0       	ldi	r20, 0x01	; 1
- c04:	b8 01       	movw	r22, r16
- c06:	80 eb       	ldi	r24, 0xB0	; 176
- c08:	94 e0       	ldi	r25, 0x04	; 4
- c0a:	7f dd       	rcall	.-1282   	; 0x70a <twi_master_transfer>
+ c0e:	41 e0       	ldi	r20, 0x01	; 1
+ c10:	b8 01       	movw	r22, r16
+ c12:	80 eb       	ldi	r24, 0xB0	; 176
+ c14:	94 e0       	ldi	r25, 0x04	; 4
+ c16:	7a de       	rcall	.-780    	; 0x90c <twi_master_transfer>
 				.buffer			= recieved_data,
 				.length			= 2
 				
 			};
 			
 			if(twi_master_read(&TWIF, &packet_read) == TWI_SUCCESS){
- c0c:	81 11       	cpse	r24, r1
- c0e:	05 c0       	rjmp	.+10     	; 0xc1a <main+0x252>
+ c18:	81 11       	cpse	r24, r1
+ c1a:	05 c0       	rjmp	.+10     	; 0xc26 <main+0xa4>
 				sensor_data[0] = recieved_data[1];
- c10:	8d 85       	ldd	r24, Y+13	; 0x0d
- c12:	f7 01       	movw	r30, r14
- c14:	80 83       	st	Z, r24
+ c1c:	8d 85       	ldd	r24, Y+13	; 0x0d
+ c1e:	f7 01       	movw	r30, r14
+ c20:	80 83       	st	Z, r24
 				sensor_data[1] = recieved_data[0];
- c16:	8c 85       	ldd	r24, Y+12	; 0x0c
- c18:	81 83       	std	Z+1, r24	; 0x01
+ c22:	8c 85       	ldd	r24, Y+12	; 0x0c
+ c24:	81 83       	std	Z+1, r24	; 0x01
 			}
 			
 			packet_read.chip = 0x49;
- c1a:	f9 e4       	ldi	r31, 0x49	; 73
- c1c:	f9 83       	std	Y+1, r31	; 0x01
- c1e:	41 e0       	ldi	r20, 0x01	; 1
- c20:	b8 01       	movw	r22, r16
- c22:	80 eb       	ldi	r24, 0xB0	; 176
- c24:	94 e0       	ldi	r25, 0x04	; 4
- c26:	71 dd       	rcall	.-1310   	; 0x70a <twi_master_transfer>
+ c26:	69 82       	std	Y+1, r6	; 0x01
+ c28:	41 e0       	ldi	r20, 0x01	; 1
+ c2a:	b8 01       	movw	r22, r16
+ c2c:	80 eb       	ldi	r24, 0xB0	; 176
+ c2e:	94 e0       	ldi	r25, 0x04	; 4
+ c30:	6d de       	rcall	.-806    	; 0x90c <twi_master_transfer>
 			if(twi_master_read(&TWIF,  &packet_read) ==TWI_SUCCESS){
- c28:	81 11       	cpse	r24, r1
- c2a:	05 c0       	rjmp	.+10     	; 0xc36 <main+0x26e>
+ c32:	81 11       	cpse	r24, r1
+ c34:	05 c0       	rjmp	.+10     	; 0xc40 <main+0xbe>
 				sensor_data[2] = recieved_data[1];
- c2c:	8d 85       	ldd	r24, Y+13	; 0x0d
- c2e:	f7 01       	movw	r30, r14
- c30:	82 83       	std	Z+2, r24	; 0x02
+ c36:	8d 85       	ldd	r24, Y+13	; 0x0d
+ c38:	f7 01       	movw	r30, r14
+ c3a:	82 83       	std	Z+2, r24	; 0x02
 				sensor_data[3] = recieved_data[0];
- c32:	8c 85       	ldd	r24, Y+12	; 0x0c
- c34:	83 83       	std	Z+3, r24	; 0x03
+ c3c:	8c 85       	ldd	r24, Y+12	; 0x0c
+ c3e:	83 83       	std	Z+3, r24	; 0x03
 			}
 			
 			packet_read.chip = 0x4A;
- c36:	fa e4       	ldi	r31, 0x4A	; 74
- c38:	f9 83       	std	Y+1, r31	; 0x01
- c3a:	41 e0       	ldi	r20, 0x01	; 1
- c3c:	b8 01       	movw	r22, r16
- c3e:	80 eb       	ldi	r24, 0xB0	; 176
- c40:	94 e0       	ldi	r25, 0x04	; 4
- c42:	63 dd       	rcall	.-1338   	; 0x70a <twi_master_transfer>
+ c40:	79 82       	std	Y+1, r7	; 0x01
+ c42:	41 e0       	ldi	r20, 0x01	; 1
+ c44:	b8 01       	movw	r22, r16
+ c46:	80 eb       	ldi	r24, 0xB0	; 176
+ c48:	94 e0       	ldi	r25, 0x04	; 4
+ c4a:	60 de       	rcall	.-832    	; 0x90c <twi_master_transfer>
 			if(twi_master_read(&TWIF,  &packet_read) ==TWI_SUCCESS){
- c44:	81 11       	cpse	r24, r1
- c46:	05 c0       	rjmp	.+10     	; 0xc52 <main+0x28a>
+ c4c:	81 11       	cpse	r24, r1
+ c4e:	05 c0       	rjmp	.+10     	; 0xc5a <main+0xd8>
 				sensor_data[4] = recieved_data[1];
- c48:	8d 85       	ldd	r24, Y+13	; 0x0d
- c4a:	f7 01       	movw	r30, r14
- c4c:	84 83       	std	Z+4, r24	; 0x04
+ c50:	8d 85       	ldd	r24, Y+13	; 0x0d
+ c52:	f7 01       	movw	r30, r14
+ c54:	84 83       	std	Z+4, r24	; 0x04
 				sensor_data[5] = recieved_data[0];
- c4e:	8c 85       	ldd	r24, Y+12	; 0x0c
- c50:	85 83       	std	Z+5, r24	; 0x05
+ c56:	8c 85       	ldd	r24, Y+12	; 0x0c
+ c58:	85 83       	std	Z+5, r24	; 0x05
 			}
 			
 			lock = 1;
- c52:	81 e0       	ldi	r24, 0x01	; 1
- c54:	80 93 15 20 	sts	0x2015, r24	; 0x802015 <lock>
- c58:	ed ce       	rjmp	.-550    	; 0xa34 <main+0x6c>
+ c5a:	81 e0       	ldi	r24, 0x01	; 1
+ c5c:	80 93 22 20 	sts	0x2022, r24	; 0x802022 <lock>
+ c60:	c5 cf       	rjmp	.-118    	; 0xbec <main+0x6a>
 
-00000c5a <_exit>:
- c5a:	f8 94       	cli
+00000c62 <_exit>:
+ c62:	f8 94       	cli
 
-00000c5c <__stop_program>:
- c5c:	ff cf       	rjmp	.-2      	; 0xc5c <__stop_program>
+00000c64 <__stop_program>:
+ c64:	ff cf       	rjmp	.-2      	; 0xc64 <__stop_program>

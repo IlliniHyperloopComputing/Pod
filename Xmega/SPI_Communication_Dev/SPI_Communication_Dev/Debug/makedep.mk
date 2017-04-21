@@ -2,6 +2,8 @@
 # Automatically-generated file. Do not edit or delete the file
 ################################################################################
 
+src\spi_to_bbb.c
+
 src\ASF\common\services\clock\xmega\sysclk.c
 
 src\ASF\xmega\drivers\crc\crc.c
