@@ -113,17 +113,21 @@ int Spi::transfer(Xmega_Transfer &xt){
   if(!sent_properly){
     return 1;
   }
+
+  if(xt.req == X_R_NONE){
+    return 0;
+  }
   
   //Setup size of data to read in
   uint8_t bytes_to_read = 0;
   
-  if(xt.req == 0){
+  if(xt.req == X_R_SENSOR){
     bytes_to_read = xd->num_bytes;
   }
-  else if(xt.req == 1 || xt.req ==2){
+  else if(xt.req == X_R_SENSOR_STATUS || xt.req == X_R_STATE){
     bytes_to_read = 1;
   }
-  else if(xt.req == 3){
+  else if(xt.req == X_R_ALL){
     bytes_to_read = xd->num_bytes+2;
   }
   else{
@@ -147,7 +151,7 @@ int Spi::transfer(Xmega_Transfer &xt){
   while(idx < bytes_to_read ){
     usleep(SLEEP_TIME);
     read(xd->fd, rx_buff+idx, 1);
-    print_debug("Reading: idx:%d\t, rx_buff: %x\n",idx, rx_buff[idx]);
+    print_test("Reading: idx:%d\t, rx_buff: %x\n",idx, rx_buff[idx]);
     idx++;
   }
 
@@ -156,7 +160,7 @@ int Spi::transfer(Xmega_Transfer &xt){
   //Calculate CRC
   uint16_t calc_crc = 0; 
   calc_crc = Crc::CRCCCITT(rx_buff, bytes_to_read, 0);
-  //print_test("Calc x1 crc: data: 0x%x\n", calc_crc);
+  print_test("Calc x1 crc: data: 0x%x\n", calc_crc);
 
   //Used to store incoming CRC
   uint16_t rx_crc = 0;
@@ -168,7 +172,7 @@ int Spi::transfer(Xmega_Transfer &xt){
     read(xd->fd, rx_buff+ bytes_to_read + idx_crc, 1);
     rx_crc |= rx_buff[bytes_to_read + idx_crc] << (idx_crc * 8);
     idx_crc++;
-    //print_test("Recieved x1 crc: data: 0x%x\n", rx_buff[idx+idx_crc1]);
+    print_test("crc: data: 0x%x\n", rx_crc);
   }
 
   //Check CRC accuracy 
@@ -178,18 +182,20 @@ int Spi::transfer(Xmega_Transfer &xt){
   }
 
   //Copy in the data!
-  memcpy(xd->buff, &rx_buff, bytes_to_read);
+  if(xt.req == X_R_SENSOR || xt.req == X_R_ALL){
+    memcpy(xd->buff, &rx_buff, bytes_to_read);
+  }
 
   //Set appropriate sensor_state or state
-  if(xt.req == 1){
-    xd->sensor_status = rx_buff[bytes_to_read];
+  if(xt.req == X_R_SENSOR_STATUS){
+    xd->sensor_status = rx_buff[0];
   }
-  else if(xt.req ==2){
-    xd->state = rx_buff[bytes_to_read];
+  else if(xt.req == X_R_STATE){
+    xd->state = rx_buff[0];
   }
-  else{
-    xd->sensor_status = rx_buff[bytes_to_read];
-    xd->state = rx_buff[bytes_to_read+1];
+  else if(xt.req == X_R_ALL){
+    xd->sensor_status = rx_buff[bytes_to_read-2];
+    xd->state = rx_buff[bytes_to_read-1];
   }
 
   return 0;
