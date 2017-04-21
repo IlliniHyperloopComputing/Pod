@@ -67,24 +67,52 @@ int main (void)
 	PMIC.CTRL = 0x04; // enable high priority interrupts
 	sei();            // enable global interrupts
 	
-	twi_master_options_t opt = {
-		.speed = 50000,
+	twi_master_options_t opt48 = {
+		.speed = 100000,
 		.chip = 0x48
 	};
-	twi_master_setup(&TWIF, &opt);
-	const uint8_t twi_setup[] = {0x42, 0x83};
-	twi_package_t packet_write = {
+	twi_master_setup(&TWIF, &opt48);
+	
+	twi_master_options_t opt49 = {
+		.speed = 100000,
+		.chip = 0x49
+	};
+	twi_master_setup(&TWIF, &opt49);
+	
+	twi_master_options_t opt4A = {
+		.speed = 100000,
+		.chip = 0x4A
+	};
+	twi_master_setup(&TWIF, &opt4A);
+	
+	const uint8_t adc_setup_bytes[] = {0x42, 0x83};
+	twi_package_t adc_setup_48 = {
 		.addr			= 0x01,
 		.addr_length	= sizeof(uint8_t),
 		.chip			= 0x48,
-		.buffer			= (void *)twi_setup,
-		.length			= sizeof(twi_setup)
-		
+		.buffer			= (void *)adc_setup_bytes,
+		.length			= sizeof(adc_setup_bytes)
+	};
+	twi_package_t adc_setup_49 = {
+		.addr			= 0x01,
+		.addr_length	= sizeof(uint8_t),
+		.chip			= 0x49,
+		.buffer			= (void *)adc_setup_bytes,
+		.length			= sizeof(adc_setup_bytes)
+	};
+	twi_package_t adc_setup_4A = {
+		.addr			= 0x01,
+		.addr_length	= sizeof(uint8_t),
+		.chip			= 0x4A,
+		.buffer			= (void *)adc_setup_bytes,
+		.length			= sizeof(adc_setup_bytes)
 	};
 	
-	while(twi_master_write(&TWIF, &packet_write) != TWI_SUCCESS);
 	
-	
+	while(twi_master_write(&TWIF, &adc_setup_48) != TWI_SUCCESS);
+	while(twi_master_write(&TWIF, &adc_setup_49) != TWI_SUCCESS);
+	while(twi_master_write(&TWIF, &adc_setup_4A) != TWI_SUCCESS);
+	ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 	
 	while (1) {
 		
@@ -95,7 +123,7 @@ int main (void)
 		if(spic_flag){
 			//Indicate start of incoming command
 			if(rx_byte == SPI_TX_START){
-				ioport_set_pin_level(LED_0_PIN,LED_0_INACTIVE);
+				
 				cmd_idx = CMD_DATA_SIZE;
 				//Reset all the send variables/tmp storage
 				cmd_finished = 0;
@@ -195,9 +223,20 @@ int main (void)
 			};
 			
 			if(twi_master_read(&TWIF, &packet_read) == TWI_SUCCESS){
-				sensor_data[0] = recieved_data[0];
-				sensor_data[1] = recieved_data[1];
-				
+				sensor_data[0] = recieved_data[1];
+				sensor_data[1] = recieved_data[0];
+			}
+			
+			packet_read.chip = 0x49;
+			if(twi_master_read(&TWIF,  &packet_read) ==TWI_SUCCESS){
+				sensor_data[2] = recieved_data[1];
+				sensor_data[3] = recieved_data[0];
+			}
+			
+			packet_read.chip = 0x4A;
+			if(twi_master_read(&TWIF,  &packet_read) ==TWI_SUCCESS){
+				sensor_data[4] = recieved_data[1];
+				sensor_data[5] = recieved_data[0];
 			}
 			
 			lock = 1;
