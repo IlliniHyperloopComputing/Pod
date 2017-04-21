@@ -104,9 +104,11 @@ target/
 *.out
 *.app
 build
-build_debug
+build-debug
+build-test
 cross
-cross_debug
+cross-debug
+cross-test
 
 # Other
 .depend
