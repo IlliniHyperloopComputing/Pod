@@ -3,33 +3,33 @@ SPI_Communication_Dev.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00000f26  00000000  00000000  00000094  2**1
+  0 .text         00000c5e  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000006  00802000  00000f26  00000fba  2**0
+  1 .data         00000006  00802000  00000c5e  00000cf2  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          0000002c  00802006  00802006  00000fc0  2**0
+  2 .bss          0000002c  00802006  00802006  00000cf8  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  00000fc0  2**0
+  3 .comment      00000030  00000000  00000000  00000cf8  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000ff0  2**2
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  00000d28  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 00000170  00000000  00000000  00001030  2**0
+  5 .debug_aranges 00000170  00000000  00000000  00000d68  2**0
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   00008cf4  00000000  00000000  000011a0  2**0
+  6 .debug_info   00008805  00000000  00000000  00000ed8  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00004838  00000000  00000000  00009e94  2**0
+  7 .debug_abbrev 000047f0  00000000  00000000  000096dd  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00002d94  00000000  00000000  0000e6cc  2**0
+  8 .debug_line   00002bb6  00000000  00000000  0000decd  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  000004a4  00000000  00000000  00011460  2**2
+  9 .debug_frame  000004e4  00000000  00000000  00010a84  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    0003243a  00000000  00000000  00011904  2**0
+ 10 .debug_str    00032429  00000000  00000000  00010f68  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    000014cd  00000000  00000000  00043d3e  2**0
+ 11 .debug_loc    00001490  00000000  00000000  00043391  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 00000170  00000000  00000000  0004520b  2**0
+ 12 .debug_ranges 00000170  00000000  00000000  00044821  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_macro  0000b2ea  00000000  00000000  0004537b  2**0
+ 13 .debug_macro  0000b2ea  00000000  00000000  00044991  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -83,7 +83,7 @@ Disassembly of section .text:
   5a:	00 00       	nop
   5c:	f3 c0       	rjmp	.+486    	; 0x244 <__bad_interrupt>
   5e:	00 00       	nop
-  60:	15 c5       	rjmp	.+2602   	; 0xa8c <__vector_24>
+  60:	b1 c3       	rjmp	.+1890   	; 0x7c4 <__vector_24>
   62:	00 00       	nop
   64:	ef c0       	rjmp	.+478    	; 0x244 <__bad_interrupt>
   66:	00 00       	nop
@@ -308,8 +308,8 @@ Disassembly of section .text:
  214:	10 e2       	ldi	r17, 0x20	; 32
  216:	a0 e0       	ldi	r26, 0x00	; 0
  218:	b0 e2       	ldi	r27, 0x20	; 32
- 21a:	e6 e2       	ldi	r30, 0x26	; 38
- 21c:	ff e0       	ldi	r31, 0x0F	; 15
+ 21a:	ee e5       	ldi	r30, 0x5E	; 94
+ 21c:	fc e0       	ldi	r31, 0x0C	; 12
  21e:	00 e0       	ldi	r16, 0x00	; 0
  220:	0b bf       	out	0x3b, r16	; 59
  222:	02 c0       	rjmp	.+4      	; 0x228 <__do_copy_data+0x14>
@@ -333,8 +333,8 @@ Disassembly of section .text:
  23a:	a2 33       	cpi	r26, 0x32	; 50
  23c:	b2 07       	cpc	r27, r18
  23e:	e1 f7       	brne	.-8      	; 0x238 <.do_clear_bss_loop>
- 240:	46 d4       	rcall	.+2188   	; 0xace <main>
- 242:	6f c6       	rjmp	.+3294   	; 0xf22 <_exit>
+ 240:	c3 d3       	rcall	.+1926   	; 0x9c8 <main>
+ 242:	0b c5       	rjmp	.+2582   	; 0xc5a <_exit>
 
 00000244 <__bad_interrupt>:
  244:	dd ce       	rjmp	.-582    	; 0x0 <__vectors>
@@ -1521,1369 +1521,817 @@ static inline status_code_t twim_acquire(bool no_wait)
  7c0:	cf 91       	pop	r28
  7c2:	08 95       	ret
 
-000007c4 <twi_master_setup>:
-
-typedef TWI_t *twi_master_t;
-typedef twi_options_t twi_master_options_t;
-
-static inline int twi_master_setup(twi_master_t twi, twi_master_options_t *opt)
-{
- 7c4:	0f 93       	push	r16
- 7c6:	1f 93       	push	r17
- 7c8:	cf 93       	push	r28
- 7ca:	df 93       	push	r29
- 7cc:	ec 01       	movw	r28, r24
- 7ce:	8b 01       	movw	r16, r22
-	opt->speed_reg = TWI_BAUD(sysclk_get_cpu_hz(),opt->speed);
- 7d0:	fb 01       	movw	r30, r22
- 7d2:	80 81       	ld	r24, Z
- 7d4:	91 81       	ldd	r25, Z+1	; 0x01
- 7d6:	a2 81       	ldd	r26, Z+2	; 0x02
- 7d8:	b3 81       	ldd	r27, Z+3	; 0x03
- 7da:	9c 01       	movw	r18, r24
- 7dc:	ad 01       	movw	r20, r26
- 7de:	22 0f       	add	r18, r18
- 7e0:	33 1f       	adc	r19, r19
- 7e2:	44 1f       	adc	r20, r20
- 7e4:	55 1f       	adc	r21, r21
- 7e6:	60 e8       	ldi	r22, 0x80	; 128
- 7e8:	74 e8       	ldi	r23, 0x84	; 132
- 7ea:	8e e1       	ldi	r24, 0x1E	; 30
- 7ec:	90 e0       	ldi	r25, 0x00	; 0
- 7ee:	77 d3       	rcall	.+1774   	; 0xede <__udivmodsi4>
- 7f0:	da 01       	movw	r26, r20
- 7f2:	c9 01       	movw	r24, r18
- 7f4:	05 97       	sbiw	r24, 0x05	; 5
- 7f6:	a1 09       	sbc	r26, r1
- 7f8:	b1 09       	sbc	r27, r1
- 7fa:	f8 01       	movw	r30, r16
- 7fc:	84 83       	std	Z+4, r24	; 0x04
- 7fe:	95 83       	std	Z+5, r25	; 0x05
- 800:	a6 83       	std	Z+6, r26	; 0x06
- 802:	b7 83       	std	Z+7, r27	; 0x07
- *
- * \param module Pointer to the module's base address.
- */
-static inline void sysclk_enable_peripheral_clock(const volatile void *module)
-{
-	if (module == NULL) {
- 804:	20 97       	sbiw	r28, 0x00	; 0
- 806:	09 f4       	brne	.+2      	; 0x80a <twi_master_setup+0x46>
- 808:	36 c1       	rjmp	.+620    	; 0xa76 <twi_master_setup+0x2b2>
-		Assert(false);
-	}
-#ifdef AES
-	else if (module == &AES) {
- 80a:	c0 3c       	cpi	r28, 0xC0	; 192
- 80c:	d1 05       	cpc	r29, r1
- 80e:	21 f4       	brne	.+8      	; 0x818 <twi_master_setup+0x54>
-		sysclk_enable_module(SYSCLK_PORT_GEN, SYSCLK_AES);
- 810:	60 e1       	ldi	r22, 0x10	; 16
- 812:	80 e0       	ldi	r24, 0x00	; 0
- 814:	18 dd       	rcall	.-1488   	; 0x246 <sysclk_enable_module>
- 816:	2f c1       	rjmp	.+606    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef EBI
-	else if (module == &EBI) {
- 818:	c0 34       	cpi	r28, 0x40	; 64
- 81a:	f4 e0       	ldi	r31, 0x04	; 4
- 81c:	df 07       	cpc	r29, r31
- 81e:	21 f4       	brne	.+8      	; 0x828 <twi_master_setup+0x64>
-		sysclk_enable_module(SYSCLK_PORT_GEN, SYSCLK_EBI);
- 820:	68 e0       	ldi	r22, 0x08	; 8
- 822:	80 e0       	ldi	r24, 0x00	; 0
- 824:	10 dd       	rcall	.-1504   	; 0x246 <sysclk_enable_module>
- 826:	27 c1       	rjmp	.+590    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef RTC
-	else if (module == &RTC) {
- 828:	c1 15       	cp	r28, r1
- 82a:	84 e0       	ldi	r24, 0x04	; 4
- 82c:	d8 07       	cpc	r29, r24
- 82e:	21 f4       	brne	.+8      	; 0x838 <twi_master_setup+0x74>
-		sysclk_enable_module(SYSCLK_PORT_GEN, SYSCLK_RTC);
- 830:	64 e0       	ldi	r22, 0x04	; 4
- 832:	80 e0       	ldi	r24, 0x00	; 0
- 834:	08 dd       	rcall	.-1520   	; 0x246 <sysclk_enable_module>
- 836:	1f c1       	rjmp	.+574    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef EVSYS
-	else if (module == &EVSYS) {
- 838:	c0 38       	cpi	r28, 0x80	; 128
- 83a:	e1 e0       	ldi	r30, 0x01	; 1
- 83c:	de 07       	cpc	r29, r30
- 83e:	21 f4       	brne	.+8      	; 0x848 <twi_master_setup+0x84>
-		sysclk_enable_module(SYSCLK_PORT_GEN, SYSCLK_EVSYS);
- 840:	62 e0       	ldi	r22, 0x02	; 2
- 842:	80 e0       	ldi	r24, 0x00	; 0
- 844:	00 dd       	rcall	.-1536   	; 0x246 <sysclk_enable_module>
- 846:	17 c1       	rjmp	.+558    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef DMA
-	else if (module == &DMA) {
- 848:	c1 15       	cp	r28, r1
- 84a:	f1 e0       	ldi	r31, 0x01	; 1
- 84c:	df 07       	cpc	r29, r31
- 84e:	21 f4       	brne	.+8      	; 0x858 <twi_master_setup+0x94>
-		sysclk_enable_module(SYSCLK_PORT_GEN, SYSCLK_DMA);
- 850:	61 e0       	ldi	r22, 0x01	; 1
- 852:	80 e0       	ldi	r24, 0x00	; 0
- 854:	f8 dc       	rcall	.-1552   	; 0x246 <sysclk_enable_module>
- 856:	0f c1       	rjmp	.+542    	; 0xa76 <twi_master_setup+0x2b2>
-	else if (module == &EDMA) {
-		sysclk_enable_module(SYSCLK_PORT_GEN, SYSCLK_EDMA);
-	}
-#endif
-#ifdef ACA
-	else if (module == &ACA) {
- 858:	c0 38       	cpi	r28, 0x80	; 128
- 85a:	83 e0       	ldi	r24, 0x03	; 3
- 85c:	d8 07       	cpc	r29, r24
- 85e:	21 f4       	brne	.+8      	; 0x868 <twi_master_setup+0xa4>
-		sysclk_enable_module(SYSCLK_PORT_A, SYSCLK_AC);
- 860:	61 e0       	ldi	r22, 0x01	; 1
- 862:	81 e0       	ldi	r24, 0x01	; 1
- 864:	f0 dc       	rcall	.-1568   	; 0x246 <sysclk_enable_module>
- 866:	07 c1       	rjmp	.+526    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef ACB
-	else if (module == &ACB) {
- 868:	c0 39       	cpi	r28, 0x90	; 144
- 86a:	e3 e0       	ldi	r30, 0x03	; 3
- 86c:	de 07       	cpc	r29, r30
- 86e:	21 f4       	brne	.+8      	; 0x878 <twi_master_setup+0xb4>
-		sysclk_enable_module(SYSCLK_PORT_B, SYSCLK_AC);
- 870:	61 e0       	ldi	r22, 0x01	; 1
- 872:	82 e0       	ldi	r24, 0x02	; 2
- 874:	e8 dc       	rcall	.-1584   	; 0x246 <sysclk_enable_module>
- 876:	ff c0       	rjmp	.+510    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef ADCA
-	else if (module == &ADCA) {
- 878:	c1 15       	cp	r28, r1
- 87a:	f2 e0       	ldi	r31, 0x02	; 2
- 87c:	df 07       	cpc	r29, r31
- 87e:	21 f4       	brne	.+8      	; 0x888 <twi_master_setup+0xc4>
-		sysclk_enable_module(SYSCLK_PORT_A, SYSCLK_ADC);
- 880:	62 e0       	ldi	r22, 0x02	; 2
- 882:	81 e0       	ldi	r24, 0x01	; 1
- 884:	e0 dc       	rcall	.-1600   	; 0x246 <sysclk_enable_module>
- 886:	f7 c0       	rjmp	.+494    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef ADCB
-	else if (module == &ADCB) {
- 888:	c0 34       	cpi	r28, 0x40	; 64
- 88a:	82 e0       	ldi	r24, 0x02	; 2
- 88c:	d8 07       	cpc	r29, r24
- 88e:	21 f4       	brne	.+8      	; 0x898 <twi_master_setup+0xd4>
-		sysclk_enable_module(SYSCLK_PORT_B, SYSCLK_ADC);
- 890:	62 e0       	ldi	r22, 0x02	; 2
- 892:	82 e0       	ldi	r24, 0x02	; 2
- 894:	d8 dc       	rcall	.-1616   	; 0x246 <sysclk_enable_module>
- 896:	ef c0       	rjmp	.+478    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef DACA
-	else if (module == &DACA) {
- 898:	c1 15       	cp	r28, r1
- 89a:	e3 e0       	ldi	r30, 0x03	; 3
- 89c:	de 07       	cpc	r29, r30
- 89e:	21 f4       	brne	.+8      	; 0x8a8 <twi_master_setup+0xe4>
-		sysclk_enable_module(SYSCLK_PORT_A, SYSCLK_DAC);
- 8a0:	64 e0       	ldi	r22, 0x04	; 4
- 8a2:	81 e0       	ldi	r24, 0x01	; 1
- 8a4:	d0 dc       	rcall	.-1632   	; 0x246 <sysclk_enable_module>
- 8a6:	e7 c0       	rjmp	.+462    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-// Workaround for bad XMEGA D header file
-#if !XMEGA_D
-#ifdef DACB
-	else if (module == &DACB) {
- 8a8:	c0 32       	cpi	r28, 0x20	; 32
- 8aa:	f3 e0       	ldi	r31, 0x03	; 3
- 8ac:	df 07       	cpc	r29, r31
- 8ae:	21 f4       	brne	.+8      	; 0x8b8 <twi_master_setup+0xf4>
-		sysclk_enable_module(SYSCLK_PORT_B, SYSCLK_DAC);
- 8b0:	64 e0       	ldi	r22, 0x04	; 4
- 8b2:	82 e0       	ldi	r24, 0x02	; 2
- 8b4:	c8 dc       	rcall	.-1648   	; 0x246 <sysclk_enable_module>
- 8b6:	df c0       	rjmp	.+446    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#endif // Workaround end
-#ifdef TCC0
-	else if (module == &TCC0) {
- 8b8:	c1 15       	cp	r28, r1
- 8ba:	88 e0       	ldi	r24, 0x08	; 8
- 8bc:	d8 07       	cpc	r29, r24
- 8be:	21 f4       	brne	.+8      	; 0x8c8 <twi_master_setup+0x104>
-		sysclk_enable_module(SYSCLK_PORT_C, SYSCLK_TC0);
- 8c0:	61 e0       	ldi	r22, 0x01	; 1
- 8c2:	83 e0       	ldi	r24, 0x03	; 3
- 8c4:	c0 dc       	rcall	.-1664   	; 0x246 <sysclk_enable_module>
- 8c6:	d7 c0       	rjmp	.+430    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef TCD0
-	else if (module == &TCD0) {
- 8c8:	c1 15       	cp	r28, r1
- 8ca:	e9 e0       	ldi	r30, 0x09	; 9
- 8cc:	de 07       	cpc	r29, r30
- 8ce:	21 f4       	brne	.+8      	; 0x8d8 <twi_master_setup+0x114>
-		sysclk_enable_module(SYSCLK_PORT_D, SYSCLK_TC0);
- 8d0:	61 e0       	ldi	r22, 0x01	; 1
- 8d2:	84 e0       	ldi	r24, 0x04	; 4
- 8d4:	b8 dc       	rcall	.-1680   	; 0x246 <sysclk_enable_module>
- 8d6:	cf c0       	rjmp	.+414    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef TCE0
-	else if (module == &TCE0) {
- 8d8:	c1 15       	cp	r28, r1
- 8da:	fa e0       	ldi	r31, 0x0A	; 10
- 8dc:	df 07       	cpc	r29, r31
- 8de:	21 f4       	brne	.+8      	; 0x8e8 <twi_master_setup+0x124>
-		sysclk_enable_module(SYSCLK_PORT_E, SYSCLK_TC0);
- 8e0:	61 e0       	ldi	r22, 0x01	; 1
- 8e2:	85 e0       	ldi	r24, 0x05	; 5
- 8e4:	b0 dc       	rcall	.-1696   	; 0x246 <sysclk_enable_module>
- 8e6:	c7 c0       	rjmp	.+398    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef TCF0
-	else if (module == &TCF0) {
- 8e8:	c1 15       	cp	r28, r1
- 8ea:	8b e0       	ldi	r24, 0x0B	; 11
- 8ec:	d8 07       	cpc	r29, r24
- 8ee:	21 f4       	brne	.+8      	; 0x8f8 <twi_master_setup+0x134>
-		sysclk_enable_module(SYSCLK_PORT_F, SYSCLK_TC0);
- 8f0:	61 e0       	ldi	r22, 0x01	; 1
- 8f2:	86 e0       	ldi	r24, 0x06	; 6
- 8f4:	a8 dc       	rcall	.-1712   	; 0x246 <sysclk_enable_module>
- 8f6:	bf c0       	rjmp	.+382    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef TCC1
-	else if (module == &TCC1) {
- 8f8:	c0 34       	cpi	r28, 0x40	; 64
- 8fa:	e8 e0       	ldi	r30, 0x08	; 8
- 8fc:	de 07       	cpc	r29, r30
- 8fe:	21 f4       	brne	.+8      	; 0x908 <twi_master_setup+0x144>
-		sysclk_enable_module(SYSCLK_PORT_C, SYSCLK_TC1);
- 900:	62 e0       	ldi	r22, 0x02	; 2
- 902:	83 e0       	ldi	r24, 0x03	; 3
- 904:	a0 dc       	rcall	.-1728   	; 0x246 <sysclk_enable_module>
- 906:	b7 c0       	rjmp	.+366    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef TCD1
-	else if (module == &TCD1) {
- 908:	c0 34       	cpi	r28, 0x40	; 64
- 90a:	f9 e0       	ldi	r31, 0x09	; 9
- 90c:	df 07       	cpc	r29, r31
- 90e:	21 f4       	brne	.+8      	; 0x918 <twi_master_setup+0x154>
-		sysclk_enable_module(SYSCLK_PORT_D, SYSCLK_TC1);
- 910:	62 e0       	ldi	r22, 0x02	; 2
- 912:	84 e0       	ldi	r24, 0x04	; 4
- 914:	98 dc       	rcall	.-1744   	; 0x246 <sysclk_enable_module>
- 916:	af c0       	rjmp	.+350    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef TCE1
-	else if (module == &TCE1) {
- 918:	c0 34       	cpi	r28, 0x40	; 64
- 91a:	8a e0       	ldi	r24, 0x0A	; 10
- 91c:	d8 07       	cpc	r29, r24
- 91e:	21 f4       	brne	.+8      	; 0x928 <twi_master_setup+0x164>
-		sysclk_enable_module(SYSCLK_PORT_E, SYSCLK_TC1);
- 920:	62 e0       	ldi	r22, 0x02	; 2
- 922:	85 e0       	ldi	r24, 0x05	; 5
- 924:	90 dc       	rcall	.-1760   	; 0x246 <sysclk_enable_module>
- 926:	a7 c0       	rjmp	.+334    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef TCF1
-	else if (module == &TCF1) {
- 928:	c0 34       	cpi	r28, 0x40	; 64
- 92a:	eb e0       	ldi	r30, 0x0B	; 11
- 92c:	de 07       	cpc	r29, r30
- 92e:	21 f4       	brne	.+8      	; 0x938 <twi_master_setup+0x174>
-		sysclk_enable_module(SYSCLK_PORT_F, SYSCLK_TC1);
- 930:	62 e0       	ldi	r22, 0x02	; 2
- 932:	86 e0       	ldi	r24, 0x06	; 6
- 934:	88 dc       	rcall	.-1776   	; 0x246 <sysclk_enable_module>
- 936:	9f c0       	rjmp	.+318    	; 0xa76 <twi_master_setup+0x2b2>
-	else if (module == &TCD5) {
-		sysclk_enable_module(SYSCLK_PORT_D, SYSCLK_TC5);
-	}
-#endif
-#ifdef HIRESC
-	else if (module == &HIRESC) {
- 938:	c0 39       	cpi	r28, 0x90	; 144
- 93a:	f8 e0       	ldi	r31, 0x08	; 8
- 93c:	df 07       	cpc	r29, r31
- 93e:	21 f4       	brne	.+8      	; 0x948 <twi_master_setup+0x184>
-			sysclk_enable_module(SYSCLK_PORT_C, SYSCLK_HIRES);
- 940:	64 e0       	ldi	r22, 0x04	; 4
- 942:	83 e0       	ldi	r24, 0x03	; 3
- 944:	80 dc       	rcall	.-1792   	; 0x246 <sysclk_enable_module>
- 946:	97 c0       	rjmp	.+302    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef HIRESD
-	else if (module == &HIRESD) {
- 948:	c0 39       	cpi	r28, 0x90	; 144
- 94a:	89 e0       	ldi	r24, 0x09	; 9
- 94c:	d8 07       	cpc	r29, r24
- 94e:	21 f4       	brne	.+8      	; 0x958 <twi_master_setup+0x194>
-		sysclk_enable_module(SYSCLK_PORT_D, SYSCLK_HIRES);
- 950:	64 e0       	ldi	r22, 0x04	; 4
- 952:	84 e0       	ldi	r24, 0x04	; 4
- 954:	78 dc       	rcall	.-1808   	; 0x246 <sysclk_enable_module>
- 956:	8f c0       	rjmp	.+286    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef HIRESE
-	else if (module == &HIRESE) {
- 958:	c0 39       	cpi	r28, 0x90	; 144
- 95a:	ea e0       	ldi	r30, 0x0A	; 10
- 95c:	de 07       	cpc	r29, r30
- 95e:	21 f4       	brne	.+8      	; 0x968 <twi_master_setup+0x1a4>
-		sysclk_enable_module(SYSCLK_PORT_E, SYSCLK_HIRES);
- 960:	64 e0       	ldi	r22, 0x04	; 4
- 962:	85 e0       	ldi	r24, 0x05	; 5
- 964:	70 dc       	rcall	.-1824   	; 0x246 <sysclk_enable_module>
- 966:	87 c0       	rjmp	.+270    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef HIRESF
-	else if (module == &HIRESF) {
- 968:	c0 39       	cpi	r28, 0x90	; 144
- 96a:	fb e0       	ldi	r31, 0x0B	; 11
- 96c:	df 07       	cpc	r29, r31
- 96e:	21 f4       	brne	.+8      	; 0x978 <twi_master_setup+0x1b4>
-		sysclk_enable_module(SYSCLK_PORT_F, SYSCLK_HIRES);
- 970:	64 e0       	ldi	r22, 0x04	; 4
- 972:	86 e0       	ldi	r24, 0x06	; 6
- 974:	68 dc       	rcall	.-1840   	; 0x246 <sysclk_enable_module>
- 976:	7f c0       	rjmp	.+254    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef SPIC
-	else if (module == &SPIC) {
- 978:	c0 3c       	cpi	r28, 0xC0	; 192
- 97a:	88 e0       	ldi	r24, 0x08	; 8
- 97c:	d8 07       	cpc	r29, r24
- 97e:	21 f4       	brne	.+8      	; 0x988 <twi_master_setup+0x1c4>
-		sysclk_enable_module(SYSCLK_PORT_C, SYSCLK_SPI);
- 980:	68 e0       	ldi	r22, 0x08	; 8
- 982:	83 e0       	ldi	r24, 0x03	; 3
- 984:	60 dc       	rcall	.-1856   	; 0x246 <sysclk_enable_module>
- 986:	77 c0       	rjmp	.+238    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef SPID
-	else if (module == &SPID) {
- 988:	c0 3c       	cpi	r28, 0xC0	; 192
- 98a:	e9 e0       	ldi	r30, 0x09	; 9
- 98c:	de 07       	cpc	r29, r30
- 98e:	21 f4       	brne	.+8      	; 0x998 <twi_master_setup+0x1d4>
-		sysclk_enable_module(SYSCLK_PORT_D, SYSCLK_SPI);
- 990:	68 e0       	ldi	r22, 0x08	; 8
- 992:	84 e0       	ldi	r24, 0x04	; 4
- 994:	58 dc       	rcall	.-1872   	; 0x246 <sysclk_enable_module>
- 996:	6f c0       	rjmp	.+222    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef SPIE
-	else if (module == &SPIE) {
- 998:	c0 3c       	cpi	r28, 0xC0	; 192
- 99a:	fa e0       	ldi	r31, 0x0A	; 10
- 99c:	df 07       	cpc	r29, r31
- 99e:	21 f4       	brne	.+8      	; 0x9a8 <twi_master_setup+0x1e4>
-		sysclk_enable_module(SYSCLK_PORT_E, SYSCLK_SPI);
- 9a0:	68 e0       	ldi	r22, 0x08	; 8
- 9a2:	85 e0       	ldi	r24, 0x05	; 5
- 9a4:	50 dc       	rcall	.-1888   	; 0x246 <sysclk_enable_module>
- 9a6:	67 c0       	rjmp	.+206    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef SPIF
-	else if (module == &SPIF) {
- 9a8:	c0 3c       	cpi	r28, 0xC0	; 192
- 9aa:	8b e0       	ldi	r24, 0x0B	; 11
- 9ac:	d8 07       	cpc	r29, r24
- 9ae:	21 f4       	brne	.+8      	; 0x9b8 <twi_master_setup+0x1f4>
-		sysclk_enable_module(SYSCLK_PORT_F, SYSCLK_SPI);
- 9b0:	68 e0       	ldi	r22, 0x08	; 8
- 9b2:	86 e0       	ldi	r24, 0x06	; 6
- 9b4:	48 dc       	rcall	.-1904   	; 0x246 <sysclk_enable_module>
- 9b6:	5f c0       	rjmp	.+190    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef USARTC0
-	else if (module == &USARTC0) {
- 9b8:	c0 3a       	cpi	r28, 0xA0	; 160
- 9ba:	e8 e0       	ldi	r30, 0x08	; 8
- 9bc:	de 07       	cpc	r29, r30
- 9be:	21 f4       	brne	.+8      	; 0x9c8 <twi_master_setup+0x204>
-		sysclk_enable_module(SYSCLK_PORT_C, SYSCLK_USART0);
- 9c0:	60 e1       	ldi	r22, 0x10	; 16
- 9c2:	83 e0       	ldi	r24, 0x03	; 3
- 9c4:	40 dc       	rcall	.-1920   	; 0x246 <sysclk_enable_module>
- 9c6:	57 c0       	rjmp	.+174    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef USARTD0
-	else if (module == &USARTD0) {
- 9c8:	c0 3a       	cpi	r28, 0xA0	; 160
- 9ca:	f9 e0       	ldi	r31, 0x09	; 9
- 9cc:	df 07       	cpc	r29, r31
- 9ce:	21 f4       	brne	.+8      	; 0x9d8 <twi_master_setup+0x214>
-		sysclk_enable_module(SYSCLK_PORT_D, SYSCLK_USART0);
- 9d0:	60 e1       	ldi	r22, 0x10	; 16
- 9d2:	84 e0       	ldi	r24, 0x04	; 4
- 9d4:	38 dc       	rcall	.-1936   	; 0x246 <sysclk_enable_module>
- 9d6:	4f c0       	rjmp	.+158    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef USARTE0
-	else if (module == &USARTE0) {
- 9d8:	c0 3a       	cpi	r28, 0xA0	; 160
- 9da:	8a e0       	ldi	r24, 0x0A	; 10
- 9dc:	d8 07       	cpc	r29, r24
- 9de:	21 f4       	brne	.+8      	; 0x9e8 <twi_master_setup+0x224>
-		sysclk_enable_module(SYSCLK_PORT_E, SYSCLK_USART0);
- 9e0:	60 e1       	ldi	r22, 0x10	; 16
- 9e2:	85 e0       	ldi	r24, 0x05	; 5
- 9e4:	30 dc       	rcall	.-1952   	; 0x246 <sysclk_enable_module>
- 9e6:	47 c0       	rjmp	.+142    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef USARTF0
-	else if (module == &USARTF0) {
- 9e8:	c0 3a       	cpi	r28, 0xA0	; 160
- 9ea:	eb e0       	ldi	r30, 0x0B	; 11
- 9ec:	de 07       	cpc	r29, r30
- 9ee:	21 f4       	brne	.+8      	; 0x9f8 <twi_master_setup+0x234>
-		sysclk_enable_module(SYSCLK_PORT_F, SYSCLK_USART0);
- 9f0:	60 e1       	ldi	r22, 0x10	; 16
- 9f2:	86 e0       	ldi	r24, 0x06	; 6
- 9f4:	28 dc       	rcall	.-1968   	; 0x246 <sysclk_enable_module>
- 9f6:	3f c0       	rjmp	.+126    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef USARTC1
-	else if (module == &USARTC1) {
- 9f8:	c0 3b       	cpi	r28, 0xB0	; 176
- 9fa:	f8 e0       	ldi	r31, 0x08	; 8
- 9fc:	df 07       	cpc	r29, r31
- 9fe:	21 f4       	brne	.+8      	; 0xa08 <twi_master_setup+0x244>
-		sysclk_enable_module(SYSCLK_PORT_C, SYSCLK_USART1);
- a00:	60 e2       	ldi	r22, 0x20	; 32
- a02:	83 e0       	ldi	r24, 0x03	; 3
- a04:	20 dc       	rcall	.-1984   	; 0x246 <sysclk_enable_module>
- a06:	37 c0       	rjmp	.+110    	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef USARTD1
-	else if (module == &USARTD1) {
- a08:	c0 3b       	cpi	r28, 0xB0	; 176
- a0a:	89 e0       	ldi	r24, 0x09	; 9
- a0c:	d8 07       	cpc	r29, r24
- a0e:	21 f4       	brne	.+8      	; 0xa18 <twi_master_setup+0x254>
-		sysclk_enable_module(SYSCLK_PORT_D, SYSCLK_USART1);
- a10:	60 e2       	ldi	r22, 0x20	; 32
- a12:	84 e0       	ldi	r24, 0x04	; 4
- a14:	18 dc       	rcall	.-2000   	; 0x246 <sysclk_enable_module>
- a16:	2f c0       	rjmp	.+94     	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef USARTE1
-	else if (module == &USARTE1) {
- a18:	c0 3b       	cpi	r28, 0xB0	; 176
- a1a:	ea e0       	ldi	r30, 0x0A	; 10
- a1c:	de 07       	cpc	r29, r30
- a1e:	21 f4       	brne	.+8      	; 0xa28 <twi_master_setup+0x264>
-		sysclk_enable_module(SYSCLK_PORT_E, SYSCLK_USART1);
- a20:	60 e2       	ldi	r22, 0x20	; 32
- a22:	85 e0       	ldi	r24, 0x05	; 5
- a24:	10 dc       	rcall	.-2016   	; 0x246 <sysclk_enable_module>
- a26:	27 c0       	rjmp	.+78     	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef USARTF1
-	else if (module == &USARTF1) {
- a28:	c0 3b       	cpi	r28, 0xB0	; 176
- a2a:	fb e0       	ldi	r31, 0x0B	; 11
- a2c:	df 07       	cpc	r29, r31
- a2e:	21 f4       	brne	.+8      	; 0xa38 <twi_master_setup+0x274>
-		sysclk_enable_module(SYSCLK_PORT_F, SYSCLK_USART1);
- a30:	60 e2       	ldi	r22, 0x20	; 32
- a32:	86 e0       	ldi	r24, 0x06	; 6
- a34:	08 dc       	rcall	.-2032   	; 0x246 <sysclk_enable_module>
- a36:	1f c0       	rjmp	.+62     	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef TWIC
-	else if (module == &TWIC) {
- a38:	c0 38       	cpi	r28, 0x80	; 128
- a3a:	84 e0       	ldi	r24, 0x04	; 4
- a3c:	d8 07       	cpc	r29, r24
- a3e:	21 f4       	brne	.+8      	; 0xa48 <twi_master_setup+0x284>
-		sysclk_enable_module(SYSCLK_PORT_C, SYSCLK_TWI);
- a40:	60 e4       	ldi	r22, 0x40	; 64
- a42:	83 e0       	ldi	r24, 0x03	; 3
- a44:	00 dc       	rcall	.-2048   	; 0x246 <sysclk_enable_module>
- a46:	17 c0       	rjmp	.+46     	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef TWID
-	else if (module == &TWID) {
- a48:	c0 39       	cpi	r28, 0x90	; 144
- a4a:	e4 e0       	ldi	r30, 0x04	; 4
- a4c:	de 07       	cpc	r29, r30
- a4e:	21 f4       	brne	.+8      	; 0xa58 <twi_master_setup+0x294>
-		sysclk_enable_module(SYSCLK_PORT_D, SYSCLK_TWI);
- a50:	60 e4       	ldi	r22, 0x40	; 64
- a52:	84 e0       	ldi	r24, 0x04	; 4
- a54:	f8 db       	rcall	.-2064   	; 0x246 <sysclk_enable_module>
- a56:	0f c0       	rjmp	.+30     	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef TWIE
-	else if (module == &TWIE) {
- a58:	c0 3a       	cpi	r28, 0xA0	; 160
- a5a:	f4 e0       	ldi	r31, 0x04	; 4
- a5c:	df 07       	cpc	r29, r31
- a5e:	21 f4       	brne	.+8      	; 0xa68 <twi_master_setup+0x2a4>
-		sysclk_enable_module(SYSCLK_PORT_E, SYSCLK_TWI);
- a60:	60 e4       	ldi	r22, 0x40	; 64
- a62:	85 e0       	ldi	r24, 0x05	; 5
- a64:	f0 db       	rcall	.-2080   	; 0x246 <sysclk_enable_module>
- a66:	07 c0       	rjmp	.+14     	; 0xa76 <twi_master_setup+0x2b2>
-	}
-#endif
-#ifdef TWIF
-	else if (module == &TWIF) {
- a68:	c0 3b       	cpi	r28, 0xB0	; 176
- a6a:	84 e0       	ldi	r24, 0x04	; 4
- a6c:	d8 07       	cpc	r29, r24
- a6e:	19 f4       	brne	.+6      	; 0xa76 <twi_master_setup+0x2b2>
-		sysclk_enable_module(SYSCLK_PORT_F, SYSCLK_TWI);
- a70:	60 e4       	ldi	r22, 0x40	; 64
- a72:	86 e0       	ldi	r24, 0x06	; 6
- a74:	e8 db       	rcall	.-2096   	; 0x246 <sysclk_enable_module>
-
-	sysclk_enable_peripheral_clock(twi);
-
-	return twi_master_init(twi,opt);
- a76:	b8 01       	movw	r22, r16
- a78:	ce 01       	movw	r24, r28
- a7a:	32 de       	rcall	.-924    	; 0x6e0 <twi_master_init>
-}
- a7c:	08 2e       	mov	r0, r24
- a7e:	00 0c       	add	r0, r0
- a80:	99 0b       	sbc	r25, r25
- a82:	df 91       	pop	r29
- a84:	cf 91       	pop	r28
- a86:	1f 91       	pop	r17
- a88:	0f 91       	pop	r16
- a8a:	08 95       	ret
-
-00000a8c <__vector_24>:
+000007c4 <__vector_24>:
 
 //lock
 uint8_t lock = 0;
 
 
 ISR(SPIC_INT_vect) {
- a8c:	1f 92       	push	r1
- a8e:	0f 92       	push	r0
- a90:	0f b6       	in	r0, 0x3f	; 63
- a92:	0f 92       	push	r0
- a94:	11 24       	eor	r1, r1
- a96:	08 b6       	in	r0, 0x38	; 56
- a98:	0f 92       	push	r0
- a9a:	18 be       	out	0x38, r1	; 56
- a9c:	8f 93       	push	r24
+ 7c4:	1f 92       	push	r1
+ 7c6:	0f 92       	push	r0
+ 7c8:	0f b6       	in	r0, 0x3f	; 63
+ 7ca:	0f 92       	push	r0
+ 7cc:	11 24       	eor	r1, r1
+ 7ce:	08 b6       	in	r0, 0x38	; 56
+ 7d0:	0f 92       	push	r0
+ 7d2:	18 be       	out	0x38, r1	; 56
+ 7d4:	8f 93       	push	r24
 	rx_byte = SPIC.DATA;
- a9e:	80 91 c3 08 	lds	r24, 0x08C3	; 0x8008c3 <__TEXT_REGION_LENGTH__+0x7008c3>
- aa2:	80 93 24 20 	sts	0x2024, r24	; 0x802024 <rx_byte>
+ 7d6:	80 91 c3 08 	lds	r24, 0x08C3	; 0x8008c3 <__TEXT_REGION_LENGTH__+0x7008c3>
+ 7da:	80 93 24 20 	sts	0x2024, r24	; 0x802024 <rx_byte>
 	spic_flag = 1;
- aa6:	81 e0       	ldi	r24, 0x01	; 1
- aa8:	80 93 23 20 	sts	0x2023, r24	; 0x802023 <spic_flag>
+ 7de:	81 e0       	ldi	r24, 0x01	; 1
+ 7e0:	80 93 23 20 	sts	0x2023, r24	; 0x802023 <spic_flag>
 }
- aac:	8f 91       	pop	r24
- aae:	0f 90       	pop	r0
- ab0:	08 be       	out	0x38, r0	; 56
- ab2:	0f 90       	pop	r0
- ab4:	0f be       	out	0x3f, r0	; 63
- ab6:	0f 90       	pop	r0
- ab8:	1f 90       	pop	r1
- aba:	18 95       	reti
+ 7e4:	8f 91       	pop	r24
+ 7e6:	0f 90       	pop	r0
+ 7e8:	08 be       	out	0x38, r0	; 56
+ 7ea:	0f 90       	pop	r0
+ 7ec:	0f be       	out	0x3f, r0	; 63
+ 7ee:	0f 90       	pop	r0
+ 7f0:	1f 90       	pop	r1
+ 7f2:	18 95       	reti
 
-00000abc <setUpSPIC>:
+000007f4 <setUpSPIC>:
 
 void setUpSPIC()
 {
 	PORTC.DIR = 0x40;		// MISO output; MOSI, SCK, SS inputs
- abc:	80 e4       	ldi	r24, 0x40	; 64
- abe:	80 93 40 06 	sts	0x0640, r24	; 0x800640 <__TEXT_REGION_LENGTH__+0x700640>
+ 7f4:	80 e4       	ldi	r24, 0x40	; 64
+ 7f6:	80 93 40 06 	sts	0x0640, r24	; 0x800640 <__TEXT_REGION_LENGTH__+0x700640>
 	SPIC.CTRL = 0x40;		// slave mode, mode 0
- ac2:	e0 ec       	ldi	r30, 0xC0	; 192
- ac4:	f8 e0       	ldi	r31, 0x08	; 8
- ac6:	80 83       	st	Z, r24
+ 7fa:	e0 ec       	ldi	r30, 0xC0	; 192
+ 7fc:	f8 e0       	ldi	r31, 0x08	; 8
+ 7fe:	80 83       	st	Z, r24
 	SPIC.INTCTRL = 0x03;	// enable interrupts
- ac8:	83 e0       	ldi	r24, 0x03	; 3
- aca:	81 83       	std	Z+1, r24	; 0x01
- acc:	08 95       	ret
+ 800:	83 e0       	ldi	r24, 0x03	; 3
+ 802:	81 83       	std	Z+1, r24	; 0x01
+	PMIC.CTRL = 0x04; // enable high priority interrupts
+ 804:	84 e0       	ldi	r24, 0x04	; 4
+ 806:	80 93 a2 00 	sts	0x00A2, r24	; 0x8000a2 <__TEXT_REGION_LENGTH__+0x7000a2>
+ 80a:	08 95       	ret
 
-00000ace <main>:
+0000080c <setUpI2C>:
 }
 
-
-int main (void)
+void setUpI2C()
 {
- ace:	cf 93       	push	r28
- ad0:	df 93       	push	r29
- ad2:	cd b7       	in	r28, 0x3d	; 61
- ad4:	de b7       	in	r29, 0x3e	; 62
- ad6:	cb 54       	subi	r28, 0x4B	; 75
- ad8:	d1 09       	sbc	r29, r1
- ada:	cd bf       	out	0x3d, r28	; 61
- adc:	de bf       	out	0x3e, r29	; 62
-	board_init();	//Init board
- ade:	94 dc       	rcall	.-1752   	; 0x408 <board_init>
-	//sysclk_init();	//Needed for CRC
-	setUpSPIC();	//Setup SPI on Port C
- ae0:	ed df       	rcall	.-38     	; 0xabc <setUpSPIC>
-	
-	PMIC.CTRL = 0x04; // enable high priority interrupts
- ae2:	84 e0       	ldi	r24, 0x04	; 4
- ae4:	80 93 a2 00 	sts	0x00A2, r24	; 0x8000a2 <__TEXT_REGION_LENGTH__+0x7000a2>
-	sei();            // enable global interrupts
- ae8:	78 94       	sei
-	
+ 80c:	5f 92       	push	r5
+ 80e:	6f 92       	push	r6
+ 810:	7f 92       	push	r7
+ 812:	8f 92       	push	r8
+ 814:	9f 92       	push	r9
+ 816:	af 92       	push	r10
+ 818:	bf 92       	push	r11
+ 81a:	cf 92       	push	r12
+ 81c:	df 92       	push	r13
+ 81e:	ef 92       	push	r14
+ 820:	ff 92       	push	r15
+ 822:	0f 93       	push	r16
+ 824:	1f 93       	push	r17
+ 826:	cf 93       	push	r28
+ 828:	df 93       	push	r29
+ 82a:	cd b7       	in	r28, 0x3d	; 61
+ 82c:	de b7       	in	r29, 0x3e	; 62
+ 82e:	ee 97       	sbiw	r28, 0x3e	; 62
+ 830:	cd bf       	out	0x3d, r28	; 61
+ 832:	de bf       	out	0x3e, r29	; 62
 	twi_master_options_t opt48 = {
- aea:	19 e0       	ldi	r17, 0x09	; 9
- aec:	be 01       	movw	r22, r28
- aee:	6f 5f       	subi	r22, 0xFF	; 255
- af0:	7f 4f       	sbci	r23, 0xFF	; 255
- af2:	db 01       	movw	r26, r22
- af4:	e1 2f       	mov	r30, r17
- af6:	1d 92       	st	X+, r1
- af8:	ea 95       	dec	r30
- afa:	e9 f7       	brne	.-6      	; 0xaf6 <main+0x28>
- afc:	0f 2e       	mov	r0, r31
- afe:	f0 ea       	ldi	r31, 0xA0	; 160
- b00:	cf 2e       	mov	r12, r31
- b02:	f6 e8       	ldi	r31, 0x86	; 134
- b04:	df 2e       	mov	r13, r31
- b06:	ee 24       	eor	r14, r14
- b08:	e3 94       	inc	r14
- b0a:	f1 2c       	mov	r15, r1
- b0c:	f0 2d       	mov	r31, r0
- b0e:	c9 82       	std	Y+1, r12	; 0x01
- b10:	da 82       	std	Y+2, r13	; 0x02
- b12:	eb 82       	std	Y+3, r14	; 0x03
- b14:	fc 82       	std	Y+4, r15	; 0x04
- b16:	0f 2e       	mov	r0, r31
- b18:	f8 e4       	ldi	r31, 0x48	; 72
- b1a:	bf 2e       	mov	r11, r31
- b1c:	f0 2d       	mov	r31, r0
- b1e:	b9 86       	std	Y+9, r11	; 0x09
+ 834:	0f 2e       	mov	r0, r31
+ 836:	f9 e0       	ldi	r31, 0x09	; 9
+ 838:	7f 2e       	mov	r7, r31
+ 83a:	f0 2d       	mov	r31, r0
+ 83c:	8e 01       	movw	r16, r28
+ 83e:	0f 5f       	subi	r16, 0xFF	; 255
+ 840:	1f 4f       	sbci	r17, 0xFF	; 255
+ 842:	d8 01       	movw	r26, r16
+ 844:	e7 2d       	mov	r30, r7
+ 846:	1d 92       	st	X+, r1
+ 848:	ea 95       	dec	r30
+ 84a:	e9 f7       	brne	.-6      	; 0x846 <setUpI2C+0x3a>
+ 84c:	0f 2e       	mov	r0, r31
+ 84e:	f0 ea       	ldi	r31, 0xA0	; 160
+ 850:	8f 2e       	mov	r8, r31
+ 852:	f6 e8       	ldi	r31, 0x86	; 134
+ 854:	9f 2e       	mov	r9, r31
+ 856:	aa 24       	eor	r10, r10
+ 858:	a3 94       	inc	r10
+ 85a:	b1 2c       	mov	r11, r1
+ 85c:	f0 2d       	mov	r31, r0
+ 85e:	89 82       	std	Y+1, r8	; 0x01
+ 860:	9a 82       	std	Y+2, r9	; 0x02
+ 862:	ab 82       	std	Y+3, r10	; 0x03
+ 864:	bc 82       	std	Y+4, r11	; 0x04
+ 866:	0f 2e       	mov	r0, r31
+ 868:	f8 e4       	ldi	r31, 0x48	; 72
+ 86a:	6f 2e       	mov	r6, r31
+ 86c:	f0 2d       	mov	r31, r0
+ 86e:	69 86       	std	Y+9, r6	; 0x09
+typedef TWI_t *twi_master_t;
+typedef twi_options_t twi_master_options_t;
+
+static inline int twi_master_setup(twi_master_t twi, twi_master_options_t *opt)
+{
+	opt->speed_reg = TWI_BAUD(sysclk_get_cpu_hz(),opt->speed);
+ 870:	0f 2e       	mov	r0, r31
+ 872:	f5 e0       	ldi	r31, 0x05	; 5
+ 874:	cf 2e       	mov	r12, r31
+ 876:	d1 2c       	mov	r13, r1
+ 878:	e1 2c       	mov	r14, r1
+ 87a:	f1 2c       	mov	r15, r1
+ 87c:	f0 2d       	mov	r31, r0
+ 87e:	cd 82       	std	Y+5, r12	; 0x05
+ 880:	de 82       	std	Y+6, r13	; 0x06
+ 882:	ef 82       	std	Y+7, r14	; 0x07
+ 884:	f8 86       	std	Y+8, r15	; 0x08
+		sysclk_enable_module(SYSCLK_PORT_E, SYSCLK_TWI);
+	}
+#endif
+#ifdef TWIF
+	else if (module == &TWIF) {
+		sysclk_enable_module(SYSCLK_PORT_F, SYSCLK_TWI);
+ 886:	60 e4       	ldi	r22, 0x40	; 64
+ 888:	86 e0       	ldi	r24, 0x06	; 6
+ 88a:	dd dc       	rcall	.-1606   	; 0x246 <sysclk_enable_module>
+
+	sysclk_enable_peripheral_clock(twi);
+
+	return twi_master_init(twi,opt);
+ 88c:	b8 01       	movw	r22, r16
+ 88e:	80 eb       	ldi	r24, 0xB0	; 176
+ 890:	94 e0       	ldi	r25, 0x04	; 4
+ 892:	26 df       	rcall	.-436    	; 0x6e0 <twi_master_init>
 		.speed = 100000,
 		.chip = 0x48
 	};
 	twi_master_setup(&TWIF, &opt48);
- b20:	80 eb       	ldi	r24, 0xB0	; 176
- b22:	94 e0       	ldi	r25, 0x04	; 4
- b24:	4f de       	rcall	.-866    	; 0x7c4 <twi_master_setup>
 	
 	twi_master_options_t opt49 = {
- b26:	be 01       	movw	r22, r28
- b28:	66 5f       	subi	r22, 0xF6	; 246
- b2a:	7f 4f       	sbci	r23, 0xFF	; 255
- b2c:	db 01       	movw	r26, r22
- b2e:	e1 2f       	mov	r30, r17
- b30:	1d 92       	st	X+, r1
- b32:	ea 95       	dec	r30
- b34:	e9 f7       	brne	.-6      	; 0xb30 <main+0x62>
- b36:	ca 86       	std	Y+10, r12	; 0x0a
- b38:	db 86       	std	Y+11, r13	; 0x0b
- b3a:	ec 86       	std	Y+12, r14	; 0x0c
- b3c:	fd 86       	std	Y+13, r15	; 0x0d
- b3e:	09 e4       	ldi	r16, 0x49	; 73
- b40:	0a 8b       	std	Y+18, r16	; 0x12
+ 894:	07 5f       	subi	r16, 0xF7	; 247
+ 896:	1f 4f       	sbci	r17, 0xFF	; 255
+ 898:	d8 01       	movw	r26, r16
+ 89a:	e7 2d       	mov	r30, r7
+ 89c:	1d 92       	st	X+, r1
+ 89e:	ea 95       	dec	r30
+ 8a0:	e9 f7       	brne	.-6      	; 0x89c <setUpI2C+0x90>
+ 8a2:	8a 86       	std	Y+10, r8	; 0x0a
+ 8a4:	9b 86       	std	Y+11, r9	; 0x0b
+ 8a6:	ac 86       	std	Y+12, r10	; 0x0c
+ 8a8:	bd 86       	std	Y+13, r11	; 0x0d
+ 8aa:	0f 2e       	mov	r0, r31
+ 8ac:	f9 e4       	ldi	r31, 0x49	; 73
+ 8ae:	5f 2e       	mov	r5, r31
+ 8b0:	f0 2d       	mov	r31, r0
+ 8b2:	5a 8a       	std	Y+18, r5	; 0x12
+typedef TWI_t *twi_master_t;
+typedef twi_options_t twi_master_options_t;
+
+static inline int twi_master_setup(twi_master_t twi, twi_master_options_t *opt)
+{
+	opt->speed_reg = TWI_BAUD(sysclk_get_cpu_hz(),opt->speed);
+ 8b4:	ce 86       	std	Y+14, r12	; 0x0e
+ 8b6:	df 86       	std	Y+15, r13	; 0x0f
+ 8b8:	e8 8a       	std	Y+16, r14	; 0x10
+ 8ba:	f9 8a       	std	Y+17, r15	; 0x11
+ 8bc:	60 e4       	ldi	r22, 0x40	; 64
+ 8be:	86 e0       	ldi	r24, 0x06	; 6
+ 8c0:	c2 dc       	rcall	.-1660   	; 0x246 <sysclk_enable_module>
+
+	sysclk_enable_peripheral_clock(twi);
+
+	return twi_master_init(twi,opt);
+ 8c2:	b8 01       	movw	r22, r16
+ 8c4:	80 eb       	ldi	r24, 0xB0	; 176
+ 8c6:	94 e0       	ldi	r25, 0x04	; 4
+ 8c8:	0b df       	rcall	.-490    	; 0x6e0 <twi_master_init>
 		.speed = 100000,
 		.chip = 0x49
 	};
 	twi_master_setup(&TWIF, &opt49);
- b42:	80 eb       	ldi	r24, 0xB0	; 176
- b44:	94 e0       	ldi	r25, 0x04	; 4
- b46:	3e de       	rcall	.-900    	; 0x7c4 <twi_master_setup>
 	
 	twi_master_options_t opt4A = {
- b48:	be 01       	movw	r22, r28
- b4a:	6d 5e       	subi	r22, 0xED	; 237
- b4c:	7f 4f       	sbci	r23, 0xFF	; 255
- b4e:	db 01       	movw	r26, r22
- b50:	1d 92       	st	X+, r1
- b52:	1a 95       	dec	r17
- b54:	e9 f7       	brne	.-6      	; 0xb50 <main+0x82>
- b56:	cb 8a       	std	Y+19, r12	; 0x13
- b58:	dc 8a       	std	Y+20, r13	; 0x14
- b5a:	ed 8a       	std	Y+21, r14	; 0x15
- b5c:	fe 8a       	std	Y+22, r15	; 0x16
- b5e:	1a e4       	ldi	r17, 0x4A	; 74
- b60:	1b 8f       	std	Y+27, r17	; 0x1b
+ 8ca:	07 5f       	subi	r16, 0xF7	; 247
+ 8cc:	1f 4f       	sbci	r17, 0xFF	; 255
+ 8ce:	d8 01       	movw	r26, r16
+ 8d0:	1d 92       	st	X+, r1
+ 8d2:	7a 94       	dec	r7
+ 8d4:	e9 f7       	brne	.-6      	; 0x8d0 <setUpI2C+0xc4>
+ 8d6:	8b 8a       	std	Y+19, r8	; 0x13
+ 8d8:	9c 8a       	std	Y+20, r9	; 0x14
+ 8da:	ad 8a       	std	Y+21, r10	; 0x15
+ 8dc:	be 8a       	std	Y+22, r11	; 0x16
+ 8de:	0f 2e       	mov	r0, r31
+ 8e0:	fa e4       	ldi	r31, 0x4A	; 74
+ 8e2:	bf 2e       	mov	r11, r31
+ 8e4:	f0 2d       	mov	r31, r0
+ 8e6:	bb 8e       	std	Y+27, r11	; 0x1b
+typedef TWI_t *twi_master_t;
+typedef twi_options_t twi_master_options_t;
+
+static inline int twi_master_setup(twi_master_t twi, twi_master_options_t *opt)
+{
+	opt->speed_reg = TWI_BAUD(sysclk_get_cpu_hz(),opt->speed);
+ 8e8:	cf 8a       	std	Y+23, r12	; 0x17
+ 8ea:	d8 8e       	std	Y+24, r13	; 0x18
+ 8ec:	e9 8e       	std	Y+25, r14	; 0x19
+ 8ee:	fa 8e       	std	Y+26, r15	; 0x1a
+ 8f0:	60 e4       	ldi	r22, 0x40	; 64
+ 8f2:	86 e0       	ldi	r24, 0x06	; 6
+ 8f4:	a8 dc       	rcall	.-1712   	; 0x246 <sysclk_enable_module>
+
+	sysclk_enable_peripheral_clock(twi);
+
+	return twi_master_init(twi,opt);
+ 8f6:	b8 01       	movw	r22, r16
+ 8f8:	80 eb       	ldi	r24, 0xB0	; 176
+ 8fa:	94 e0       	ldi	r25, 0x04	; 4
+ 8fc:	f1 de       	rcall	.-542    	; 0x6e0 <twi_master_init>
 		.speed = 100000,
 		.chip = 0x4A
 	};
 	twi_master_setup(&TWIF, &opt4A);
- b62:	80 eb       	ldi	r24, 0xB0	; 176
- b64:	94 e0       	ldi	r25, 0x04	; 4
- b66:	2e de       	rcall	.-932    	; 0x7c4 <twi_master_setup>
 	
 	const uint8_t adc_setup_bytes[] = {0x42, 0x83};
- b68:	82 e4       	ldi	r24, 0x42	; 66
- b6a:	8c 8f       	std	Y+28, r24	; 0x1c
- b6c:	83 e8       	ldi	r24, 0x83	; 131
- b6e:	8d 8f       	std	Y+29, r24	; 0x1d
+ 8fe:	82 e4       	ldi	r24, 0x42	; 66
+ 900:	8c 8f       	std	Y+28, r24	; 0x1c
+ 902:	83 e8       	ldi	r24, 0x83	; 131
+ 904:	8d 8f       	std	Y+29, r24	; 0x1d
 	twi_package_t adc_setup_48 = {
- b70:	7b e0       	ldi	r23, 0x0B	; 11
- b72:	fe 01       	movw	r30, r28
- b74:	7e 96       	adiw	r30, 0x1e	; 30
- b76:	df 01       	movw	r26, r30
- b78:	f7 2e       	mov	r15, r23
- b7a:	1d 92       	st	X+, r1
- b7c:	fa 94       	dec	r15
- b7e:	e9 f7       	brne	.-6      	; 0xb7a <main+0xac>
- b80:	be 8e       	std	Y+30, r11	; 0x1e
- b82:	61 e0       	ldi	r22, 0x01	; 1
- b84:	6f 8f       	std	Y+31, r22	; 0x1f
- b86:	41 e0       	ldi	r20, 0x01	; 1
- b88:	50 e0       	ldi	r21, 0x00	; 0
- b8a:	4a a3       	std	Y+34, r20	; 0x22
- b8c:	5b a3       	std	Y+35, r21	; 0x23
- b8e:	9e 01       	movw	r18, r28
- b90:	24 5e       	subi	r18, 0xE4	; 228
- b92:	3f 4f       	sbci	r19, 0xFF	; 255
- b94:	2c a3       	std	Y+36, r18	; 0x24
- b96:	3d a3       	std	Y+37, r19	; 0x25
- b98:	82 e0       	ldi	r24, 0x02	; 2
- b9a:	90 e0       	ldi	r25, 0x00	; 0
- b9c:	8e a3       	std	Y+38, r24	; 0x26
- b9e:	9f a3       	std	Y+39, r25	; 0x27
+ 906:	7b e0       	ldi	r23, 0x0B	; 11
+ 908:	fe 01       	movw	r30, r28
+ 90a:	7e 96       	adiw	r30, 0x1e	; 30
+ 90c:	df 01       	movw	r26, r30
+ 90e:	17 2f       	mov	r17, r23
+ 910:	1d 92       	st	X+, r1
+ 912:	1a 95       	dec	r17
+ 914:	e9 f7       	brne	.-6      	; 0x910 <setUpI2C+0x104>
+ 916:	6e 8e       	std	Y+30, r6	; 0x1e
+ 918:	61 e0       	ldi	r22, 0x01	; 1
+ 91a:	6f 8f       	std	Y+31, r22	; 0x1f
+ 91c:	41 e0       	ldi	r20, 0x01	; 1
+ 91e:	50 e0       	ldi	r21, 0x00	; 0
+ 920:	4a a3       	std	Y+34, r20	; 0x22
+ 922:	5b a3       	std	Y+35, r21	; 0x23
+ 924:	9e 01       	movw	r18, r28
+ 926:	24 5e       	subi	r18, 0xE4	; 228
+ 928:	3f 4f       	sbci	r19, 0xFF	; 255
+ 92a:	2c a3       	std	Y+36, r18	; 0x24
+ 92c:	3d a3       	std	Y+37, r19	; 0x25
+ 92e:	82 e0       	ldi	r24, 0x02	; 2
+ 930:	90 e0       	ldi	r25, 0x00	; 0
+ 932:	8e a3       	std	Y+38, r24	; 0x26
+ 934:	9f a3       	std	Y+39, r25	; 0x27
 		.addr_length	= sizeof(uint8_t),
 		.chip			= 0x48,
 		.buffer			= (void *)adc_setup_bytes,
 		.length			= sizeof(adc_setup_bytes)
 	};
 	twi_package_t adc_setup_49 = {
- ba0:	3b 96       	adiw	r30, 0x0b	; 11
- ba2:	df 01       	movw	r26, r30
- ba4:	f7 2e       	mov	r15, r23
- ba6:	1d 92       	st	X+, r1
- ba8:	fa 94       	dec	r15
- baa:	e9 f7       	brne	.-6      	; 0xba6 <main+0xd8>
- bac:	09 a7       	std	Y+41, r16	; 0x29
- bae:	6a a7       	std	Y+42, r22	; 0x2a
- bb0:	4d a7       	std	Y+45, r20	; 0x2d
- bb2:	5e a7       	std	Y+46, r21	; 0x2e
- bb4:	2f a7       	std	Y+47, r18	; 0x2f
- bb6:	38 ab       	std	Y+48, r19	; 0x30
- bb8:	89 ab       	std	Y+49, r24	; 0x31
- bba:	9a ab       	std	Y+50, r25	; 0x32
+ 936:	3b 96       	adiw	r30, 0x0b	; 11
+ 938:	df 01       	movw	r26, r30
+ 93a:	17 2f       	mov	r17, r23
+ 93c:	1d 92       	st	X+, r1
+ 93e:	1a 95       	dec	r17
+ 940:	e9 f7       	brne	.-6      	; 0x93c <setUpI2C+0x130>
+ 942:	59 a6       	std	Y+41, r5	; 0x29
+ 944:	6a a7       	std	Y+42, r22	; 0x2a
+ 946:	4d a7       	std	Y+45, r20	; 0x2d
+ 948:	5e a7       	std	Y+46, r21	; 0x2e
+ 94a:	2f a7       	std	Y+47, r18	; 0x2f
+ 94c:	38 ab       	std	Y+48, r19	; 0x30
+ 94e:	89 ab       	std	Y+49, r24	; 0x31
+ 950:	9a ab       	std	Y+50, r25	; 0x32
 		.addr_length	= sizeof(uint8_t),
 		.chip			= 0x49,
 		.buffer			= (void *)adc_setup_bytes,
 		.length			= sizeof(adc_setup_bytes)
 	};
 	twi_package_t adc_setup_4A = {
- bbc:	3b 96       	adiw	r30, 0x0b	; 11
- bbe:	df 01       	movw	r26, r30
- bc0:	1d 92       	st	X+, r1
- bc2:	7a 95       	dec	r23
- bc4:	e9 f7       	brne	.-6      	; 0xbc0 <main+0xf2>
- bc6:	1c ab       	std	Y+52, r17	; 0x34
- bc8:	6d ab       	std	Y+53, r22	; 0x35
- bca:	48 af       	std	Y+56, r20	; 0x38
- bcc:	59 af       	std	Y+57, r21	; 0x39
- bce:	2a af       	std	Y+58, r18	; 0x3a
- bd0:	3b af       	std	Y+59, r19	; 0x3b
- bd2:	8c af       	std	Y+60, r24	; 0x3c
- bd4:	9d af       	std	Y+61, r25	; 0x3d
+ 952:	3b 96       	adiw	r30, 0x0b	; 11
+ 954:	df 01       	movw	r26, r30
+ 956:	1d 92       	st	X+, r1
+ 958:	7a 95       	dec	r23
+ 95a:	e9 f7       	brne	.-6      	; 0x956 <setUpI2C+0x14a>
+ 95c:	bc aa       	std	Y+52, r11	; 0x34
+ 95e:	6d ab       	std	Y+53, r22	; 0x35
+ 960:	48 af       	std	Y+56, r20	; 0x38
+ 962:	59 af       	std	Y+57, r21	; 0x39
+ 964:	2a af       	std	Y+58, r18	; 0x3a
+ 966:	3b af       	std	Y+59, r19	; 0x3b
+ 968:	8c af       	std	Y+60, r24	; 0x3c
+ 96a:	9d af       	std	Y+61, r25	; 0x3d
  * \return STATUS_OK   If all bytes were written, error code otherwise
  */
 static inline status_code_t twi_master_write(TWI_t *twi,
 		const twi_package_t *package)
 {
 	return twi_master_transfer (twi, package, false);
- bd6:	40 e0       	ldi	r20, 0x00	; 0
- bd8:	be 01       	movw	r22, r28
- bda:	62 5e       	subi	r22, 0xE2	; 226
- bdc:	7f 4f       	sbci	r23, 0xFF	; 255
- bde:	80 eb       	ldi	r24, 0xB0	; 176
- be0:	94 e0       	ldi	r25, 0x04	; 4
- be2:	93 dd       	rcall	.-1242   	; 0x70a <twi_master_transfer>
+ 96c:	40 e0       	ldi	r20, 0x00	; 0
+ 96e:	be 01       	movw	r22, r28
+ 970:	62 5e       	subi	r22, 0xE2	; 226
+ 972:	7f 4f       	sbci	r23, 0xFF	; 255
+ 974:	80 eb       	ldi	r24, 0xB0	; 176
+ 976:	94 e0       	ldi	r25, 0x04	; 4
+ 978:	c8 de       	rcall	.-624    	; 0x70a <twi_master_transfer>
 		.buffer			= (void *)adc_setup_bytes,
 		.length			= sizeof(adc_setup_bytes)
 	};
 	
 	
 	while(twi_master_write(&TWIF, &adc_setup_48) != TWI_SUCCESS);
- be4:	81 11       	cpse	r24, r1
- be6:	f7 cf       	rjmp	.-18     	; 0xbd6 <main+0x108>
- be8:	40 e0       	ldi	r20, 0x00	; 0
- bea:	be 01       	movw	r22, r28
- bec:	67 5d       	subi	r22, 0xD7	; 215
- bee:	7f 4f       	sbci	r23, 0xFF	; 255
- bf0:	80 eb       	ldi	r24, 0xB0	; 176
- bf2:	94 e0       	ldi	r25, 0x04	; 4
- bf4:	8a dd       	rcall	.-1260   	; 0x70a <twi_master_transfer>
+ 97a:	81 11       	cpse	r24, r1
+ 97c:	f7 cf       	rjmp	.-18     	; 0x96c <setUpI2C+0x160>
+ 97e:	40 e0       	ldi	r20, 0x00	; 0
+ 980:	be 01       	movw	r22, r28
+ 982:	67 5d       	subi	r22, 0xD7	; 215
+ 984:	7f 4f       	sbci	r23, 0xFF	; 255
+ 986:	80 eb       	ldi	r24, 0xB0	; 176
+ 988:	94 e0       	ldi	r25, 0x04	; 4
+ 98a:	bf de       	rcall	.-642    	; 0x70a <twi_master_transfer>
 	while(twi_master_write(&TWIF, &adc_setup_49) != TWI_SUCCESS);
- bf6:	81 11       	cpse	r24, r1
- bf8:	f7 cf       	rjmp	.-18     	; 0xbe8 <main+0x11a>
- bfa:	40 e0       	ldi	r20, 0x00	; 0
- bfc:	be 01       	movw	r22, r28
- bfe:	6c 5c       	subi	r22, 0xCC	; 204
- c00:	7f 4f       	sbci	r23, 0xFF	; 255
- c02:	80 eb       	ldi	r24, 0xB0	; 176
- c04:	94 e0       	ldi	r25, 0x04	; 4
- c06:	81 dd       	rcall	.-1278   	; 0x70a <twi_master_transfer>
+ 98c:	81 11       	cpse	r24, r1
+ 98e:	f7 cf       	rjmp	.-18     	; 0x97e <setUpI2C+0x172>
+ 990:	40 e0       	ldi	r20, 0x00	; 0
+ 992:	be 01       	movw	r22, r28
+ 994:	6c 5c       	subi	r22, 0xCC	; 204
+ 996:	7f 4f       	sbci	r23, 0xFF	; 255
+ 998:	80 eb       	ldi	r24, 0xB0	; 176
+ 99a:	94 e0       	ldi	r25, 0x04	; 4
+ 99c:	b6 de       	rcall	.-660    	; 0x70a <twi_master_transfer>
 	while(twi_master_write(&TWIF, &adc_setup_4A) != TWI_SUCCESS);
- c08:	81 11       	cpse	r24, r1
- c0a:	f7 cf       	rjmp	.-18     	; 0xbfa <main+0x12c>
-	PORT_t *base = arch_ioport_pin_to_base(pin);
+ 99e:	81 11       	cpse	r24, r1
+ 9a0:	f7 cf       	rjmp	.-18     	; 0x990 <setUpI2C+0x184>
+	
+}
+ 9a2:	ee 96       	adiw	r28, 0x3e	; 62
+ 9a4:	cd bf       	out	0x3d, r28	; 61
+ 9a6:	de bf       	out	0x3e, r29	; 62
+ 9a8:	df 91       	pop	r29
+ 9aa:	cf 91       	pop	r28
+ 9ac:	1f 91       	pop	r17
+ 9ae:	0f 91       	pop	r16
+ 9b0:	ff 90       	pop	r15
+ 9b2:	ef 90       	pop	r14
+ 9b4:	df 90       	pop	r13
+ 9b6:	cf 90       	pop	r12
+ 9b8:	bf 90       	pop	r11
+ 9ba:	af 90       	pop	r10
+ 9bc:	9f 90       	pop	r9
+ 9be:	8f 90       	pop	r8
+ 9c0:	7f 90       	pop	r7
+ 9c2:	6f 90       	pop	r6
+ 9c4:	5f 90       	pop	r5
+ 9c6:	08 95       	ret
 
-	if (level) {
-		base->OUTSET = arch_ioport_pin_to_mask(pin);
-	} else {
-		base->OUTCLR = arch_ioport_pin_to_mask(pin);
- c0c:	88 e0       	ldi	r24, 0x08	; 8
- c0e:	80 93 c6 07 	sts	0x07C6, r24	; 0x8007c6 <__TEXT_REGION_LENGTH__+0x7007c6>
+000009c8 <main>:
+
+
+int main (void)
+{
+ 9c8:	cf 93       	push	r28
+ 9ca:	df 93       	push	r29
+ 9cc:	cd b7       	in	r28, 0x3d	; 61
+ 9ce:	de b7       	in	r29, 0x3e	; 62
+ 9d0:	2d 97       	sbiw	r28, 0x0d	; 13
+ 9d2:	cd bf       	out	0x3d, r28	; 61
+ 9d4:	de bf       	out	0x3e, r29	; 62
+	board_init();	//Init board
+ 9d6:	18 dd       	rcall	.-1488   	; 0x408 <board_init>
+	setUpSPIC();	//Setup SPI on Port C
+ 9d8:	0d df       	rcall	.-486    	; 0x7f4 <setUpSPIC>
+	setUpI2C();
+ 9da:	18 df       	rcall	.-464    	; 0x80c <setUpI2C>
+	state = 1;
+ 9dc:	81 e0       	ldi	r24, 0x01	; 1
+ 9de:	80 93 1d 20 	sts	0x201D, r24	; 0x80201d <state>
+	sensor_status = 52;
+ 9e2:	84 e3       	ldi	r24, 0x34	; 52
+ 9e4:	80 93 1c 20 	sts	0x201C, r24	; 0x80201c <sensor_status>
+	
+	sei();            // enable global interrupts
+ 9e8:	78 94       	sei
 			
 			spic_flag = 0;
 		}
 		else if(lock == 0){//Do anything that is not SPI related
 			uint8_t recieved_data[2];
 			twi_package_t packet_read = {
- c12:	1e 01       	movw	r2, r28
- c14:	bf e3       	ldi	r27, 0x3F	; 63
- c16:	2b 0e       	add	r2, r27
- c18:	31 1c       	adc	r3, r1
- c1a:	7e 01       	movw	r14, r28
- c1c:	ea e4       	ldi	r30, 0x4A	; 74
- c1e:	ee 0e       	add	r14, r30
- c20:	f1 1c       	adc	r15, r1
- c22:	68 94       	set
- c24:	aa 24       	eor	r10, r10
- c26:	a1 f8       	bld	r10, 1
- c28:	b1 2c       	mov	r11, r1
+ 9ea:	8e 01       	movw	r16, r28
+ 9ec:	0f 5f       	subi	r16, 0xFF	; 255
+ 9ee:	1f 4f       	sbci	r17, 0xFF	; 255
+ 9f0:	44 24       	eor	r4, r4
+ 9f2:	43 94       	inc	r4
+ 9f4:	51 2c       	mov	r5, r1
+ 9f6:	1e 01       	movw	r2, r28
+ 9f8:	8c e0       	ldi	r24, 0x0C	; 12
+ 9fa:	28 0e       	add	r2, r24
+ 9fc:	31 1c       	adc	r3, r1
+ 9fe:	68 94       	set
+ a00:	aa 24       	eor	r10, r10
+ a02:	a1 f8       	bld	r10, 1
+ a04:	b1 2c       	mov	r11, r1
 				sensor_data[3] = recieved_data[0];
 			}
 			
 			packet_read.chip = 0x4A;
 			if(twi_master_read(&TWIF,  &packet_read) ==TWI_SUCCESS){
 				sensor_data[4] = recieved_data[1];
- c2a:	0f 2e       	mov	r0, r31
- c2c:	f0 e0       	ldi	r31, 0x00	; 0
- c2e:	cf 2e       	mov	r12, r31
- c30:	f0 e2       	ldi	r31, 0x20	; 32
- c32:	df 2e       	mov	r13, r31
- c34:	f0 2d       	mov	r31, r0
-					send_crc_idx = 2;
+ a06:	0f 2e       	mov	r0, r31
+ a08:	f0 e0       	ldi	r31, 0x00	; 0
+ a0a:	ef 2e       	mov	r14, r31
+ a0c:	f0 e2       	ldi	r31, 0x20	; 32
+ a0e:	ff 2e       	mov	r15, r31
+ a10:	f0 2d       	mov	r31, r0
 				}
 				
 			}
 			else if(send_crc_idx > 0){
+				
 				SPIC.DATA = send_crc >> ((2-send_crc_idx)*8);
- c36:	0f 2e       	mov	r0, r31
- c38:	f0 ec       	ldi	r31, 0xC0	; 192
- c3a:	6f 2e       	mov	r6, r31
- c3c:	f8 e0       	ldi	r31, 0x08	; 8
- c3e:	7f 2e       	mov	r7, r31
- c40:	f0 2d       	mov	r31, r0
-				cmd_finished = 0;
+ a12:	0f 2e       	mov	r0, r31
+ a14:	f0 ec       	ldi	r31, 0xC0	; 192
+ a16:	cf 2e       	mov	r12, r31
+ a18:	f8 e0       	ldi	r31, 0x08	; 8
+ a1a:	df 2e       	mov	r13, r31
+ a1c:	f0 2d       	mov	r31, r0
+					}
+				}				
 			}
-			
-			
-			if(send_idx > 0){
-				if(cmd_data[2] == 0){//Send only sensor data
- c42:	05 e2       	ldi	r16, 0x25	; 37
- c44:	10 e2       	ldi	r17, 0x20	; 32
-					SPIC.DATA = send_data[SENSOR_DATA_SIZE-send_idx];
- c46:	0f 2e       	mov	r0, r31
- c48:	f6 e0       	ldi	r31, 0x06	; 6
- c4a:	4f 2e       	mov	r4, r31
- c4c:	51 2c       	mov	r5, r1
- c4e:	f0 2d       	mov	r31, r0
+			else if(cmd_finished){
+				//On next pass we will be start pipelining data
+				if(cmd_data[2] == 0){
+ a1e:	0f 2e       	mov	r0, r31
+ a20:	f5 e2       	ldi	r31, 0x25	; 37
+ a22:	6f 2e       	mov	r6, r31
+ a24:	f0 e2       	ldi	r31, 0x20	; 32
+ a26:	7f 2e       	mov	r7, r31
+ a28:	f0 2d       	mov	r31, r0
 			}
 			
 			//If we are receiving command, store it appropriately
 			if(cmd_idx > 0){
 				
 				cmd_data[CMD_DATA_SIZE-cmd_idx] = rx_byte;
- c50:	0f 2e       	mov	r0, r31
- c52:	f5 e0       	ldi	r31, 0x05	; 5
- c54:	8f 2e       	mov	r8, r31
- c56:	91 2c       	mov	r9, r1
- c58:	f0 2d       	mov	r31, r0
+ a2a:	0f 2e       	mov	r0, r31
+ a2c:	f5 e0       	ldi	r31, 0x05	; 5
+ a2e:	8f 2e       	mov	r8, r31
+ a30:	91 2c       	mov	r9, r1
+ a32:	f0 2d       	mov	r31, r0
 		
 		//SPIC handler
 		//When this is true, it means we have just received a byte
 		//So, we need to pipeline the next byte to be sent out.
 		//Also, the most recently sent byte is in the rx_byte
 		if(spic_flag){
- c5a:	80 91 23 20 	lds	r24, 0x2023	; 0x802023 <spic_flag>
- c5e:	88 23       	and	r24, r24
- c60:	09 f4       	brne	.+2      	; 0xc64 <main+0x196>
- c62:	ef c0       	rjmp	.+478    	; 0xe42 <main+0x374>
+ a34:	80 91 23 20 	lds	r24, 0x2023	; 0x802023 <spic_flag>
+ a38:	88 23       	and	r24, r24
+ a3a:	09 f4       	brne	.+2      	; 0xa3e <main+0x76>
+ a3c:	d1 c0       	rjmp	.+418    	; 0xbe0 <main+0x218>
 			//Indicate start of incoming command
 			if(rx_byte == SPI_TX_START){
- c64:	80 91 24 20 	lds	r24, 0x2024	; 0x802024 <rx_byte>
- c68:	8a 3a       	cpi	r24, 0xAA	; 170
- c6a:	91 f4       	brne	.+36     	; 0xc90 <main+0x1c2>
+ a3e:	80 91 24 20 	lds	r24, 0x2024	; 0x802024 <rx_byte>
+ a42:	8a 3a       	cpi	r24, 0xAA	; 170
+ a44:	91 f4       	brne	.+36     	; 0xa6a <main+0xa2>
 				
 				cmd_idx = CMD_DATA_SIZE;
- c6c:	85 e0       	ldi	r24, 0x05	; 5
- c6e:	80 93 22 20 	sts	0x2022, r24	; 0x802022 <cmd_idx>
+ a46:	85 e0       	ldi	r24, 0x05	; 5
+ a48:	80 93 22 20 	sts	0x2022, r24	; 0x802022 <cmd_idx>
 				//Reset all the send variables/tmp storage
 				cmd_finished = 0;
- c72:	10 92 1b 20 	sts	0x201B, r1	; 0x80201b <cmd_finished>
+ a4c:	10 92 1b 20 	sts	0x201B, r1	; 0x80201b <cmd_finished>
 				send_idx = 0;
- c76:	10 92 1a 20 	sts	0x201A, r1	; 0x80201a <send_idx>
+ a50:	10 92 1a 20 	sts	0x201A, r1	; 0x80201a <send_idx>
 				send_crc_length = 0;
- c7a:	10 92 19 20 	sts	0x2019, r1	; 0x802019 <send_crc_length>
+ a54:	10 92 19 20 	sts	0x2019, r1	; 0x802019 <send_crc_length>
 				send_crc = 0;
- c7e:	10 92 17 20 	sts	0x2017, r1	; 0x802017 <send_crc>
- c82:	10 92 18 20 	sts	0x2018, r1	; 0x802018 <send_crc+0x1>
+ a58:	10 92 17 20 	sts	0x2017, r1	; 0x802017 <send_crc>
+ a5c:	10 92 18 20 	sts	0x2018, r1	; 0x802018 <send_crc+0x1>
 				send_crc_idx = 0;
- c86:	10 92 16 20 	sts	0x2016, r1	; 0x802016 <send_crc_idx>
+ a60:	10 92 16 20 	sts	0x2016, r1	; 0x802016 <send_crc_idx>
 				lock = 1;
- c8a:	81 e0       	ldi	r24, 0x01	; 1
- c8c:	80 93 15 20 	sts	0x2015, r24	; 0x802015 <lock>
+ a64:	81 e0       	ldi	r24, 0x01	; 1
+ a66:	80 93 15 20 	sts	0x2015, r24	; 0x802015 <lock>
 
 			}
 			
 			//If we are receiving command, store it appropriately
 			if(cmd_idx > 0){
- c90:	80 91 22 20 	lds	r24, 0x2022	; 0x802022 <cmd_idx>
- c94:	88 23       	and	r24, r24
- c96:	09 f4       	brne	.+2      	; 0xc9a <main+0x1cc>
- c98:	3d c0       	rjmp	.+122    	; 0xd14 <main+0x246>
+ a6a:	80 91 22 20 	lds	r24, 0x2022	; 0x802022 <cmd_idx>
+ a6e:	88 23       	and	r24, r24
+ a70:	99 f1       	breq	.+102    	; 0xad8 <main+0x110>
 				
 				cmd_data[CMD_DATA_SIZE-cmd_idx] = rx_byte;
- c9a:	90 91 24 20 	lds	r25, 0x2024	; 0x802024 <rx_byte>
- c9e:	f4 01       	movw	r30, r8
- ca0:	e8 1b       	sub	r30, r24
- ca2:	f1 09       	sbc	r31, r1
- ca4:	eb 5d       	subi	r30, 0xDB	; 219
- ca6:	ff 4d       	sbci	r31, 0xDF	; 223
- ca8:	90 83       	st	Z, r25
+ a72:	90 91 24 20 	lds	r25, 0x2024	; 0x802024 <rx_byte>
+ a76:	f4 01       	movw	r30, r8
+ a78:	e8 1b       	sub	r30, r24
+ a7a:	f1 09       	sbc	r31, r1
+ a7c:	eb 5d       	subi	r30, 0xDB	; 219
+ a7e:	ff 4d       	sbci	r31, 0xDF	; 223
+ a80:	90 83       	st	Z, r25
 				cmd_idx--;
- caa:	81 50       	subi	r24, 0x01	; 1
- cac:	80 93 22 20 	sts	0x2022, r24	; 0x802022 <cmd_idx>
+ a82:	81 50       	subi	r24, 0x01	; 1
+ a84:	80 93 22 20 	sts	0x2022, r24	; 0x802022 <cmd_idx>
 				//Finished last storage of incoming data
 				if(cmd_idx == 0){
- cb0:	81 11       	cpse	r24, r1
- cb2:	66 c0       	rjmp	.+204    	; 0xd80 <main+0x2b2>
- cb4:	88 e0       	ldi	r24, 0x08	; 8
- cb6:	80 93 c6 07 	sts	0x07C6, r24	; 0x8007c6 <__TEXT_REGION_LENGTH__+0x7007c6>
-					ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
+ a88:	81 11       	cpse	r24, r1
+ a8a:	67 c0       	rjmp	.+206    	; 0xb5a <main+0x192>
 					//Check recieved_crc against calculated CRC
 					received_crc =	(cmd_data[CMD_DATA_SIZE-1]<<8) | cmd_data[CMD_DATA_SIZE-2];
- cba:	d8 01       	movw	r26, r16
- cbc:	14 96       	adiw	r26, 0x04	; 4
- cbe:	8c 91       	ld	r24, X
- cc0:	14 97       	sbiw	r26, 0x04	; 4
- cc2:	90 e0       	ldi	r25, 0x00	; 0
- cc4:	98 2f       	mov	r25, r24
- cc6:	88 27       	eor	r24, r24
- cc8:	13 96       	adiw	r26, 0x03	; 3
- cca:	2c 91       	ld	r18, X
- ccc:	82 2b       	or	r24, r18
- cce:	80 93 20 20 	sts	0x2020, r24	; 0x802020 <received_crc>
- cd2:	90 93 21 20 	sts	0x2021, r25	; 0x802021 <received_crc+0x1>
+ a8c:	f3 01       	movw	r30, r6
+ a8e:	84 81       	ldd	r24, Z+4	; 0x04
+ a90:	90 e0       	ldi	r25, 0x00	; 0
+ a92:	98 2f       	mov	r25, r24
+ a94:	88 27       	eor	r24, r24
+ a96:	23 81       	ldd	r18, Z+3	; 0x03
+ a98:	82 2b       	or	r24, r18
+ a9a:	80 93 20 20 	sts	0x2020, r24	; 0x802020 <received_crc>
+ a9e:	90 93 21 20 	sts	0x2021, r25	; 0x802021 <received_crc+0x1>
 					calculated_crc = crc_io_checksum(cmd_data, CMD_DATA_SIZE-2, CRC_16BIT);
- cd6:	40 e0       	ldi	r20, 0x00	; 0
- cd8:	63 e0       	ldi	r22, 0x03	; 3
- cda:	70 e0       	ldi	r23, 0x00	; 0
- cdc:	c8 01       	movw	r24, r16
- cde:	51 db       	rcall	.-2398   	; 0x382 <crc_io_checksum>
- ce0:	60 93 1e 20 	sts	0x201E, r22	; 0x80201e <calculated_crc>
- ce4:	70 93 1f 20 	sts	0x201F, r23	; 0x80201f <calculated_crc+0x1>
+ aa2:	40 e0       	ldi	r20, 0x00	; 0
+ aa4:	63 e0       	ldi	r22, 0x03	; 3
+ aa6:	70 e0       	ldi	r23, 0x00	; 0
+ aa8:	c3 01       	movw	r24, r6
+ aaa:	6b dc       	rcall	.-1834   	; 0x382 <crc_io_checksum>
+ aac:	60 93 1e 20 	sts	0x201E, r22	; 0x80201e <calculated_crc>
+ ab0:	70 93 1f 20 	sts	0x201F, r23	; 0x80201f <calculated_crc+0x1>
 					//Send appropriate signal if passed/failed
 					
 					if(calculated_crc == received_crc){
- ce8:	20 91 20 20 	lds	r18, 0x2020	; 0x802020 <received_crc>
- cec:	30 91 21 20 	lds	r19, 0x2021	; 0x802021 <received_crc+0x1>
- cf0:	26 17       	cp	r18, r22
- cf2:	37 07       	cpc	r19, r23
- cf4:	39 f4       	brne	.+14     	; 0xd04 <main+0x236>
+ ab4:	20 91 20 20 	lds	r18, 0x2020	; 0x802020 <received_crc>
+ ab8:	30 91 21 20 	lds	r19, 0x2021	; 0x802021 <received_crc+0x1>
+ abc:	26 17       	cp	r18, r22
+ abe:	37 07       	cpc	r19, r23
+ ac0:	39 f4       	brne	.+14     	; 0xad0 <main+0x108>
 						SPIC.DATA = SPI_CRC_PASS;
- cf6:	8a ea       	ldi	r24, 0xAA	; 170
- cf8:	f3 01       	movw	r30, r6
- cfa:	83 83       	std	Z+3, r24	; 0x03
+ ac2:	8a ea       	ldi	r24, 0xAA	; 170
+ ac4:	f6 01       	movw	r30, r12
+ ac6:	83 83       	std	Z+3, r24	; 0x03
 						cmd_finished = 1;
- cfc:	81 e0       	ldi	r24, 0x01	; 1
- cfe:	80 93 1b 20 	sts	0x201B, r24	; 0x80201b <cmd_finished>
- d02:	3e c0       	rjmp	.+124    	; 0xd80 <main+0x2b2>
- d04:	88 e0       	ldi	r24, 0x08	; 8
- d06:	80 93 c6 07 	sts	0x07C6, r24	; 0x8007c6 <__TEXT_REGION_LENGTH__+0x7007c6>
-						//ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
+ ac8:	81 e0       	ldi	r24, 0x01	; 1
+ aca:	80 93 1b 20 	sts	0x201B, r24	; 0x80201b <cmd_finished>
+ ace:	45 c0       	rjmp	.+138    	; 0xb5a <main+0x192>
 					}
 					else{
-						ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 						SPIC.DATA = SPI_CRC_FAIL;
- d0a:	8f ef       	ldi	r24, 0xFF	; 255
- d0c:	d3 01       	movw	r26, r6
- d0e:	13 96       	adiw	r26, 0x03	; 3
- d10:	8c 93       	st	X, r24
- d12:	36 c0       	rjmp	.+108    	; 0xd80 <main+0x2b2>
+ ad0:	8f ef       	ldi	r24, 0xFF	; 255
+ ad2:	f6 01       	movw	r30, r12
+ ad4:	83 83       	std	Z+3, r24	; 0x03
+ ad6:	41 c0       	rjmp	.+130    	; 0xb5a <main+0x192>
 					}
 				}				
 			}
 			else if(cmd_finished){
- d14:	80 91 1b 20 	lds	r24, 0x201B	; 0x80201b <cmd_finished>
- d18:	88 23       	and	r24, r24
- d1a:	91 f1       	breq	.+100    	; 0xd80 <main+0x2b2>
+ ad8:	80 91 1b 20 	lds	r24, 0x201B	; 0x80201b <cmd_finished>
+ adc:	88 23       	and	r24, r24
+ ade:	e9 f1       	breq	.+122    	; 0xb5a <main+0x192>
 				//On next pass we will be start pipelining data
 				if(cmd_data[2] == 0){
- d1c:	f8 01       	movw	r30, r16
- d1e:	82 81       	ldd	r24, Z+2	; 0x02
- d20:	81 11       	cpse	r24, r1
- d22:	0e c0       	rjmp	.+28     	; 0xd40 <main+0x272>
+ ae0:	f3 01       	movw	r30, r6
+ ae2:	82 81       	ldd	r24, Z+2	; 0x02
+ ae4:	81 11       	cpse	r24, r1
+ ae6:	0c c0       	rjmp	.+24     	; 0xb00 <main+0x138>
 					memcpy(send_data,sensor_data,SENSOR_DATA_SIZE);//TODO: determine if this takes too long
- d24:	86 e0       	ldi	r24, 0x06	; 6
- d26:	f6 01       	movw	r30, r12
- d28:	aa e2       	ldi	r26, 0x2A	; 42
- d2a:	b0 e2       	ldi	r27, 0x20	; 32
- d2c:	01 90       	ld	r0, Z+
- d2e:	0d 92       	st	X+, r0
- d30:	8a 95       	dec	r24
- d32:	e1 f7       	brne	.-8      	; 0xd2c <main+0x25e>
+ ae8:	86 e0       	ldi	r24, 0x06	; 6
+ aea:	f7 01       	movw	r30, r14
+ aec:	aa e2       	ldi	r26, 0x2A	; 42
+ aee:	b0 e2       	ldi	r27, 0x20	; 32
+ af0:	01 90       	ld	r0, Z+
+ af2:	0d 92       	st	X+, r0
+ af4:	8a 95       	dec	r24
+ af6:	e1 f7       	brne	.-8      	; 0xaf0 <main+0x128>
 					send_idx = SENSOR_DATA_SIZE;
- d34:	86 e0       	ldi	r24, 0x06	; 6
- d36:	80 93 1a 20 	sts	0x201A, r24	; 0x80201a <send_idx>
-					send_crc_length = send_idx;
- d3a:	80 93 19 20 	sts	0x2019, r24	; 0x802019 <send_crc_length>
- d3e:	1e c0       	rjmp	.+60     	; 0xd7c <main+0x2ae>
+ af8:	86 e0       	ldi	r24, 0x06	; 6
+ afa:	80 93 1a 20 	sts	0x201A, r24	; 0x80201a <send_idx>
+ afe:	27 c0       	rjmp	.+78     	; 0xb4e <main+0x186>
 				}
-				else if(cmd_data[2] == 1 || cmd_data[2] == 2){
- d40:	81 50       	subi	r24, 0x01	; 1
- d42:	82 30       	cpi	r24, 0x02	; 2
- d44:	30 f4       	brcc	.+12     	; 0xd52 <main+0x284>
+				else if(cmd_data[2] == 1){
+ b00:	81 30       	cpi	r24, 0x01	; 1
+ b02:	41 f4       	brne	.+16     	; 0xb14 <main+0x14c>
+					//ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
+					send_data[0] = sensor_status;
+ b04:	80 91 1c 20 	lds	r24, 0x201C	; 0x80201c <sensor_status>
+ b08:	80 93 2a 20 	sts	0x202A, r24	; 0x80202a <send_data>
 					send_idx = 1;
- d46:	81 e0       	ldi	r24, 0x01	; 1
- d48:	80 93 1a 20 	sts	0x201A, r24	; 0x80201a <send_idx>
-					send_crc_length = send_idx;
- d4c:	80 93 19 20 	sts	0x2019, r24	; 0x802019 <send_crc_length>
- d50:	15 c0       	rjmp	.+42     	; 0xd7c <main+0x2ae>
+ b0c:	81 e0       	ldi	r24, 0x01	; 1
+ b0e:	80 93 1a 20 	sts	0x201A, r24	; 0x80201a <send_idx>
+ b12:	1d c0       	rjmp	.+58     	; 0xb4e <main+0x186>
+				}
+				else if(cmd_data[2] == 2){
+ b14:	82 30       	cpi	r24, 0x02	; 2
+ b16:	41 f4       	brne	.+16     	; 0xb28 <main+0x160>
+					send_data[0] = state;
+ b18:	80 91 1d 20 	lds	r24, 0x201D	; 0x80201d <state>
+ b1c:	80 93 2a 20 	sts	0x202A, r24	; 0x80202a <send_data>
+					send_idx = 1;
+ b20:	81 e0       	ldi	r24, 0x01	; 1
+ b22:	80 93 1a 20 	sts	0x201A, r24	; 0x80201a <send_idx>
+ b26:	13 c0       	rjmp	.+38     	; 0xb4e <main+0x186>
 				}
 				else{
 					memcpy(send_data,sensor_data,SENSOR_DATA_SIZE);
- d52:	86 e0       	ldi	r24, 0x06	; 6
- d54:	f6 01       	movw	r30, r12
- d56:	aa e2       	ldi	r26, 0x2A	; 42
- d58:	b0 e2       	ldi	r27, 0x20	; 32
- d5a:	01 90       	ld	r0, Z+
- d5c:	0d 92       	st	X+, r0
- d5e:	8a 95       	dec	r24
- d60:	e1 f7       	brne	.-8      	; 0xd5a <main+0x28c>
-					send_data[SENSOR_DATA_SIZE] = state;
- d62:	ea e2       	ldi	r30, 0x2A	; 42
- d64:	f0 e2       	ldi	r31, 0x20	; 32
- d66:	80 91 1d 20 	lds	r24, 0x201D	; 0x80201d <state>
- d6a:	86 83       	std	Z+6, r24	; 0x06
-					send_data[SENSOR_DATA_SIZE+1] = sensor_status;
- d6c:	80 91 1c 20 	lds	r24, 0x201C	; 0x80201c <sensor_status>
- d70:	87 83       	std	Z+7, r24	; 0x07
+ b28:	86 e0       	ldi	r24, 0x06	; 6
+ b2a:	f7 01       	movw	r30, r14
+ b2c:	aa e2       	ldi	r26, 0x2A	; 42
+ b2e:	b0 e2       	ldi	r27, 0x20	; 32
+ b30:	01 90       	ld	r0, Z+
+ b32:	0d 92       	st	X+, r0
+ b34:	8a 95       	dec	r24
+ b36:	e1 f7       	brne	.-8      	; 0xb30 <main+0x168>
+					send_data[SENSOR_DATA_SIZE] = sensor_status;
+ b38:	ea e2       	ldi	r30, 0x2A	; 42
+ b3a:	f0 e2       	ldi	r31, 0x20	; 32
+ b3c:	80 91 1c 20 	lds	r24, 0x201C	; 0x80201c <sensor_status>
+ b40:	86 83       	std	Z+6, r24	; 0x06
+					send_data[SENSOR_DATA_SIZE+1] = state;
+ b42:	80 91 1d 20 	lds	r24, 0x201D	; 0x80201d <state>
+ b46:	87 83       	std	Z+7, r24	; 0x07
 					send_idx = SENSOR_DATA_SIZE+2;
- d72:	88 e0       	ldi	r24, 0x08	; 8
- d74:	80 93 1a 20 	sts	0x201A, r24	; 0x80201a <send_idx>
-					send_crc_length = send_idx;
- d78:	80 93 19 20 	sts	0x2019, r24	; 0x802019 <send_crc_length>
+ b48:	88 e0       	ldi	r24, 0x08	; 8
+ b4a:	80 93 1a 20 	sts	0x201A, r24	; 0x80201a <send_idx>
 				}
+				send_crc_length = send_idx;
+ b4e:	80 91 1a 20 	lds	r24, 0x201A	; 0x80201a <send_idx>
+ b52:	80 93 19 20 	sts	0x2019, r24	; 0x802019 <send_crc_length>
 				cmd_finished = 0;
- d7c:	10 92 1b 20 	sts	0x201B, r1	; 0x80201b <cmd_finished>
+ b56:	10 92 1b 20 	sts	0x201B, r1	; 0x80201b <cmd_finished>
 			}
 			
 			
 			if(send_idx > 0){
- d80:	80 91 1a 20 	lds	r24, 0x201A	; 0x80201a <send_idx>
- d84:	88 23       	and	r24, r24
- d86:	d9 f1       	breq	.+118    	; 0xdfe <main+0x330>
-				if(cmd_data[2] == 0){//Send only sensor data
- d88:	d8 01       	movw	r26, r16
- d8a:	12 96       	adiw	r26, 0x02	; 2
- d8c:	9c 91       	ld	r25, X
- d8e:	91 11       	cpse	r25, r1
- d90:	09 c0       	rjmp	.+18     	; 0xda4 <main+0x2d6>
-					SPIC.DATA = send_data[SENSOR_DATA_SIZE-send_idx];
- d92:	f2 01       	movw	r30, r4
- d94:	e8 1b       	sub	r30, r24
- d96:	f1 09       	sbc	r31, r1
- d98:	e6 5d       	subi	r30, 0xD6	; 214
- d9a:	ff 4d       	sbci	r31, 0xDF	; 223
- d9c:	90 81       	ld	r25, Z
- d9e:	f3 01       	movw	r30, r6
- da0:	93 83       	std	Z+3, r25	; 0x03
- da2:	19 c0       	rjmp	.+50     	; 0xdd6 <main+0x308>
-				}
-				else if(cmd_data[2] == 1){//send only state data
- da4:	91 30       	cpi	r25, 0x01	; 1
- da6:	31 f4       	brne	.+12     	; 0xdb4 <main+0x2e6>
-					SPIC.DATA = state;
- da8:	90 91 1d 20 	lds	r25, 0x201D	; 0x80201d <state>
- dac:	d3 01       	movw	r26, r6
- dae:	13 96       	adiw	r26, 0x03	; 3
- db0:	9c 93       	st	X, r25
- db2:	11 c0       	rjmp	.+34     	; 0xdd6 <main+0x308>
-				}
-				else if(cmd_data[2] == 2){//send only sensor_status data
- db4:	92 30       	cpi	r25, 0x02	; 2
- db6:	29 f4       	brne	.+10     	; 0xdc2 <main+0x2f4>
-					SPIC.DATA = sensor_status;
- db8:	90 91 1c 20 	lds	r25, 0x201C	; 0x80201c <sensor_status>
- dbc:	f3 01       	movw	r30, r6
- dbe:	93 83       	std	Z+3, r25	; 0x03
- dc0:	0a c0       	rjmp	.+20     	; 0xdd6 <main+0x308>
+ b5a:	80 91 1a 20 	lds	r24, 0x201A	; 0x80201a <send_idx>
+ b5e:	88 23       	and	r24, r24
+ b60:	e9 f0       	breq	.+58     	; 0xb9c <main+0x1d4>
+				SPIC.DATA = send_data[send_crc_length-send_idx];
+ b62:	60 91 19 20 	lds	r22, 0x2019	; 0x802019 <send_crc_length>
+ b66:	e6 2f       	mov	r30, r22
+ b68:	f0 e0       	ldi	r31, 0x00	; 0
+ b6a:	e8 1b       	sub	r30, r24
+ b6c:	f1 09       	sbc	r31, r1
+ b6e:	e6 5d       	subi	r30, 0xD6	; 214
+ b70:	ff 4d       	sbci	r31, 0xDF	; 223
+ b72:	90 81       	ld	r25, Z
+ b74:	f6 01       	movw	r30, r12
+ b76:	93 83       	std	Z+3, r25	; 0x03
+					ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 				}
 				else{//send all
 					SPIC.DATA = send_data[SENSOR_DATA_SIZE+2-send_idx];
- dc2:	e8 e0       	ldi	r30, 0x08	; 8
- dc4:	f0 e0       	ldi	r31, 0x00	; 0
- dc6:	e8 1b       	sub	r30, r24
- dc8:	f1 09       	sbc	r31, r1
- dca:	e6 5d       	subi	r30, 0xD6	; 214
- dcc:	ff 4d       	sbci	r31, 0xDF	; 223
- dce:	90 81       	ld	r25, Z
- dd0:	d3 01       	movw	r26, r6
- dd2:	13 96       	adiw	r26, 0x03	; 3
- dd4:	9c 93       	st	X, r25
-				}				
+				}	*/			
 				send_idx--;
- dd6:	81 50       	subi	r24, 0x01	; 1
- dd8:	80 93 1a 20 	sts	0x201A, r24	; 0x80201a <send_idx>
+ b78:	81 50       	subi	r24, 0x01	; 1
+ b7a:	80 93 1a 20 	sts	0x201A, r24	; 0x80201a <send_idx>
 				
 				//Calculate CRC
 				if(send_idx == 0){
- ddc:	81 11       	cpse	r24, r1
- dde:	2e c0       	rjmp	.+92     	; 0xe3c <main+0x36e>
+ b7e:	81 11       	cpse	r24, r1
+ b80:	2c c0       	rjmp	.+88     	; 0xbda <main+0x212>
 					send_crc = crc_io_checksum(send_data, send_crc_length, CRC_16BIT);
- de0:	60 91 19 20 	lds	r22, 0x2019	; 0x802019 <send_crc_length>
- de4:	70 e0       	ldi	r23, 0x00	; 0
- de6:	40 e0       	ldi	r20, 0x00	; 0
- de8:	8a e2       	ldi	r24, 0x2A	; 42
- dea:	90 e2       	ldi	r25, 0x20	; 32
- dec:	ca da       	rcall	.-2668   	; 0x382 <crc_io_checksum>
- dee:	60 93 17 20 	sts	0x2017, r22	; 0x802017 <send_crc>
- df2:	70 93 18 20 	sts	0x2018, r23	; 0x802018 <send_crc+0x1>
+ b82:	70 e0       	ldi	r23, 0x00	; 0
+ b84:	40 e0       	ldi	r20, 0x00	; 0
+ b86:	8a e2       	ldi	r24, 0x2A	; 42
+ b88:	90 e2       	ldi	r25, 0x20	; 32
+ b8a:	fb db       	rcall	.-2058   	; 0x382 <crc_io_checksum>
+ b8c:	60 93 17 20 	sts	0x2017, r22	; 0x802017 <send_crc>
+ b90:	70 93 18 20 	sts	0x2018, r23	; 0x802018 <send_crc+0x1>
 					send_crc_idx = 2;
- df6:	82 e0       	ldi	r24, 0x02	; 2
- df8:	80 93 16 20 	sts	0x2016, r24	; 0x802016 <send_crc_idx>
- dfc:	1f c0       	rjmp	.+62     	; 0xe3c <main+0x36e>
+ b94:	f2 e0       	ldi	r31, 0x02	; 2
+ b96:	f0 93 16 20 	sts	0x2016, r31	; 0x802016 <send_crc_idx>
+ b9a:	1f c0       	rjmp	.+62     	; 0xbda <main+0x212>
 				}
 				
 			}
 			else if(send_crc_idx > 0){
- dfe:	80 91 16 20 	lds	r24, 0x2016	; 0x802016 <send_crc_idx>
- e02:	88 23       	and	r24, r24
- e04:	d9 f0       	breq	.+54     	; 0xe3c <main+0x36e>
+ b9c:	80 91 16 20 	lds	r24, 0x2016	; 0x802016 <send_crc_idx>
+ ba0:	88 23       	and	r24, r24
+ ba2:	d9 f0       	breq	.+54     	; 0xbda <main+0x212>
+				
 				SPIC.DATA = send_crc >> ((2-send_crc_idx)*8);
- e06:	a5 01       	movw	r20, r10
- e08:	48 1b       	sub	r20, r24
- e0a:	51 09       	sbc	r21, r1
- e0c:	44 0f       	add	r20, r20
- e0e:	55 1f       	adc	r21, r21
- e10:	44 0f       	add	r20, r20
- e12:	55 1f       	adc	r21, r21
- e14:	44 0f       	add	r20, r20
- e16:	55 1f       	adc	r21, r21
- e18:	20 91 17 20 	lds	r18, 0x2017	; 0x802017 <send_crc>
- e1c:	30 91 18 20 	lds	r19, 0x2018	; 0x802018 <send_crc+0x1>
- e20:	02 c0       	rjmp	.+4      	; 0xe26 <main+0x358>
- e22:	36 95       	lsr	r19
- e24:	27 95       	ror	r18
- e26:	4a 95       	dec	r20
- e28:	e2 f7       	brpl	.-8      	; 0xe22 <main+0x354>
- e2a:	f3 01       	movw	r30, r6
- e2c:	23 83       	std	Z+3, r18	; 0x03
+ ba4:	a5 01       	movw	r20, r10
+ ba6:	48 1b       	sub	r20, r24
+ ba8:	51 09       	sbc	r21, r1
+ baa:	44 0f       	add	r20, r20
+ bac:	55 1f       	adc	r21, r21
+ bae:	44 0f       	add	r20, r20
+ bb0:	55 1f       	adc	r21, r21
+ bb2:	44 0f       	add	r20, r20
+ bb4:	55 1f       	adc	r21, r21
+ bb6:	20 91 17 20 	lds	r18, 0x2017	; 0x802017 <send_crc>
+ bba:	30 91 18 20 	lds	r19, 0x2018	; 0x802018 <send_crc+0x1>
+ bbe:	02 c0       	rjmp	.+4      	; 0xbc4 <main+0x1fc>
+ bc0:	36 95       	lsr	r19
+ bc2:	27 95       	ror	r18
+ bc4:	4a 95       	dec	r20
+ bc6:	e2 f7       	brpl	.-8      	; 0xbc0 <main+0x1f8>
+ bc8:	f6 01       	movw	r30, r12
+ bca:	23 83       	std	Z+3, r18	; 0x03
 				send_crc_idx--;
- e2e:	81 50       	subi	r24, 0x01	; 1
- e30:	80 93 16 20 	sts	0x2016, r24	; 0x802016 <send_crc_idx>
+ bcc:	81 50       	subi	r24, 0x01	; 1
+ bce:	80 93 16 20 	sts	0x2016, r24	; 0x802016 <send_crc_idx>
 				if(send_crc_idx == 0) lock = 0;
- e34:	81 11       	cpse	r24, r1
- e36:	02 c0       	rjmp	.+4      	; 0xe3c <main+0x36e>
- e38:	10 92 15 20 	sts	0x2015, r1	; 0x802015 <lock>
+ bd2:	81 11       	cpse	r24, r1
+ bd4:	02 c0       	rjmp	.+4      	; 0xbda <main+0x212>
+ bd6:	10 92 15 20 	sts	0x2015, r1	; 0x802015 <lock>
 			}
 			
 			spic_flag = 0;
- e3c:	10 92 23 20 	sts	0x2023, r1	; 0x802023 <spic_flag>
- e40:	0c cf       	rjmp	.-488    	; 0xc5a <main+0x18c>
+ bda:	10 92 23 20 	sts	0x2023, r1	; 0x802023 <spic_flag>
+ bde:	2a cf       	rjmp	.-428    	; 0xa34 <main+0x6c>
 		}
 		else if(lock == 0){//Do anything that is not SPI related
- e42:	80 91 15 20 	lds	r24, 0x2015	; 0x802015 <lock>
- e46:	81 11       	cpse	r24, r1
- e48:	08 cf       	rjmp	.-496    	; 0xc5a <main+0x18c>
+ be0:	80 91 15 20 	lds	r24, 0x2015	; 0x802015 <lock>
+ be4:	81 11       	cpse	r24, r1
+ be6:	26 cf       	rjmp	.-436    	; 0xa34 <main+0x6c>
 			uint8_t recieved_data[2];
 			twi_package_t packet_read = {
- e4a:	8b e0       	ldi	r24, 0x0B	; 11
- e4c:	d1 01       	movw	r26, r2
- e4e:	1d 92       	st	X+, r1
- e50:	8a 95       	dec	r24
- e52:	e9 f7       	brne	.-6      	; 0xe4e <main+0x380>
- e54:	88 e4       	ldi	r24, 0x48	; 72
- e56:	8f af       	std	Y+63, r24	; 0x3f
- e58:	e1 e0       	ldi	r30, 0x01	; 1
- e5a:	f0 e0       	ldi	r31, 0x00	; 0
- e5c:	25 96       	adiw	r28, 0x05	; 5
- e5e:	ee af       	std	Y+62, r30	; 0x3e
- e60:	ff af       	std	Y+63, r31	; 0x3f
- e62:	25 97       	sbiw	r28, 0x05	; 5
- e64:	27 96       	adiw	r28, 0x07	; 7
- e66:	ee ae       	std	Y+62, r14	; 0x3e
- e68:	ff ae       	std	Y+63, r15	; 0x3f
- e6a:	27 97       	sbiw	r28, 0x07	; 7
- e6c:	29 96       	adiw	r28, 0x09	; 9
- e6e:	ae ae       	std	Y+62, r10	; 0x3e
- e70:	bf ae       	std	Y+63, r11	; 0x3f
- e72:	29 97       	sbiw	r28, 0x09	; 9
+ be8:	f8 01       	movw	r30, r16
+ bea:	8b e0       	ldi	r24, 0x0B	; 11
+ bec:	11 92       	st	Z+, r1
+ bee:	8a 95       	dec	r24
+ bf0:	e9 f7       	brne	.-6      	; 0xbec <main+0x224>
+ bf2:	e8 e4       	ldi	r30, 0x48	; 72
+ bf4:	e9 83       	std	Y+1, r30	; 0x01
+ bf6:	4d 82       	std	Y+5, r4	; 0x05
+ bf8:	5e 82       	std	Y+6, r5	; 0x06
+ bfa:	2f 82       	std	Y+7, r2	; 0x07
+ bfc:	38 86       	std	Y+8, r3	; 0x08
+ bfe:	a9 86       	std	Y+9, r10	; 0x09
+ c00:	ba 86       	std	Y+10, r11	; 0x0a
  * \return STATUS_OK   If all bytes were read, error code otherwise
  */
 static inline status_code_t twi_master_read(TWI_t *twi,
 		const twi_package_t *package)
 {
 	return twi_master_transfer (twi, package, true);
- e74:	41 e0       	ldi	r20, 0x01	; 1
- e76:	b1 01       	movw	r22, r2
- e78:	80 eb       	ldi	r24, 0xB0	; 176
- e7a:	94 e0       	ldi	r25, 0x04	; 4
- e7c:	46 dc       	rcall	.-1908   	; 0x70a <twi_master_transfer>
+ c02:	41 e0       	ldi	r20, 0x01	; 1
+ c04:	b8 01       	movw	r22, r16
+ c06:	80 eb       	ldi	r24, 0xB0	; 176
+ c08:	94 e0       	ldi	r25, 0x04	; 4
+ c0a:	7f dd       	rcall	.-1282   	; 0x70a <twi_master_transfer>
 				.buffer			= recieved_data,
 				.length			= 2
 				
 			};
 			
 			if(twi_master_read(&TWIF, &packet_read) == TWI_SUCCESS){
- e7e:	81 11       	cpse	r24, r1
- e80:	08 c0       	rjmp	.+16     	; 0xe92 <main+0x3c4>
+ c0c:	81 11       	cpse	r24, r1
+ c0e:	05 c0       	rjmp	.+10     	; 0xc1a <main+0x252>
 				sensor_data[0] = recieved_data[1];
- e82:	d7 01       	movw	r26, r14
- e84:	11 96       	adiw	r26, 0x01	; 1
- e86:	8c 91       	ld	r24, X
- e88:	11 97       	sbiw	r26, 0x01	; 1
- e8a:	f6 01       	movw	r30, r12
- e8c:	80 83       	st	Z, r24
+ c10:	8d 85       	ldd	r24, Y+13	; 0x0d
+ c12:	f7 01       	movw	r30, r14
+ c14:	80 83       	st	Z, r24
 				sensor_data[1] = recieved_data[0];
- e8e:	8c 91       	ld	r24, X
- e90:	81 83       	std	Z+1, r24	; 0x01
+ c16:	8c 85       	ldd	r24, Y+12	; 0x0c
+ c18:	81 83       	std	Z+1, r24	; 0x01
 			}
 			
 			packet_read.chip = 0x49;
- e92:	89 e4       	ldi	r24, 0x49	; 73
- e94:	8f af       	std	Y+63, r24	; 0x3f
- e96:	41 e0       	ldi	r20, 0x01	; 1
- e98:	b1 01       	movw	r22, r2
- e9a:	80 eb       	ldi	r24, 0xB0	; 176
- e9c:	94 e0       	ldi	r25, 0x04	; 4
- e9e:	35 dc       	rcall	.-1942   	; 0x70a <twi_master_transfer>
+ c1a:	f9 e4       	ldi	r31, 0x49	; 73
+ c1c:	f9 83       	std	Y+1, r31	; 0x01
+ c1e:	41 e0       	ldi	r20, 0x01	; 1
+ c20:	b8 01       	movw	r22, r16
+ c22:	80 eb       	ldi	r24, 0xB0	; 176
+ c24:	94 e0       	ldi	r25, 0x04	; 4
+ c26:	71 dd       	rcall	.-1310   	; 0x70a <twi_master_transfer>
 			if(twi_master_read(&TWIF,  &packet_read) ==TWI_SUCCESS){
- ea0:	81 11       	cpse	r24, r1
- ea2:	08 c0       	rjmp	.+16     	; 0xeb4 <main+0x3e6>
+ c28:	81 11       	cpse	r24, r1
+ c2a:	05 c0       	rjmp	.+10     	; 0xc36 <main+0x26e>
 				sensor_data[2] = recieved_data[1];
- ea4:	d7 01       	movw	r26, r14
- ea6:	11 96       	adiw	r26, 0x01	; 1
- ea8:	8c 91       	ld	r24, X
- eaa:	11 97       	sbiw	r26, 0x01	; 1
- eac:	f6 01       	movw	r30, r12
- eae:	82 83       	std	Z+2, r24	; 0x02
+ c2c:	8d 85       	ldd	r24, Y+13	; 0x0d
+ c2e:	f7 01       	movw	r30, r14
+ c30:	82 83       	std	Z+2, r24	; 0x02
 				sensor_data[3] = recieved_data[0];
- eb0:	8c 91       	ld	r24, X
- eb2:	83 83       	std	Z+3, r24	; 0x03
+ c32:	8c 85       	ldd	r24, Y+12	; 0x0c
+ c34:	83 83       	std	Z+3, r24	; 0x03
 			}
 			
 			packet_read.chip = 0x4A;
- eb4:	8a e4       	ldi	r24, 0x4A	; 74
- eb6:	8f af       	std	Y+63, r24	; 0x3f
- eb8:	41 e0       	ldi	r20, 0x01	; 1
- eba:	b1 01       	movw	r22, r2
- ebc:	80 eb       	ldi	r24, 0xB0	; 176
- ebe:	94 e0       	ldi	r25, 0x04	; 4
- ec0:	24 dc       	rcall	.-1976   	; 0x70a <twi_master_transfer>
+ c36:	fa e4       	ldi	r31, 0x4A	; 74
+ c38:	f9 83       	std	Y+1, r31	; 0x01
+ c3a:	41 e0       	ldi	r20, 0x01	; 1
+ c3c:	b8 01       	movw	r22, r16
+ c3e:	80 eb       	ldi	r24, 0xB0	; 176
+ c40:	94 e0       	ldi	r25, 0x04	; 4
+ c42:	63 dd       	rcall	.-1338   	; 0x70a <twi_master_transfer>
 			if(twi_master_read(&TWIF,  &packet_read) ==TWI_SUCCESS){
- ec2:	81 11       	cpse	r24, r1
- ec4:	08 c0       	rjmp	.+16     	; 0xed6 <main+0x408>
+ c44:	81 11       	cpse	r24, r1
+ c46:	05 c0       	rjmp	.+10     	; 0xc52 <main+0x28a>
 				sensor_data[4] = recieved_data[1];
- ec6:	d7 01       	movw	r26, r14
- ec8:	11 96       	adiw	r26, 0x01	; 1
- eca:	8c 91       	ld	r24, X
- ecc:	11 97       	sbiw	r26, 0x01	; 1
- ece:	f6 01       	movw	r30, r12
- ed0:	84 83       	std	Z+4, r24	; 0x04
+ c48:	8d 85       	ldd	r24, Y+13	; 0x0d
+ c4a:	f7 01       	movw	r30, r14
+ c4c:	84 83       	std	Z+4, r24	; 0x04
 				sensor_data[5] = recieved_data[0];
- ed2:	8c 91       	ld	r24, X
- ed4:	85 83       	std	Z+5, r24	; 0x05
+ c4e:	8c 85       	ldd	r24, Y+12	; 0x0c
+ c50:	85 83       	std	Z+5, r24	; 0x05
 			}
 			
 			lock = 1;
- ed6:	81 e0       	ldi	r24, 0x01	; 1
- ed8:	80 93 15 20 	sts	0x2015, r24	; 0x802015 <lock>
- edc:	be ce       	rjmp	.-644    	; 0xc5a <main+0x18c>
+ c52:	81 e0       	ldi	r24, 0x01	; 1
+ c54:	80 93 15 20 	sts	0x2015, r24	; 0x802015 <lock>
+ c58:	ed ce       	rjmp	.-550    	; 0xa34 <main+0x6c>
 
-00000ede <__udivmodsi4>:
- ede:	a1 e2       	ldi	r26, 0x21	; 33
- ee0:	1a 2e       	mov	r1, r26
- ee2:	aa 1b       	sub	r26, r26
- ee4:	bb 1b       	sub	r27, r27
- ee6:	fd 01       	movw	r30, r26
- ee8:	0d c0       	rjmp	.+26     	; 0xf04 <__udivmodsi4_ep>
+00000c5a <_exit>:
+ c5a:	f8 94       	cli
 
-00000eea <__udivmodsi4_loop>:
- eea:	aa 1f       	adc	r26, r26
- eec:	bb 1f       	adc	r27, r27
- eee:	ee 1f       	adc	r30, r30
- ef0:	ff 1f       	adc	r31, r31
- ef2:	a2 17       	cp	r26, r18
- ef4:	b3 07       	cpc	r27, r19
- ef6:	e4 07       	cpc	r30, r20
- ef8:	f5 07       	cpc	r31, r21
- efa:	20 f0       	brcs	.+8      	; 0xf04 <__udivmodsi4_ep>
- efc:	a2 1b       	sub	r26, r18
- efe:	b3 0b       	sbc	r27, r19
- f00:	e4 0b       	sbc	r30, r20
- f02:	f5 0b       	sbc	r31, r21
-
-00000f04 <__udivmodsi4_ep>:
- f04:	66 1f       	adc	r22, r22
- f06:	77 1f       	adc	r23, r23
- f08:	88 1f       	adc	r24, r24
- f0a:	99 1f       	adc	r25, r25
- f0c:	1a 94       	dec	r1
- f0e:	69 f7       	brne	.-38     	; 0xeea <__udivmodsi4_loop>
- f10:	60 95       	com	r22
- f12:	70 95       	com	r23
- f14:	80 95       	com	r24
- f16:	90 95       	com	r25
- f18:	9b 01       	movw	r18, r22
- f1a:	ac 01       	movw	r20, r24
- f1c:	bd 01       	movw	r22, r26
- f1e:	cf 01       	movw	r24, r30
- f20:	08 95       	ret
-
-00000f22 <_exit>:
- f22:	f8 94       	cli
-
-00000f24 <__stop_program>:
- f24:	ff cf       	rjmp	.-2      	; 0xf24 <__stop_program>
+00000c5c <__stop_program>:
+ c5c:	ff cf       	rjmp	.-2      	; 0xc5c <__stop_program>
