@@ -1,7 +1,8 @@
 
 #include <asf.h>
 #include <avr/interrupt.h>
-
+#include <twi_master.h>
+#include <avr/io.h>
 //For memcpy
 #include <string.h>
 
@@ -27,8 +28,10 @@ uint16_t calculated_crc = 0;
 //Sensor data storage
 uint8_t state = 0;
 uint8_t sensor_status = 0;
-#define SENSOR_DATA_SIZE 20
-uint8_t sensor_data[SENSOR_DATA_SIZE] = {1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20};
+#define SENSOR_DATA_SIZE 6
+uint8_t sensor_data[SENSOR_DATA_SIZE] = {1,2,3,4,5,6};
+//#define SENSOR_DATA_SIZE 8
+//uint8_t sensor_data[SENSOR_DATA_SIZE] = {1,2,3,4,5,6,7,8};
 
 //Sending data
 uint8_t cmd_finished = 0;
@@ -38,6 +41,8 @@ uint8_t send_crc_length = 0;//set equal to maximum value of send_idx
 uint16_t send_crc = 0;
 uint8_t send_crc_idx = 0;
 
+//lock
+uint8_t lock = 0;
 
 
 ISR(SPIC_INT_vect) {
@@ -62,6 +67,24 @@ int main (void)
 	PMIC.CTRL = 0x04; // enable high priority interrupts
 	sei();            // enable global interrupts
 	
+	twi_master_options_t opt = {
+		.speed = 50000,
+		.chip = 0x48
+	};
+	twi_master_setup(&TWIF, &opt);
+	const uint8_t twi_setup[] = {0x42, 0x83};
+	twi_package_t packet_write = {
+		.addr			= 0x01,
+		.addr_length	= sizeof(uint8_t),
+		.chip			= 0x48,
+		.buffer			= (void *)twi_setup,
+		.length			= sizeof(twi_setup)
+		
+	};
+	
+	while(twi_master_write(&TWIF, &packet_write) != TWI_SUCCESS);
+	
+	
 	
 	while (1) {
 		
@@ -72,6 +95,7 @@ int main (void)
 		if(spic_flag){
 			//Indicate start of incoming command
 			if(rx_byte == SPI_TX_START){
+				ioport_set_pin_level(LED_0_PIN,LED_0_INACTIVE);
 				cmd_idx = CMD_DATA_SIZE;
 				//Reset all the send variables/tmp storage
 				cmd_finished = 0;
@@ -79,25 +103,30 @@ int main (void)
 				send_crc_length = 0;
 				send_crc = 0;
 				send_crc_idx = 0;
+				lock = 1;
 
 			}
 			
 			//If we are receiving command, store it appropriately
 			if(cmd_idx > 0){
+				
 				cmd_data[CMD_DATA_SIZE-cmd_idx] = rx_byte;
 				cmd_idx--;
-				
 				//Finished last storage of incoming data
 				if(cmd_idx == 0){
+					ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 					//Check recieved_crc against calculated CRC
 					received_crc =	(cmd_data[CMD_DATA_SIZE-1]<<8) | cmd_data[CMD_DATA_SIZE-2];
 					calculated_crc = crc_io_checksum(cmd_data, CMD_DATA_SIZE-2, CRC_16BIT);
 					//Send appropriate signal if passed/failed
+					
 					if(calculated_crc == received_crc){
 						SPIC.DATA = SPI_CRC_PASS;
 						cmd_finished = 1;
+						//ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 					}
 					else{
+						ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 						SPIC.DATA = SPI_CRC_FAIL;
 					}
 				}				
@@ -125,7 +154,6 @@ int main (void)
 			
 			
 			if(send_idx > 0){
-				
 				if(cmd_data[2] == 0){//Send only sensor data
 					SPIC.DATA = send_data[SENSOR_DATA_SIZE-send_idx];
 				}
@@ -150,9 +178,32 @@ int main (void)
 			else if(send_crc_idx > 0){
 				SPIC.DATA = send_crc >> ((2-send_crc_idx)*8);
 				send_crc_idx--;
+				if(send_crc_idx == 0) lock = 0;
 			}
 			
 			spic_flag = 0;
 		}
+		else if(lock == 0){//Do anything that is not SPI related
+			uint8_t recieved_data[2];
+			twi_package_t packet_read = {
+				.addr			= 0x00,
+				.addr_length	= sizeof(uint8_t),
+				.chip			= 0x48,
+				.buffer			= recieved_data,
+				.length			= 2
+				
+			};
+			
+			if(twi_master_read(&TWIF, &packet_read) == TWI_SUCCESS){
+				sensor_data[0] = recieved_data[0];
+				sensor_data[1] = recieved_data[1];
+				
+			}
+			
+			lock = 1;
+			
+			
+		}
 	}
+	
 }

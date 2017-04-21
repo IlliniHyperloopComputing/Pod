@@ -16,5 +16,9 @@ src\ASF\common\services\ioport\xmega\ioport_compat.c
 
 src\ASF\xmega\boards\xmega_a1u_xplained_pro\board_init.c
 
+src\ASF\xmega\drivers\twi\twim.c
+
+src\ASF\xmega\drivers\twi\twis.c
+
 src\main.c
 
