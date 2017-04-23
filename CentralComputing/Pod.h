@@ -1,7 +1,7 @@
 #ifndef _POD_H
 #define _POD_H
 
-#include "StateMachineCompact/StateMachine.h"
+#include "StateMachine.h"
 #include <iostream>
 #include <string>
 

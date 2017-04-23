@@ -1,65 +1,85 @@
-#include "Sensor.h"
-#include <iostream>
-#include <unistd.h>
-#include "Pod.h"
-#include "StateMachineCompact/stdafx.h"
-#include <string>
-#include <fstream>
-#include <sstream>
-#include <algorithm>
-#include <vector>
-#include <stdlib.h>
-#include <iterator>
-#include <time.h>
+#include "StateMachine_Test.h"
 
-using namespace std;
+//Include any other dependencies 
 
-// declaring function, implented later
-void print_help();
-void print_help_instr();
+StateMachine_Test::StateMachine_Test(){
+  name = "State Machine Test";
+  cmd  = "smt";
+}
 
-/**
-	brings out the best in all of us
-*/
-void memes() {
-	srand(time(NULL));
-	int r = rand() % 5 +1;
+int StateMachine_Test::test(int argc, char** argv) {
+	Pod pod;
+	// argument vector
+	vector<string> args(argv, argv + argc);
 
-	cout << "MEME LORD IS HERE FOR YOU:" << endl;
-	if(r == 1) {
-		cout << "http://media.treehugger.com/assets/images/2013/08/elon-musk-hyperloop-good-guy-elon-musk-meme-chris-tackett.png.662x0_q70_crop-scale.png" << endl;
-	} else if (r == 2) {
-		cout << "http://s2.quickmeme.com/img/e6/e6b0f2395a1b7168c30c19881f51e8d20e83d08bec4d0b2a67e69a0cd18b43b1.jpg" << endl;
-	} else if (r == 3) {	
-		cout << "http://www.mememaker.net/static/images/memes/4284241.jpg" << endl;
-	} else if (r == 4) {
-		cout << "https://cdn.meme.am/cache/instances/folder695/63313695.jpg" << endl;
-	} else if (r == 5) {
-		cout << "https://s-media-cache-ak0.pinimg.com/736x/92/ab/3a/92ab3abea77d3f6a397fe8545993713e.jpg" << endl;
+	// too few arguments
+	if(argc == 1) {
+		cout << "Enter Arguments...type help or -h" << endl;
 	}
-	cout << endl;
+	else if (args[1] == "default") {
+		default_test(pod);
+	}
+	// complex commands
+	else {
+		if(args[1] == "load") {
+			if(argc >= 3) {
+				read_file(args[2], pod);
+			}
+			else if(args[1] == "load" && argc < 3) {
+				cout << "Please enter a file name" << endl;
+			}
+		}
+		else if(args[1] == "manual") {
+			manual(pod);
+		}
+		else if(args[1] == "random") {
+			if(argc >= 3) {
+				random(std::stoi(args[2]), pod);
+			}
+			else {
+				random(10,pod);
+			}
+		}
+		// tutorial commands
+		else if(args[1] == "help" || args[1] == "-h") {
+			print_help();
+		}
+		else if(args[1] == "script_instructions" || args[1] == "-si" ) {
+			print_script_instr();
+		}
+		else if(args[1] == "memes") {
+			memes();
+		}
+		// command failed to be recognized
+		else {
+			cout << "command unrecognized try again or type help" << endl;
+		}
+	}
+		
+  return 0;
+	//usleep(200000);
 }
 
 /**
 	
 */
 void wait(string command, Pod& pod) {
-	istringstream buf(command);
-	istream_iterator<string> beg(buf), end;
-	
-	vector<string> tokens(beg, end);
-	for(auto& s:tokens) {
-		//cout << s << endl;
-	}
+	//istringstream buf(command);
+	//istream_iterator<string> beg(buf), end;
+	//
+	//vector<string> tokens(beg, end);
+	//for(auto& s:tokens) {
+	//	//cout << s << endl;
+	//}
 }
 /**
 	checks if the current state of pod matches witht the check state command
 	word: check state command to be executed
 	pod: reference of pod to be checked
+	*/
 
-	return: if the current state is the same as in command
-*/
-bool assert_state_equals(string word, Pod& pod) {
+
+bool StateMachine_Test::assert_state_equals(string word, Pod& pod) {
 	size_t start = word.find("[");
 	size_t end = word.find("]");
 	string arg = word.substr(start+1,end-1);
@@ -88,30 +108,14 @@ bool assert_state_equals(string word, Pod& pod) {
 	}
 }
 
-/**
-	checks if the current state of pod matches witht the check state command
-	word: check state command to be executed
-	pod: reference of pod to be checked
-
-	return: if the current state is not the same as in command
-*/
-bool assert_state_not_equals(string command, Pod& pod) {
+bool StateMachine_Test::assert_state_not_equals(string command, Pod& pod) {
 	// remove the ! from the command
 	command = "[" + command.substr(1);
 	
 	return !assert_state_equals(command, pod);
 }
 
-
-/**
-	Processes a line of code and executes on the pod object
-	word: the line of code to execute
-	pod: a reference to the pod object to be used
-
-	returns: a bool for the success of the process
-		Usually true
-*/
-bool process( string word, Pod& pod ) {
+bool StateMachine_Test::process(string word, Pod& pod) {
 	std::transform(word.begin(), word.end(), word.begin(), ::toupper);
 	// TODO add other events like sensor readings, etc;
 	
@@ -171,14 +175,7 @@ bool process( string word, Pod& pod ) {
 	return true;
 }
 
-/**
-	Reads from a file and executes each command one by one
-	fileName: file to read in
-	pod: reference to pod object to be executed on
-	
-	prints at the end if the test was succesful
-*/
-void read_file( string fileName , Pod& pod) {
+void StateMachine_Test::read_file(string fileName, Pod& pod) {
 	bool worked = true;
 	ifstream wordsFile(fileName);
 	string word;
@@ -193,11 +190,7 @@ void read_file( string fileName , Pod& pod) {
 	cout << "Test was successful = " << worked << endl;
 }
 
-/**
-	Reads from command line and executes user commands
-	pod: reference to pod object to be executed on
-*/
-void manual(Pod& pod) {
+void StateMachine_Test::manual(Pod& pod) {
 	string line = "";
 	
 	// loop until user types end or quit
@@ -212,8 +205,8 @@ void manual(Pod& pod) {
 		if(line == "help" || line == "-h" ) {
 			print_help();
 		}
-		if(line == "help_instructions" || line == "-hi" ) {
-			print_help_instr();
+		if(line == "script_instructions" || line == "-si" ) {
+			print_script_instr();
 		}
 		// exit condition for loop
 		else if(line == "end" || line == "exit" ) {
@@ -226,12 +219,7 @@ void manual(Pod& pod) {
 	}
 }
 
-/**
-	Monkey test, does random functional calls to see if pod would break
-	num: the number of commands to run before terminating
-	pod: reference to pod object to be executed on
-*/
-void random(int num, Pod& pod) {
+void StateMachine_Test::random(int num, Pod& pod) {
 	// sets seed for rng
 	srand(time(NULL));
 
@@ -268,103 +256,34 @@ void random(int num, Pod& pod) {
 	}
 }
 
-/**
-	A default test for the pod, for easy testing
-	pod: reference to pod object to be executed on
-*/
-void default_test(Pod& pod) {
+void StateMachine_Test::default_test(Pod& pod) {
 	cout << "doing default test here" << endl;
 	//pod.move_functional_tests();
 	cout << pod.get_current_state_string() << endl;
 }
-/**
-	main function
-	param: an array of strings to be parsed into a command";
-*/
-int main(int argc, char** argv) {
-	Pod pod;
-	// argument vector
-	vector<string> args(argv, argv + argc);
 
-	// too few arguments
-	if(argc == 1) {
-		cout << "Enter Arguments...type help or -h" << endl;
-	}
-	else if (args[1] == "default") {
-		default_test(pod);
-	}
-	// complex commands
-	else {
-		if(args[1] == "load") {
-			if(argc >= 3) {
-				read_file(args[2], pod);
-			}
-			else if(args[1] == "load" && argc < 3) {
-				cout << "Please enter a file name" << endl;
-			}
-		}
-		else if(args[1] == "manual") {
-			manual(pod);
-		}
-		else if(args[1] == "random") {
-			if(argc >= 3) {
-				random(std::stoi(args[2]), pod);
-			}
-			else {
-				random(10,pod);
-			}
-		}
-		// tutorial commands
-		else if(args[1] == "help" || args[1] == "-h") {
-			print_help();
-		}
-		else if(args[1] == "help_instructions" || args[1] == "-hi" ) {
-			print_help_instr();
-		}
-		else if(args[1] == "memes") {
-			memes();
-		}
-		// command failed to be recognized
-		else {
-			cout << "command unrecognized try again or type help" << endl;
-		}
-	}
-		
-	//usleep(200000);
-}
 
-/**
-	prints out all the commands that can be used
-*/
-void print_help() {
-	cout << "======================" << endl;
-	cout << "ILLINI HYPER LOOOP SIM" << endl;
-	cout << "======================" << endl;
-	cout << "AUTHOR: ELON MUSK" << endl;
-	cout << "CREATED: 2017" << endl;
-	cout << "----------------------" << endl;
+void StateMachine_Test::print_help() {
+	cout << "==============================" << endl;
+	cout << "STATE MACHINE TESTING SUITE " << endl;
+	cout << "==============================" << endl;
 	cout << "Commands:" << endl;
-	cout << "help" << endl;
-	cout << "default" << endl;
-	cout << "load <file_name>" << endl;
-	cout << "manual" << endl;	
-	cout << "...end" << endl;	
-	cout << "random" << endl;
-	cout << "help_instructions" << endl;
-	cout << "memes" << endl;
+	cout << "\thelp, -h" << endl;
+	cout << "\tdefault" << endl;
+	cout << "\tload (file_name)" << endl;
+	cout << "\tmanual" << endl;	
+	cout << "\trandom" << endl;
+	cout << "\tscript_instructions, -si" << endl;
+	cout << "\tmemes" << endl;
 }
 
-/**
-	prints out commands that can be used for scripting
-*/
-void print_help_instr() {
-	cout << "________________________________________________" << endl;
-	cout << "List w/ explanations of instructions for testing" << endl;
-	cout << "	Can also be called with -hi" << endl;
-	cout << "each line has instructions with abrv inside ()" << endl;
-	cout << "tests can be done with full instructs and abrv" << endl;
+void StateMachine_Test::print_script_instr() {
+	cout << "____________________________________________________" << endl;
+	cout << "Scripting instructions for testing" << endl;
+	cout << "Each line has instructions with abrv inside ()" << endl;
+	cout << "Mix-and-match of full and abrv instructions allowed" << endl;
 	cout << "some functions like help can still be called" << endl;	
-	cout << "------------------------------------------------" << endl;
+	cout << "----------------------------------------------------" << endl;
 	cout << "MOVE_FUNCTIONAL_TESTS (MV_F_T)" << endl;
 	cout << "MOVE_SAFE_MODE (MV_S_M)" << endl;
 	cout << "MOVE_FLIGHT_ACCELERATION (MV_F_A)" << endl;
@@ -377,9 +296,8 @@ void print_help_instr() {
 	cout << "	seconds (s)" << endl;
 	cout << "	minutes (m)" << endl;
 	cout << "---checker---" <<endl;
-	cout << "You can check for being in a state with []" << endl;
+	cout << "You can assert the current state with []" << endl;
 	cout << "ex: [STATE_NAME]" << endl;
-	cout << "You can also check for not being in a state" << endl;
 	cout << "ex: [!STATE_NAME]" << endl;
 	cout << "Here's a list of state names:" << endl;
 	cout << "	safe_mode (s_m)" << endl;
@@ -388,6 +306,25 @@ void print_help_instr() {
 	cout << "	flight_coast (f_c)" << endl;
 	cout << "	flight_brake (f_b)" << endl;
 	cout << endl;
-	cout << "Note: commenting out lines can be done with #" << endl;
-	cout << "Note: don't indent or start lines with spaces" << endl;
+	cout << "Note: Comment out lines with #" << endl;
+	cout << "Note: Don't indent or start lines with spaces" << endl;
+}
+
+void StateMachine_Test::memes() {
+	srand(time(NULL));
+	int r = rand() % 5 +1;
+
+	cout << "MEME LORD IS HERE FOR YOU:" << endl;
+	if(r == 1) {
+		cout << "http://media.treehugger.com/assets/images/2013/08/elon-musk-hyperloop-good-guy-elon-musk-meme-chris-tackett.png.662x0_q70_crop-scale.png" << endl;
+	} else if (r == 2) {
+		cout << "http://s2.quickmeme.com/img/e6/e6b0f2395a1b7168c30c19881f51e8d20e83d08bec4d0b2a67e69a0cd18b43b1.jpg" << endl;
+	} else if (r == 3) {	
+		cout << "http://www.mememaker.net/static/images/memes/4284241.jpg" << endl;
+	} else if (r == 4) {
+		cout << "https://cdn.meme.am/cache/instances/folder695/63313695.jpg" << endl;
+	} else if (r == 5) {
+		cout << "https://s-media-cache-ak0.pinimg.com/736x/92/ab/3a/92ab3abea77d3f6a397fe8545993713e.jpg" << endl;
+	}
+	cout << endl;
 }
