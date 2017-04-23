@@ -1,4 +1,4 @@
-#include "Sensor.h"
+#include "Sensor_Package.h"
 #include <iostream>
 
 using namespace std;
@@ -9,11 +9,6 @@ Thermocouple::Thermocouple(Sensor_Configuration configuration) : Sensor_Group(co
 
 Thermocouple::~Thermocouple(){
 	//do nothing
-}
-
-bool Thermocouple::connect() {
-	//TODO::implement connection
-	return true;
 }
 
 void Thermocouple::reset() {

@@ -38,12 +38,14 @@ class Sensor_Group {
 
 
 		virtual ~Sensor_Group() = 0;
-
+		
+		// removed connect as per request by Richard
 		/**
 		* Connect to a sensor group on an XMEGA
 		* @return connection status
-		**/
+		*
 		virtual	bool connect() = 0;
+		*/
 
 		/**
 		* Performs IO to get new sensor data from the XMEGA
@@ -85,10 +87,6 @@ class Thermocouple : public Sensor_Group {
 		Thermocouple(Sensor_Configuration configuration);
 
 		~Thermocouple();
-		/**
-		* Connects to XMEGA
-		**/
-		bool connect();
 
 		/**
 		* Receives new data from the XMega or calls simulations
@@ -105,45 +103,6 @@ class Thermocouple : public Sensor_Group {
 		* Simulates set values in the vector
 		**/
 		void simulation_1();
-};
-
-
-class Sensor_Package {
-	public:	
-		/**
-		* Creates a SensorPackage
-		* @param  configuration a vector of sensor configurations for each sensor.  Initalized in the main thread
-		**/
-		Sensor_Package(vector<Sensor_Configuration> configuration);
-
-		/**
-		* Destructor, cleans up map and deletes sensor_group objects
-		**/
-		~Sensor_Package();
-
-		/**
-		* Calls update on every sensor group
-		**/
-		void update();
-
-		/**
-		* Sends a reset command to each sensor group
-		**/
-		void reset(); 
-
-		/**
-		* Returns a vector of the sensor data from a sensor group
-		* @return a vector of sensor data
-		**/
-		vector<double> get_sensor_data(Sensor_Type type);
-
-		static long long get_current_time();
-
-
-		static long long start_time;
-	private:
-		map<Sensor_Type, Sensor_Group * > sensor_groups;
-
 };
 
 #endif

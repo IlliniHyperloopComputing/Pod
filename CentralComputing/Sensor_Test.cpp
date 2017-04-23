@@ -9,7 +9,7 @@
 #include <algorithm>
 #include <vector>
 #include <stdlib.h>
-
+#include <iterator>
 #include <time.h>
 
 using namespace std;
@@ -40,6 +40,18 @@ void memes() {
 	cout << endl;
 }
 
+/**
+	
+*/
+void wait(string command, Pod& pod) {
+	istringstream buf(command);
+	istream_iterator<string> beg(buf), end;
+	
+	vector<string> tokens(beg, end);
+	for(auto& s:tokens) {
+		//cout << s << endl;
+	}
+}
 /**
 	checks if the current state of pod matches witht the check state command
 	word: check state command to be executed
@@ -133,14 +145,18 @@ bool process( string word, Pod& pod ) {
 		}
 		else {
 			result = assert_state_equals(word, pod);
-		}
-		
+		}	
 		// prints out if the assert fails, ignores otherwise
 		if(!result) {
 			cout << "warning: " << word << " failed!" << endl;
 			cout << "	current state: " << pod.get_current_state_string() << endl;
 		}
+		// for the read_file tests, all the tests are & together
 		return result;
+	}
+	// sets a timer to wait
+	else if ( word.substr(0,4) == "WAIT" || word.substr(0,1) == "W" ) {
+		wait(word, pod);
 	}
 	// checks if command is a comment
 	else if ( word.find("#") != string::npos || word == "" || word == " " ) {
@@ -183,6 +199,7 @@ void read_file( string fileName , Pod& pod) {
 */
 void manual(Pod& pod) {
 	string line = "";
+	
 	// loop until user types end or quit
 	while(true) {
 		// prints the carrot for beauty's sake
@@ -329,7 +346,7 @@ void print_help() {
 	cout << "Commands:" << endl;
 	cout << "help" << endl;
 	cout << "default" << endl;
-	cout << "load (file_name)" << endl;
+	cout << "load <file_name>" << endl;
 	cout << "manual" << endl;	
 	cout << "...end" << endl;	
 	cout << "random" << endl;
@@ -356,6 +373,9 @@ void print_help_instr() {
 	cout << "BRAKE (b)" << endl;
 	cout << "---utility---" <<endl;
 	cout << "PRINT_STATE (ps)" << endl;
+	cout << "WAIT (W) <number> <unit>" << endl;
+	cout << "	seconds (s)" << endl;
+	cout << "	minutes (m)" << endl;
 	cout << "---checker---" <<endl;
 	cout << "You can check for being in a state with []" << endl;
 	cout << "ex: [STATE_NAME]" << endl;
