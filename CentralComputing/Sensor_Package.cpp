@@ -38,7 +38,7 @@ long long Sensor_Package::get_current_time() {
 
 void Sensor_Package::update() {
 	for(auto const & pair : sensor_groups){
-		pair.second->update();
+		pair.second->update(NULL);
 	}
 }
 

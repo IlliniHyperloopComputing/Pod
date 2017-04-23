@@ -64,6 +64,9 @@ int StateMachine_Test::test(int argc, char** argv) {
 	
 */
 void wait(string command, Pod& pod) {
+	// TODO implement this
+	command = "";
+	pod.get_current_state();
 	//istringstream buf(command);
 	//istream_iterator<string> beg(buf), end;
 	//

@@ -15,11 +15,11 @@ void Thermocouple::reset() {
 	//TODO: implement resetting
 }
 
-void Thermocouple::update() {
+void Thermocouple::update(const Spi* spi) {
 
 	switch(simulation) {
 		case 0:
-			//TODO: read from XMega
+			spi->get_data(device, idx);
 			break;
 		case 1:
 			simulation_1();

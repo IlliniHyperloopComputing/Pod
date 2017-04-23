@@ -6,6 +6,8 @@
 #include <thread>
 #include <mutex>
 
+#include "Spi.h"
+
 using namespace std;
 enum Sensor_Type {
 	THERMOCOUPLE,
@@ -50,8 +52,9 @@ class Sensor_Group {
 		/**
 		* Performs IO to get new sensor data from the XMEGA
 		* OR uses a time function to set simulated values
+		* @param a pointer to the spi object from which data will be extracted
 		**/
-		virtual void update() = 0;
+		virtual void update(const Spi* spi) = 0;
 
 
 		/**
@@ -70,15 +73,15 @@ class Sensor_Group {
 
 
 	protected:
-	
+		
 		int simulation;
 
 		Sensor_Type type;
 
 		vector<double> data;
-
-		vector<int> addresses; //TODO figure out how each sensor group connects to the XMEGA
-
+		
+		uint8_t device = 0;
+		int idx = 0;
 };
 
 class Thermocouple : public Sensor_Group {
@@ -91,7 +94,7 @@ class Thermocouple : public Sensor_Group {
 		/**
 		* Receives new data from the XMega or calls simulations
 		**/
-		void update();
+		void update(const Spi* spi);
 
 		/**
 		* Resets and recalibrates sensors
@@ -103,6 +106,9 @@ class Thermocouple : public Sensor_Group {
 		* Simulates set values in the vector
 		**/
 		void simulation_1();
+		
+		uint8_t device = 0;
+		int idx = 0;
 };
 
 #endif
