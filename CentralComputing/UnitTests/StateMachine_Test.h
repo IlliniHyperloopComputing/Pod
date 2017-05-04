@@ -6,7 +6,7 @@
 #include "Unit_Test.h"
 
 //Any other dependencies 
-#include "Pod.h"
+#include "Pod_State.h"
 #include "Sensor.h"
 #include <iostream>
 #include <unistd.h>
@@ -39,7 +39,7 @@ class StateMachine_Test : public Unit_Test {
     *
     *	@param return  If the current state is the same as in command
     **/
-    static bool assert_state_equals(string word, Pod& pod);
+    static bool assert_state_equals(string word, Pod_State& pod);
 
     /**
     *	Checks if the current state of pod matches with the check state command
@@ -48,7 +48,7 @@ class StateMachine_Test : public Unit_Test {
     *
     *	@param return  If the current state is not the same as in command
     **/
-    static bool assert_state_not_equals(string command, Pod& pod);
+    static bool assert_state_not_equals(string command, Pod_State& pod);
 
     /**
     *	Processes a line of code and executes on the pod object
@@ -58,7 +58,7 @@ class StateMachine_Test : public Unit_Test {
     *	@return A bool for the success of the process
     *		Usually true
     **/
-    static bool process(string word, Pod& pod);
+    static bool process(string word, Pod_State& pod);
 
     /**
     *	Reads from a file and executes each command one by one
@@ -67,26 +67,26 @@ class StateMachine_Test : public Unit_Test {
     *	
     *	prints at the end if the test was succesful
     **/
-    static void read_file(string fileName, Pod& pod);
+    static void read_file(string fileName, Pod_State& pod);
 
     /**
     *	Reads from command line and executes user commands
     *	@param pod reference to pod object to be executed on
     **/
-    static void manual(Pod& pod);
+    static void manual(Pod_State& pod);
 
     /**
     *	Monkey test, does random functional calls to see if pod would break
     *	@param num  the number of commands to run before terminating
     *	@param pod  reference to pod object to be executed on
     **/
-    static void random(int num, Pod& pod);
+    static void random(int num, Pod_State& pod);
 
     /**
     *	A default test for the pod, for easy testing
     *	@param pod  A reference to the pod object 
     **/
-    static void default_test(Pod& pod);
+    static void default_test(Pod_State& pod);
 
     /**
     *	Prints out all the commands that can be used

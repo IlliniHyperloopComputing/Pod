@@ -5,7 +5,7 @@ using namespace std;
 
 Sensor_Group::Sensor_Group(Sensor_Configuration configuration) : simulation(configuration.simulation) {
 	data = vector<double>(configuration.count);
-	//TODO: initialize mutex
+	
 }
 
 Sensor_Group::~Sensor_Group(){
@@ -13,9 +13,9 @@ Sensor_Group::~Sensor_Group(){
 }
 
 vector<double> Sensor_Group::get_data() {
-	//TODO: lock mutex
+	sensor_group_mutex.lock();
 	vector<double> d = data;
-	//TODO: unlock mutex
+	sensor_group_mutex.unlock();
 	return d;
 }
 

@@ -8,7 +8,7 @@ StateMachine_Test::StateMachine_Test(){
 }
 
 int StateMachine_Test::test(int argc, char** argv) {
-	Pod pod;
+	Pod_State pod;
 	// argument vector
 	vector<string> args(argv, argv + argc);
 
@@ -63,7 +63,7 @@ int StateMachine_Test::test(int argc, char** argv) {
 /**
 	
 */
-void wait(string command, Pod& pod) {
+void wait(string command, Pod_State& pod) {
 	//istringstream buf(command);
 	//istream_iterator<string> beg(buf), end;
 	//
@@ -79,7 +79,7 @@ void wait(string command, Pod& pod) {
 	*/
 
 
-bool StateMachine_Test::assert_state_equals(string word, Pod& pod) {
+bool StateMachine_Test::assert_state_equals(string word, Pod_State& pod) {
 	size_t start = word.find("[");
 	size_t end = word.find("]");
 	string arg = word.substr(start+1,end-1);
@@ -87,19 +87,19 @@ bool StateMachine_Test::assert_state_equals(string word, Pod& pod) {
 	
 	// switch case for all the different states
 	switch(state) {
-		case Pod::ST_SAFE_MODE:
+		case Pod_State::ST_SAFE_MODE:
 			return (arg == "SAFE_MODE" || arg == "S_M");
 			break;
-		case Pod::ST_FUNCTIONAL_TEST:
+		case Pod_State::ST_FUNCTIONAL_TEST:
 			return (arg == "FUNCTIONAL_TESTS" || arg == "F_T");
 			break;
-		case Pod::ST_FLIGHT_ACCEL:
+		case Pod_State::ST_FLIGHT_ACCEL:
 			return (arg == "FLIGHT_ACCEL" || arg == "F_A");
 			break;
-		case Pod::ST_FLIGHT_COAST:
+		case Pod_State::ST_FLIGHT_COAST:
 			return (arg == "FLIGHT_COAST" || arg == "F_C");
 			break;
-		case Pod::ST_FLIGHT_BRAKE:
+		case Pod_State::ST_FLIGHT_BRAKE:
 			return (arg == "FLIGHT_BRAKE" || arg == "F_B");
 			break;
 		default:
@@ -108,14 +108,14 @@ bool StateMachine_Test::assert_state_equals(string word, Pod& pod) {
 	}
 }
 
-bool StateMachine_Test::assert_state_not_equals(string command, Pod& pod) {
+bool StateMachine_Test::assert_state_not_equals(string command, Pod_State& pod) {
 	// remove the ! from the command
 	command = "[" + command.substr(1);
 	
 	return !assert_state_equals(command, pod);
 }
 
-bool StateMachine_Test::process(string word, Pod& pod) {
+bool StateMachine_Test::process(string word, Pod_State& pod) {
 	std::transform(word.begin(), word.end(), word.begin(), ::toupper);
 	// TODO add other events like sensor readings, etc;
 	
@@ -175,7 +175,7 @@ bool StateMachine_Test::process(string word, Pod& pod) {
 	return true;
 }
 
-void StateMachine_Test::read_file(string fileName, Pod& pod) {
+void StateMachine_Test::read_file(string fileName, Pod_State& pod) {
 	bool worked = true;
 	ifstream wordsFile(fileName);
 	string word;
@@ -190,7 +190,7 @@ void StateMachine_Test::read_file(string fileName, Pod& pod) {
 	cout << "Test was successful = " << worked << endl;
 }
 
-void StateMachine_Test::manual(Pod& pod) {
+void StateMachine_Test::manual(Pod_State& pod) {
 	string line = "";
 	
 	// loop until user types end or quit
@@ -219,7 +219,7 @@ void StateMachine_Test::manual(Pod& pod) {
 	}
 }
 
-void StateMachine_Test::random(int num, Pod& pod) {
+void StateMachine_Test::random(int num, Pod_State& pod) {
 	// sets seed for rng
 	srand(time(NULL));
 
@@ -256,7 +256,7 @@ void StateMachine_Test::random(int num, Pod& pod) {
 	}
 }
 
-void StateMachine_Test::default_test(Pod& pod) {
+void StateMachine_Test::default_test(Pod_State& pod) {
 	cout << "doing default test here" << endl;
 	//pod.move_functional_tests();
 	cout << pod.get_current_state_string() << endl;

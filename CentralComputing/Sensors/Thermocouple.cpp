@@ -1,4 +1,4 @@
-#include "Sensor_Package.h"
+#include "../Sensor_Package.h"
 #include <iostream>
 
 using namespace std;
@@ -19,7 +19,6 @@ void Thermocouple::update() {
 
 	switch(simulation) {
 		case 0:
-			//TODO: read from XMega
 			break;
 		case 1:
 			simulation_1();
@@ -35,10 +34,9 @@ void Thermocouple::simulation_1() {
 	
 	//TODO calc some actual value
 	
-	//Creates a mutex lock that automatically unlocks after it falls out of scope
-	//Cleaner than calling mutex lock
-	lock_guard<mutex> guard(sensor_group_mutex);
+	sensor_group_mutex.lock();
 	for(size_t i = 0; i < data.size(); i++) {
 		data[i] = i;
 	}
+	sensor_group_mutex.unlock();
 }

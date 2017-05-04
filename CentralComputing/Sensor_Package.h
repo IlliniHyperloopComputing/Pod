@@ -7,6 +7,7 @@
 #include <mutex>
 
 #include "Sensor.h"
+#include "Spi.h"
 
 using namespace std;
 
@@ -25,8 +26,9 @@ class Sensor_Package {
 
 		/**
 		* Calls update on every sensor group
+		* @param transfer the Xmega transfer struct
 		**/
-		void update();
+		void update(Xmega_Transfer & transfer);
 
 		/**
 		* Sends a reset command to each sensor group
@@ -45,6 +47,7 @@ class Sensor_Package {
 		static long long start_time;
 	private:
 		map<Sensor_Type, Sensor_Group * > sensor_groups;
+		Spi * spi;
 
 };
 
