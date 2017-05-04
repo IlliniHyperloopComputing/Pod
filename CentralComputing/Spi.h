@@ -11,21 +11,34 @@
 
 #include <string>
 #include <cstdlib>
+#include <cstring>
 #include <cstdint>
 #include <cassert>
 #include <unistd.h>
 
 #include "Crc.h"
 
+#define CRC_PASS 0xAA
+#define SLEEP_TIME 18
+
 using namespace std;
 
-enum class Xmega_Command_t: uint8_t {
+enum Xmega_Transmission_Failure_t: uint8_t {
+  //No error
+  X_TF_NONE = 0,
+  //Error sending data
+  X_TF_SEND = 1,
+  //Error recieving data
+  X_TF_RECIEVE =2,
+};
+
+enum Xmega_Command_t: uint8_t {
   //No Command
   X_C_NONE = 0,
   //TODO: Add others as needed
 };
 
-enum class Xmega_Request_t: uint8_t {
+enum Xmega_Request_t: uint8_t {
   //Read num bytes as described in Xmega_Setup
   X_R_SENSOR = 0,
   //Read byte to determine if any Xmega sensor error
@@ -39,13 +52,12 @@ enum class Xmega_Request_t: uint8_t {
 };
 
 typedef struct Xmega_Transfer_{
+  //Which device? 0 or 1
+  int device;
   //What data are we sending/commanding
-  enum Xmega_Command_t cmd1;
-  enum Xmega_Command_t cmd2;
-
+  enum Xmega_Command_t cmd;
   //What data are we requesting
-  enum Xmega_Request_t req1;
-  enum Xmega_Request_t req2;
+  enum Xmega_Request_t req;
   
 } Xmega_Transfer;
 
@@ -106,6 +118,44 @@ typedef struct Xmega_Setup_{
   uint32_t bits_per_word;
 
 } Xmega_Setup;
+
+typedef struct Xmega_Data_ {
+
+  //SPI file descriptors for each Xmega
+  int fd;
+
+  //storage of most recently read in data
+  //dynamically allocated, according to maximum message size + 2
+  uint8_t * buff;
+
+  //Number of total bytes used by data (not CRC, status, or state)
+  //in buff
+  uint8_t num_bytes;
+
+  /**
+  * To quickly find each data item, and to make the code simpler,
+  * this will hold forward calculations of all the offsets. 
+  *
+  * Example: 
+  * num_items = 4
+  * index         -> |       0       |         1        |     2      |     3      |
+  * xmega data    -> | 16-bit thermo | 8-bit rideheight | 10-bit ADC | 12-bit ADC |
+  * bytes_per_item-> |       2       |         1        |     2      |     2      |
+  * offset_lookup -> |       0       |         2        |     3      |     5      |
+  *
+  **/
+  uint8_t * offset_lookup;
+
+  /**
+  * Storage for most recent byte describing Xmega sensor_status / state
+  * This information will be initially transfered into the buffer, 
+  * but moved here because sensor_status and state might not be 
+  * requested every time
+  **/
+  uint8_t sensor_status;
+  uint8_t state;
+
+} Xmega_Data;
 
 class Spi {
   
@@ -180,16 +230,21 @@ class Spi {
     * To solve this problem the reads for each Xmega are interlaced. That
     * seems to do the trick. Using usleep() seems like it would also work.
     *
+    * Update on above paragraph: Interlaced Read/Writes between Xmegas 
+    * are no longer a thing. That was a crazy idea, which would save a 
+    * little bit of time in exchange for SO MUCH HASSLE. So I moved to
+    * a talking to a single Xmega per call to transfer()
+    *
     *
     *
     * First, write the appropriate data.
     * 1 start byte, 1 command byte, 1 request byte, and 2 bytes for CRC
-    * Using 0xAA as start byte. Why? Because command or request will never
-    * equal 0xAA. Also, 0xAA is easy to see on an Oscilliscope, and 
+    * Using 0xAA as start byte. Why? Because command or request will (should) 
+    * never equal 0xAA. Also, 0xAA is easy to see on an Oscilliscope, and 
     * less likely to appear by mistake than 0xFF or 0x00 ... at least
     * I think so. Whatever. 
     *
-    * A start byte is needed so the Xmega knows a transfer is about
+    * A start byte (0xAA) is needed so the Xmega knows a transfer is about
     * to happen, and can start pipelining the correct data. 
     * 
     * Need to send 5 bytes before reading
@@ -206,8 +261,12 @@ class Spi {
     *       of the time reading, and thus half duplex is simpler.
     *
     * @param request_type   Xmega_Transfer describing transfer
+    * @return failure mode   0b00000000 == no failure
+    *                        0b00000001 == x1 send failure
+    *                        0b00000010 == x2 recieve failure
+    * 
     **/
-    void transfer(Xmega_Transfer &transfer);
+    int transfer(Xmega_Transfer &transfer);
 
     /**
     * Of the most recently recieved data, get the appropriate index
@@ -240,7 +299,6 @@ class Spi {
     **/
     uint8_t get_state(uint8_t device);
 
-
   private:
 
     /**
@@ -250,50 +308,20 @@ class Spi {
     **/
     int setup_spi();
 
+    /**
+    * Used to setup the offset field that is part of each xmega data
+    * struct. Really it just makes the constructor cleaner
+    *
+    **/
+    void setup_offset(Xmega_Data * xd, Xmega_Setup * xs);
+
     //Storage of setup details 
-    Xmega_Setup * x1;
-    Xmega_Setup * x2;
+    Xmega_Setup * x1_setup;
+    Xmega_Setup * x2_setup;
 
-    //SPI file descriptors for each Xmega
-    int fd1;
-    int fd2;
-
-    //storage of most recently read in data
-    //dynamically allocated, acording to maximum message size + 2
-    uint8_t * x1_buff;
-    uint8_t * x2_buff;
-
-    //Number of total bytes used by data (not CRC, status, or state)
-    //in the x1/2_buff
-    uint8_t x1_num_bytes;
-    uint8_t x2_num_bytes;
-
-    /**
-    * To quickly find each data item, and to make the code simpler,
-    * this will hold forward calculations of all the offsets. 
-    *
-    * Example: 
-    * num_items = 4
-    * index         -> |       0       |         1        |     2      |     3      |
-    * xmega data    -> | 16-bit thermo | 8-bit rideheight | 10-bit ADC | 12-bit ADC |
-    * bytes_per_item-> |       2       |         1        |     2      |     2      |
-    * offset_lookup -> |       0       |         2        |     3      |     5      |
-    *
-    **/
-    uint8_t * x1_offset_lookup;
-    uint8_t * x2_offset_lookup;
-
-    /**
-    * Storage for most recent byte describing Xmega sensor_status / state
-    * This information will be initially transfered into the x1/2_buff, 
-    * but moved here because sensor_status and state might not be 
-    * requested every time
-    **/
-    uint8_t x1_sensor_status;
-    uint8_t x1_state;
-
-    uint8_t x2_sensor_status;
-    uint8_t x2_state;
+    //Storage of all data that isn't data
+    Xmega_Data * x1;
+    Xmega_Data * x2;
 
 };
 
