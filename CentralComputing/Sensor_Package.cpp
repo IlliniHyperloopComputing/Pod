@@ -7,13 +7,17 @@ using namespace std;
 
 
 long long Sensor_Package::start_time = 1;
-Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration) {
+Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool xmega_connect) {
+	connect = xmega_connect;
 	for(Sensor_Configuration c : configuration){
 		Sensor_Group * group;
 		switch(c.type){
 			case THERMOCOUPLE:
 				group = new Thermocouple(c);
 				break; //TODO add new sensors here
+			case ACCELEROMETER:
+				group = new Accelerometer(c);
+				break;
 			default:
 				cout << "Something went wrong" << endl;
 				group = NULL;
@@ -48,14 +52,19 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration) {
 	//16-bit RideHeight3
 	Xmega_Setup x1 = {"/dev/spidev1.0", 3, bpi1, 500000, 8};//Xmega1 initialization struct
 	Xmega_Setup x2 = {"/dev/spidev1.1",16, bpi2, 500000, 8};
-
-	spi = new Spi(&x1, &x2);
+	
+	if(xmega_connect) {
+		spi = new Spi(&x1, &x2);
+	} else {
+		spi = NULL;
+	}
 }
 
 Sensor_Package::~Sensor_Package() {
 	for(auto const & pair : sensor_groups){
 		delete pair.second;
 	}
+	delete spi;
 }
 
 long long Sensor_Package::get_current_time() {
@@ -66,9 +75,13 @@ long long Sensor_Package::get_current_time() {
 }
 
 void Sensor_Package::update(Xmega_Transfer & transfer) {
-	spi->transfer(transfer);	
+	//TODO handle transferring in non simulation cases
+
+	if(connect == true) {
+		spi->transfer(transfer);	
+	}
 	for(auto const & pair : sensor_groups){
-		pair.second->update();
+		pair.second->update(spi);
 	}
 }
 

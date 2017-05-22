@@ -19,8 +19,7 @@ enum Sensor_Type {
 	TAPE_COUNT,
 	POSITION,
 	BRAKE_PRESSURE,
-	PRIMARY_BATTERY,
-	SECONDARY_BATTERY
+	BATTERY,
 };
 
 enum Sensor_Index_1 {
@@ -30,8 +29,7 @@ enum Sensor_Index_1 {
 };
 
 enum Sensor_Index_2 {
-	PRIMARY_BATTERY_CELL_INDEX = 0,
-	SECONDARY_BATTERY_CELL_INDEX = 4,
+	BATTERY_CELL_INDEX = 0,
 	TAPE_COUNT_INDEX = 8,
 	THERMOCOUPLE_INDEX = 9,
 	RIDE_HEIGHT_INDEX = 13
@@ -44,9 +42,6 @@ static const int NUM_SENSORS = 6;
 struct Sensor_Configuration {
 	Sensor_Type type;
 	int simulation; //simulation is an int that specifies the number of the test to be run
-	size_t count; //number of sensors
-	size_t first_index; // index offset to read from spi
-	size_t device; //xmega device number (0 or 1)
 
 
 };
@@ -62,7 +57,8 @@ class Sensor_Group {
 
 
 		virtual ~Sensor_Group() = 0;
-		// removed connect as per request by Richard
+
+
 		/**
 		* Connect to a sensor group on an XMEGA
 		* @return connection status
@@ -71,10 +67,11 @@ class Sensor_Group {
 		*/
 		
 		/**
-		* Performs IO to get new sensor data from the XMEGA
+		* Virtual function implemented by child classes 
+		* Updates the values from the SPI buffers 
 		* OR uses a time function to set simulated values
 		**/
-		virtual void update() = 0;
+		virtual void update(Spi * spi) = 0;
 
 
 		/**
@@ -88,7 +85,13 @@ class Sensor_Group {
 		**/
 		vector<double> get_data();
 
-		mutex sensor_group_mutex;
+		/** 
+		* Helper function
+		* Refreshes the local data array from the spi buffers
+		**/
+		void refresh_data(Spi * spi);	
+
+
 
 
 
@@ -99,6 +102,11 @@ class Sensor_Group {
 		Sensor_Type type;
 
 		vector<double> data;
+
+		mutex sensor_group_mutex;
+		const size_t first_index = 0; // index offset to read from spi
+		const size_t device = 0; //xmega device number (0 or 1)
+		const size_t count = 0; //number of sensors
 
 
 };
@@ -113,12 +121,16 @@ class Thermocouple : public Sensor_Group {
 		/**
 		* Receives new data from the XMega or calls simulations
 		**/
-		void update();
+		void update(Spi * spi);
 
 		/**
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+
+		const size_t first_index = THERMOCOUPLE_INDEX; // index offset to read from spi
+		const size_t device = XMEGA2; //xmega device number (0 or 1)
+		const size_t count = 4; //number of sensors
 
 	private:
 		/**
@@ -137,12 +149,16 @@ class Accelerometer : public Sensor_Group {
 		/**
 		* Receives new data from the XMega or calls simulations
 		**/
-		void update();
+		void update(Spi * spi);
 
 		/**
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+
+		const size_t first_index = X_ACCELERATION_INDEX; // index offset to read from spi
+		const size_t device = XMEGA1; //xmega device number (0 or 1)
+		const size_t count = 1; //number of sensors
 
 	private:
 		/**
@@ -161,12 +177,17 @@ class Ride_Height : public Sensor_Group {
 		/**
 		* Receives new data from the XMega or calls simulations
 		**/
-		void update();
+		void update(Spi * spi);
 
 		/**
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+
+		
+		const size_t first_index = RIDE_HEIGHT_INDEX; // index offset to read from spi
+		const size_t device = XMEGA2; //xmega device number (0 or 1)
+		const size_t count = 3; //number of sensors
 
 	private:
 		/**
@@ -186,12 +207,17 @@ class Tape_Count : public Sensor_Group {
 		/**
 		* Receives new data from the XMega or calls simulations
 		**/
-		void update();
+		void update(Spi * spi);
 
 		/**
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+
+		
+		const size_t first_index = TAPE_COUNT_INDEX; // index offset to read from spi
+		const size_t device = XMEGA2; //xmega device number (0 or 1)
+		const size_t count = 1; //number of sensors
 
 	private:
 		/**
@@ -210,12 +236,17 @@ class Position : public Sensor_Group {
 		/**
 		* Receives new data from the XMega or calls simulations
 		**/
-		void update();
+		void update(Spi * spi);
 
 		/**
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+
+
+		const size_t first_index = POSITION_INDEX; // index offset to read from spi
+		const size_t device = XMEGA1; //xmega device number (0 or 1)
+		const size_t count = 1; //number of sensors
 
 	private:
 		/**
@@ -234,13 +265,17 @@ class Brake_Pressure : public Sensor_Group {
 		/**
 		* Receives new data from the XMega or calls simulations
 		**/
-		void update();
+		void update(Spi * spi);
 
 		/**
 		* Resets and recalibrates sensors
 		**/
 		void reset();
 
+
+		const size_t first_index = BRAKE_PRESSURE_INDEX; // index offset to read from spi
+		const size_t device = XMEGA1; //xmega device number (0 or 1)
+		const size_t count = 1; //number of sensors
 	private:
 		/**
 		* Simulates set values in the vector
@@ -249,22 +284,28 @@ class Brake_Pressure : public Sensor_Group {
 };
 
 
-class Primary_Battery : public Sensor_Group {
+class Battery : public Sensor_Group {
 
 	public:
-		Primary_Battery(Sensor_Configuration configuration);
+		Battery(Sensor_Configuration configuration);
 
-		~Primary_Battery();
+		~Battery();
 
 		/**
 		* Receives new data from the XMega or calls simulations
 		**/
-		void update();
+		void update(Spi * spi);
 
 		/**
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+
+
+		const size_t first_index = BATTERY_CELL_INDEX; // index offset to read from spi
+		const size_t device = XMEGA2; //xmega device number (0 or 1)
+		const size_t count = 8; //number of sensors
+
 
 	private:
 		/**
@@ -273,28 +314,5 @@ class Primary_Battery : public Sensor_Group {
 		void simulation_1();
 };
 
-class Secondary_Battery : public Sensor_Group {
-
-	public:
-		Secondary_Battery(Sensor_Configuration configuration);
-
-		~Secondary_Battery();
-
-		/**
-		* Receives new data from the XMega or calls simulations
-		**/
-		void update();
-
-		/**
-		* Resets and recalibrates sensors
-		**/
-		void reset();
-
-	private:
-		/**
-		* Simulates set values in the vector
-		**/
-		void simulation_1();
-};
 
 #endif

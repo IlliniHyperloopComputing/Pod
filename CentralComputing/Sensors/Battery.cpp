@@ -3,22 +3,23 @@
 
 using namespace std;
 
-Primary_Battery::Primary_Battery(Sensor_Configuration configuration) : Sensor_Group(configuration) {
-	
+Battery::Battery(Sensor_Configuration configuration) : Sensor_Group(configuration) {
+	data = vector<double>(count);		
 }
 
-Primary_Battery::~Primary_Battery(){
+Battery::~Battery(){
 	//do nothing
 }
 
-void Primary_Battery::reset() {
+void Battery::reset() {
 	//TODO: implement resetting
 }
 
-void Primary_Battery::update() {
+void Battery::update(Spi * spi) {
 
 	switch(simulation) {
 		case 0:
+			refresh_data(spi);
 			break;
 		case 1:
 			simulation_1();
@@ -26,7 +27,7 @@ void Primary_Battery::update() {
 	}
 }
 
-void Primary_Battery::simulation_1() {
+void Battery::simulation_1() {
 	auto start = Sensor_Package::start_time;
 	auto now = Sensor_Package::get_current_time();
 	auto difference = now - start;

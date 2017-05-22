@@ -15,10 +15,11 @@ void Accelerometer::reset() {
 	//TODO: implement resetting
 }
 
-void Accelerometer::update() {
+void Accelerometer::update(Spi * spi) {
 
 	switch(simulation) {
 		case 0:
+			refresh_data(spi);	
 			break;
 		case 1:
 			simulation_1();
@@ -32,7 +33,6 @@ void Accelerometer::simulation_1() {
 	auto difference = now - start;
 	cout << difference << endl;
 	
-	//TODO calc some actual value
 	
 	sensor_group_mutex.lock();
 	for(size_t i = 0; i < data.size(); i++) {

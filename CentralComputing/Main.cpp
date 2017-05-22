@@ -1,5 +1,7 @@
 #include "Spi.h"
 #include "Unit_Test.h"
+#include "Pod.h"
+
 
 int main(int argc, char** argv) {
 
@@ -8,6 +10,9 @@ int main(int argc, char** argv) {
     ut.test(argc, argv);
   #else
     //TODO: Define normal run mode
+	printf("Running\n");	
+	pod(argc, argv);
+
   #endif
 
 

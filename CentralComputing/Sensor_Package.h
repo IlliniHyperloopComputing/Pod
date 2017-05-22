@@ -17,7 +17,7 @@ class Sensor_Package {
 		* Creates a SensorPackage
 		* @param  configuration a vector of sensor configurations for each sensor.  Initalized in the main thread
 		**/
-		Sensor_Package(vector<Sensor_Configuration> configuration);
+		Sensor_Package(vector<Sensor_Configuration> configuration, bool xmega_connect);
 
 		/**
 		* Destructor, cleans up map and deletes sensor_group objects
@@ -41,13 +41,13 @@ class Sensor_Package {
 		**/
 		vector<double> get_sensor_data(Sensor_Type type);
 
+
 		static long long get_current_time();
-
-
 		static long long start_time;
+		bool connect;
 	private:
 		map<Sensor_Type, Sensor_Group * > sensor_groups;
-		Spi * spi;
+		Spi * spi;	
 
 };
 

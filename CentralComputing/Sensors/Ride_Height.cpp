@@ -15,10 +15,11 @@ void Ride_Height::reset() {
 	//TODO: implement resetting
 }
 
-void Ride_Height::update() {
+void Ride_Height::update(Spi * spi) {
 
 	switch(simulation) {
 		case 0:
+			refresh_data(spi);
 			break;
 		case 1:
 			simulation_1();

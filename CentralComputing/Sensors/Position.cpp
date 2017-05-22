@@ -15,10 +15,11 @@ void Position::reset() {
 	//TODO: implement resetting
 }
 
-void Position::update() {
+void Position::update(Spi * spi) {
 
 	switch(simulation) {
 		case 0:
+			refresh_data(spi);
 			break;
 		case 1:
 			simulation_1();

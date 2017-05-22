@@ -15,10 +15,11 @@ void Brake_Pressure::reset() {
 	//TODO: implement resetting
 }
 
-void Brake_Pressure::update() {
+void Brake_Pressure::update(Spi * spi) {
 
 	switch(simulation) {
 		case 0:
+			refresh_data(spi);
 			break;
 		case 1:
 			simulation_1();
