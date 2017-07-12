@@ -67,21 +67,23 @@ int main (void)
 		spi_read_packet(&SPIF, data_buffer, 2);
 		spi_deselect_device(&SPIF, &spi_pf0);
 		
-		spi_select_device(&SPIF, &spi_pf1);
-		spi_read_packet(&SPIF, data_buffer, 2);
-		spi_deselect_device(&SPIF, &spi_pf1);
-		
-		spi_select_device(&SPIF, &spi_pf2);
-		spi_read_packet(&SPIF, data_buffer, 2);
-		spi_deselect_device(&SPIF, &spi_pf2);
-		
-		spi_select_device(&SPIF, &spi_pf3);
-		spi_read_packet(&SPIF, data_buffer, 2);
-		spi_deselect_device(&SPIF, &spi_pf3);
-		
-		spi_select_device(&SPIF, &spi_pr0);
-		spi_read_packet(&SPIF, data_buffer, 2);
-		spi_deselect_device(&SPIF, &spi_pr0);
+		uint16_t out = (data_buffer[0] | (data_buffer[1]<<8)>>3);
+		out /=4;
+	//	spi_select_device(&SPIF, &spi_pf1);
+	//	spi_read_packet(&SPIF, data_buffer, 2);
+	//	spi_deselect_device(&SPIF, &spi_pf1);
+	//	
+	//	spi_select_device(&SPIF, &spi_pf2);
+	//	spi_read_packet(&SPIF, data_buffer, 2);
+	//	spi_deselect_device(&SPIF, &spi_pf2);
+	//	
+	//	spi_select_device(&SPIF, &spi_pf3);
+	//	spi_read_packet(&SPIF, data_buffer, 2);
+	//	spi_deselect_device(&SPIF, &spi_pf3);
+	//	
+	//	spi_select_device(&SPIF, &spi_pr0);
+	//	spi_read_packet(&SPIF, data_buffer, 2);
+	//	spi_deselect_device(&SPIF, &spi_pr0);
 		
 	}
 }
