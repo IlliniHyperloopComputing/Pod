@@ -60,6 +60,23 @@ int StateMachine_Test::test(int argc, char** argv) {
 	//usleep(200000);
 }
 
+/**
+	
+*/
+void wait(string command, Pod& pod) {
+	//istringstream buf(command);
+	//istream_iterator<string> beg(buf), end;
+	//
+	//vector<string> tokens(beg, end);
+	//for(auto& s:tokens) {
+	//	//cout << s << endl;
+	//}
+}
+/**
+	checks if the current state of pod matches witht the check state command
+	word: check state command to be executed
+	pod: reference of pod to be checked
+	*/
 
 
 bool StateMachine_Test::assert_state_equals(string word, Pod& pod) {
@@ -132,14 +149,18 @@ bool StateMachine_Test::process(string word, Pod& pod) {
 		}
 		else {
 			result = assert_state_equals(word, pod);
-		}
-		
+		}	
 		// prints out if the assert fails, ignores otherwise
 		if(!result) {
 			cout << "warning: " << word << " failed!" << endl;
 			cout << "	current state: " << pod.get_current_state_string() << endl;
 		}
+		// for the read_file tests, all the tests are & together
 		return result;
+	}
+	// sets a timer to wait
+	else if ( word.substr(0,4) == "WAIT" || word.substr(0,1) == "W" ) {
+		wait(word, pod);
 	}
 	// checks if command is a comment
 	else if ( word.find("#") != string::npos || word == "" || word == " " ) {
@@ -171,6 +192,7 @@ void StateMachine_Test::read_file(string fileName, Pod& pod) {
 
 void StateMachine_Test::manual(Pod& pod) {
 	string line = "";
+	
 	// loop until user types end or quit
 	while(true) {
 		// prints the carrot for beauty's sake
@@ -270,6 +292,9 @@ void StateMachine_Test::print_script_instr() {
 	cout << "BRAKE (b)" << endl;
 	cout << "---utility---" <<endl;
 	cout << "PRINT_STATE (ps)" << endl;
+	cout << "WAIT (W) <number> <unit>" << endl;
+	cout << "	seconds (s)" << endl;
+	cout << "	minutes (m)" << endl;
 	cout << "---checker---" <<endl;
 	cout << "You can assert the current state with []" << endl;
 	cout << "ex: [STATE_NAME]" << endl;
