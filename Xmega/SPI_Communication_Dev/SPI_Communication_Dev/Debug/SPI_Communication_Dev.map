@@ -3,22 +3,247 @@ Archive member included to satisfy reference by file (symbol)
 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega7\libgcc.a(_exit.o)
                               C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/XMEGAA_DFP/1.1.63/gcc/dev/atxmega128a1u/avrxmega7/crtatxmega128a1u.o (exit)
 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega7\libgcc.a(_copy_data.o)
-                              src/main.o (__do_copy_data)
+                              src/ASF/common/services/sleepmgr/xmega/sleepmgr.o (__do_copy_data)
 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega7\libgcc.a(_clear_bss.o)
-                              src/spi_to_bbb.o (__do_clear_bss)
+                              src/ASF/common/services/sleepmgr/xmega/sleepmgr.o (__do_clear_bss)
 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/../../../../avr/lib/avrxmega7\libc.a(memcpy.o)
                               src/ASF/xmega/drivers/nvm/nvm.o (memcpy)
 
 Allocating common symbols
 Common symbol       size              file
 
+rx_buff             0x35              src/spi_to_bbb.o
+rtc_data            0x8               src/ASF/xmega/drivers/rtc/rtc.o
 cmd_data            0x5               src/spi_to_bbb.o
-send_data           0x8               src/spi_to_bbb.o
+size                0x1               src/spi_to_bbb.o
+sleepmgr_locks      0x6               src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+tx_buff             0x35              src/spi_to_bbb.o
+send_data           0xe               src/spi_to_bbb.o
 
 Discarded input sections
 
  .data          0x00000000        0x0 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/XMEGAA_DFP/1.1.63/gcc/dev/atxmega128a1u/avrxmega7/crtatxmega128a1u.o
  .bss           0x00000000        0x0 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/XMEGAA_DFP/1.1.63/gcc/dev/atxmega128a1u/avrxmega7/crtatxmega128a1u.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .text          0x00000000        0x0 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .data          0x00000000        0x0 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .bss           0x00000000        0x0 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .data.sleepmgr_configs
+                0x00000000        0x6 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+ .text          0x00000000        0x0 src/ASF/xmega/drivers/rtc/rtc.o
+ .data          0x00000000        0x0 src/ASF/xmega/drivers/rtc/rtc.o
+ .bss           0x00000000        0x0 src/ASF/xmega/drivers/rtc/rtc.o
+ .text.rtc_alarm_has_triggered
+                0x00000000       0x10 src/ASF/xmega/drivers/rtc/rtc.o
+ .text.rtc_set_time
+                0x00000000       0x24 src/ASF/xmega/drivers/rtc/rtc.o
+ .text.rtc_get_time
+                0x00000000       0x6c src/ASF/xmega/drivers/rtc/rtc.o
+ .text.rtc_set_alarm
+                0x00000000       0x30 src/ASF/xmega/drivers/rtc/rtc.o
+ .text.rtc_set_callback
+                0x00000000        0xa src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000      0xa96 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x10 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000      0x1c9 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000      0x2fc src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x9e src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000     0x6ddf src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x9a src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0xf1 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x34 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x10 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x18 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x5e src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x10 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x22 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000      0x166 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x1c src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x35 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x66 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000      0x652 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x97 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x17 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000      0x250 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x76 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x16 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000      0x6e3 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x10 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000      0x175 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x40 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x69 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x32 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0xe4 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x10 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00000000       0x42 src/ASF/xmega/drivers/rtc/rtc.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .group         0x00000000        0x8 src/circular_buffer.o
+ .text          0x00000000        0x0 src/circular_buffer.o
+ .data          0x00000000        0x0 src/circular_buffer.o
+ .bss           0x00000000        0x0 src/circular_buffer.o
+ .debug_macro   0x00000000      0xa96 src/circular_buffer.o
+ .debug_macro   0x00000000       0x10 src/circular_buffer.o
+ .debug_macro   0x00000000      0x1c9 src/circular_buffer.o
+ .debug_macro   0x00000000      0x2fc src/circular_buffer.o
+ .debug_macro   0x00000000       0x9e src/circular_buffer.o
+ .debug_macro   0x00000000     0x6ddf src/circular_buffer.o
+ .debug_macro   0x00000000       0x9a src/circular_buffer.o
+ .debug_macro   0x00000000       0xf1 src/circular_buffer.o
+ .debug_macro   0x00000000       0x34 src/circular_buffer.o
+ .debug_macro   0x00000000       0x10 src/circular_buffer.o
+ .debug_macro   0x00000000       0x18 src/circular_buffer.o
+ .debug_macro   0x00000000       0x5e src/circular_buffer.o
+ .debug_macro   0x00000000       0x10 src/circular_buffer.o
+ .debug_macro   0x00000000       0x22 src/circular_buffer.o
+ .debug_macro   0x00000000      0x166 src/circular_buffer.o
+ .debug_macro   0x00000000       0x1c src/circular_buffer.o
+ .debug_macro   0x00000000       0x35 src/circular_buffer.o
+ .debug_macro   0x00000000       0x66 src/circular_buffer.o
+ .debug_macro   0x00000000      0x652 src/circular_buffer.o
+ .debug_macro   0x00000000       0x97 src/circular_buffer.o
+ .debug_macro   0x00000000       0x17 src/circular_buffer.o
+ .debug_macro   0x00000000      0x250 src/circular_buffer.o
+ .debug_macro   0x00000000       0x76 src/circular_buffer.o
+ .debug_macro   0x00000000       0x16 src/circular_buffer.o
+ .debug_macro   0x00000000      0x6e3 src/circular_buffer.o
+ .debug_macro   0x00000000       0x10 src/circular_buffer.o
+ .debug_macro   0x00000000      0x175 src/circular_buffer.o
+ .debug_macro   0x00000000       0x40 src/circular_buffer.o
+ .debug_macro   0x00000000       0x69 src/circular_buffer.o
+ .debug_macro   0x00000000       0x32 src/circular_buffer.o
+ .debug_macro   0x00000000       0xe4 src/circular_buffer.o
+ .debug_macro   0x00000000      0x2bf src/circular_buffer.o
+ .debug_macro   0x00000000      0x530 src/circular_buffer.o
+ .debug_macro   0x00000000       0x1c src/circular_buffer.o
+ .debug_macro   0x00000000       0x42 src/circular_buffer.o
+ .debug_macro   0x00000000       0x10 src/circular_buffer.o
+ .debug_macro   0x00000000       0x28 src/circular_buffer.o
+ .debug_macro   0x00000000       0x7d src/circular_buffer.o
+ .debug_macro   0x00000000       0x2f src/circular_buffer.o
+ .debug_macro   0x00000000      0x154 src/circular_buffer.o
+ .group         0x00000000        0x8 src/spi_to_bbb.o
+ .group         0x00000000        0x8 src/spi_to_bbb.o
+ .group         0x00000000        0x8 src/spi_to_bbb.o
+ .group         0x00000000        0x8 src/spi_to_bbb.o
  .group         0x00000000        0x8 src/spi_to_bbb.o
  .group         0x00000000        0x8 src/spi_to_bbb.o
  .group         0x00000000        0x8 src/spi_to_bbb.o
@@ -70,6 +295,55 @@ Discarded input sections
  .text          0x00000000        0x0 src/spi_to_bbb.o
  .data          0x00000000        0x0 src/spi_to_bbb.o
  .bss           0x00000000        0x0 src/spi_to_bbb.o
+ .debug_macro   0x00000000      0xa96 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x10 src/spi_to_bbb.o
+ .debug_macro   0x00000000      0x1c9 src/spi_to_bbb.o
+ .debug_macro   0x00000000      0x2fc src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x9e src/spi_to_bbb.o
+ .debug_macro   0x00000000     0x6ddf src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x9a src/spi_to_bbb.o
+ .debug_macro   0x00000000       0xf1 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x34 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x10 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x18 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x5e src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x10 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x22 src/spi_to_bbb.o
+ .debug_macro   0x00000000      0x166 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x1c src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x35 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x66 src/spi_to_bbb.o
+ .debug_macro   0x00000000      0x652 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x97 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x17 src/spi_to_bbb.o
+ .debug_macro   0x00000000      0x250 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x76 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x16 src/spi_to_bbb.o
+ .debug_macro   0x00000000      0x6e3 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x10 src/spi_to_bbb.o
+ .debug_macro   0x00000000      0x175 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x40 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x69 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x32 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0xe4 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x34 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x26 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x1c src/spi_to_bbb.o
+ .debug_macro   0x00000000      0x2bf src/spi_to_bbb.o
+ .debug_macro   0x00000000      0x530 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x9a src/spi_to_bbb.o
+ .debug_macro   0x00000000      0x109 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x1c src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x42 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x10 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x28 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x7d src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x2f src/spi_to_bbb.o
+ .debug_macro   0x00000000      0x154 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x16 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x22 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x10 src/spi_to_bbb.o
+ .debug_macro   0x00000000       0x28 src/spi_to_bbb.o
  .group         0x00000000        0x8 src/ASF/common/services/clock/xmega/sysclk.o
  .group         0x00000000        0x8 src/ASF/common/services/clock/xmega/sysclk.o
  .group         0x00000000        0x8 src/ASF/common/services/clock/xmega/sysclk.o
@@ -111,8 +385,6 @@ Discarded input sections
  .text          0x00000000        0x0 src/ASF/common/services/clock/xmega/sysclk.o
  .data          0x00000000        0x0 src/ASF/common/services/clock/xmega/sysclk.o
  .bss           0x00000000        0x0 src/ASF/common/services/clock/xmega/sysclk.o
- .text.sysclk_init
-                0x00000000       0x20 src/ASF/common/services/clock/xmega/sysclk.o
  .text.sysclk_disable_module
                 0x00000000       0x2a src/ASF/common/services/clock/xmega/sysclk.o
  .text.sysclk_enable_usb
@@ -150,7 +422,7 @@ Discarded input sections
  .debug_macro   0x00000000       0x69 src/ASF/common/services/clock/xmega/sysclk.o
  .debug_macro   0x00000000       0x32 src/ASF/common/services/clock/xmega/sysclk.o
  .debug_macro   0x00000000       0xe4 src/ASF/common/services/clock/xmega/sysclk.o
- .debug_macro   0x00000000       0x22 src/ASF/common/services/clock/xmega/sysclk.o
+ .debug_macro   0x00000000       0x28 src/ASF/common/services/clock/xmega/sysclk.o
  .debug_macro   0x00000000      0x2bf src/ASF/common/services/clock/xmega/sysclk.o
  .debug_macro   0x00000000      0x530 src/ASF/common/services/clock/xmega/sysclk.o
  .debug_macro   0x00000000       0x7d src/ASF/common/services/clock/xmega/sysclk.o
@@ -376,13 +648,6 @@ Discarded input sections
  .text          0x00000000        0x0 src/ASF/xmega/drivers/cpu/ccp.o
  .data          0x00000000        0x0 src/ASF/xmega/drivers/cpu/ccp.o
  .bss           0x00000000        0x0 src/ASF/xmega/drivers/cpu/ccp.o
- .text.ccp_write_io
-                0x00000000        0xc src/ASF/xmega/drivers/cpu/ccp.o
- .debug_line    0x00000000       0x6e src/ASF/xmega/drivers/cpu/ccp.o
- .debug_info    0x00000000       0xa8 src/ASF/xmega/drivers/cpu/ccp.o
- .debug_abbrev  0x00000000       0x14 src/ASF/xmega/drivers/cpu/ccp.o
- .debug_aranges
-                0x00000000       0x20 src/ASF/xmega/drivers/cpu/ccp.o
  .group         0x00000000        0x8 src/ASF/common/services/ioport/xmega/ioport_compat.o
  .group         0x00000000        0x8 src/ASF/common/services/ioport/xmega/ioport_compat.o
  .group         0x00000000        0x8 src/ASF/common/services/ioport/xmega/ioport_compat.o
@@ -561,6 +826,10 @@ Discarded input sections
  .text          0x00000000        0x0 src/ASF/xmega/drivers/twi/twim.o
  .data          0x00000000        0x0 src/ASF/xmega/drivers/twi/twim.o
  .bss           0x00000000        0x0 src/ASF/xmega/drivers/twi/twim.o
+ .text.twi_master_init
+                0x00000000       0x2a src/ASF/xmega/drivers/twi/twim.o
+ .text.twi_master_transfer
+                0x00000000       0xba src/ASF/xmega/drivers/twi/twim.o
  .debug_macro   0x00000000      0xa96 src/ASF/xmega/drivers/twi/twim.o
  .debug_macro   0x00000000       0x10 src/ASF/xmega/drivers/twi/twim.o
  .debug_macro   0x00000000      0x1c9 src/ASF/xmega/drivers/twi/twim.o
@@ -742,9 +1011,19 @@ Discarded input sections
  .group         0x00000000        0x8 src/main.o
  .group         0x00000000        0x8 src/main.o
  .group         0x00000000        0x8 src/main.o
+ .group         0x00000000        0x8 src/main.o
+ .group         0x00000000        0x8 src/main.o
+ .group         0x00000000        0x8 src/main.o
+ .group         0x00000000        0x8 src/main.o
+ .group         0x00000000        0x8 src/main.o
  .text          0x00000000        0x0 src/main.o
  .data          0x00000000        0x0 src/main.o
  .bss           0x00000000        0x0 src/main.o
+ .text.init_i2c
+                0x00000000      0x25a src/main.o
+ .data.time3    0x00000000        0x4 src/main.o
+ .data.time2    0x00000000        0x4 src/main.o
+ .bss.time1     0x00000000        0x4 src/main.o
  .debug_macro   0x00000000      0xa96 src/main.o
  .debug_macro   0x00000000       0x10 src/main.o
  .debug_macro   0x00000000      0x1c9 src/main.o
@@ -783,7 +1062,10 @@ Discarded input sections
  .debug_macro   0x00000000      0x530 src/main.o
  .debug_macro   0x00000000       0x9a src/main.o
  .debug_macro   0x00000000      0x109 src/main.o
- .debug_macro   0x00000000       0x22 src/main.o
+ .debug_macro   0x00000000       0x1c src/main.o
+ .debug_macro   0x00000000       0x42 src/main.o
+ .debug_macro   0x00000000       0x10 src/main.o
+ .debug_macro   0x00000000       0x28 src/main.o
  .debug_macro   0x00000000       0x7d src/main.o
  .debug_macro   0x00000000       0x2f src/main.o
  .debug_macro   0x00000000      0x154 src/main.o
@@ -792,6 +1074,7 @@ Discarded input sections
  .debug_macro   0x00000000       0x10 src/main.o
  .debug_macro   0x00000000       0x28 src/main.o
  .debug_macro   0x00000000       0x16 src/main.o
+ .debug_macro   0x00000000       0x10 src/main.o
  .debug_macro   0x00000000       0x10 src/main.o
  .text          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega7\libgcc.a(_exit.o)
  .data          0x00000000        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega7\libgcc.a(_exit.o)
@@ -862,6 +1145,9 @@ user_signatures  0x00850000         0x00000400         rw !x
 Linker script and memory map
 
 LOAD C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/XMEGAA_DFP/1.1.63/gcc/dev/atxmega128a1u/avrxmega7/crtatxmega128a1u.o
+LOAD src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+LOAD src/ASF/xmega/drivers/rtc/rtc.o
+LOAD src/circular_buffer.o
 LOAD src/spi_to_bbb.o
 LOAD src/ASF/common/services/clock/xmega/sysclk.o
 LOAD src/ASF/xmega/drivers/crc/crc.o
@@ -981,7 +1267,7 @@ END GROUP
 .rela.plt
  *(.rela.plt)
 
-.text           0x00000000      0xc66
+.text           0x00000000      0xc7c
  *(.vectors)
  .vectors       0x00000000      0x1fc C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/XMEGAA_DFP/1.1.63/gcc/dev/atxmega128a1u/avrxmega7/crtatxmega128a1u.o
                 0x00000000                __vector_default
@@ -1085,7 +1371,6 @@ END GROUP
                 0x00000244                __vector_25
                 0x00000244                __vector_93
                 0x00000244                __vector_61
-                0x00000244                __vector_11
                 0x00000244                __vector_54
                 0x00000244                __vector_99
                 0x00000244                __vector_17
@@ -1151,7 +1436,6 @@ END GROUP
                 0x00000244                __vector_84
                 0x00000244                __vector_57
                 0x00000244                __vector_53
-                0x00000244                __vector_10
                 0x00000244                __vector_50
                 0x00000244                __vector_16
                 0x00000244                __vector_59
@@ -1164,63 +1448,78 @@ END GROUP
                 0x00000244                __vector_120
                 0x00000246                . = ALIGN (0x2)
  *(.text.*)
+ .text.rtc_init
+                0x00000246       0x50 src/ASF/xmega/drivers/rtc/rtc.o
+                0x00000246                rtc_init
+ .text.__vector_10
+                0x00000296       0x46 src/ASF/xmega/drivers/rtc/rtc.o
+                0x00000296                __vector_10
+ .text.__vector_11
+                0x000002dc      0x108 src/ASF/xmega/drivers/rtc/rtc.o
+                0x000002dc                __vector_11
+ .text.circular_buffer_push
+                0x000003e4       0x28 src/circular_buffer.o
+                0x000003e4                circular_buffer_push
+ .text.circular_buffer_pop
+                0x0000040c       0x28 src/circular_buffer.o
+                0x0000040c                circular_buffer_pop
+ .text.circular_buffer_size
+                0x00000434       0x22 src/circular_buffer.o
+                0x00000434                circular_buffer_size
  .text.__vector_24
-                0x00000246       0x30 src/spi_to_bbb.o
-                0x00000246                __vector_24
+                0x00000456       0x8a src/spi_to_bbb.o
+                0x00000456                __vector_24
  .text.init_spi_to_bbb
-                0x00000276       0x18 src/spi_to_bbb.o
-                0x00000276                init_spi_to_bbb
+                0x000004e0       0x3a src/spi_to_bbb.o
+                0x000004e0                init_spi_to_bbb
  .text.handle_spi_to_bbb
-                0x0000028e      0x1ba src/spi_to_bbb.o
-                0x0000028e                handle_spi_to_bbb
+                0x0000051a      0x202 src/spi_to_bbb.o
+                0x0000051a                handle_spi_to_bbb
+ .text.sysclk_init
+                0x0000071c       0x8a src/ASF/common/services/clock/xmega/sysclk.o
+                0x0000071c                sysclk_init
  .text.sysclk_enable_module
-                0x00000448       0x2c src/ASF/common/services/clock/xmega/sysclk.o
-                0x00000448                sysclk_enable_module
+                0x000007a6       0x2c src/ASF/common/services/clock/xmega/sysclk.o
+                0x000007a6                sysclk_enable_module
  .text.crc_io_checksum_byte_start
-                0x00000474       0x6c src/ASF/xmega/drivers/crc/crc.o
-                0x00000474                crc_io_checksum_byte_start
+                0x000007d2       0x6c src/ASF/xmega/drivers/crc/crc.o
+                0x000007d2                crc_io_checksum_byte_start
  .text.crc_io_checksum_byte_stop
-                0x000004e0       0xa4 src/ASF/xmega/drivers/crc/crc.o
-                0x000004e0                crc_io_checksum_byte_stop
+                0x0000083e       0xa4 src/ASF/xmega/drivers/crc/crc.o
+                0x0000083e                crc_io_checksum_byte_stop
  .text.crc_io_checksum
-                0x00000584       0x36 src/ASF/xmega/drivers/crc/crc.o
-                0x00000584                crc_io_checksum
+                0x000008e2       0x36 src/ASF/xmega/drivers/crc/crc.o
+                0x000008e2                crc_io_checksum
+ .text.ccp_write_io
+                0x00000918        0xc src/ASF/xmega/drivers/cpu/ccp.o
+                0x00000918                ccp_write_io
  .text.ioport_configure_port_pin
-                0x000005ba       0x50 src/ASF/common/services/ioport/xmega/ioport_compat.o
-                0x000005ba                ioport_configure_port_pin
+                0x00000924       0x50 src/ASF/common/services/ioport/xmega/ioport_compat.o
+                0x00000924                ioport_configure_port_pin
  .text.board_init
-                0x0000060a       0x1a src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
-                0x0000060a                board_init
+                0x00000974       0x1a src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
+                0x00000974                board_init
  .text.twim_interrupt_handler
-                0x00000624      0x12e src/ASF/xmega/drivers/twi/twim.o
+                0x0000098e      0x12e src/ASF/xmega/drivers/twi/twim.o
  .text.__vector_13
-                0x00000752       0x64 src/ASF/xmega/drivers/twi/twim.o
-                0x00000752                __vector_13
+                0x00000abc       0x64 src/ASF/xmega/drivers/twi/twim.o
+                0x00000abc                __vector_13
  .text.__vector_76
-                0x000007b6       0x64 src/ASF/xmega/drivers/twi/twim.o
-                0x000007b6                __vector_76
+                0x00000b20       0x64 src/ASF/xmega/drivers/twi/twim.o
+                0x00000b20                __vector_76
  .text.__vector_46
-                0x0000081a       0x64 src/ASF/xmega/drivers/twi/twim.o
-                0x0000081a                __vector_46
+                0x00000b84       0x64 src/ASF/xmega/drivers/twi/twim.o
+                0x00000b84                __vector_46
  .text.__vector_107
-                0x0000087e       0x64 src/ASF/xmega/drivers/twi/twim.o
-                0x0000087e                __vector_107
- .text.twi_master_init
-                0x000008e2       0x2a src/ASF/xmega/drivers/twi/twim.o
-                0x000008e2                twi_master_init
- .text.twi_master_transfer
-                0x0000090c       0xba src/ASF/xmega/drivers/twi/twim.o
-                0x0000090c                twi_master_transfer
- .text.setUpI2C
-                0x000009c6      0x1bc src/main.o
-                0x000009c6                setUpI2C
- .text.main     0x00000b82       0xe0 src/main.o
-                0x00000b82                main
-                0x00000c62                . = ALIGN (0x2)
+                0x00000be8       0x64 src/ASF/xmega/drivers/twi/twim.o
+                0x00000be8                __vector_107
+ .text.main     0x00000c4c       0x2c src/main.o
+                0x00000c4c                main
+                0x00000c78                . = ALIGN (0x2)
  *(.fini9)
- .fini9         0x00000c62        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega7\libgcc.a(_exit.o)
-                0x00000c62                _exit
-                0x00000c62                exit
+ .fini9         0x00000c78        0x0 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega7\libgcc.a(_exit.o)
+                0x00000c78                _exit
+                0x00000c78                exit
  *(.fini9)
  *(.fini8)
  *(.fini8)
@@ -1239,78 +1538,85 @@ END GROUP
  *(.fini1)
  *(.fini1)
  *(.fini0)
- .fini0         0x00000c62        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega7\libgcc.a(_exit.o)
+ .fini0         0x00000c78        0x4 c:/program files (x86)/atmel/studio/7.0/toolchain/avr8/avr8-gnu-toolchain/bin/../lib/gcc/avr/4.9.2/avrxmega7\libgcc.a(_exit.o)
  *(.fini0)
-                0x00000c66                _etext = .
+                0x00000c7c                _etext = .
 
-.data           0x00802000        0x6 load address 0x00000c66
+.data           0x00802000        0xc load address 0x00000c7c
                 0x00802000                PROVIDE (__data_start, .)
  *(.data)
  *(.data*)
  .data.sensor_data
-                0x00802000        0x6 src/main.o
+                0x00802000        0xc src/main.o
                 0x00802000                sensor_data
  *(.rodata)
  *(.rodata*)
  *(.gnu.linkonce.d*)
-                0x00802006                . = ALIGN (0x2)
-                0x00802006                _edata = .
-                0x00802006                PROVIDE (__data_end, .)
+                0x0080200c                . = ALIGN (0x2)
+                0x0080200c                _edata = .
+                0x0080200c                PROVIDE (__data_end, .)
 
-.bss            0x00802006       0x2c
-                0x00802006                PROVIDE (__bss_start, .)
+.bss            0x0080200c       0xab
+                0x0080200c                PROVIDE (__bss_start, .)
  *(.bss)
  *(.bss*)
  .bss.send_crc_idx
-                0x00802006        0x1 src/spi_to_bbb.o
-                0x00802006                send_crc_idx
- .bss.send_crc  0x00802007        0x2 src/spi_to_bbb.o
-                0x00802007                send_crc
+                0x0080200c        0x1 src/spi_to_bbb.o
+                0x0080200c                send_crc_idx
+ .bss.send_crc  0x0080200d        0x2 src/spi_to_bbb.o
+                0x0080200d                send_crc
  .bss.send_crc_length
-                0x00802009        0x1 src/spi_to_bbb.o
-                0x00802009                send_crc_length
- .bss.send_idx  0x0080200a        0x1 src/spi_to_bbb.o
-                0x0080200a                send_idx
+                0x0080200f        0x1 src/spi_to_bbb.o
+                0x0080200f                send_crc_length
+ .bss.send_idx  0x00802010        0x1 src/spi_to_bbb.o
+                0x00802010                send_idx
  .bss.cmd_finished
-                0x0080200b        0x1 src/spi_to_bbb.o
-                0x0080200b                cmd_finished
- .bss.calculated_crc
-                0x0080200c        0x2 src/spi_to_bbb.o
-                0x0080200c                calculated_crc
- .bss.received_crc
-                0x0080200e        0x2 src/spi_to_bbb.o
-                0x0080200e                received_crc
- .bss.cmd_idx   0x00802010        0x1 src/spi_to_bbb.o
-                0x00802010                cmd_idx
- .bss.spic_flag
                 0x00802011        0x1 src/spi_to_bbb.o
-                0x00802011                spic_flag
- .bss.rx_byte   0x00802012        0x1 src/spi_to_bbb.o
-                0x00802012                rx_byte
+                0x00802011                cmd_finished
+ .bss.calculated_crc
+                0x00802012        0x2 src/spi_to_bbb.o
+                0x00802012                calculated_crc
+ .bss.received_crc
+                0x00802014        0x2 src/spi_to_bbb.o
+                0x00802014                received_crc
+ .bss.cmd_idx   0x00802016        0x1 src/spi_to_bbb.o
+                0x00802016                cmd_idx
+ .bss.spic_flag
+                0x00802017        0x1 src/spi_to_bbb.o
+                0x00802017                spic_flag
+ .bss.rx_byte   0x00802018        0x1 src/spi_to_bbb.o
+                0x00802018                rx_byte
  .bss.crc_initial_value
-                0x00802013        0x4 src/ASF/xmega/drivers/crc/crc.o
-                0x00802013                crc_initial_value
- .bss.transfer  0x00802017        0xb src/ASF/xmega/drivers/twi/twim.o
- .bss.lock      0x00802022        0x1 src/main.o
-                0x00802022                lock
+                0x00802019        0x4 src/ASF/xmega/drivers/crc/crc.o
+                0x00802019                crc_initial_value
+ .bss.transfer  0x0080201d        0xb src/ASF/xmega/drivers/twi/twim.o
+ .bss.lock      0x00802028        0x1 src/main.o
+                0x00802028                lock
  .bss.sensor_status
-                0x00802023        0x1 src/main.o
-                0x00802023                sensor_status
- .bss.state     0x00802024        0x1 src/main.o
-                0x00802024                state
+                0x00802029        0x1 src/main.o
+                0x00802029                sensor_status
+ .bss.state     0x0080202a        0x1 src/main.o
+                0x0080202a                state
  *(COMMON)
- COMMON         0x00802025        0xd src/spi_to_bbb.o
-                0x00802025                cmd_data
-                0x0080202a                send_data
-                0x00802032                PROVIDE (__bss_end, .)
-                0x00000c66                __data_load_start = LOADADDR (.data)
-                0x00000c6c                __data_load_end = (__data_load_start + SIZEOF (.data))
+ COMMON         0x0080202b        0x6 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+                0x0080202b                sleepmgr_locks
+ COMMON         0x00802031        0x8 src/ASF/xmega/drivers/rtc/rtc.o
+                0x00802031                rtc_data
+ COMMON         0x00802039       0x7e src/spi_to_bbb.o
+                0x00802039                rx_buff
+                0x0080206e                cmd_data
+                0x00802073                size
+                0x00802074                tx_buff
+                0x008020a9                send_data
+                0x008020b7                PROVIDE (__bss_end, .)
+                0x00000c7c                __data_load_start = LOADADDR (.data)
+                0x00000c88                __data_load_end = (__data_load_start + SIZEOF (.data))
 
-.noinit         0x00802032        0x0
+.noinit         0x008020b7        0x0
                 [!provide]                PROVIDE (__noinit_start, .)
  *(.noinit*)
                 [!provide]                PROVIDE (__noinit_end, .)
-                0x00802032                _end = .
+                0x008020b7                _end = .
                 [!provide]                PROVIDE (__heap_start, .)
 
 .eeprom         0x00810000        0x0
@@ -1352,8 +1658,11 @@ END GROUP
 
 .comment        0x00000000       0x30
  *(.comment)
- .comment       0x00000000       0x30 src/spi_to_bbb.o
+ .comment       0x00000000       0x30 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
                                  0x31 (size before relaxing)
+ .comment       0x00000030       0x31 src/ASF/xmega/drivers/rtc/rtc.o
+ .comment       0x00000030       0x31 src/circular_buffer.o
+ .comment       0x00000030       0x31 src/spi_to_bbb.o
  .comment       0x00000030       0x31 src/ASF/common/services/clock/xmega/sysclk.o
  .comment       0x00000030       0x31 src/ASF/xmega/drivers/crc/crc.o
  .comment       0x00000030       0x31 src/ASF/common/services/ioport/xmega/ioport_compat.o
@@ -1381,95 +1690,125 @@ END GROUP
 .debug_sfnames
  *(.debug_sfnames)
 
-.debug_aranges  0x00000000      0x190
+.debug_aranges  0x00000000      0x250
  *(.debug_aranges)
  .debug_aranges
-                0x00000000       0x30 src/spi_to_bbb.o
+                0x00000000       0x18 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
  .debug_aranges
-                0x00000030       0x40 src/ASF/common/services/clock/xmega/sysclk.o
+                0x00000018       0x58 src/ASF/xmega/drivers/rtc/rtc.o
  .debug_aranges
-                0x00000070       0x68 src/ASF/xmega/drivers/crc/crc.o
+                0x00000070       0x30 src/circular_buffer.o
  .debug_aranges
-                0x000000d8       0x20 src/ASF/common/services/ioport/xmega/ioport_compat.o
+                0x000000a0       0x30 src/spi_to_bbb.o
  .debug_aranges
-                0x000000f8       0x20 src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
+                0x000000d0       0x40 src/ASF/common/services/clock/xmega/sysclk.o
  .debug_aranges
-                0x00000118       0x50 src/ASF/xmega/drivers/twi/twim.o
+                0x00000110       0x68 src/ASF/xmega/drivers/crc/crc.o
  .debug_aranges
-                0x00000168       0x28 src/main.o
+                0x00000178       0x20 src/ASF/xmega/drivers/cpu/ccp.o
+ .debug_aranges
+                0x00000198       0x20 src/ASF/common/services/ioport/xmega/ioport_compat.o
+ .debug_aranges
+                0x000001b8       0x20 src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
+ .debug_aranges
+                0x000001d8       0x50 src/ASF/xmega/drivers/twi/twim.o
+ .debug_aranges
+                0x00000228       0x28 src/main.o
 
 .debug_pubnames
  *(.debug_pubnames)
 
-.debug_info     0x00000000     0x89b9
+.debug_info     0x00000000     0xb742
  *(.debug_info .gnu.linkonce.wi.*)
  .debug_info    0x00000000     0x3e5a C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/XMEGAA_DFP/1.1.63/gcc/dev/atxmega128a1u/avrxmega7/crtatxmega128a1u.o
- .debug_info    0x00003e5a      0x5c1 src/spi_to_bbb.o
- .debug_info    0x0000441b      0x718 src/ASF/common/services/clock/xmega/sysclk.o
- .debug_info    0x00004b33      0xbc6 src/ASF/xmega/drivers/crc/crc.o
- .debug_info    0x000056f9      0x11d src/ASF/common/services/ioport/xmega/ioport_compat.o
- .debug_info    0x00005816      0x3ea src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
- .debug_info    0x00005c00      0x94d src/ASF/xmega/drivers/twi/twim.o
- .debug_info    0x0000654d     0x246c src/main.o
+ .debug_info    0x00003e5a      0x121 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_info    0x00003f7b      0x700 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_info    0x0000467b      0x1f3 src/circular_buffer.o
+ .debug_info    0x0000486e     0x255b src/spi_to_bbb.o
+ .debug_info    0x00006dc9      0x959 src/ASF/common/services/clock/xmega/sysclk.o
+ .debug_info    0x00007722      0xbc6 src/ASF/xmega/drivers/crc/crc.o
+ .debug_info    0x000082e8       0xa8 src/ASF/xmega/drivers/cpu/ccp.o
+ .debug_info    0x00008390      0x11d src/ASF/common/services/ioport/xmega/ioport_compat.o
+ .debug_info    0x000084ad      0x3ea src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
+ .debug_info    0x00008897      0x94d src/ASF/xmega/drivers/twi/twim.o
+ .debug_info    0x000091e4     0x255e src/main.o
 
-.debug_abbrev   0x00000000     0x491a
+.debug_abbrev   0x00000000     0x4fd4
  *(.debug_abbrev)
  .debug_abbrev  0x00000000     0x3b0e C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/XMEGAA_DFP/1.1.63/gcc/dev/atxmega128a1u/avrxmega7/crtatxmega128a1u.o
- .debug_abbrev  0x00003b0e      0x167 src/spi_to_bbb.o
- .debug_abbrev  0x00003c75      0x237 src/ASF/common/services/clock/xmega/sysclk.o
- .debug_abbrev  0x00003eac      0x2d5 src/ASF/xmega/drivers/crc/crc.o
- .debug_abbrev  0x00004181       0x93 src/ASF/common/services/ioport/xmega/ioport_compat.o
- .debug_abbrev  0x00004214      0x160 src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
- .debug_abbrev  0x00004374      0x2c6 src/ASF/xmega/drivers/twi/twim.o
- .debug_abbrev  0x0000463a      0x2e0 src/main.o
+ .debug_abbrev  0x00003b0e       0x80 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_abbrev  0x00003b8e      0x2eb src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_abbrev  0x00003e79      0x115 src/circular_buffer.o
+ .debug_abbrev  0x00003f8e      0x301 src/spi_to_bbb.o
+ .debug_abbrev  0x0000428f      0x257 src/ASF/common/services/clock/xmega/sysclk.o
+ .debug_abbrev  0x000044e6      0x2d5 src/ASF/xmega/drivers/crc/crc.o
+ .debug_abbrev  0x000047bb       0x14 src/ASF/xmega/drivers/cpu/ccp.o
+ .debug_abbrev  0x000047cf       0x93 src/ASF/common/services/ioport/xmega/ioport_compat.o
+ .debug_abbrev  0x00004862      0x160 src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
+ .debug_abbrev  0x000049c2      0x2c6 src/ASF/xmega/drivers/twi/twim.o
+ .debug_abbrev  0x00004c88      0x34c src/main.o
 
-.debug_line     0x00000000     0x32d7
+.debug_line     0x00000000     0x4bb8
  *(.debug_line .debug_line.* .debug_line_end)
  .debug_line    0x00000000      0x3b5 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/XMEGAA_DFP/1.1.63/gcc/dev/atxmega128a1u/avrxmega7/crtatxmega128a1u.o
- .debug_line    0x000003b5      0x87c src/spi_to_bbb.o
- .debug_line    0x00000c31      0x645 src/ASF/common/services/clock/xmega/sysclk.o
- .debug_line    0x00001276      0x7bc src/ASF/xmega/drivers/crc/crc.o
- .debug_line    0x00001a32      0x4b3 src/ASF/common/services/ioport/xmega/ioport_compat.o
- .debug_line    0x00001ee5      0x4ea src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
- .debug_line    0x000023cf      0x659 src/ASF/xmega/drivers/twi/twim.o
- .debug_line    0x00002a28      0x8af src/main.o
+ .debug_line    0x000003b5      0x456 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_line    0x0000080b      0x7fa src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_line    0x00001005      0x84c src/circular_buffer.o
+ .debug_line    0x00001851      0x9cf src/spi_to_bbb.o
+ .debug_line    0x00002220      0x711 src/ASF/common/services/clock/xmega/sysclk.o
+ .debug_line    0x00002931      0x7bc src/ASF/xmega/drivers/crc/crc.o
+ .debug_line    0x000030ed       0x6e src/ASF/xmega/drivers/cpu/ccp.o
+ .debug_line    0x0000315b      0x4b3 src/ASF/common/services/ioport/xmega/ioport_compat.o
+ .debug_line    0x0000360e      0x4ea src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
+ .debug_line    0x00003af8      0x659 src/ASF/xmega/drivers/twi/twim.o
+ .debug_line    0x00004151      0xa67 src/main.o
 
-.debug_frame    0x00000000      0x508
+.debug_frame    0x00000000      0x714
  *(.debug_frame)
- .debug_frame   0x00000000       0x54 src/spi_to_bbb.o
- .debug_frame   0x00000054       0x94 src/ASF/common/services/clock/xmega/sysclk.o
- .debug_frame   0x000000e8      0x174 src/ASF/xmega/drivers/crc/crc.o
- .debug_frame   0x0000025c       0x30 src/ASF/common/services/ioport/xmega/ioport_compat.o
- .debug_frame   0x0000028c       0x24 src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
- .debug_frame   0x000002b0      0x1c0 src/ASF/xmega/drivers/twi/twim.o
- .debug_frame   0x00000470       0x98 src/main.o
+ .debug_frame   0x00000000      0x144 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_frame   0x00000144       0x44 src/circular_buffer.o
+ .debug_frame   0x00000188       0xd4 src/spi_to_bbb.o
+ .debug_frame   0x0000025c       0xa4 src/ASF/common/services/clock/xmega/sysclk.o
+ .debug_frame   0x00000300      0x174 src/ASF/xmega/drivers/crc/crc.o
+ .debug_frame   0x00000474       0x30 src/ASF/common/services/ioport/xmega/ioport_compat.o
+ .debug_frame   0x000004a4       0x24 src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
+ .debug_frame   0x000004c8      0x1c0 src/ASF/xmega/drivers/twi/twim.o
+ .debug_frame   0x00000688       0x8c src/main.o
 
-.debug_str      0x00000000    0x32464
+.debug_str      0x00000000    0x330b8
  *(.debug_str)
  .debug_str     0x00000000     0x2969 C:/Program Files (x86)/Atmel/Studio/7.0/Packs/atmel/XMEGAA_DFP/1.1.63/gcc/dev/atxmega128a1u/avrxmega7/crtatxmega128a1u.o
- .debug_str     0x00002969    0x2e30f src/spi_to_bbb.o
-                              0x2e994 (size before relaxing)
- .debug_str     0x00030c78      0x331 src/ASF/common/services/clock/xmega/sysclk.o
-                              0x2df93 (size before relaxing)
- .debug_str     0x00030fa9      0x70c src/ASF/xmega/drivers/crc/crc.o
+ .debug_str     0x00002969    0x2acbd src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+                              0x2b307 (size before relaxing)
+ .debug_str     0x0002d626     0x3025 src/ASF/xmega/drivers/rtc/rtc.o
+                              0x2e39b (size before relaxing)
+ .debug_str     0x0003064b      0xae6 src/circular_buffer.o
+                              0x2e944 (size before relaxing)
+ .debug_str     0x00031131      0xbee src/spi_to_bbb.o
+                              0x2f701 (size before relaxing)
+ .debug_str     0x00031d1f      0x2a9 src/ASF/common/services/clock/xmega/sysclk.o
+                              0x2e059 (size before relaxing)
+ .debug_str     0x00031fc8      0x6fe src/ASF/xmega/drivers/crc/crc.o
                               0x2b8a4 (size before relaxing)
- .debug_str     0x000316b5       0xab src/ASF/common/services/ioport/xmega/ioport_compat.o
+ .debug_str     0x000326c6       0xab src/ASF/common/services/ioport/xmega/ioport_compat.o
                               0x2b5fb (size before relaxing)
- .debug_str     0x00031760       0xf8 src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
+ .debug_str     0x00032771       0x5c src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
                               0x2d86e (size before relaxing)
- .debug_str     0x00031858      0x43d src/ASF/xmega/drivers/twi/twim.o
+ .debug_str     0x000327cd      0x3ce src/ASF/xmega/drivers/twi/twim.o
                               0x2b600 (size before relaxing)
- .debug_str     0x00031c95      0x7cf src/main.o
-                              0x2f42e (size before relaxing)
+ .debug_str     0x00032b9b      0x51d src/main.o
+                              0x2fc55 (size before relaxing)
 
-.debug_loc      0x00000000     0x1490
+.debug_loc      0x00000000     0x1992
  *(.debug_loc)
- .debug_loc     0x00000000       0x3c src/spi_to_bbb.o
- .debug_loc     0x0000003c      0x2c4 src/ASF/common/services/clock/xmega/sysclk.o
- .debug_loc     0x00000300      0x9b3 src/ASF/xmega/drivers/crc/crc.o
- .debug_loc     0x00000cb3       0x66 src/ASF/common/services/ioport/xmega/ioport_compat.o
- .debug_loc     0x00000d19      0x63f src/ASF/xmega/drivers/twi/twim.o
- .debug_loc     0x00001358      0x138 src/main.o
+ .debug_loc     0x00000000      0x2b6 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_loc     0x000002b6       0x78 src/circular_buffer.o
+ .debug_loc     0x0000032e      0x1d2 src/spi_to_bbb.o
+ .debug_loc     0x00000500      0x312 src/ASF/common/services/clock/xmega/sysclk.o
+ .debug_loc     0x00000812      0x9b3 src/ASF/xmega/drivers/crc/crc.o
+ .debug_loc     0x000011c5       0x66 src/ASF/common/services/ioport/xmega/ioport_compat.o
+ .debug_loc     0x0000122b      0x63f src/ASF/xmega/drivers/twi/twim.o
+ .debug_loc     0x0000186a      0x128 src/main.o
 
 .debug_macinfo
  *(.debug_macinfo)
@@ -1489,78 +1828,88 @@ END GROUP
 .debug_pubtypes
  *(.debug_pubtypes)
 
-.debug_ranges   0x00000000      0x180
+.debug_ranges   0x00000000      0x1e8
  *(.debug_ranges)
- .debug_ranges  0x00000000       0x20 src/spi_to_bbb.o
- .debug_ranges  0x00000020       0x30 src/ASF/common/services/clock/xmega/sysclk.o
- .debug_ranges  0x00000050       0x70 src/ASF/xmega/drivers/crc/crc.o
- .debug_ranges  0x000000c0       0x10 src/ASF/common/services/ioport/xmega/ioport_compat.o
- .debug_ranges  0x000000d0       0x10 src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
- .debug_ranges  0x000000e0       0x70 src/ASF/xmega/drivers/twi/twim.o
- .debug_ranges  0x00000150       0x30 src/main.o
+ .debug_ranges  0x00000000       0x48 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_ranges  0x00000048       0x20 src/circular_buffer.o
+ .debug_ranges  0x00000068       0x38 src/spi_to_bbb.o
+ .debug_ranges  0x000000a0       0x30 src/ASF/common/services/clock/xmega/sysclk.o
+ .debug_ranges  0x000000d0       0x70 src/ASF/xmega/drivers/crc/crc.o
+ .debug_ranges  0x00000140       0x10 src/ASF/common/services/ioport/xmega/ioport_compat.o
+ .debug_ranges  0x00000150       0x10 src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
+ .debug_ranges  0x00000160       0x70 src/ASF/xmega/drivers/twi/twim.o
+ .debug_ranges  0x000001d0       0x18 src/main.o
 
-.debug_macro    0x00000000     0xb5d9
+.debug_macro    0x00000000     0xbf68
  *(.debug_macro)
- .debug_macro   0x00000000      0x2de src/spi_to_bbb.o
- .debug_macro   0x000002de      0xa96 src/spi_to_bbb.o
- .debug_macro   0x00000d74       0x10 src/spi_to_bbb.o
- .debug_macro   0x00000d84      0x1c9 src/spi_to_bbb.o
- .debug_macro   0x00000f4d      0x2fc src/spi_to_bbb.o
- .debug_macro   0x00001249       0x9e src/spi_to_bbb.o
- .debug_macro   0x000012e7     0x6ddf src/spi_to_bbb.o
- .debug_macro   0x000080c6       0x9a src/spi_to_bbb.o
- .debug_macro   0x00008160       0xf1 src/spi_to_bbb.o
- .debug_macro   0x00008251       0x34 src/spi_to_bbb.o
- .debug_macro   0x00008285       0x10 src/spi_to_bbb.o
- .debug_macro   0x00008295       0x18 src/spi_to_bbb.o
- .debug_macro   0x000082ad       0x5e src/spi_to_bbb.o
- .debug_macro   0x0000830b       0x10 src/spi_to_bbb.o
- .debug_macro   0x0000831b       0x22 src/spi_to_bbb.o
- .debug_macro   0x0000833d      0x166 src/spi_to_bbb.o
- .debug_macro   0x000084a3       0x1c src/spi_to_bbb.o
- .debug_macro   0x000084bf       0x35 src/spi_to_bbb.o
- .debug_macro   0x000084f4       0x66 src/spi_to_bbb.o
- .debug_macro   0x0000855a      0x652 src/spi_to_bbb.o
- .debug_macro   0x00008bac       0x97 src/spi_to_bbb.o
- .debug_macro   0x00008c43       0x17 src/spi_to_bbb.o
- .debug_macro   0x00008c5a      0x250 src/spi_to_bbb.o
- .debug_macro   0x00008eaa       0x76 src/spi_to_bbb.o
- .debug_macro   0x00008f20       0x16 src/spi_to_bbb.o
- .debug_macro   0x00008f36      0x6e3 src/spi_to_bbb.o
- .debug_macro   0x00009619       0x10 src/spi_to_bbb.o
- .debug_macro   0x00009629      0x175 src/spi_to_bbb.o
- .debug_macro   0x0000979e       0x40 src/spi_to_bbb.o
- .debug_macro   0x000097de       0x69 src/spi_to_bbb.o
- .debug_macro   0x00009847       0x32 src/spi_to_bbb.o
- .debug_macro   0x00009879       0xe4 src/spi_to_bbb.o
- .debug_macro   0x0000995d       0x34 src/spi_to_bbb.o
- .debug_macro   0x00009991       0x26 src/spi_to_bbb.o
- .debug_macro   0x000099b7       0x1c src/spi_to_bbb.o
- .debug_macro   0x000099d3      0x2bf src/spi_to_bbb.o
- .debug_macro   0x00009c92      0x530 src/spi_to_bbb.o
- .debug_macro   0x0000a1c2       0x9a src/spi_to_bbb.o
- .debug_macro   0x0000a25c      0x109 src/spi_to_bbb.o
- .debug_macro   0x0000a365       0x22 src/spi_to_bbb.o
- .debug_macro   0x0000a387       0x7d src/spi_to_bbb.o
- .debug_macro   0x0000a404       0x2f src/spi_to_bbb.o
- .debug_macro   0x0000a433      0x154 src/spi_to_bbb.o
- .debug_macro   0x0000a587       0x16 src/spi_to_bbb.o
- .debug_macro   0x0000a59d       0x22 src/spi_to_bbb.o
- .debug_macro   0x0000a5bf       0x10 src/spi_to_bbb.o
- .debug_macro   0x0000a5cf       0x28 src/spi_to_bbb.o
- .debug_macro   0x0000a5f7       0x16 src/spi_to_bbb.o
- .debug_macro   0x0000a60d       0x10 src/spi_to_bbb.o
- .debug_macro   0x0000a61d      0x1eb src/ASF/common/services/clock/xmega/sysclk.o
- .debug_macro   0x0000a808      0x1a5 src/ASF/xmega/drivers/crc/crc.o
- .debug_macro   0x0000a9ad      0x10e src/ASF/xmega/drivers/crc/crc.o
- .debug_macro   0x0000aabb       0x7f src/ASF/xmega/drivers/crc/crc.o
- .debug_macro   0x0000ab3a       0x20 src/ASF/xmega/drivers/crc/crc.o
- .debug_macro   0x0000ab5a      0x193 src/ASF/common/services/ioport/xmega/ioport_compat.o
- .debug_macro   0x0000aced      0x1bc src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
- .debug_macro   0x0000aea9      0x2b9 src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
- .debug_macro   0x0000b162      0x198 src/ASF/xmega/drivers/twi/twim.o
- .debug_macro   0x0000b2fa      0x2cf src/main.o
- .debug_macro   0x0000b5c9       0x10 src/main.o
+ .debug_macro   0x00000000      0x1a3 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x000001a3      0xa96 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00000c39       0x10 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00000c49      0x1c9 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00000e12      0x2fc src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x0000110e       0x9e src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x000011ac     0x6ddf src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00007f8b       0x9a src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00008025       0xf1 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00008116       0x34 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x0000814a       0x10 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x0000815a       0x18 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00008172       0x5e src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x000081d0       0x10 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x000081e0       0x22 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00008202      0x166 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00008368       0x1c src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00008384       0x35 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x000083b9       0x66 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x0000841f      0x652 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00008a71       0x97 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00008b08       0x17 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00008b1f      0x250 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00008d6f       0x76 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00008de5       0x16 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00008dfb      0x6e3 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x000094de       0x10 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x000094ee      0x175 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00009663       0x40 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x000096a3       0x69 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x0000970c       0x32 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x0000973e       0xe4 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00009822       0x10 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00009832       0x42 src/ASF/common/services/sleepmgr/xmega/sleepmgr.o
+ .debug_macro   0x00009874      0x237 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00009aab       0x28 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00009ad3      0x2bf src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x00009d92      0x530 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x0000a2c2       0x7d src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x0000a33f       0x2f src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x0000a36e      0x154 src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x0000a4c2       0x1c src/ASF/xmega/drivers/rtc/rtc.o
+ .debug_macro   0x0000a4de      0x302 src/circular_buffer.o
+ .debug_macro   0x0000a7e0       0x34 src/circular_buffer.o
+ .debug_macro   0x0000a814       0x26 src/circular_buffer.o
+ .debug_macro   0x0000a83a       0x1c src/circular_buffer.o
+ .debug_macro   0x0000a856       0x9a src/circular_buffer.o
+ .debug_macro   0x0000a8f0      0x109 src/circular_buffer.o
+ .debug_macro   0x0000a9f9       0x16 src/circular_buffer.o
+ .debug_macro   0x0000aa0f       0x22 src/circular_buffer.o
+ .debug_macro   0x0000aa31       0x10 src/circular_buffer.o
+ .debug_macro   0x0000aa41       0x28 src/circular_buffer.o
+ .debug_macro   0x0000aa69      0x334 src/spi_to_bbb.o
+ .debug_macro   0x0000ad9d       0x16 src/spi_to_bbb.o
+ .debug_macro   0x0000adb3       0x10 src/spi_to_bbb.o
+ .debug_macro   0x0000adc3       0x10 src/spi_to_bbb.o
+ .debug_macro   0x0000add3      0x1eb src/ASF/common/services/clock/xmega/sysclk.o
+ .debug_macro   0x0000afbe      0x1a5 src/ASF/xmega/drivers/crc/crc.o
+ .debug_macro   0x0000b163      0x10e src/ASF/xmega/drivers/crc/crc.o
+ .debug_macro   0x0000b271       0x7f src/ASF/xmega/drivers/crc/crc.o
+ .debug_macro   0x0000b2f0       0x20 src/ASF/xmega/drivers/crc/crc.o
+ .debug_macro   0x0000b310      0x193 src/ASF/common/services/ioport/xmega/ioport_compat.o
+ .debug_macro   0x0000b4a3      0x1bc src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
+ .debug_macro   0x0000b65f      0x2b9 src/ASF/xmega/boards/xmega_a1u_xplained_pro/board_init.o
+ .debug_macro   0x0000b918      0x198 src/ASF/xmega/drivers/twi/twim.o
+ .debug_macro   0x0000bab0      0x348 src/main.o
+ .debug_macro   0x0000bdf8      0x160 src/main.o
+ .debug_macro   0x0000bf58       0x10 src/main.o
 OUTPUT(SPI_Communication_Dev.elf elf32-avr)
 LOAD linker stubs
 

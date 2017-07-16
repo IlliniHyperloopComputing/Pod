@@ -2,6 +2,12 @@
 # Automatically-generated file. Do not edit or delete the file
 ################################################################################
 
+src\ASF\common\services\sleepmgr\xmega\sleepmgr.c
+
+src\ASF\xmega\drivers\rtc\rtc.c
+
+src\circular_buffer.c
+
 src\spi_to_bbb.c
 
 src\ASF\common\services\clock\xmega\sysclk.c
