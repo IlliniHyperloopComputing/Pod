@@ -8,9 +8,7 @@
 #include "spi_to_bbb.h"
 
 
-//Used in SPI ISR
 volatile uint8_t rx_byte = 0x00;
-volatile uint8_t spic_flag = 0;
 
 extern uint8_t sensor_status;
 extern uint8_t state;
@@ -42,14 +40,12 @@ uint8_t send_crc_idx = 0;
 
 ISR(SPIC_INT_vect) {
 	//Add recieved byte to rx buffer
-	uint8_t tmp = SPIC.DATA;
-	circular_buffer_push(&rx_buff,tmp);
+	circular_buffer_push(&rx_buff, SPIC.DATA);
 	
 	//Send tx byte if there is one to send
 	if(circular_buffer_size(&tx_buff)){
 		SPIC.DATA = circular_buffer_pop(&tx_buff);
 	}
-	spic_flag ++;
 }
 
 void init_spi_to_bbb(){
@@ -63,12 +59,9 @@ void init_spi_to_bbb(){
 	
 	
 }
-uint8_t size;
 void handle_spi_to_bbb(){
 	//Loop while we have data in the RX buffer to process
-	size = circular_buffer_size(&rx_buff);
 	while(circular_buffer_size(&rx_buff)){
-		
 		rx_byte = circular_buffer_pop(&rx_buff);
 		//if(rx_byte == 0xaa)ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 		
@@ -154,7 +147,5 @@ void handle_spi_to_bbb(){
 			send_crc_idx--;
 			if(send_crc_idx == 0) lock = 0;
 		}
-	
-		spic_flag = 0;
 	}
 }

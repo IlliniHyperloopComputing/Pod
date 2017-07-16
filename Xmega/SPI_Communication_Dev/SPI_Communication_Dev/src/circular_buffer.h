@@ -19,9 +19,9 @@ typedef struct circular_buffer
 	uint8_t back;
 } circular_buffer_t;
 
-extern void circular_buffer_push(circular_buffer_t * cb, uint8_t data);
+void circular_buffer_push(circular_buffer_t * cb, uint8_t data);
 
-extern uint8_t circular_buffer_pop(circular_buffer_t * cb);
+uint8_t circular_buffer_pop(circular_buffer_t * cb);
 
 extern uint8_t circular_buffer_size(circular_buffer_t * cb);
 
