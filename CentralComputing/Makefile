@@ -12,7 +12,7 @@ WARNINGS 	:= -Wall -Wextra
 
 CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP -IStateMachineCompact/ -IUnitTests/ -I. -D_GNU_SOURCE -pthread -DDEBUG 
 CFLAGS_RELEASE 	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP -IStateMachineCompact/ -IUnitTests/ -I. -D_GNU_SOURCE -pthread -DNDEBUG
-CFlAGS_T 				:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP -IStateMachineCompact/ -IUnitTests/ -I. -D_GNU_SOURCE -pthread -DTEST_POD -DDEBUG
+CFlAGS_T 				:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP -IStateMachineCompact/ -IUnitTests/ -I. -D_GNU_SOURCE -pthread -DTEST_POD 
 
 # Set up linker
 LDFLAGS := -pthread

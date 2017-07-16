@@ -19,7 +19,7 @@
 #include "Crc.h"
 
 #define CRC_PASS 0xAA
-#define SLEEP_TIME 25 //18
+#define SLEEP_TIME 12 //12 gets 3.87
 
 using namespace std;
 
@@ -40,11 +40,11 @@ enum Xmega_Command_t: uint8_t {
 
 enum Xmega_Request_t: uint8_t {
   //Read num bytes as described in Xmega_Setup
-  X_R_SENSOR = 0,
+  //X_R_SENSOR = 0,
   //Read byte to determine if any Xmega sensor error
-  X_R_SENSOR_STATUS = 1,
+  //X_R_SENSOR_STATUS = 1,
   //What state is the Xmega in. Reads a byte
-  X_R_STATE = 2,
+  //X_R_STATE = 2,
   //Read All of the above at once
   X_R_ALL = 3,
   //None

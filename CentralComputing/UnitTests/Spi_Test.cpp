@@ -6,12 +6,12 @@
 int Spi_Test::test(int argc, char** argv){
 
   if(argv[1][0] == '1'){
-    uint8_t bpi1[] = {2,2,2,2,2,2,2,2,2,2};
-    Xmega_Setup x1 = {"/dev/spidev1.0", 10, bpi1, 500000, 8};
+    uint8_t bpi1[] = {2,2,2,2,4};
+    Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
     uint8_t bpi2[] = {2,2,2};
     Xmega_Setup x2 = {"/dev/spidev1.1", 3, bpi2, 500000, 8};
     Spi spi(&x1, &x2);
-    Xmega_Transfer xt = {1,X_C_NONE, X_R_SENSOR};
+    Xmega_Transfer xt = {0,X_C_NONE, X_R_ALL};
 
     double elapsed = 0;
     int err1 = 0;
@@ -43,7 +43,7 @@ int Spi_Test::test(int argc, char** argv){
     uint8_t bpi2[] = {2,2,2,2,4};
     Xmega_Setup x2 = {"/dev/spidev1.1", 5, bpi2, 500000, 8};
     Spi spi(&x1, &x2);
-    Xmega_Transfer xt = {0,X_C_NONE, X_R_STATE};
+    Xmega_Transfer xt = {0,X_C_NONE, X_R_ALL};
       
     //print_test("Asking for state\n");
     //int result = spi.transfer(xt);
