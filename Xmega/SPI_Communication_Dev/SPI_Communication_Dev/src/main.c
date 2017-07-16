@@ -197,7 +197,7 @@ int main (void)
 			sensor_data[11] = time3 >> 24;
 			
 			
-			spi_transfer = 1;
+			spi_transfer = 0;
 		}
 	}
 }

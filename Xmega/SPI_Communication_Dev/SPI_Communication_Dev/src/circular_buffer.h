@@ -10,7 +10,7 @@
 #define CIRCULAR_BUFFER_H_
 #include <asf.h>
 //
-#define MAX_BUFFER_SIZE 50
+#define MAX_BUFFER_SIZE 120
 
 typedef struct circular_buffer
 {

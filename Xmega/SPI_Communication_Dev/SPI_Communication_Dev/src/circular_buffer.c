@@ -11,17 +11,15 @@ inline void circular_buffer_push(circular_buffer_t * cb, uint8_t data){
 	cb->buffer[cb->front] = data;
 	cb->front++;
 	cb->front =  cb->front % MAX_BUFFER_SIZE;
-	//cb->len++;
 }
 inline uint8_t circular_buffer_pop(circular_buffer_t * cb){
 	uint8_t ret = cb->buffer[cb->back];
 	cb->back++;
 	cb->back = cb->back % MAX_BUFFER_SIZE;
-	//cb->len--;
 	return ret;
 }
 
 inline uint8_t circular_buffer_size(circular_buffer_t * cb){
-	return ((uint8_t)(cb->front - cb->back))%MAX_BUFFER_SIZE;
+	return abs(cb->front - cb->back);
 }
 
