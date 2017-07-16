@@ -3,33 +3,33 @@ SPI_Communication_Dev.elf:     file format elf32-avr
 
 Sections:
 Idx Name          Size      VMA       LMA       File off  Algn
-  0 .text         00001116  00000000  00000000  00000094  2**1
+  0 .text         00001110  00000000  00000000  00000094  2**1
                   CONTENTS, ALLOC, LOAD, READONLY, CODE
-  1 .data         00000014  00802000  00001116  000011aa  2**0
+  1 .data         00000014  00802000  00001110  000011a4  2**0
                   CONTENTS, ALLOC, LOAD, DATA
-  2 .bss          00000138  00802014  00802014  000011be  2**0
+  2 .bss          00000138  00802014  00802014  000011b8  2**0
                   ALLOC
-  3 .comment      00000030  00000000  00000000  000011be  2**0
+  3 .comment      00000030  00000000  00000000  000011b8  2**0
                   CONTENTS, READONLY
-  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000011f0  2**2
+  4 .note.gnu.avr.deviceinfo 00000040  00000000  00000000  000011e8  2**2
                   CONTENTS, READONLY
-  5 .debug_aranges 00000250  00000000  00000000  00001230  2**3
+  5 .debug_aranges 00000250  00000000  00000000  00001228  2**3
                   CONTENTS, READONLY, DEBUGGING
-  6 .debug_info   0000b703  00000000  00000000  00001480  2**0
+  6 .debug_info   0000b6f8  00000000  00000000  00001478  2**0
                   CONTENTS, READONLY, DEBUGGING
-  7 .debug_abbrev 00004eea  00000000  00000000  0000cb83  2**0
+  7 .debug_abbrev 00004edd  00000000  00000000  0000cb70  2**0
                   CONTENTS, READONLY, DEBUGGING
-  8 .debug_line   00004c88  00000000  00000000  00011a6d  2**0
+  8 .debug_line   00004c7c  00000000  00000000  00011a4d  2**0
                   CONTENTS, READONLY, DEBUGGING
-  9 .debug_frame  00000714  00000000  00000000  000166f8  2**2
+  9 .debug_frame  00000714  00000000  00000000  000166cc  2**2
                   CONTENTS, READONLY, DEBUGGING
- 10 .debug_str    000330a0  00000000  00000000  00016e0c  2**0
+ 10 .debug_str    00033099  00000000  00000000  00016de0  2**0
                   CONTENTS, READONLY, DEBUGGING
- 11 .debug_loc    00001970  00000000  00000000  00049eac  2**0
+ 11 .debug_loc    00001970  00000000  00000000  00049e79  2**0
                   CONTENTS, READONLY, DEBUGGING
- 12 .debug_ranges 000001e8  00000000  00000000  0004b81c  2**0
+ 12 .debug_ranges 000001e8  00000000  00000000  0004b7e9  2**0
                   CONTENTS, READONLY, DEBUGGING
- 13 .debug_macro  0000bf68  00000000  00000000  0004ba04  2**0
+ 13 .debug_macro  0000bf68  00000000  00000000  0004b9d1  2**0
                   CONTENTS, READONLY, DEBUGGING
 
 Disassembly of section .text:
@@ -308,7 +308,7 @@ Disassembly of section .text:
      214:	10 e2       	ldi	r17, 0x20	; 32
      216:	a0 e0       	ldi	r26, 0x00	; 0
      218:	b0 e2       	ldi	r27, 0x20	; 32
-     21a:	e6 e1       	ldi	r30, 0x16	; 22
+     21a:	e0 e1       	ldi	r30, 0x10	; 16
      21c:	f1 e1       	ldi	r31, 0x11	; 17
      21e:	00 e0       	ldi	r16, 0x00	; 0
      220:	0b bf       	out	0x3b, r16	; 59
@@ -334,7 +334,7 @@ Disassembly of section .text:
      23c:	b2 07       	cpc	r27, r18
      23e:	e1 f7       	brne	.-8      	; 0x238 <.do_clear_bss_loop>
      240:	ad d6       	rcall	.+3418   	; 0xf9c <main>
-     242:	67 c7       	rjmp	.+3790   	; 0x1112 <_exit>
+     242:	64 c7       	rjmp	.+3784   	; 0x110c <_exit>
 
 00000244 <__bad_interrupt>:
      244:	dd ce       	rjmp	.-582    	; 0x0 <__vectors>
@@ -3039,278 +3039,266 @@ int main (void)
      faa:	f9 dc       	rcall	.-1550   	; 0x99e <board_init>
 	sysclk_init();
      fac:	cc db       	rcall	.-2152   	; 0x746 <sysclk_init>
-	
-	rtc_init();
+	rtc_init();	
      fae:	81 d9       	rcall	.-3326   	; 0x2b2 <rtc_init>
-	
-	
-	
-	//rtc_set_time(1038);
-	
 	init_spi_to_bbb();	//Setup SPI on Port C
      fb0:	d7 da       	rcall	.-2642   	; 0x560 <init_spi_to_bbb>
-	
+	sensor_status = init_i2c();
+     fb2:	d3 de       	rcall	.-602    	; 0xd5a <init_i2c>
+     fb4:	80 93 35 20 	sts	0x2035, r24	; 0x802035 <sensor_status>
 	sei();            // enable global interrupts
-     fb2:	78 94       	sei
-	int sensor_error = init_i2c();
-     fb4:	d2 de       	rcall	.-604    	; 0xd5a <init_i2c>
+     fb8:	78 94       	sei
+	
 	state = 1;
-     fb6:	81 e0       	ldi	r24, 0x01	; 1
-     fb8:	80 93 36 20 	sts	0x2036, r24	; 0x802036 <state>
-	sensor_status = 52;
-     fbc:	84 e3       	ldi	r24, 0x34	; 52
-     fbe:	80 93 35 20 	sts	0x2035, r24	; 0x802035 <sensor_status>
+     fba:	81 e0       	ldi	r24, 0x01	; 1
+     fbc:	80 93 36 20 	sts	0x2036, r24	; 0x802036 <state>
 		
 		if(spi_transfer == 0){//Do anything that is not SPI related
 			
 			uint8_t recieved_data[2];
 			twi_package_t packet_read;
 			memset(&packet_read, 0, sizeof(twi_package_t));
-     fc2:	0f 2e       	mov	r0, r31
-     fc4:	fb e0       	ldi	r31, 0x0B	; 11
-     fc6:	5f 2e       	mov	r5, r31
-     fc8:	f0 2d       	mov	r31, r0
-     fca:	8e 01       	movw	r16, r28
-     fcc:	0f 5f       	subi	r16, 0xFF	; 255
-     fce:	1f 4f       	sbci	r17, 0xFF	; 255
+     fc0:	0f 2e       	mov	r0, r31
+     fc2:	fb e0       	ldi	r31, 0x0B	; 11
+     fc4:	5f 2e       	mov	r5, r31
+     fc6:	f0 2d       	mov	r31, r0
+     fc8:	8e 01       	movw	r16, r28
+     fca:	0f 5f       	subi	r16, 0xFF	; 255
+     fcc:	1f 4f       	sbci	r17, 0xFF	; 255
 			packet_read.addr[0]			= 0x00;
 			packet_read.addr_length		= sizeof(uint8_t);
-     fd0:	88 24       	eor	r8, r8
-     fd2:	83 94       	inc	r8
-     fd4:	91 2c       	mov	r9, r1
+     fce:	88 24       	eor	r8, r8
+     fd0:	83 94       	inc	r8
+     fd2:	91 2c       	mov	r9, r1
 			packet_read.chip			= 0x48;
-     fd6:	0f 2e       	mov	r0, r31
-     fd8:	f8 e4       	ldi	r31, 0x48	; 72
-     fda:	6f 2e       	mov	r6, r31
-     fdc:	f0 2d       	mov	r31, r0
+     fd4:	0f 2e       	mov	r0, r31
+     fd6:	f8 e4       	ldi	r31, 0x48	; 72
+     fd8:	6f 2e       	mov	r6, r31
+     fda:	f0 2d       	mov	r31, r0
 			packet_read.buffer			= recieved_data;
-     fde:	5e 01       	movw	r10, r28
-     fe0:	8c e0       	ldi	r24, 0x0C	; 12
-     fe2:	a8 0e       	add	r10, r24
-     fe4:	b1 1c       	adc	r11, r1
+     fdc:	5e 01       	movw	r10, r28
+     fde:	8c e0       	ldi	r24, 0x0C	; 12
+     fe0:	a8 0e       	add	r10, r24
+     fe2:	b1 1c       	adc	r11, r1
 			packet_read.length			= 2;
-     fe6:	68 94       	set
-     fe8:	cc 24       	eor	r12, r12
-     fea:	c1 f8       	bld	r12, 1
-     fec:	d1 2c       	mov	r13, r1
+     fe4:	68 94       	set
+     fe6:	cc 24       	eor	r12, r12
+     fe8:	c1 f8       	bld	r12, 1
+     fea:	d1 2c       	mov	r13, r1
 			
 			time1= rtc_get_time();
 			
 			//_delay_ms(1);
 			if(twi_master_read(&TWIF, &packet_read) == TWI_SUCCESS){
 				sensor_data[0] = recieved_data[1];
-     fee:	0f 2e       	mov	r0, r31
-     ff0:	f8 e0       	ldi	r31, 0x08	; 8
-     ff2:	ef 2e       	mov	r14, r31
-     ff4:	f0 e2       	ldi	r31, 0x20	; 32
-     ff6:	ff 2e       	mov	r15, r31
-     ff8:	f0 2d       	mov	r31, r0
+     fec:	0f 2e       	mov	r0, r31
+     fee:	f8 e0       	ldi	r31, 0x08	; 8
+     ff0:	ef 2e       	mov	r14, r31
+     ff2:	f0 e2       	ldi	r31, 0x20	; 32
+     ff4:	ff 2e       	mov	r15, r31
+     ff6:	f0 2d       	mov	r31, r0
 				sensor_data[1] = recieved_data[0];
 				
 			}
 			
 			
 			packet_read.chip = 0x49;
-     ffa:	0f 2e       	mov	r0, r31
-     ffc:	f9 e4       	ldi	r31, 0x49	; 73
-     ffe:	7f 2e       	mov	r7, r31
-    1000:	f0 2d       	mov	r31, r0
+     ff8:	0f 2e       	mov	r0, r31
+     ffa:	f9 e4       	ldi	r31, 0x49	; 73
+     ffc:	7f 2e       	mov	r7, r31
+     ffe:	f0 2d       	mov	r31, r0
 				sensor_data[2] = recieved_data[1];
 				sensor_data[3] = recieved_data[0];
 			}
 			if(spi_isr) continue;
 			
 			packet_read.chip = 0x4A;
-    1002:	0f 2e       	mov	r0, r31
-    1004:	fa e4       	ldi	r31, 0x4A	; 74
-    1006:	4f 2e       	mov	r4, r31
-    1008:	f0 2d       	mov	r31, r0
+    1000:	0f 2e       	mov	r0, r31
+    1002:	fa e4       	ldi	r31, 0x4A	; 74
+    1004:	4f 2e       	mov	r4, r31
+    1006:	f0 2d       	mov	r31, r0
 				sensor_data[4] = recieved_data[1];
 				sensor_data[5] = recieved_data[0];
 			}
 			if(spi_isr) continue;
 			
 			packet_read.chip = 0x4B;
-    100a:	0f 2e       	mov	r0, r31
-    100c:	fb e4       	ldi	r31, 0x4B	; 75
-    100e:	3f 2e       	mov	r3, r31
-    1010:	f0 2d       	mov	r31, r0
+    1008:	0f 2e       	mov	r0, r31
+    100a:	fb e4       	ldi	r31, 0x4B	; 75
+    100c:	3f 2e       	mov	r3, r31
+    100e:	f0 2d       	mov	r31, r0
 		//SPIC handler
 		//When this is true, it means we have just received a byte
 		//So, we need to pipeline the next byte to be sent out.
 		//Also, the most recently sent byte is in the rx_byte
 		//_delay_ms(200);
 		handle_spi_to_bbb();
-    1012:	c3 da       	rcall	.-2682   	; 0x59a <handle_spi_to_bbb>
+    1010:	c4 da       	rcall	.-2680   	; 0x59a <handle_spi_to_bbb>
 		
 		if(spi_transfer == 0){//Do anything that is not SPI related
-    1014:	80 91 33 20 	lds	r24, 0x2033	; 0x802033 <spi_transfer>
-    1018:	81 11       	cpse	r24, r1
-    101a:	fb cf       	rjmp	.-10     	; 0x1012 <main+0x76>
+    1012:	80 91 33 20 	lds	r24, 0x2033	; 0x802033 <spi_transfer>
+    1016:	81 11       	cpse	r24, r1
+    1018:	fb cf       	rjmp	.-10     	; 0x1010 <main+0x74>
 			
 			uint8_t recieved_data[2];
 			twi_package_t packet_read;
 			memset(&packet_read, 0, sizeof(twi_package_t));
-    101c:	f8 01       	movw	r30, r16
-    101e:	85 2d       	mov	r24, r5
-    1020:	11 92       	st	Z+, r1
-    1022:	8a 95       	dec	r24
-    1024:	e9 f7       	brne	.-6      	; 0x1020 <main+0x84>
+    101a:	f8 01       	movw	r30, r16
+    101c:	85 2d       	mov	r24, r5
+    101e:	11 92       	st	Z+, r1
+    1020:	8a 95       	dec	r24
+    1022:	e9 f7       	brne	.-6      	; 0x101e <main+0x82>
 			packet_read.addr[0]			= 0x00;
 			packet_read.addr_length		= sizeof(uint8_t);
-    1026:	8d 82       	std	Y+5, r8	; 0x05
-    1028:	9e 82       	std	Y+6, r9	; 0x06
+    1024:	8d 82       	std	Y+5, r8	; 0x05
+    1026:	9e 82       	std	Y+6, r9	; 0x06
 			packet_read.chip			= 0x48;
-    102a:	69 82       	std	Y+1, r6	; 0x01
+    1028:	69 82       	std	Y+1, r6	; 0x01
 			packet_read.buffer			= recieved_data;
-    102c:	af 82       	std	Y+7, r10	; 0x07
-    102e:	b8 86       	std	Y+8, r11	; 0x08
+    102a:	af 82       	std	Y+7, r10	; 0x07
+    102c:	b8 86       	std	Y+8, r11	; 0x08
 			packet_read.length			= 2;
-    1030:	c9 86       	std	Y+9, r12	; 0x09
-    1032:	da 86       	std	Y+10, r13	; 0x0a
+    102e:	c9 86       	std	Y+9, r12	; 0x09
+    1030:	da 86       	std	Y+10, r13	; 0x0a
 			
 			time1= rtc_get_time();
-    1034:	08 d9       	rcall	.-3568   	; 0x246 <rtc_get_time>
-    1036:	60 93 2f 20 	sts	0x202F, r22	; 0x80202f <time1>
-    103a:	70 93 30 20 	sts	0x2030, r23	; 0x802030 <time1+0x1>
-    103e:	80 93 31 20 	sts	0x2031, r24	; 0x802031 <time1+0x2>
-    1042:	90 93 32 20 	sts	0x2032, r25	; 0x802032 <time1+0x3>
+    1032:	09 d9       	rcall	.-3566   	; 0x246 <rtc_get_time>
+    1034:	60 93 2f 20 	sts	0x202F, r22	; 0x80202f <time1>
+    1038:	70 93 30 20 	sts	0x2030, r23	; 0x802030 <time1+0x1>
+    103c:	80 93 31 20 	sts	0x2031, r24	; 0x802031 <time1+0x2>
+    1040:	90 93 32 20 	sts	0x2032, r25	; 0x802032 <time1+0x3>
  * \return STATUS_OK   If all bytes were read, error code otherwise
  */
 static inline status_code_t twi_master_read(TWI_t *twi,
 		const twi_package_t *package)
 {
 	return twi_master_transfer (twi, package, true);
-    1046:	41 e0       	ldi	r20, 0x01	; 1
-    1048:	b8 01       	movw	r22, r16
-    104a:	80 eb       	ldi	r24, 0xB0	; 176
-    104c:	94 e0       	ldi	r25, 0x04	; 4
-    104e:	28 de       	rcall	.-944    	; 0xca0 <twi_master_transfer>
+    1044:	41 e0       	ldi	r20, 0x01	; 1
+    1046:	b8 01       	movw	r22, r16
+    1048:	80 eb       	ldi	r24, 0xB0	; 176
+    104a:	94 e0       	ldi	r25, 0x04	; 4
+    104c:	29 de       	rcall	.-942    	; 0xca0 <twi_master_transfer>
 			
 			//_delay_ms(1);
 			if(twi_master_read(&TWIF, &packet_read) == TWI_SUCCESS){
-    1050:	81 11       	cpse	r24, r1
-    1052:	05 c0       	rjmp	.+10     	; 0x105e <main+0xc2>
+    104e:	81 11       	cpse	r24, r1
+    1050:	05 c0       	rjmp	.+10     	; 0x105c <main+0xc0>
 				sensor_data[0] = recieved_data[1];
-    1054:	8d 85       	ldd	r24, Y+13	; 0x0d
-    1056:	f7 01       	movw	r30, r14
-    1058:	80 83       	st	Z, r24
+    1052:	8d 85       	ldd	r24, Y+13	; 0x0d
+    1054:	f7 01       	movw	r30, r14
+    1056:	80 83       	st	Z, r24
 				sensor_data[1] = recieved_data[0];
-    105a:	8c 85       	ldd	r24, Y+12	; 0x0c
-    105c:	81 83       	std	Z+1, r24	; 0x01
+    1058:	8c 85       	ldd	r24, Y+12	; 0x0c
+    105a:	81 83       	std	Z+1, r24	; 0x01
 				
 			}
 			
 			
 			packet_read.chip = 0x49;
-    105e:	79 82       	std	Y+1, r7	; 0x01
-    1060:	41 e0       	ldi	r20, 0x01	; 1
-    1062:	b8 01       	movw	r22, r16
-    1064:	80 eb       	ldi	r24, 0xB0	; 176
-    1066:	94 e0       	ldi	r25, 0x04	; 4
-    1068:	1b de       	rcall	.-970    	; 0xca0 <twi_master_transfer>
+    105c:	79 82       	std	Y+1, r7	; 0x01
+    105e:	41 e0       	ldi	r20, 0x01	; 1
+    1060:	b8 01       	movw	r22, r16
+    1062:	80 eb       	ldi	r24, 0xB0	; 176
+    1064:	94 e0       	ldi	r25, 0x04	; 4
+    1066:	1c de       	rcall	.-968    	; 0xca0 <twi_master_transfer>
 			
 			if(twi_master_read(&TWIF,  &packet_read) ==TWI_SUCCESS){
-    106a:	81 11       	cpse	r24, r1
-    106c:	05 c0       	rjmp	.+10     	; 0x1078 <main+0xdc>
+    1068:	81 11       	cpse	r24, r1
+    106a:	05 c0       	rjmp	.+10     	; 0x1076 <main+0xda>
 				sensor_data[2] = recieved_data[1];
-    106e:	8d 85       	ldd	r24, Y+13	; 0x0d
-    1070:	f7 01       	movw	r30, r14
-    1072:	82 83       	std	Z+2, r24	; 0x02
+    106c:	8d 85       	ldd	r24, Y+13	; 0x0d
+    106e:	f7 01       	movw	r30, r14
+    1070:	82 83       	std	Z+2, r24	; 0x02
 				sensor_data[3] = recieved_data[0];
-    1074:	8c 85       	ldd	r24, Y+12	; 0x0c
-    1076:	83 83       	std	Z+3, r24	; 0x03
+    1072:	8c 85       	ldd	r24, Y+12	; 0x0c
+    1074:	83 83       	std	Z+3, r24	; 0x03
 			}
 			if(spi_isr) continue;
-    1078:	80 91 34 20 	lds	r24, 0x2034	; 0x802034 <spi_isr>
-    107c:	81 11       	cpse	r24, r1
-    107e:	c9 cf       	rjmp	.-110    	; 0x1012 <main+0x76>
+    1076:	80 91 34 20 	lds	r24, 0x2034	; 0x802034 <spi_isr>
+    107a:	81 11       	cpse	r24, r1
+    107c:	c9 cf       	rjmp	.-110    	; 0x1010 <main+0x74>
 			
 			packet_read.chip = 0x4A;
-    1080:	49 82       	std	Y+1, r4	; 0x01
-    1082:	41 e0       	ldi	r20, 0x01	; 1
-    1084:	b8 01       	movw	r22, r16
-    1086:	80 eb       	ldi	r24, 0xB0	; 176
-    1088:	94 e0       	ldi	r25, 0x04	; 4
-    108a:	0a de       	rcall	.-1004   	; 0xca0 <twi_master_transfer>
+    107e:	49 82       	std	Y+1, r4	; 0x01
+    1080:	41 e0       	ldi	r20, 0x01	; 1
+    1082:	b8 01       	movw	r22, r16
+    1084:	80 eb       	ldi	r24, 0xB0	; 176
+    1086:	94 e0       	ldi	r25, 0x04	; 4
+    1088:	0b de       	rcall	.-1002   	; 0xca0 <twi_master_transfer>
 			if(twi_master_read(&TWIF,  &packet_read) ==TWI_SUCCESS){
-    108c:	81 11       	cpse	r24, r1
-    108e:	05 c0       	rjmp	.+10     	; 0x109a <main+0xfe>
+    108a:	81 11       	cpse	r24, r1
+    108c:	05 c0       	rjmp	.+10     	; 0x1098 <main+0xfc>
 				sensor_data[4] = recieved_data[1];
-    1090:	8d 85       	ldd	r24, Y+13	; 0x0d
-    1092:	f7 01       	movw	r30, r14
-    1094:	84 83       	std	Z+4, r24	; 0x04
+    108e:	8d 85       	ldd	r24, Y+13	; 0x0d
+    1090:	f7 01       	movw	r30, r14
+    1092:	84 83       	std	Z+4, r24	; 0x04
 				sensor_data[5] = recieved_data[0];
-    1096:	8c 85       	ldd	r24, Y+12	; 0x0c
-    1098:	85 83       	std	Z+5, r24	; 0x05
+    1094:	8c 85       	ldd	r24, Y+12	; 0x0c
+    1096:	85 83       	std	Z+5, r24	; 0x05
 			}
 			if(spi_isr) continue;
-    109a:	80 91 34 20 	lds	r24, 0x2034	; 0x802034 <spi_isr>
-    109e:	81 11       	cpse	r24, r1
-    10a0:	b8 cf       	rjmp	.-144    	; 0x1012 <main+0x76>
+    1098:	80 91 34 20 	lds	r24, 0x2034	; 0x802034 <spi_isr>
+    109c:	81 11       	cpse	r24, r1
+    109e:	b8 cf       	rjmp	.-144    	; 0x1010 <main+0x74>
 			
 			packet_read.chip = 0x4B;
-    10a2:	39 82       	std	Y+1, r3	; 0x01
-    10a4:	41 e0       	ldi	r20, 0x01	; 1
-    10a6:	b8 01       	movw	r22, r16
-    10a8:	80 eb       	ldi	r24, 0xB0	; 176
-    10aa:	94 e0       	ldi	r25, 0x04	; 4
-    10ac:	f9 dd       	rcall	.-1038   	; 0xca0 <twi_master_transfer>
+    10a0:	39 82       	std	Y+1, r3	; 0x01
+    10a2:	41 e0       	ldi	r20, 0x01	; 1
+    10a4:	b8 01       	movw	r22, r16
+    10a6:	80 eb       	ldi	r24, 0xB0	; 176
+    10a8:	94 e0       	ldi	r25, 0x04	; 4
+    10aa:	fa dd       	rcall	.-1036   	; 0xca0 <twi_master_transfer>
 			if(twi_master_read(&TWIF,  &packet_read) ==TWI_SUCCESS){
-    10ae:	81 11       	cpse	r24, r1
-    10b0:	05 c0       	rjmp	.+10     	; 0x10bc <main+0x120>
+    10ac:	81 11       	cpse	r24, r1
+    10ae:	05 c0       	rjmp	.+10     	; 0x10ba <main+0x11e>
 				sensor_data[6] = recieved_data[1];
-    10b2:	8d 85       	ldd	r24, Y+13	; 0x0d
-    10b4:	f7 01       	movw	r30, r14
-    10b6:	86 83       	std	Z+6, r24	; 0x06
+    10b0:	8d 85       	ldd	r24, Y+13	; 0x0d
+    10b2:	f7 01       	movw	r30, r14
+    10b4:	86 83       	std	Z+6, r24	; 0x06
 				sensor_data[7] = recieved_data[0];
-    10b8:	8c 85       	ldd	r24, Y+12	; 0x0c
-    10ba:	87 83       	std	Z+7, r24	; 0x07
+    10b6:	8c 85       	ldd	r24, Y+12	; 0x0c
+    10b8:	87 83       	std	Z+7, r24	; 0x07
 			}
 			if(spi_isr) continue;
-    10bc:	80 91 34 20 	lds	r24, 0x2034	; 0x802034 <spi_isr>
-    10c0:	81 11       	cpse	r24, r1
-    10c2:	a7 cf       	rjmp	.-178    	; 0x1012 <main+0x76>
+    10ba:	80 91 34 20 	lds	r24, 0x2034	; 0x802034 <spi_isr>
+    10be:	81 11       	cpse	r24, r1
+    10c0:	a7 cf       	rjmp	.-178    	; 0x1010 <main+0x74>
 			
 			
 			time2 = rtc_get_time();
-    10c4:	c0 d8       	rcall	.-3712   	; 0x246 <rtc_get_time>
-    10c6:	60 93 04 20 	sts	0x2004, r22	; 0x802004 <time2>
-    10ca:	70 93 05 20 	sts	0x2005, r23	; 0x802005 <time2+0x1>
-    10ce:	80 93 06 20 	sts	0x2006, r24	; 0x802006 <time2+0x2>
-    10d2:	90 93 07 20 	sts	0x2007, r25	; 0x802007 <time2+0x3>
+    10c2:	c1 d8       	rcall	.-3710   	; 0x246 <rtc_get_time>
+    10c4:	60 93 04 20 	sts	0x2004, r22	; 0x802004 <time2>
+    10c8:	70 93 05 20 	sts	0x2005, r23	; 0x802005 <time2+0x1>
+    10cc:	80 93 06 20 	sts	0x2006, r24	; 0x802006 <time2+0x2>
+    10d0:	90 93 07 20 	sts	0x2007, r25	; 0x802007 <time2+0x3>
 			time3 = time2-time1;
-    10d6:	20 91 2f 20 	lds	r18, 0x202F	; 0x80202f <time1>
-    10da:	30 91 30 20 	lds	r19, 0x2030	; 0x802030 <time1+0x1>
-    10de:	40 91 31 20 	lds	r20, 0x2031	; 0x802031 <time1+0x2>
-    10e2:	50 91 32 20 	lds	r21, 0x2032	; 0x802032 <time1+0x3>
-    10e6:	dc 01       	movw	r26, r24
-    10e8:	cb 01       	movw	r24, r22
-    10ea:	82 1b       	sub	r24, r18
-    10ec:	93 0b       	sbc	r25, r19
-    10ee:	a4 0b       	sbc	r26, r20
-    10f0:	b5 0b       	sbc	r27, r21
-    10f2:	80 93 00 20 	sts	0x2000, r24	; 0x802000 <__data_start>
-    10f6:	90 93 01 20 	sts	0x2001, r25	; 0x802001 <__data_start+0x1>
-    10fa:	a0 93 02 20 	sts	0x2002, r26	; 0x802002 <__data_start+0x2>
-    10fe:	b0 93 03 20 	sts	0x2003, r27	; 0x802003 <__data_start+0x3>
+    10d4:	20 91 2f 20 	lds	r18, 0x202F	; 0x80202f <time1>
+    10d8:	30 91 30 20 	lds	r19, 0x2030	; 0x802030 <time1+0x1>
+    10dc:	40 91 31 20 	lds	r20, 0x2031	; 0x802031 <time1+0x2>
+    10e0:	50 91 32 20 	lds	r21, 0x2032	; 0x802032 <time1+0x3>
+    10e4:	dc 01       	movw	r26, r24
+    10e6:	cb 01       	movw	r24, r22
+    10e8:	82 1b       	sub	r24, r18
+    10ea:	93 0b       	sbc	r25, r19
+    10ec:	a4 0b       	sbc	r26, r20
+    10ee:	b5 0b       	sbc	r27, r21
+    10f0:	80 93 00 20 	sts	0x2000, r24	; 0x802000 <__data_start>
+    10f4:	90 93 01 20 	sts	0x2001, r25	; 0x802001 <__data_start+0x1>
+    10f8:	a0 93 02 20 	sts	0x2002, r26	; 0x802002 <__data_start+0x2>
+    10fc:	b0 93 03 20 	sts	0x2003, r27	; 0x802003 <__data_start+0x3>
 			sensor_data[8] = time3 >> 0;
-    1102:	f7 01       	movw	r30, r14
-    1104:	80 87       	std	Z+8, r24	; 0x08
+    1100:	f7 01       	movw	r30, r14
+    1102:	80 87       	std	Z+8, r24	; 0x08
 			sensor_data[9] = time3 >> 8;
-    1106:	91 87       	std	Z+9, r25	; 0x09
+    1104:	91 87       	std	Z+9, r25	; 0x09
 			sensor_data[10] = time3 >> 16;
-    1108:	a2 87       	std	Z+10, r26	; 0x0a
+    1106:	a2 87       	std	Z+10, r26	; 0x0a
 			sensor_data[11] = time3 >> 24;
-    110a:	b3 87       	std	Z+11, r27	; 0x0b
-			
-			
-			spi_transfer = 0;
-    110c:	10 92 33 20 	sts	0x2033, r1	; 0x802033 <spi_transfer>
-    1110:	80 cf       	rjmp	.-256    	; 0x1012 <main+0x76>
+    1108:	b3 87       	std	Z+11, r27	; 0x0b
+    110a:	82 cf       	rjmp	.-252    	; 0x1010 <main+0x74>
 
-00001112 <_exit>:
-    1112:	f8 94       	cli
+0000110c <_exit>:
+    110c:	f8 94       	cli
 
-00001114 <__stop_program>:
-    1114:	ff cf       	rjmp	.-2      	; 0x1114 <__stop_program>
+0000110e <__stop_program>:
+    110e:	ff cf       	rjmp	.-2      	; 0x110e <__stop_program>

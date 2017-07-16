@@ -121,20 +121,12 @@ int main (void)
 {
 	board_init();	//Init board
 	sysclk_init();
-	
-	rtc_init();
-	
-	
-	
-	//rtc_set_time(1038);
-	
+	rtc_init();	
 	init_spi_to_bbb();	//Setup SPI on Port C
-	
+	sensor_status = init_i2c();
 	sei();            // enable global interrupts
-	int sensor_error = init_i2c();
-	state = 1;
-	sensor_status = 52;
 	
+	state = 1;
 	
 	while (1) {
 		
@@ -195,9 +187,7 @@ int main (void)
 			sensor_data[9] = time3 >> 8;
 			sensor_data[10] = time3 >> 16;
 			sensor_data[11] = time3 >> 24;
-			
-			
-			spi_transfer = 0;
+		
 		}
 	}
 }
