@@ -19,7 +19,7 @@
 #include "Crc.h"
 
 #define CRC_PASS 0xAA
-#define SLEEP_TIME 12 //12 gets 3.87
+#define SLEEP_TIME 10 //12 gets 3.87
 
 using namespace std;
 
