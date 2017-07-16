@@ -87,7 +87,7 @@ void handle_spi_to_bbb(){
 	
 		//If we are receiving command, store it appropriately
 		if(cmd_idx > 0){
-		ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
+		
 			cmd_data[CMD_DATA_SIZE-cmd_idx] = rx_byte;
 			cmd_idx--;
 			//Finished last storage of incoming data
@@ -97,9 +97,8 @@ void handle_spi_to_bbb(){
 				received_crc =	(cmd_data[CMD_DATA_SIZE-1]<<8) | cmd_data[CMD_DATA_SIZE-2];
 				calculated_crc = crc_io_checksum(cmd_data, CMD_DATA_SIZE-2, CRC_16BIT);
 				//Send appropriate signal if passed/failed
-			
 				if(calculated_crc == received_crc){
-					//SPIC.DATA = SPI_CRC_PASS;
+					SPIC.DATA = SPI_CRC_PASS;
 					
 					circular_buffer_push(&tx_buff,SPI_CRC_PASS);
 					cmd_finished = 1;

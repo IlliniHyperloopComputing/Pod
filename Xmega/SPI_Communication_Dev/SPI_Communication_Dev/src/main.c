@@ -130,7 +130,7 @@ int main (void)
 	init_spi_to_bbb();	//Setup SPI on Port C
 	
 	sei();            // enable global interrupts
-	//int sensor_error = init_i2c();
+	int sensor_error = init_i2c();
 	state = 1;
 	sensor_status = 52;
 	
@@ -143,7 +143,7 @@ int main (void)
 		//Also, the most recently sent byte is in the rx_byte
 		//_delay_ms(200);
 		handle_spi_to_bbb();
-		/*
+		
 		if(lock == 0){//Do anything that is not SPI related
 			uint8_t recieved_data[2];
 			twi_package_t packet_read;
@@ -193,6 +193,6 @@ int main (void)
 			lock = 1;
 			
 			
-		}*/
+		}
 	}
 }
