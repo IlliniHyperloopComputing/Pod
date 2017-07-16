@@ -86,8 +86,9 @@ int Spi::transfer(Xmega_Transfer &xt){
   int max_passes = 3;
   int passes = 0;
   while(!sent_properly && passes < max_passes){
-    if(passes > 0){
+    if(passes > 0 || send_result == 0x4A){
       print_debug("Sending to Xmega: passes: %d send_properly: %d\n", passes, sent_properly);
+      usleep(SLEEP_TIME*100);
     }
     //send to Xmegas
     print_debug("wval: \t");
@@ -100,11 +101,14 @@ int Spi::transfer(Xmega_Transfer &xt){
 
     //read ACK or NACK from Xmegas to confirm sent data properly
     usleep(SLEEP_TIME*10);
-    //read(x1->fd, &send_result, 1);
-    read(xd->fd, &send_result, 1);
+
+    int rval = read(xd->fd, &send_result, 1);
+    print_debug("rval: %d\n", rval);
+    print_debug("read: %x\n", send_result);
+    
 
     //Determine if another attempt is needed
-    sent_properly = send_result == CRC_PASS;
+    sent_properly = (send_result == CRC_PASS) ;
 
     passes++;
   }

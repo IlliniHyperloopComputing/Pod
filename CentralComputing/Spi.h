@@ -19,7 +19,7 @@
 #include "Crc.h"
 
 #define CRC_PASS 0xAA
-#define SLEEP_TIME 18
+#define SLEEP_TIME 25 //18
 
 using namespace std;
 

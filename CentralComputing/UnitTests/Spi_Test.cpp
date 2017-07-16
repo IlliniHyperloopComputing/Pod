@@ -38,40 +38,40 @@ int Spi_Test::test(int argc, char** argv){
 
   }
   else{
-    uint8_t bpi1[] = {2,2,2,2,2,2,2,2,2,2};
-    Xmega_Setup x1 = {"/dev/spidev1.0", 10, bpi1, 500000, 8};
-    uint8_t bpi2[] = {2,2,2};
-    Xmega_Setup x2 = {"/dev/spidev1.1", 3, bpi2, 500000, 8};
+    uint8_t bpi1[] = {2,2,2,2,4};
+    Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
+    uint8_t bpi2[] = {2,2,2,2,4};
+    Xmega_Setup x2 = {"/dev/spidev1.1", 5, bpi2, 500000, 8};
     Spi spi(&x1, &x2);
-    Xmega_Transfer xt = {1,X_C_NONE, X_R_STATE};
+    Xmega_Transfer xt = {0,X_C_NONE, X_R_STATE};
       
-    print_test("Asking for state\n");
-    int result = spi.transfer(xt);
-    print_test("Result: %d\n", result);
-    assert(result == 0);
+    //print_test("Asking for state\n");
+    //int result = spi.transfer(xt);
+    //print_test("Result: %d\n", result);
+    //assert(result == 0);
 
-    print_test("\nAsking for sensor status\n");
-    xt.req = X_R_SENSOR_STATUS;
-    result = spi.transfer(xt);
-    print_test("Result: %d\n", result);
-    assert(result == 0);
+    //print_test("\nAsking for sensor status\n");
+    //xt.req = X_R_SENSOR_STATUS;
+    //result = spi.transfer(xt);
+    //print_test("Result: %d\n", result);
+    //assert(result == 0);
 
-    print_test("\nAsking for NONE\n");
-    xt.req = X_R_NONE;
-    result = spi.transfer(xt);
-    print_test("Result: %d\n", result);
-    assert(result == 0);
+    //print_test("\nAsking for NONE\n");
+    //xt.req = X_R_NONE;
+    //result = spi.transfer(xt);
+    //print_test("Result: %d\n", result);
+    //assert(result == 0);
 
     print_test("\nAsking for ALL\n");
     xt.req = X_R_ALL;
-    result = spi.transfer(xt);
+    int result = spi.transfer(xt);
     print_test("Result: %d\n", result);
     assert(result == 0);
 
     print_test("\nSensor_status: %d\n", spi.get_sensor_status(1));
     print_test("State: %d\n", spi.get_state(1));
-    for(int i = 0; i < 3; i++){
-      print_test("Data: idx: %x\t xmega1:%x\txmega2:%x\n",i, spi.get_data(0,i), spi.get_data(1,i));
+    for(int i = 0; i < 5; i++){
+      print_test("Data: idx: %x\t xmega1:%d\txmega2:%d\n",i, spi.get_data(0,i), spi.get_data(1,i));
     }
 
   }
