@@ -130,7 +130,7 @@ int main (void)
 	init_spi_to_bbb();	//Setup SPI on Port C
 	
 	sei();            // enable global interrupts
-	//int sensor_error = init_i2c();
+	int sensor_error = init_i2c();
 	state = 1;
 	sensor_status = 52;
 	
@@ -190,9 +190,8 @@ int main (void)
 			sensor_data[10] = time3 >> 16;
 			sensor_data[11] = time3 >> 24;
 			
+			
 			lock = 1;
-			
-			
 		}*/
 	}
 }
