@@ -63,7 +63,6 @@ void handle_spi_to_bbb(){
 	//Loop while we have data in the RX buffer to process
 	while(circular_buffer_size(&rx_buff)){
 		rx_byte = circular_buffer_pop(&rx_buff);
-		//if(rx_byte == 0xaa)ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 		
 		if(rx_byte == SPI_TX_START){
 			cmd_idx = CMD_DATA_SIZE;
@@ -74,8 +73,6 @@ void handle_spi_to_bbb(){
 			send_crc = 0;
 			send_crc_idx = 0;
 			lock = 1;
-			
-
 		}
 	
 		//If we are receiving command, store it appropriately
@@ -126,26 +123,21 @@ void handle_spi_to_bbb(){
 			//}
 			send_crc_length = send_idx;
 			cmd_finished = 0;
-		}
-	
-		if(send_idx > 0){
-			//SPIC.DATA = send_data[send_crc_length-send_idx];
-			circular_buffer_push(&tx_buff, send_data[send_crc_length-send_idx]);
-			send_idx--;
-		
-			//Calculate CRC
-			if(send_idx == 0){
-				send_crc = crc_io_checksum(send_data, send_crc_length, CRC_16BIT);
-				send_crc_idx = 2;
+			
+			while(send_idx){
+				//SPIC.DATA = send_data[send_crc_length-send_idx];
+				circular_buffer_push(&tx_buff, send_data[send_crc_length-send_idx]);
+				send_idx--;
+				
+				//Calculate CRC
+				if(send_idx == 0){
+					send_crc = crc_io_checksum(send_data, send_crc_length, CRC_16BIT);
+					circular_buffer_push(&tx_buff, send_crc);
+					circular_buffer_push(&tx_buff, send_crc>> 8);
+				}
 			}
-		
-		}
-		else if(send_crc_idx > 0){
-		
-			//SPIC.DATA = send_crc >> ((2-send_crc_idx)*8);
-			circular_buffer_push(&tx_buff, send_crc>> ((2-send_crc_idx)*8));
-			send_crc_idx--;
-			if(send_crc_idx == 0) lock = 0;
+			
+			lock = 0;
 		}
 	}
 }

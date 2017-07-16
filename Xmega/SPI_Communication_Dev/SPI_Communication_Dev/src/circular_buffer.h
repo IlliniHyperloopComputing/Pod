@@ -14,9 +14,9 @@
 
 typedef struct circular_buffer
 {
-	uint8_t buffer[MAX_BUFFER_SIZE];
-	uint8_t front;
-	uint8_t back;
+	volatile uint8_t buffer[MAX_BUFFER_SIZE];
+	volatile uint8_t front;
+	volatile uint8_t back;
 } circular_buffer_t;
 
 void circular_buffer_push(circular_buffer_t * cb, uint8_t data);
