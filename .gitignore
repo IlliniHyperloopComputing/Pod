@@ -1,6 +1,12 @@
 #Specific ignores
 build
 builds/
+Debug/
+Release/
+
+
+
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
