@@ -150,12 +150,11 @@ int main (void)
 			
 			time1= rtc_get_time();
 			
-			//_delay_ms(1);
 			if(twi_master_read(&TWIF, &packet_read) == TWI_SUCCESS){
 				sensor_data[0] = recieved_data[1];
 				sensor_data[1] = recieved_data[0];
-				
 			}
+			if(spi_isr) continue;
 			
 			
 			packet_read.chip = 0x49;
