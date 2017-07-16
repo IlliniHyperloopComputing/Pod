@@ -7,7 +7,7 @@ int Spi_Test::test(int argc, char** argv){
 
   if(argv[1][0] == '1'){
     uint8_t bpi1[] = {2,2,2,2,4};
-    Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
+    Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 8000000, 8};
     uint8_t bpi2[] = {2,2,2};
     Xmega_Setup x2 = {"/dev/spidev1.1", 3, bpi2, 500000, 8};
     Spi spi(&x1, &x2);
@@ -39,7 +39,7 @@ int Spi_Test::test(int argc, char** argv){
   }
   else{
     uint8_t bpi1[] = {2,2,2,2,4};
-    Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
+    Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 8000000, 8};
     uint8_t bpi2[] = {2,2,2,2,4};
     Xmega_Setup x2 = {"/dev/spidev1.1", 5, bpi2, 500000, 8};
     Spi spi(&x1, &x2);
