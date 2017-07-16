@@ -24,7 +24,7 @@ int Spi_Test::test(int argc, char** argv){
       clock_gettime(CLOCK_MONOTONIC, &ts2);
       if(result & 0b01) err1++;
       if(result & 0b10) err2++;
-      usleep(2500);
+      usleep(5000);//5 milliseconds
       elapsed += (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
     }
     print_test("time elapsed: %lf\t Average time: %lf\n",elapsed, elapsed/iters);
