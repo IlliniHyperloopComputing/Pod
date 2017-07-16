@@ -20,7 +20,8 @@ uint8_t sensor_status = 0;
 uint8_t sensor_data[SENSOR_DATA_SIZE] = {1,2,3,4,5,6,0,0,0,0,0,0};
 
 //lock
-uint8_t lock = 0;
+volatile uint8_t spi_isr = 0;
+uint8_t spi_transfer = 0;
 
 //RTC
 uint32_t time1 = 0;
@@ -144,7 +145,7 @@ int main (void)
 		//_delay_ms(200);
 		handle_spi_to_bbb();
 		
-		if(lock == 0){//Do anything that is not SPI related
+		if(spi_transfer == 0){//Do anything that is not SPI related
 			
 			uint8_t recieved_data[2];
 			twi_package_t packet_read;
@@ -171,18 +172,21 @@ int main (void)
 				sensor_data[2] = recieved_data[1];
 				sensor_data[3] = recieved_data[0];
 			}
+			if(spi_isr) continue;
 			
 			packet_read.chip = 0x4A;
 			if(twi_master_read(&TWIF,  &packet_read) ==TWI_SUCCESS){
 				sensor_data[4] = recieved_data[1];
 				sensor_data[5] = recieved_data[0];
 			}
+			if(spi_isr) continue;
 			
 			packet_read.chip = 0x4B;
 			if(twi_master_read(&TWIF,  &packet_read) ==TWI_SUCCESS){
 				sensor_data[6] = recieved_data[1];
 				sensor_data[7] = recieved_data[0];
 			}
+			if(spi_isr) continue;
 			
 			
 			time2 = rtc_get_time();
@@ -193,7 +197,7 @@ int main (void)
 			sensor_data[11] = time3 >> 24;
 			
 			
-			lock = 1;
+			spi_transfer = 1;
 		}
 	}
 }

@@ -13,7 +13,8 @@ volatile uint8_t rx_byte = 0x00;
 extern uint8_t sensor_status;
 extern uint8_t state;
 extern uint8_t sensor_data[SENSOR_DATA_SIZE];
-extern uint8_t lock;
+extern volatile uint8_t spi_isr;
+extern uint8_t spi_transfer;
 
 #define SPI_TX_START 0xAA
 #define SPI_CRC_PASS 0xAA
@@ -39,13 +40,14 @@ uint16_t send_crc = 0;
 uint8_t send_crc_idx = 0;
 
 ISR(SPIC_INT_vect) {
-	//Add recieved byte to rx buffer
+	//Add received byte to rx buffer
 	circular_buffer_push(&rx_buff, SPIC.DATA);
 	
 	//Send tx byte if there is one to send
 	if(circular_buffer_size(&tx_buff)){
 		SPIC.DATA = circular_buffer_pop(&tx_buff);
 	}
+	spi_isr = 1;
 }
 
 void init_spi_to_bbb(){
@@ -72,7 +74,7 @@ void handle_spi_to_bbb(){
 			send_crc_length = 0;
 			send_crc = 0;
 			send_crc_idx = 0;
-			lock = 1;
+			spi_transfer = 1;
 		}
 	
 		//If we are receiving command, store it appropriately
@@ -137,7 +139,8 @@ void handle_spi_to_bbb(){
 				}
 			}
 			
-			lock = 0;
+			spi_transfer = 0;
 		}
+		spi_isr = 0;
 	}
 }

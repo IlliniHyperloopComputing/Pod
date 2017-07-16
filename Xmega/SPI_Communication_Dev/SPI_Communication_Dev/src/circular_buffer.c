@@ -7,13 +7,13 @@
 
 #include "circular_buffer.h"
 
-void circular_buffer_push(circular_buffer_t * cb, uint8_t data){
+inline void circular_buffer_push(circular_buffer_t * cb, uint8_t data){
 	cb->buffer[cb->front] = data;
 	cb->front++;
 	cb->front =  cb->front % MAX_BUFFER_SIZE;
 	//cb->len++;
 }
-uint8_t circular_buffer_pop(circular_buffer_t * cb){
+inline uint8_t circular_buffer_pop(circular_buffer_t * cb){
 	uint8_t ret = cb->buffer[cb->back];
 	cb->back++;
 	cb->back = cb->back % MAX_BUFFER_SIZE;
