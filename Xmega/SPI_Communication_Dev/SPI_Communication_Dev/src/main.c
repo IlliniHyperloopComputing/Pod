@@ -147,6 +147,7 @@ int main (void)
 			packet_read.chip			= 0x48;
 			packet_read.buffer			= recieved_data;
 			packet_read.length			= 2;
+			if(spi_isr) continue;
 			
 			time1= rtc_get_time();
 			
