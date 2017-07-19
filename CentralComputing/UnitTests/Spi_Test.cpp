@@ -66,7 +66,7 @@ int Spi_Test::test(int argc, char** argv){
 
   }
   else if(l == '2'){
-    uint8_t bpi1[] = {2,2,2,2,4};
+    uint8_t bpi1[] = {2,2,2,2,2};
     Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
     uint8_t bpi2[] = {2,2,2,2,4};
     Xmega_Setup x2 = {"/dev/spidev1.1", 5, bpi2, 500000, 8};
@@ -96,11 +96,11 @@ int Spi_Test::test(int argc, char** argv){
     print_test("Result: %d\n", result);
     assert(result == 0);
 
-    print_test("\nAsking for ALL\n");
-    xt.device=1;
-    result = spi.transfer(xt);
-    print_test("Result: %d\n", result);
-    assert(result == 0);
+    //print_test("\nAsking for ALL\n");
+    //xt.device=1;
+    //result = spi.transfer(xt);
+    //print_test("Result: %d\n", result);
+    //assert(result == 0);
 
     print_test("\nSensor_status: %d\n", spi.get_sensor_status(1));
     print_test("State: %d\n", spi.get_state(1));
