@@ -24,7 +24,6 @@ uint8_t sensor_data[SENSOR_DATA_SIZE] = {0};
 4,5 == X2
 6,7 == Brake
 8,9 == Optical
-
 */
 
 //lock
@@ -192,8 +191,6 @@ int main (void)
 			time3 = time2-time1;
 			sensor_data[8] = time3 >> 0;
 			sensor_data[9] = time3 >> 8;
-			sensor_data[10] = time3 >> 16;
-			sensor_data[11] = time3 >> 24;
 		
 		}
 	}
