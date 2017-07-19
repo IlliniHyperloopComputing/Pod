@@ -17,7 +17,15 @@
 //spi_to_bbb externs these variables
 uint8_t state = 0;
 uint8_t sensor_status = 0;
-uint8_t sensor_data[SENSOR_DATA_SIZE] = {1,2,3,4,5,6,0,0,0,0,0,0};
+uint8_t sensor_data[SENSOR_DATA_SIZE] = {0};
+/*
+0,1 == X0
+2,3 == X1
+4,5 == X2
+6,7 == Brake
+8,9 == Optical
+
+*/
 
 //lock
 volatile uint8_t spi_isr = 0;
