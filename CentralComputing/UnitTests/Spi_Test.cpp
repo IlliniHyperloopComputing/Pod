@@ -10,7 +10,7 @@ int Spi_Test::test(int argc, char** argv){
   char l = argv[1][0];
 
   if(l == '1'){
-    uint8_t bpi1[] = {2,2,2,2,4};
+    uint8_t bpi1[] = {2,2,2,2,2};
     Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
     uint8_t bpi2[] = {2,2,2};
     Xmega_Setup x2 = {"/dev/spidev1.1", 3, bpi2, 500000, 8};
@@ -21,7 +21,7 @@ int Spi_Test::test(int argc, char** argv){
     double overelapsed = 0;
     int overerr1 = 0;
     int overerr2 = 0;
-    int overiters = 100;
+    int overiters = 10;
 
       int iters = 1000;
     for(int z = 0; z<overiters; z++){
@@ -68,8 +68,8 @@ int Spi_Test::test(int argc, char** argv){
   else if(l == '2'){
     uint8_t bpi1[] = {2,2,2,2,2};
     Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
-    uint8_t bpi2[] = {2,2,2,2,4};
-    Xmega_Setup x2 = {"/dev/spidev1.1", 5, bpi2, 500000, 8};
+    uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1};
+    Xmega_Setup x2 = {"/dev/spidev1.1", 19, bpi2, 500000, 8};
     Spi spi(&x1, &x2);
     Xmega_Transfer xt = {0,X_C_NONE, X_R_ALL};
       
@@ -96,11 +96,11 @@ int Spi_Test::test(int argc, char** argv){
     print_test("Result: %d\n", result);
     assert(result == 0);
 
-    //print_test("\nAsking for ALL\n");
-    //xt.device=1;
-    //result = spi.transfer(xt);
-    //print_test("Result: %d\n", result);
-    //assert(result == 0);
+    print_test("\nAsking for ALL\n");
+    xt.device=1;
+    result = spi.transfer(xt);
+    print_test("Result: %d\n", result);
+    assert(result == 0);
 
     print_test("\nSensor_status: %d\n", spi.get_sensor_status(1));
     print_test("State: %d\n", spi.get_state(1));
@@ -109,10 +109,10 @@ int Spi_Test::test(int argc, char** argv){
     }
 
   } else if(l == '3'){
-    uint8_t bpi1[] = {2,2,2,2,4};
-    Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 8000000, 8};
-    uint8_t bpi2[] = {2,2, 2,2,2, 2,2,2,2,2,2,2,2, 2,2,2,2, 1 };
-    Xmega_Setup x2 = {"/dev/spidev1.1",19, bpi2, 8000000, 8};
+    uint8_t bpi1[] = {2,2,2,2,2};
+    Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
+    uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1};
+    Xmega_Setup x2 = {"/dev/spidev1.1", 19, bpi2, 500000, 8};
     Spi spi(&x1, &x2);
     Xmega_Transfer xt = {0,X_C_NONE, X_R_ALL};
 
@@ -120,14 +120,15 @@ int Spi_Test::test(int argc, char** argv){
     xt.req = X_R_ALL;
     int result = spi.transfer(xt);
     print_test("Result: %d\n", result);
-    assert(result == 0);
+    //assert(result == 0);
 
     print_test("\nAsking for ALL\n");
     xt.req = X_R_ALL;
     xt.device=1;
     result = spi.transfer(xt);
     print_test("Result: %d\n", result);
-    assert(result == 0);
+    //assert(result == 0);
+    print_test("\n=============\n");
 
     for(int i = 0; i < 5; i++){
       print_test("Data: idx: %x\t xmega1:%d\n",i, spi.get_data(0,i));
