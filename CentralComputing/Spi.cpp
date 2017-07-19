@@ -83,16 +83,16 @@ int Spi::transfer(Xmega_Transfer &xt){
   tx_buff[4] = (uint8_t) (send_crc>>8);
 
   int sent_properly = 0;
-  int max_passes = 3;
+  int max_passes = 10;
   int passes = 0;
   while(!sent_properly && passes < max_passes){
-    if(passes > 0 || send_result == 0x4A){
-      print_debug("Sending to Xmega: passes: %d send_properly: %d\n", passes, sent_properly);
+    if(passes > 0 /*|| send_result == 0x4A */){
+      //print_debug("Sending to Xmega: passes: %d send_properly: %d\n", passes, sent_properly);
       usleep(SLEEP_TIME);
     }
     //send to Xmegas
     print_debug("wval: \t");
-    for(int i = 0; i < 5;i++){
+    for(int i = 0; i < sizeof(tx_buff);i++){
       usleep(SLEEP_TIME);
       int wval = write(xd->fd, tx_buff + i, 1);
       print_debug("%d, tx: %x\t", wval, tx_buff[i]);
@@ -140,6 +140,7 @@ int Spi::transfer(Xmega_Transfer &xt){
   else{
     bytes_to_read = 0;
   }
+  print_debug("Num bytes to read: %d\n",bytes_to_read);
 
   //Read data
   //Reading happens once. If it fails, then it failes
