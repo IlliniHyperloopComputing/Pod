@@ -369,6 +369,18 @@
     <Compile Include="src\circular_buffer.h">
       <SubType>compile</SubType>
     </Compile>
+    <Compile Include="src\i2c_sensors.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\i2c_sensors.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\spi_sensors.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\spi_sensors.h">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\spi_to_bbb.c">
       <SubType>compile</SubType>
     </Compile>
