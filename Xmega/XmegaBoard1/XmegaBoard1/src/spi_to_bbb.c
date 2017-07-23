@@ -75,6 +75,7 @@ void handle_spi_to_bbb(){
 			send_crc = 0;
 			send_crc_idx = 0;
 			spi_transfer = 1;
+			memset(&tx_buff, 0, sizeof(circular_buffer_t));
 		}
 	
 		//If we are receiving command, store it appropriately
