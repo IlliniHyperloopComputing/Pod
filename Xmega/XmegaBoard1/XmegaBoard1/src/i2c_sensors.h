@@ -45,7 +45,7 @@ twi_package_t adc_read;
  **/
 int8_t init_adc(TWI_t *twi, uint8_t chip, uint8_t type_of_adc);
 int8_t set_adc_mux(TWI_t * twi, uint8_t chip, uint8_t mux);
-int8_t read_adc(TWI_t *twi, uint8_t chip, void * buff );
+extern int8_t read_adc(TWI_t *twi, uint8_t chip, void * buff );
 
 
 

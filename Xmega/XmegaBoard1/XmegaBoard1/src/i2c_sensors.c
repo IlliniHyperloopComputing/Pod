@@ -66,7 +66,7 @@ int8_t set_adc_mux(TWI_t * twi, uint8_t chip, uint8_t mux){
 	return twi_master_write(twi, &adc_write);
 }
 
-int8_t read_adc(TWI_t * twi, uint8_t chip, void * buff){
+inline int8_t read_adc(TWI_t * twi, uint8_t chip, void * buff){
 	
 	adc_read.chip = chip;
 	adc_read.buffer = (void *)buff;

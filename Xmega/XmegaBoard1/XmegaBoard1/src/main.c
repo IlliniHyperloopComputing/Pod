@@ -70,26 +70,24 @@ int main (void)
 				sensor_data[0] = recieved_data[1];
 				sensor_data[1] = recieved_data[0];
 			}
-			handle_spi_to_bbb();
 			
 			if(read_adc(&TWIF, 0x49, recieved_data ) == TWI_SUCCESS){
 				sensor_data[2] = recieved_data[1];
 				sensor_data[3] = recieved_data[0];
 			}
-			handle_spi_to_bbb();
 			
 			if(read_adc(&TWIF, 0x4A, recieved_data ) == TWI_SUCCESS){
 				sensor_data[4] = recieved_data[1];
 				sensor_data[5] = recieved_data[0];
 			}
-			handle_spi_to_bbb();
-
+			
 			if(read_adc(&TWIF, 0x4B, recieved_data ) == TWI_SUCCESS){
 				sensor_data[6] = recieved_data[1];
 				sensor_data[7] = recieved_data[0];
 			}
-			handle_spi_to_bbb();
-			
+			if(spi_isr) continue;
+			//handle_spi_to_bbb();
+				
 			
 			time2 = rtc_get_time();
 			time3 = time2-time1;
