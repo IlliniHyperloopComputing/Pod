@@ -18,6 +18,21 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
 			case ACCELEROMETER:
 				group = new Accelerometer(c);
 				break;
+			case BRAKE_PRESSURE:
+				group = new Brake_Pressure(c);
+				break;
+			case POSITION:
+				group = new Position(c);
+				break;
+			case RIDE_HEIGHT:
+				group = new Ride_Height(c);
+				break;
+			case TAPE_COUNT:
+				group = new Tape_Count(c);
+				break;
+			case BATTERY:
+				group = new Battery(c);
+				break;
 			default:
 				cout << "Something went wrong" << endl;
 				group = NULL;

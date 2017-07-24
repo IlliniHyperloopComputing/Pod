@@ -97,7 +97,7 @@ class Sensor_Group {
 
 	protected:
 	
-		int simulation;
+		const int simulation;
 
 		Sensor_Type type;
 

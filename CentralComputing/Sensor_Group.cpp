@@ -20,7 +20,7 @@ vector<double> Sensor_Group::get_data() {
 void Sensor_Group::refresh_data(Spi * spi) {
 	//lock mutex
 	sensor_group_mutex.lock();
-	for(int i = 0; i < count; i++) {
+	for(size_t i = 0; i < count; i++) {
 		uint32_t val = spi->get_data(device, i + first_index);
 		data[i] = val;
 	}
