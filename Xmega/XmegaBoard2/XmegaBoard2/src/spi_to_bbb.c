@@ -54,8 +54,8 @@ void init_spi_to_bbb(){
 	sysclk_enable_peripheral_clock( &SPIC ); 
 	PORTC.DIR = 0x40;		// MISO output; MOSI, SCK, SS inputs
 	SPIC.CTRL = 0x40;		// slave mode, mode 0
-	SPIC.INTCTRL = 0x03;	// enable interrupts
-	PMIC.CTRL = 0x04;       // enable high priority interrupts
+	SPIC.INTCTRL = SPI_INTLVL_HI_gc;	// enable high level interrupts
+	PMIC.CTRL |= PMIC_HILVLEN_bm;       // enable high priority interrupts
 	memset(&rx_buff, 0, sizeof(circular_buffer_t));
 	memset(&tx_buff, 0, sizeof(circular_buffer_t));
 	
@@ -75,6 +75,7 @@ void handle_spi_to_bbb(){
 			send_crc = 0;
 			send_crc_idx = 0;
 			spi_transfer = 1;
+			memset(&tx_buff, 0, sizeof(circular_buffer_t));
 		}
 	
 		//If we are receiving command, store it appropriately
@@ -103,26 +104,12 @@ void handle_spi_to_bbb(){
 			}
 		}
 		else if(cmd_finished){
-			//On next pass we will start pipelining data
-			/*if(cmd_data[2] == 0){
-				memcpy(send_data,sensor_data,SENSOR_DATA_SIZE);//TODO: determine if this takes too long
-				send_idx = SENSOR_DATA_SIZE;
-			}
-			else if(cmd_data[2] == 1){
-				//ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
-				send_data[0] = sensor_status;
-				send_idx = 1;
-			}
-			else if(cmd_data[2] == 2){
-				send_data[0] = state;
-				send_idx = 1;
-			}
-			else{*/
-				memcpy(send_data,sensor_data,SENSOR_DATA_SIZE);
-				send_data[SENSOR_DATA_SIZE] = sensor_status;
-				send_data[SENSOR_DATA_SIZE+1] = state;
-				send_idx = SENSOR_DATA_SIZE+2;
-			//}
+			
+			memcpy(send_data,sensor_data,SENSOR_DATA_SIZE);
+			send_data[SENSOR_DATA_SIZE] = sensor_status;
+			send_data[SENSOR_DATA_SIZE+1] = state;
+			send_idx = SENSOR_DATA_SIZE+2;
+			
 			send_crc_length = send_idx;
 			cmd_finished = 0;
 			
