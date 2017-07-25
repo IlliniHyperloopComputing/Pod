@@ -5,7 +5,8 @@
 //for _delay_ms
 #define F_CPU 32000000
 #include <util/delay.h>
-#define APROX_HALF_SECOND 151000
+#define APROX_HALF_SECOND 16328
+#define APROX_50_MILLI 1639
 
 #include "spi_to_bbb.h"
 #include "i2c_sensors.h"
@@ -48,6 +49,26 @@ uint32_t time3 = 2;
 uint32_t time4 = 0;
 uint32_t time5 = 0;
 
+uint8_t retro_1_flag = 0;
+uint8_t retro_2_flag = 0;
+uint8_t retro_3_flag = 0;
+uint32_t retro_1_time = 0;
+uint32_t retro_2_time = 0;
+uint32_t retro_3_time = 0;
+
+ISR(PORTK_INT0_vect){
+	retro_1_flag = 1;
+	retro_1_time = rtc_get_time();
+}
+ISR(PORTF_INT0_vect){
+	retro_2_flag = 1;
+	retro_2_time = rtc_get_time();
+}
+ISR(PORTB_INT0_vect){
+	retro_3_flag = 1;
+	retro_3_time = rtc_get_time();
+}
+
 
 int main (void)
 {
@@ -55,18 +76,29 @@ int main (void)
 	sysclk_init();
 	rtc_init();	
 	init_spi_to_bbb();	//Setup SPI on Port C
-	/*
+	
+	ioport_configure_port_pin(&PORTK, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_SENSE_RISING | IOPORT_PULL_DOWN);
+	PORTK.INT0MASK = PIN2_bm;
+	PORTK.INTCTRL =	PORT_INT0LVL_MED_gc;
+	
+	ioport_configure_port_pin(&PORTF, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_SENSE_RISING | IOPORT_PULL_DOWN);
+	PORTF.INT0MASK = PIN2_bm;
+	PORTF.INTCTRL =	PORT_INT0LVL_MED_gc;
+	
+	ioport_configure_port_pin(&PORTB, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_SENSE_RISING | IOPORT_PULL_DOWN);
+	PORTB.INT0MASK = PIN2_bm;
+	PORTB.INTCTRL =	PORT_INT0LVL_MED_gc;
+	
+	PMIC.CTRL |= PMIC_MEDLVLEN_bm;
+	
+	
 	init_adc(&TWIC, 0x48, ADC_SINGLE);//Read Y, Z accel
 	init_adc(&TWIE, 0x48, ADC_SINGLE);//Read Battery Voltages
 	init_adc(&TWIC, 0x49, ADC_STREAMING);//Read RHS
-	init_adc(&TWIE, 0x49, ADC_SINGLE);//Read Battery Voltages
 	init_adc(&TWIC, 0x4a, ADC_STREAMING);//Read RHS
-	init_adc(&TWIE, 0x4a, ADC_SINGLE);//Read Battery Voltages
 	init_adc(&TWIC, 0x4b, ADC_STREAMING);//Read RHS
-	init_adc(&TWIE, 0x4b, ADC_SINGLE);//Read Battery Voltages
 
 	init_thermo_sensors();
-	*/
 	
 	sei();            // enable global interrupts
 	
@@ -83,7 +115,34 @@ int main (void)
 		
 		if(spi_transfer == 0){//Do anything that is not SPI related
 			
-			/*
+			//Checks if any 2 flags are true
+			uint8_t retro_flag = (retro_1_flag && (retro_2_flag || retro_3_flag)) || (retro_2_flag && retro_3_flag);
+			if(retro_flag){
+				sensor_data[24] ++;
+				//idea is to see if any two of the times are within 50 mill of eachother.
+				//this math will calculate if the numbers subtracted (which could overflow since uints), plus 50 milliseconds is less than 100 milliseconds. 
+				//the values, if initially overflowed, should wrap back with the addition of 50 milliseconds if a valid time
+				//the maximum value is less than 100 milliseconds. So just check if under 100 milliseconds.
+				/*uint8_t f1 = (retro_1_time - retro_2_time + APROX_50_MILLI) < (2 * APROX_50_MILLI);
+				uint8_t f2 = (retro_1_time - retro_3_time + APROX_50_MILLI) < (2 * APROX_50_MILLI);
+				uint8_t f3 = (retro_2_time - retro_3_time + APROX_50_MILLI) < (2 * APROX_50_MILLI);
+				
+				//same flag check as above, two need to be true
+				retro_flag = (f1 && (f2 || f3)) || (f2 && f3);
+				if(retro_flag){
+					sensor_data[24] ++;
+					ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
+				}
+				*/
+				retro_1_flag = 0;
+				retro_2_flag = 0;
+				retro_3_flag = 0;
+				retro_1_time = 0;
+				retro_2_time = 0;
+				retro_3_time = 0;
+			}
+			
+			
 			//Read from RHS
 			uint16_t recieved_data = 0;
 			
@@ -169,7 +228,7 @@ int main (void)
 				}
 				
 			}
-			*/
+			
 		}
 		time2 = rtc_get_time();
 		time3 = time2-time1;

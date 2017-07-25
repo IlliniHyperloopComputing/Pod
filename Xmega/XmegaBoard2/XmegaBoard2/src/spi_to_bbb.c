@@ -54,8 +54,8 @@ void init_spi_to_bbb(){
 	sysclk_enable_peripheral_clock( &SPIC ); 
 	PORTC.DIR = 0x40;		// MISO output; MOSI, SCK, SS inputs
 	SPIC.CTRL = 0x40;		// slave mode, mode 0
-	SPIC.INTCTRL = 0x03;	// enable interrupts
-	PMIC.CTRL = 0x04;       // enable high priority interrupts
+	SPIC.INTCTRL = SPI_INTLVL_HI_gc;	// enable high level interrupts
+	PMIC.CTRL |= PMIC_HILVLEN_bm;       // enable high priority interrupts
 	memset(&rx_buff, 0, sizeof(circular_buffer_t));
 	memset(&tx_buff, 0, sizeof(circular_buffer_t));
 	
