@@ -43,30 +43,34 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
 	}
 	start_time = get_current_time();
 
-	//TODO set up Spi
-	uint8_t bpi1[] = {2,2,2}; //bytes per index for Xmega1
-	//16-bit X-acceleration
-	//16-bit position
-	//16-bit brake pressure
-	uint8_t bpi2[] = {2,2,2,2,2,2,2,2, 1, 2,2,2,2, 2,2,2};
-	//16-bit Primary Battery Cell1
-	//16-bit Primary Battery Cell2
-	//16-bit Primary Battery Cell3
-	//16-bit Primary Battery Cell4
-	//16-bit Secondary Battery Cell1
-	//16-bit Secondary Battery Cell2
-	//16-bit Secondary Battery Cell3
-	//16-bit Secondary Battery Cell4
-	//8-bit Number of tapes
-	//16-bit Temp1
-	//16-bit Temp2
-	//16-bit Temp3
-	//16-bit Temp4
-	//16-bit RideHeight1
-	//16-bit RideHeight2
-	//16-bit RideHeight3
-	Xmega_Setup x1 = {"/dev/spidev1.0", 3, bpi1, 500000, 8};//Xmega1 initialization struct
-	Xmega_Setup x2 = {"/dev/spidev1.1",16, bpi2, 500000, 8};
+  /**
+  * 0,1 == X0
+  * 2,3 == X1
+  * 4,5 == X2
+  * 6,7 == Brake
+  * 8,9 == Optical
+  **/
+  uint8_t bpi1[] = {2,2,2,2,2};
+
+  /**
+  * 0,1 == y  i2c 
+  * 2,3 == z  i2c 
+  * 4,5 == RH0 i2c
+  * 6,7 == RH1 i2c 
+  * 8,9 == RH2 i2c
+  * 10,11 == Battery i2c
+  * 12,13 == Battery i2c
+  * 14,15 == Thermo0 Spi
+  * 16,17 == Thermo1
+  * 18,19 == Thermo2
+  * 20,21 == Thermo3 external
+  * 22,23 == Thermo3 internal
+  * 24    == RetroReflective  Interrupt
+  **/
+  uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
+
+  Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
+  Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
 	
 	if(xmega_connect) {
 		spi = new Spi(&x1, &x2);

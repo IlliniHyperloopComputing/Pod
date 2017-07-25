@@ -158,7 +158,7 @@ class Accelerometer : public Sensor_Group {
 
 		const size_t first_index = X_ACCELERATION_INDEX; // index offset to read from spi
 		const size_t device = XMEGA1; //xmega device number (0 or 1)
-		const size_t count = 1; //number of sensors
+		const size_t count = 3; //number of sensors
 
 	private:
 		/**
@@ -304,7 +304,7 @@ class Battery : public Sensor_Group {
 
 		const size_t first_index = BATTERY_CELL_INDEX; // index offset to read from spi
 		const size_t device = XMEGA2; //xmega device number (0 or 1)
-		const size_t count = 8; //number of sensors
+		const size_t count = 2; //number of sensors
 
 
 	private:
