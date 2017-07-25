@@ -12,18 +12,21 @@ int Spi_Test::test(int argc, char** argv){
   if(l == '1'){
     uint8_t bpi1[] = {2,2,2,2,2};
     Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
-    uint8_t bpi2[] = {2,2,2};
-    Xmega_Setup x2 = {"/dev/spidev1.1", 3, bpi2, 500000, 8};
+    uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
+    Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
     Spi spi(&x1, &x2);
     Xmega_Transfer xt = {0,X_C_NONE, X_R_ALL};
 
   
     double overelapsed = 0;
+    double overelapsed2 = 0;
     int overerr1 = 0;
     int overerr2 = 0;
+    int overerr3 = 0;
+    int overerr4 = 0;
     int overiters = 10;
 
-      int iters = 1000;
+    int iters = 1000;
     for(int z = 0; z<overiters; z++){
 
       double max_n = 0;
@@ -31,36 +34,71 @@ int Spi_Test::test(int argc, char** argv){
       double elapsed = 0;
       int err1 = 0;
       int err2 = 0;
+
+      double max_n2 = 0;
+      double min_n2 = 10000000;
+      double elapsed2 = 0;
+      int err3 = 0;
+      int err4 = 0;
+
       struct timespec ts, ts2;
       for(int i = 0; i< iters; i++){
+        xt.device = 0;
         clock_gettime(CLOCK_MONOTONIC,&ts);
         int result = spi.transfer(xt);
         clock_gettime(CLOCK_MONOTONIC, &ts2);
         if(result & 0b01) err1++;
         if(result & 0b10) err2++;
-        usleep(5000);//5 milliseconds
         elapsed += (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
         double nsec_total = (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
         if(nsec_total < min_n) 
           min_n = nsec_total;
         if(nsec_total > max_n) 
           max_n = nsec_total;
+
+        xt.device = 1;
+        clock_gettime(CLOCK_MONOTONIC,&ts);
+        result = spi.transfer(xt);
+        clock_gettime(CLOCK_MONOTONIC, &ts2);
+        if(result & 0b01) err3++;
+        if(result & 0b10) err4++;
+
+        usleep(5000);//5 milliseconds
+        elapsed2 += (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
+        nsec_total = (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
+        if(nsec_total < min_n2) 
+          min_n2 = nsec_total;
+        if(nsec_total > max_n2) 
+          max_n2 = nsec_total;
         
       }
+      print_test("=====================================\n");
+
       print_test("time elapsed: %lf\t Average time: %lf\n",elapsed, elapsed/iters);
       print_test("err1: %d\t err2:%d\n", err1,err2);
-      for(int i = 0; i < 5; i++){
-        print_test("got data: idx: %x\t data:%x\n",i, spi.get_data(0,i));
-      }
       print_test("Fail rate: %f%%\n", (err1+err2)/((float)iters)*100);
-
       print_test("Max Time: %f     Min Time: %f\n", max_n*1000, min_n*1000);
+
+      print_test("\n");
+
+      print_test("time elapsed: %lf\t Average time: %lf\n",elapsed2, elapsed2/iters);
+      print_test("err1: %d\t err2:%d\n", err3,err4);
+      print_test("Fail rate: %f%%\n", (err3+err4)/((float)iters)*100);
+      print_test("Max Time: %f     Min Time: %f\n", max_n2*1000, min_n2*1000);
+
+      print_test("=====================================\n");
 
       overelapsed +=elapsed;
       overerr1 += err1;
       overerr2 += err2;
+
+      overelapsed2 +=elapsed2;
+      overerr3 += err3;
+      overerr4 += err4;
     }
+
     print_test("==FINAL==\nElapsed: %f   avg elapsed: %f    avg trans: %f\nerr1: %d\t err2:%d\nerr %: %f%%\n",overelapsed,overelapsed/((double)overiters), overelapsed/((double)overiters)/iters, overerr1, overerr2, (overerr1+overerr2)/((double)iters*overiters)*100);
+    print_test("Elapsed: %f   avg elapsed: %f    avg trans: %f\nerr1: %d\t err2:%d\nerr %: %f%%\n",overelapsed2,overelapsed2/((double)overiters), overelapsed2/((double)overiters)/iters, overerr3, overerr4, (overerr3+overerr4)/((double)iters*overiters)*100);
     return 1;
 
 
@@ -68,8 +106,8 @@ int Spi_Test::test(int argc, char** argv){
   else if(l == '2'){
     uint8_t bpi1[] = {2,2,2,2,2};
     Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
-    uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1};
-    Xmega_Setup x2 = {"/dev/spidev1.1", 19, bpi2, 500000, 8};
+    uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
+    Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
     Spi spi(&x1, &x2);
     Xmega_Transfer xt = {0,X_C_NONE, X_R_ALL};
       
@@ -111,8 +149,8 @@ int Spi_Test::test(int argc, char** argv){
   } else if(l == '3'){
     uint8_t bpi1[] = {2,2,2,2,2};
     Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
-    uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,1};
-    Xmega_Setup x2 = {"/dev/spidev1.1", 19, bpi2, 500000, 8};
+    uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
+    Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
     Spi spi(&x1, &x2);
     Xmega_Transfer xt = {0,X_C_NONE, X_R_ALL};
 
@@ -136,7 +174,7 @@ int Spi_Test::test(int argc, char** argv){
 
     print_test("\n");
 
-    for(int i = 0; i < 18; i++){
+    for(int i = 0; i < 13; i++){
       print_test("Data: idx: %x\t xmega2:%d\n",i, spi.get_data(1,i));
     }
 
