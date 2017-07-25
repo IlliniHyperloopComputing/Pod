@@ -168,15 +168,29 @@ int Spi_Test::test(int argc, char** argv){
     //assert(result == 0);
     print_test("\n=============\n");
 
-    for(int i = 0; i < 5; i++){
-      print_test("Data: idx: %x\t xmega1:%d\n",i, spi.get_data(0,i));
-    }
+
+    print_test("Xmega1\n");
+    print_test("X0: %f\n", spi.get_data(0,0)/32768.0*4.096);
+    print_test("X1: %f\n", spi.get_data(0,1)/32768.0*4.096);
+    print_test("X2: %f\n", spi.get_data(0,2)/32768.0*4.096);
+    print_test("PRESSURE: %f\n", spi.get_data(0,3)/32768.0*4.096);
+    print_test("OPTICAL: %f\n", spi.get_data(4,4));
 
     print_test("\n");
-
-    for(int i = 0; i < 13; i++){
-      print_test("Data: idx: %x\t xmega2:%d\n",i, spi.get_data(1,i));
-    }
+    print_test("Xmega2\n");
+    print_test("Y: %f\n", spi.get_data(1,0)/32768.0*4.096);
+    print_test("Z: %f\n", spi.get_data(1,1)/32768.0*4.096);
+    print_test("RH0: %f\n", spi.get_data(1,2)/32768.0*4.096);
+    print_test("RH1: %f\n", spi.get_data(1,3)/32768.0*4.096);
+    print_test("RH2: %f\n", spi.get_data(1,4)/32768.0*4.096);
+    print_test("BAT0: %f\n", spi.get_data(1,5)/32768.0*4.096);
+    print_test("BAT1: %f\n", spi.get_data(1,6)/32768.0*4.096);
+    print_test("THERMO0: %f\n", spi.get_data(1,7)*0.25);
+    print_test("THERMO1: %f\n", spi.get_data(1,8)*0.25);
+    print_test("THERMO2: %f\n", spi.get_data(1,9)*0.25);
+    print_test("THERMO3 external: %f\n", spi.get_data(1,10)*0.25);
+    print_test("THERMO3 internal: %f\n", spi.get_data(1,11)*0.25);
+    print_test("RETRO Count: %d\n", spi.get_data(1,12)) ;
 
     return 0;
   }
