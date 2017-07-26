@@ -103,6 +103,7 @@ int main (void)
 	sei();            // enable global interrupts
 	
 	state = 1;
+	ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 	
 	while (1) {
 		time1= rtc_get_time();
