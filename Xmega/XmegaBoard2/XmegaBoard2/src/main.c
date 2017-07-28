@@ -5,8 +5,8 @@
 //for _delay_ms
 #define F_CPU 32000000
 #include <util/delay.h>
-#define APROX_HALF_SECOND 16328
-#define APROX_50_MILLI 1639
+const uint32_t APROX_HALF_SECOND = 16328;
+const uint32_t APROX_50_MILLI = 1639;
 
 #include "spi_to_bbb.h"
 #include "i2c_sensors.h"
@@ -46,7 +46,7 @@ uint8_t spi_transfer = 0;
 uint32_t time1 = 0;
 uint32_t time2 = 1;
 uint32_t time3 = 2;
-uint32_t time4 = 0;
+uint32_t time4 = 1000;//offset to time 5
 uint32_t time5 = 0;
 
 uint8_t retro_1_flag = 0;
@@ -98,7 +98,7 @@ int main (void)
 	init_adc(&TWIC, 0x4a, ADC_STREAMING);//Read RHS
 	init_adc(&TWIC, 0x4b, ADC_STREAMING);//Read RHS
 
-	init_thermo_sensors();
+	//init_thermo_sensors();
 	
 	sei();            // enable global interrupts
 	
@@ -147,88 +147,94 @@ int main (void)
 			//Read from RHS
 			uint16_t recieved_data = 0;
 			
+			set_adc_mux(&TWIC, 0x48, AIN0);//Set to read from Y value. Offset for timing
+			
 			if(read_adc(&TWIC, 0x49, &recieved_data) == TWI_SUCCESS){
-				sensor_data[4] = recieved_data;
-				sensor_data[5] = recieved_data >> 8;
+				sensor_data[4] = recieved_data >> 8;
+				sensor_data[5] = recieved_data;
 			}
 			
+			//Read the Y value
+			if(read_adc(&TWIC, 0x48, &recieved_data) == TWI_SUCCESS){
+				sensor_data[0] = recieved_data >> 8;
+				sensor_data[1] = recieved_data;
+			}
+			
+			if(spi_isr) continue;	
+			
+			
+			//Set to read Z value
+			set_adc_mux(&TWIC, 0x48, AIN1);
+			
 			if(read_adc(&TWIC, 0x4a, &recieved_data) == TWI_SUCCESS){
-				sensor_data[6] = recieved_data;
-				sensor_data[7] = recieved_data >> 8;
+				sensor_data[6] = recieved_data >> 8;
+				sensor_data[7] = recieved_data;
 			}
 			
 			if(read_adc(&TWIC, 0x4b, &recieved_data) == TWI_SUCCESS){
-				sensor_data[8] = recieved_data;
-				sensor_data[9] = recieved_data >> 8;
+				sensor_data[8] = recieved_data >> 8;
+				sensor_data[9] = recieved_data;
+			}
+			
+			//Read Z value
+			if(read_adc(&TWIC, 0x48, &recieved_data) == TWI_SUCCESS){
+				sensor_data[2] = recieved_data >> 8;
+				sensor_data[3] = recieved_data;
 			}
 
-			handle_spi_to_bbb();
-			
-			//Read from the Y,Z Values
-			set_adc_mux(&TWIC, 0x48, AIN0);
-			_delay_ms(1);
-			if(read_adc(&TWIC, 0x48, &recieved_data) == TWI_SUCCESS){
-				sensor_data[0] = recieved_data;
-				sensor_data[1] = recieved_data >> 8;
-			}
-			
-			set_adc_mux(&TWIC, 0x48, AIN1);
-			_delay_ms(1);
-			if(read_adc(&TWIC, 0x48, &recieved_data) == TWI_SUCCESS){
-				sensor_data[2] = recieved_data;
-				sensor_data[3] = recieved_data >> 8;
-			}
+			if(spi_isr) continue;			
 			
 			//Read from SPI to get the Temperatures
 			//Don't need to do this very Frequently. Temperatures don't change that fast
 			//We should make it a second eventually. Simply don't need lots of temperature data
-			if(time4 > APROX_HALF_SECOND ){
+			if(time4 > APROX_HALF_SECOND*4 ){
 				time4 = 0;
 				uint16_t value;
 
 				value = thermo_external_temp(read_thermo(0));
-				sensor_data[14] = value;
-				sensor_data[15] = value >> 8;
+				sensor_data[14] = value >> 8;
+				sensor_data[15] = value;
 				
 				value = thermo_external_temp(read_thermo(1));
-				sensor_data[16] = value;
-				sensor_data[17] = value >> 8;
+				sensor_data[16] = value >> 8;
+				sensor_data[17] = value;
 				
 				value = thermo_external_temp(read_thermo(2));
-				sensor_data[18] = value;
-				sensor_data[19] = value >> 8;
+				sensor_data[18] = value >> 8;
+				sensor_data[19] = value;
 				
 				uint32_t rt = read_thermo(3);
 				value = thermo_external_temp(rt);
-				sensor_data[20] = value;
-				sensor_data[21] = value >> 8;
+				sensor_data[20] = value >> 8;
+				sensor_data[21] = value;
 
 				value = thermo_internal_temp(rt);
-				sensor_data[22] = value;
-				sensor_data[23] = value >> 8;
+				sensor_data[22] = value >> 8;
+				sensor_data[23] = value;
 
 				
 			}
 			
 			//Get Batteries!
-			if(time5 > APROX_HALF_SECOND/2){
+			if(time5 > APROX_HALF_SECOND*2){
 				time5 = 0;
 				
 				set_adc_mux(&TWIE, 0x48, AIN0);
 				_delay_ms(1);
 				if(read_adc(&TWIE, 0x48, &recieved_data) == TWI_SUCCESS){
-					sensor_data[10] = recieved_data;
-					sensor_data[11] = recieved_data >> 8;
+					sensor_data[10] = recieved_data >> 8;
+					sensor_data[11] = recieved_data;
 				}
 
 				set_adc_mux(&TWIE, 0x48, AIN1);
 				_delay_ms(1);
 				if(read_adc(&TWIE, 0x48, &recieved_data) == TWI_SUCCESS){
-					sensor_data[12] = recieved_data;
-					sensor_data[13] = recieved_data >> 8;
+					sensor_data[12] = recieved_data >> 8;
+					sensor_data[13] = recieved_data;
 				}
 				
 			}
+			
 			
 		}
 		time2 = rtc_get_time();
