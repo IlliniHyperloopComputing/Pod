@@ -4,8 +4,6 @@
 using namespace std;
 
 Sensor_Group::Sensor_Group(Sensor_Configuration configuration) : simulation(configuration.simulation) {
-	data = vector<double>(configuration.count);
-	//TODO: initialize mutex
 }
 
 Sensor_Group::~Sensor_Group(){
@@ -13,9 +11,19 @@ Sensor_Group::~Sensor_Group(){
 }
 
 vector<double> Sensor_Group::get_data() {
-	//TODO: lock mutex
+	sensor_group_mutex.lock();
 	vector<double> d = data;
-	//TODO: unlock mutex
+	sensor_group_mutex.unlock();
 	return d;
 }
 
+void Sensor_Group::refresh_data(Spi * spi) {
+	//lock mutex
+	sensor_group_mutex.lock();
+	for(size_t i = 0; i < count; i++) {
+		uint32_t val = spi->get_data(device, i + first_index);
+		data[i] = val;
+	}
+	sensor_group_mutex.unlock();
+	//unlock 
+}
