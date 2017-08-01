@@ -9,7 +9,7 @@
 #include <avr/interrupt.h>
 #include <string.h>//memcpy
 #include "circular_buffer.h"
-#define SENSOR_DATA_SIZE 10
+#define SENSOR_DATA_SIZE 12
 
 #ifndef SPI_TO_BBB_H_
 #define SPI_TO_BBB_H_
