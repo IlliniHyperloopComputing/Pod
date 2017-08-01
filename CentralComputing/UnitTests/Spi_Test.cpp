@@ -10,7 +10,7 @@ int Spi_Test::test(int argc, char** argv){
   char l = argv[1][0];
 
   if(l == '1'){
-    uint8_t bpi1[] = {2,2,2,2,2};
+    uint8_t bpi1[] = {2,2,2,2,4};
     Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
     uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
     Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
@@ -104,7 +104,7 @@ int Spi_Test::test(int argc, char** argv){
 
   }
   else if(l == '2'){
-    uint8_t bpi1[] = {2,2,2,2,2};
+    uint8_t bpi1[] = {2,2,2,2,4};
     Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
     uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
     Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
@@ -147,7 +147,7 @@ int Spi_Test::test(int argc, char** argv){
     }
 
   } else if(l == '3'){
-    uint8_t bpi1[] = {2,2,2,2,2};
+    uint8_t bpi1[] = {2,2,2,2,4};
     Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
     uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
     Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
@@ -174,7 +174,7 @@ int Spi_Test::test(int argc, char** argv){
     print_test("X1: %f\n", spi.get_data(0,1)/32768.0*4.096);
     print_test("X2: %f\n", spi.get_data(0,2)/32768.0*4.096);
     print_test("PRESSURE: %f\n", spi.get_data(0,3)/32768.0*4.096);
-    print_test("OPTICAL: %f\n", spi.get_data(4,4));
+    print_test("OPTICAL: %f\n", 60.0 / (spi.get_data(0,4) * 0.00003051757));
 
     print_test("\n");
     print_test("Xmega2\n");
