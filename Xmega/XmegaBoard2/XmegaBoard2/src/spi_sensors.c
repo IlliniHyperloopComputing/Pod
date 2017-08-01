@@ -16,8 +16,8 @@ void init_thermo_sensors(void){
 	ioport_configure_port_pin(&PORTF, PIN0_bm, IOPORT_INIT_HIGH | IOPORT_DIR_OUTPUT);
 	//Chip select pin PF1
 	ioport_configure_port_pin(&PORTF, PIN1_bm, IOPORT_INIT_HIGH | IOPORT_DIR_OUTPUT);
-	//Chip select pin PF2
-	ioport_configure_port_pin(&PORTF, PIN2_bm, IOPORT_INIT_HIGH | IOPORT_DIR_OUTPUT);
+	//Chip select pin PR1
+	ioport_configure_port_pin(&PORTR, PIN1_bm, IOPORT_INIT_HIGH | IOPORT_DIR_OUTPUT);
 	//Chip select pin PF3
 	ioport_configure_port_pin(&PORTF, PIN3_bm, IOPORT_INIT_HIGH | IOPORT_DIR_OUTPUT);
 	
@@ -26,6 +26,8 @@ void init_thermo_sensors(void){
 	//PF4
 	ioport_configure_port_pin(&PORTF, PIN4_bm, IOPORT_PULL_UP | IOPORT_DIR_INPUT);
 	
+	//MOSI PF5 UNUSED. THIS PIN IS NOT BROKEN OUT ON THE XMEGA XPLAINED
+	ioport_configure_port_pin(&PORTF, PIN5_bm, IOPORT_INIT_HIGH | IOPORT_DIR_OUTPUT);
 	//MISO PF6
 	ioport_configure_port_pin(&PORTF, PIN6_bm, IOPORT_DIR_INPUT);
 	//SCK PF7
@@ -37,14 +39,14 @@ void init_thermo_sensors(void){
 
 	spi_pf0.id = IOPORT_CREATE_PIN(PORTF, 0);
 	spi_pf1.id = IOPORT_CREATE_PIN(PORTF, 1);
-	spi_pf2.id = IOPORT_CREATE_PIN(PORTF, 2);
+	spi_pr1.id = IOPORT_CREATE_PIN(PORTR, 1);
 	spi_pf3.id = IOPORT_CREATE_PIN(PORTF, 3);
 
 	spi_master_init(&SPIF);
 	
 	spi_master_setup_device(&SPIF, &spi_pf0, SPI_MODE_0, 1000000, 0);
 	spi_master_setup_device(&SPIF, &spi_pf1, SPI_MODE_0, 1000000, 0);
-	spi_master_setup_device(&SPIF, &spi_pf2, SPI_MODE_0, 1000000, 0);
+	spi_master_setup_device(&SPIF, &spi_pr1, SPI_MODE_0, 1000000, 0);
 	spi_master_setup_device(&SPIF, &spi_pf3, SPI_MODE_0, 1000000, 0);
 	
 	spi_enable(&SPIF);
@@ -95,7 +97,7 @@ uint32_t read_thermo(uint8_t device){
 		spi_dev = &spi_pf1;
 	}
 	else if(device == 2){
-		spi_dev = &spi_pf2;
+		spi_dev = &spi_pr1;
 	}
 	else{
 		spi_dev = &spi_pf3;

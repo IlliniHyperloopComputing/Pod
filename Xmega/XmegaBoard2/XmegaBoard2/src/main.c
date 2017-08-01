@@ -91,14 +91,13 @@ int main (void)
 	
 	PMIC.CTRL |= PMIC_MEDLVLEN_bm;
 	
-	
 	init_adc(&TWIC, 0x48, ADC_SINGLE);//Read Y, Z accel
 	init_adc(&TWIE, 0x48, ADC_SINGLE);//Read Battery Voltages
 	init_adc(&TWIC, 0x49, ADC_STREAMING);//Read RHS
 	init_adc(&TWIC, 0x4a, ADC_STREAMING);//Read RHS
 	init_adc(&TWIC, 0x4b, ADC_STREAMING);//Read RHS
 
-	//init_thermo_sensors();
+	init_thermo_sensors();
 	
 	sei();            // enable global interrupts
 	
