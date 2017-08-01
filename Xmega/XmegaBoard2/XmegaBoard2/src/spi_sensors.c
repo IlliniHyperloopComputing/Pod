@@ -45,10 +45,10 @@ void init_thermo_sensors(void){
 	spi_master_init(&SPIF);
 	
 	spi_master_setup_device(&SPIF, &spi_pf0, SPI_MODE_0, 1000000, 0);
-	spi_master_setup_device(&SPIF, &spi_pf1, SPI_MODE_0, 1000000, 0);
+	/*spi_master_setup_device(&SPIF, &spi_pf1, SPI_MODE_0, 1000000, 0);
 	spi_master_setup_device(&SPIF, &spi_pr1, SPI_MODE_0, 1000000, 0);
 	spi_master_setup_device(&SPIF, &spi_pf3, SPI_MODE_0, 1000000, 0);
-	
+	*/
 	spi_enable(&SPIF);
 	
 

@@ -123,17 +123,17 @@ int main (void)
 				//this math will calculate if the numbers subtracted (which could overflow since uints), plus 50 milliseconds is less than 100 milliseconds. 
 				//the values, if initially overflowed, should wrap back with the addition of 50 milliseconds if a valid time
 				//the maximum value is less than 100 milliseconds. So just check if under 100 milliseconds.
-				/*uint8_t f1 = (retro_1_time - retro_2_time + APROX_50_MILLI) < (2 * APROX_50_MILLI);
+				uint8_t f1 = (retro_1_time - retro_2_time + APROX_50_MILLI) < (2 * APROX_50_MILLI);
 				uint8_t f2 = (retro_1_time - retro_3_time + APROX_50_MILLI) < (2 * APROX_50_MILLI);
 				uint8_t f3 = (retro_2_time - retro_3_time + APROX_50_MILLI) < (2 * APROX_50_MILLI);
 				
 				//same flag check as above, two need to be true
-				retro_flag = (f1 && (f2 || f3)) || (f2 && f3);
+				//retro_flag = (f1 && (f2 || f3)) || (f2 && f3);
+				retro_flag = f1 || f2 || f3;
 				if(retro_flag){
 					sensor_data[24] ++;
-					ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 				}
-				*/
+				
 				retro_1_flag = 0;
 				retro_2_flag = 0;
 				retro_3_flag = 0;
@@ -194,7 +194,7 @@ int main (void)
 				sensor_data[14] = value >> 8;
 				sensor_data[15] = value;
 				
-				value = thermo_external_temp(read_thermo(1));
+				/*value = thermo_external_temp(read_thermo(1));
 				sensor_data[16] = value >> 8;
 				sensor_data[17] = value;
 				
@@ -209,7 +209,7 @@ int main (void)
 
 				value = thermo_internal_temp(rt);
 				sensor_data[22] = value >> 8;
-				sensor_data[23] = value;
+				sensor_data[23] = value;*/
 
 				
 			}
