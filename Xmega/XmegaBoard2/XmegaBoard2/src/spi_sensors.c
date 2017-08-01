@@ -45,10 +45,10 @@ void init_thermo_sensors(void){
 	spi_master_init(&SPIF);
 	
 	spi_master_setup_device(&SPIF, &spi_pf0, SPI_MODE_0, 1000000, 0);
-	/*spi_master_setup_device(&SPIF, &spi_pf1, SPI_MODE_0, 1000000, 0);
+	spi_master_setup_device(&SPIF, &spi_pf1, SPI_MODE_0, 1000000, 0);
 	spi_master_setup_device(&SPIF, &spi_pr1, SPI_MODE_0, 1000000, 0);
 	spi_master_setup_device(&SPIF, &spi_pf3, SPI_MODE_0, 1000000, 0);
-	*/
+	
 	spi_enable(&SPIF);
 	
 
@@ -108,6 +108,15 @@ uint32_t read_thermo(uint8_t device){
 	spi_select_device(&SPIF, spi_dev);
 	spi_read_packet(&SPIF, (uint8_t *)&buffer, 4);
 	spi_deselect_device(&SPIF, spi_dev);
+	
+	uint32_t result = 0;
+	result = (uint8_t)buffer;
+	result <<= 8;
+	result |= (uint8_t) (buffer >> 8);
+	result <<= 8;
+	result |= (uint8_t) (buffer >> 16);
+	result <<= 8;
+	result |= (uint8_t) (buffer >> 24);
 
-	return buffer;
+	return result;
 }

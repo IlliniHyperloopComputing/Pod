@@ -90,6 +90,7 @@ int main (void)
 	PORTB.INTCTRL =	PORT_INT0LVL_MED_gc;
 	
 	PMIC.CTRL |= PMIC_MEDLVLEN_bm;
+	PMIC.CTRL |= PMIC_LOLVLEN_bm;
 	
 	init_adc(&TWIC, 0x48, ADC_SINGLE);//Read Y, Z accel
 	init_adc(&TWIE, 0x48, ADC_SINGLE);//Read Battery Voltages
@@ -111,7 +112,6 @@ int main (void)
 		//So, we need to pipeline the next byte to be sent out.
 		//Also, the most recently sent byte is in the rx_byte
 		handle_spi_to_bbb();
-		//ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 		
 		if(spi_transfer == 0){//Do anything that is not SPI related
 			
@@ -191,25 +191,25 @@ int main (void)
 				uint16_t value;
 
 				value = thermo_external_temp(read_thermo(0));
-				sensor_data[14] = value >> 8;
-				sensor_data[15] = value;
+				sensor_data[14] = value >> 0;
+				sensor_data[15] = value >> 8;
 				
-				/*value = thermo_external_temp(read_thermo(1));
-				sensor_data[16] = value >> 8;
-				sensor_data[17] = value;
+				value = thermo_external_temp(read_thermo(1));
+				sensor_data[16] = value >> 0;
+				sensor_data[17] = value >> 8;
 				
 				value = thermo_external_temp(read_thermo(2));
-				sensor_data[18] = value >> 8;
-				sensor_data[19] = value;
+				sensor_data[18] = value >> 0;
+				sensor_data[19] = value >> 8;
 				
 				uint32_t rt = read_thermo(3);
 				value = thermo_external_temp(rt);
-				sensor_data[20] = value >> 8;
-				sensor_data[21] = value;
+				sensor_data[20] = value >> 0;
+				sensor_data[21] = value >> 8;
 
 				value = thermo_internal_temp(rt);
-				sensor_data[22] = value >> 8;
-				sensor_data[23] = value;*/
+				sensor_data[22] = value >> 0;
+				sensor_data[23] = value >> 8;
 
 				
 			}
