@@ -14,7 +14,7 @@
 
 struct spi_device spi_pf0;
 struct spi_device spi_pf1;
-struct spi_device spi_pf2;
+struct spi_device spi_pr1;
 struct spi_device spi_pf3;
 
 void init_thermo_sensors(void);
