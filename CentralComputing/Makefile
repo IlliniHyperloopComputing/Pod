@@ -40,6 +40,7 @@ mkdir_obj:
 	@mkdir -p $(OBJ_DIR)
 	@mkdir -p $(OBJ_DIR)/StateMachineCompact
 	@mkdir -p $(OBJ_DIR)/UnitTests
+	@mkdir -p $(OBJ_DIR)/Sensors
 	@echo $(OBJ:%.o=$(OBJ_DIR)/%-build-debug.o)
  
 ####
@@ -128,8 +129,8 @@ $(OBJ_DIR)/%-cross-test.o : %.cpp
 
 .PHONY: clean
 clean:
-	rm -f $(OBJ_DIR)/*.o $(OBJ_DIR)/StateMachineCompact/*.o $(OBJ_DIR)/UnitTests/*.o $(POD) $(POD_D) $(POD_T) $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)
-	rm -f $(OBJ_DIR)/*.d $(OBJ_DIR)/StateMachineCompact/*.d $(OBJ_DIR)/UnitTests/*.d
+	rm -f $(OBJ_DIR)/*.o $(OBJ_DIR)/StateMachineCompact/*.o $(OBJ_DIR)/UnitTests/*.o $(OBJ_DIR)/Sensors/*.o $(POD) $(POD_D) $(POD_T) $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)
+	rm -f $(OBJ_DIR)/*.d $(OBJ_DIR)/StateMachineCompact/*.d $(OBJ_DIR)/UnitTests/*.d $(OBJ_DIR)/Sensors/*.o
 
 .PHONY: push
 push: $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)

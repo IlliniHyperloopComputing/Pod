@@ -1,104 +1,140 @@
+#include "Sensor_Package.h"
 #include "Pod.h"
+#include "Pod_State.h"
+#include <thread>
+#include <csignal>
+#include <ctype.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
 
-// returns the current state as a E_States enum
-Pod::E_States Pod::get_current_state() {
-	return (E_States)StateMachine::getCurrentState();
-}
+using namespace std;
 
-/**
- * User controlled movement events
-**/
-void Pod::move_functional_tests(){
-	BEGIN_TRANSITION_MAP							/* Current state */
-		TRANSITION_MAP_ENTRY(ST_FUNCTIONAL_TEST)	/* Safe mode */
-		TRANSITION_MAP_ENTRY(ST_FUNCTIONAL_TEST)	/* Functional test */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight accel */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight coast */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight brake */
-	END_TRANSITION_MAP(NULL)
-}
+Sensor_Package * sensors;
+Pod_State * state;
 
-void Pod::move_safe_mode() {
-	BEGIN_TRANSITION_MAP							/* Current state */
-		TRANSITION_MAP_ENTRY(ST_SAFE_MODE)			/* Safe mode */
-		TRANSITION_MAP_ENTRY(ST_SAFE_MODE)			/* Functional test */
-		TRANSITION_MAP_ENTRY(ST_SAFE_MODE)			/* Flight accel */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight coast */
-		TRANSITION_MAP_ENTRY(ST_SAFE_MODE)			/* Flight brake */
-	END_TRANSITION_MAP(NULL)
-}
-
-void Pod::move_flight_acceleration() {
-	BEGIN_TRANSITION_MAP							/* Current state */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Safe mode */
-		TRANSITION_MAP_ENTRY(ST_FLIGHT_ACCEL)		/* Functional test */
-		TRANSITION_MAP_ENTRY(ST_FLIGHT_ACCEL)		/* Flight accel */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight coast */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight brake */
-	END_TRANSITION_MAP(NULL)
-}
-
-// it is important all states should move to braking when this function is called, this is for emergencies
-void Pod::emergency_brake() {
-	BEGIN_TRANSITION_MAP							/* Current state */
-		TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)		/* SAFE MODE */
-		TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)		/* FUNCTIONAL TEST */
-		TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)		/* FLIGHT ACCEL */
-		TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)		/* FLIGHT COAST */
-		TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)		/* FLIGHT BRAKE */
-	END_TRANSITION_MAP(NULL)
-}
+volatile bool running = true;
 
 /**
- * Software controlled events
- **/
-void Pod::coast() {
-	BEGIN_TRANSITION_MAP							/* Current state */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)		/* SAFE MODE */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)		/* FUNCTIONAL TEST */
-		TRANSITION_MAP_ENTRY(ST_FLIGHT_COAST)	/* FLIGHT ACCEL */
-		TRANSITION_MAP_ENTRY(ST_FLIGHT_COAST)	/* FLIGHT COAST */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)		/* FLIGHT BRAKE */
-	END_TRANSITION_MAP(NULL)
+* Gets new sensor values from the XMEGA
+*/
+void sensor_loop() {
+	//TODO construct XMEGA transfer object
+	Xmega_Transfer transfer;
+	while(running) {
+		sensors->update(transfer);
+	}
 }
 
-void Pod::brake() {
-	BEGIN_TRANSITION_MAP						/* Current state */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)		/* SAFE MODE */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)		/* FUNCTIONAL TEST */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)		/* FLIGHT ACCEL */
-		TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)	/* FLIGHT COAST */
-		TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)	/* FLIGHT BRAKE */
-	END_TRANSITION_MAP(NULL)
+void network_loop() {
+	//TODO 
+}
+
+void int_handler(int signum) {
+	running = false;
 }
 
 
-// State Machine State functions
-void Pod::ST_Safe_Mode() {
-	std::cout << "Entering: Safe Mode" << std::endl;
-	//std::cout << GetCurrentState() << std::endl;
-	// TODO implement here
-}
-
-void Pod::ST_Functional_Test() {
-	std::cout << "Entering: Functional Test" << std::endl;
-	// TODO implement here
-}
-
-void Pod::ST_Flight_Accel() {
-	std::cout << "Entering: Flight Accel" << std::endl;
-
-	// TODO implement here
-}
-
-void Pod::ST_Flight_Coast() {
-	std::cout << "Entering: Flight Coast" << std::endl;
+int pod(int argc, char** argv) {
 	
-	// TODO implement here
+	signal(SIGINT, int_handler);
+	auto configs = parse_input(argc, argv);
+	state = new Pod_State();
+		
+	sensors = new Sensor_Package(std::get<1>(configs), std::get<0>(configs));
+	printf("Created sensor package\n");
+	thread sensor_thread(sensor_loop);
+	thread network_thread(network_loop);
+
+	usleep(50000);
+	raise(SIGINT);
+
+	sensor_thread.join();
+	network_thread.join();
+	delete sensors;	
+
+
+	return 0;	
+} 
+
+std::tuple<bool, vector<Sensor_Configuration>> parse_input(int argc, char** argv) {
+
+	vector<Sensor_Configuration> configs = vector<Sensor_Configuration>();
+	
+	Sensor_Configuration thermo;
+	thermo.type = THERMOCOUPLE;
+	thermo.simulation = 0;
+
+	Sensor_Configuration accel;
+	accel.type = ACCELEROMETER;
+	accel.simulation = 0;
+
+	Sensor_Configuration brake;
+	brake.type = BRAKE_PRESSURE;
+	brake.simulation = 0;
+
+	Sensor_Configuration pos;
+	pos.type = POSITION;
+	pos.simulation = 0;
+
+	Sensor_Configuration height;
+	height.type = RIDE_HEIGHT;
+	height.simulation = 0;
+
+	Sensor_Configuration tape;
+	tape.type = TAPE_COUNT;
+	tape.simulation = 0;
+	
+	Sensor_Configuration battery;
+	battery.type = BATTERY;
+	battery.simulation = 0;
+
+	size_t simulating_sensors = 0;
+	int c;
+
+	while((c = getopt(argc, argv, "t:a:b:p:h:c:v:"))!= -1){
+		switch(c) {
+			case 't':
+				thermo.simulation = atoi(optarg);
+				break;
+			case 'a':
+				accel.simulation = atoi(optarg);
+				break;
+			case 'b':
+				brake.simulation = atoi(optarg);
+				break;
+			case 'p':
+				pos.simulation = atoi(optarg);
+				break;
+			case 'h':
+				height.simulation = atoi(optarg);
+				break;
+			case 'c':
+				tape.simulation = atoi(optarg);
+				break;
+			case 'v':
+				battery.simulation = atoi(optarg);
+				break;
+		}
+		simulating_sensors++;
+	}
+	
+
+	configs.push_back(thermo);
+	configs.push_back(accel);
+	configs.push_back(brake);
+	configs.push_back(pos);
+	configs.push_back(height);
+	configs.push_back(tape);
+	configs.push_back(battery);
+
+	return std::make_tuple(simulating_sensors != NUM_SENSORS, configs);
+
 }
 
-void Pod::ST_Flight_Brake() {
-	std::cout << "Entering: Flight Brake" << std::endl;
-	
-	// TODO implement here
-}
+
+
+
+
+
+
