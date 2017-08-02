@@ -106,10 +106,13 @@ uint32_t read_thermo(uint8_t device){
 	uint32_t buffer = 0;
 
 	spi_select_device(&SPIF, spi_dev);
-	spi_read_packet(&SPIF, (uint8_t *)&buffer, 4);
+	spi_read_packet(&SPIF, ((uint8_t *)&buffer)+3, 1);
+	spi_read_packet(&SPIF, ((uint8_t *)&buffer)+2, 1);
+	spi_read_packet(&SPIF, ((uint8_t *)&buffer)+1, 1);
+	spi_read_packet(&SPIF, ((uint8_t *)&buffer)+0, 1);
 	spi_deselect_device(&SPIF, spi_dev);
 	
-	uint32_t result = 0;
+	/*uint32_t result = 0;
 	result = (uint8_t)buffer;
 	result <<= 8;
 	result |= (uint8_t) (buffer >> 8);
@@ -117,6 +120,7 @@ uint32_t read_thermo(uint8_t device){
 	result |= (uint8_t) (buffer >> 16);
 	result <<= 8;
 	result |= (uint8_t) (buffer >> 24);
+	*/
 
-	return result;
+	return buffer;
 }
