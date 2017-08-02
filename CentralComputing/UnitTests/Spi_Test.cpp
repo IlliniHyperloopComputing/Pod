@@ -196,7 +196,7 @@ int Spi_Test::test(int argc, char** argv){
       print_test("THERMO1: %f\n", spi.get_data(1,8)*0.25);
       print_test("THERMO2: %f\n", spi.get_data(1,9)*0.25);
       print_test("THERMO3 external: %f\n", spi.get_data(1,10)*0.25);
-      print_test("THERMO3 internal: %f\n", spi.get_data(1,11)*0.25);
+      print_test("THERMO3 internal: %f\n", spi.get_data(1,11)*0.0625);
       print_test("RETRO Count: %d\n", spi.get_data(1,12)) ;
     }
 
