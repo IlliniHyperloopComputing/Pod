@@ -2,6 +2,7 @@
 #include "Spi_Test.h"
 #include "Utils.h"
 #include <time.h>
+#include <iostream>
 
 int Spi_Test::test(int argc, char** argv){
   
@@ -10,8 +11,8 @@ int Spi_Test::test(int argc, char** argv){
   char l = argv[1][0];
 
   if(l == '1'){
-    uint8_t bpi1[] = {2,2,2,2,4};
-    Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
+    uint8_t bpi1[] = {2,2,2,2,4,4};
+    Xmega_Setup x1 = {"/dev/spidev1.0", 6, bpi1, 500000, 8};
     uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
     Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
     Spi spi(&x1, &x2);
@@ -104,8 +105,8 @@ int Spi_Test::test(int argc, char** argv){
 
   }
   else if(l == '2'){
-    uint8_t bpi1[] = {2,2,2,2,4};
-    Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
+    uint8_t bpi1[] = {2,2,2,2,4,4};
+    Xmega_Setup x1 = {"/dev/spidev1.0", 6, bpi1, 500000, 8};
     uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
     Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
     Spi spi(&x1, &x2);
@@ -147,50 +148,57 @@ int Spi_Test::test(int argc, char** argv){
     }
 
   } else if(l == '3'){
-    uint8_t bpi1[] = {2,2,2,2,4};
-    Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
+    uint8_t bpi1[] = {2,2,2,2,4,4};
+    Xmega_Setup x1 = {"/dev/spidev1.0", 6, bpi1, 500000, 8};
     uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
     Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
     Spi spi(&x1, &x2);
     Xmega_Transfer xt = {0,X_C_NONE, X_R_ALL};
 
-    print_test("\nAsking for ALL\n");
-    xt.req = X_R_ALL;
-    int result = spi.transfer(xt);
-    print_test("Result: %d\n", result);
-    //assert(result == 0);
+    while(1){
+      std::string bleh;
+      cin >> bleh;
 
-    print_test("\nAsking for ALL\n");
-    xt.req = X_R_ALL;
-    xt.device=1;
-    result = spi.transfer(xt);
-    print_test("Result: %d\n", result);
-    //assert(result == 0);
-    print_test("\n=============\n");
+      print_test("\nAsking for ALL\n");
+      xt.req = X_R_ALL;
+      xt.device = 0;
+      int result = spi.transfer(xt);
+      print_test("Result: %d\n", result);
+      //assert(result == 0);
+
+      print_test("\nAsking for ALL\n");
+      xt.req = X_R_ALL;
+      xt.device=1;
+      result = spi.transfer(xt);
+      print_test("Result: %d\n", result);
+      //assert(result == 0);
+      print_test("\n=============\n");
 
 
-    print_test("Xmega1\n");
-    print_test("X0: %f\n", spi.get_data(0,0)/32768.0*4.096);
-    print_test("X1: %f\n", spi.get_data(0,1)/32768.0*4.096);
-    print_test("X2: %f\n", spi.get_data(0,2)/32768.0*4.096);
-    print_test("PRESSURE: %f\n", spi.get_data(0,3)/32768.0*4.096);
-    print_test("OPTICAL: %f\n", 60.0 / (spi.get_data(0,4) * 0.00003051757));
+      print_test("Xmega1\n");
+      print_test("X0: %f\n", spi.get_data(0,0)/32768.0*4.096);
+      print_test("X1: %f\n", spi.get_data(0,1)/32768.0*4.096);
+      print_test("X2: %f\n", spi.get_data(0,2)/32768.0*4.096);
+      print_test("PRESSURE: %f\n", spi.get_data(0,3)/32768.0*4.096);
+      print_test("OPTICAL RPM: %f\n", 60.0 / (spi.get_data(0,4) * 0.00003051757));
+      print_test("OPTICAL Rotations: %lu\n", spi.get_data(0,5));
 
-    print_test("\n");
-    print_test("Xmega2\n");
-    print_test("Y: %f\n", spi.get_data(1,0)/32768.0*4.096);
-    print_test("Z: %f\n", spi.get_data(1,1)/32768.0*4.096);
-    print_test("RH0: %f\n", spi.get_data(1,2)/32768.0*4.096);
-    print_test("RH1: %f\n", spi.get_data(1,3)/32768.0*4.096);
-    print_test("RH2: %f\n", spi.get_data(1,4)/32768.0*4.096);
-    print_test("BAT0: %f\n", spi.get_data(1,5)/32768.0*4.096);
-    print_test("BAT1: %f\n", spi.get_data(1,6)/32768.0*4.096);
-    print_test("THERMO0: %f\n", spi.get_data(1,7)*0.25);
-    print_test("THERMO1: %f\n", spi.get_data(1,8)*0.25);
-    print_test("THERMO2: %f\n", spi.get_data(1,9)*0.25);
-    print_test("THERMO3 external: %f\n", spi.get_data(1,10)*0.25);
-    print_test("THERMO3 internal: %f\n", spi.get_data(1,11)*0.25);
-    print_test("RETRO Count: %d\n", spi.get_data(1,12)) ;
+      print_test("\n");
+      print_test("Xmega2\n");
+      print_test("Y: %f\n", spi.get_data(1,0)/32768.0*4.096);
+      print_test("Z: %f\n", spi.get_data(1,1)/32768.0*4.096);
+      print_test("RH0: %f\n", spi.get_data(1,2)/32768.0*4.096);
+      print_test("RH1: %f\n", spi.get_data(1,3)/32768.0*4.096);
+      print_test("RH2: %f\n", spi.get_data(1,4)/32768.0*4.096);
+      print_test("BAT0: %f\n", spi.get_data(1,5)/32768.0*4.096);
+      print_test("BAT1: %f\n", spi.get_data(1,6)/32768.0*4.096);
+      print_test("THERMO0: %f\n", spi.get_data(1,7)*0.25);
+      print_test("THERMO1: %f\n", spi.get_data(1,8)*0.25);
+      print_test("THERMO2: %f\n", spi.get_data(1,9)*0.25);
+      print_test("THERMO3 external: %f\n", spi.get_data(1,10)*0.25);
+      print_test("THERMO3 internal: %f\n", spi.get_data(1,11)*0.25);
+      print_test("RETRO Count: %d\n", spi.get_data(1,12)) ;
+    }
 
     return 0;
   }
