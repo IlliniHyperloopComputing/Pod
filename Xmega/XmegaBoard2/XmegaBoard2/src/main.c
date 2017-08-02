@@ -146,7 +146,7 @@ int main (void)
 			uint16_t recieved_data = 0;
 			
 			set_adc_mux(&TWIC, 0x48, AIN0);//Set to read from Y value. Offset for timing
-			
+			_delay_ms(0.5);
 			if(read_adc(&TWIC, 0x49, &recieved_data) == TWI_SUCCESS){
 				sensor_data[4] = recieved_data >> 8;
 				sensor_data[5] = recieved_data;
