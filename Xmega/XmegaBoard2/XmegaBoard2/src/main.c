@@ -77,15 +77,15 @@ int main (void)
 	rtc_init();	
 	init_spi_to_bbb();	//Setup SPI on Port C
 	
-	ioport_configure_port_pin(&PORTK, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_SENSE_RISING | IOPORT_PULL_DOWN);
+	ioport_configure_port_pin(&PORTK, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_SENSE_RISING);
 	PORTK.INT0MASK = PIN2_bm;
 	PORTK.INTCTRL =	PORT_INT0LVL_MED_gc;
 	
-	ioport_configure_port_pin(&PORTF, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_SENSE_RISING | IOPORT_PULL_DOWN);
+	ioport_configure_port_pin(&PORTF, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_SENSE_RISING);
 	PORTF.INT0MASK = PIN2_bm;
 	PORTF.INTCTRL =	PORT_INT0LVL_MED_gc;
 	
-	ioport_configure_port_pin(&PORTB, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_SENSE_RISING | IOPORT_PULL_DOWN);
+	ioport_configure_port_pin(&PORTB, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_SENSE_RISING);
 	PORTB.INT0MASK = PIN2_bm;
 	PORTB.INTCTRL =	PORT_INT0LVL_MED_gc;
 	
@@ -127,8 +127,7 @@ int main (void)
 				uint8_t f2 = (retro_1_time - retro_3_time + APROX_50_MILLI) < (2 * APROX_50_MILLI);
 				uint8_t f3 = (retro_2_time - retro_3_time + APROX_50_MILLI) < (2 * APROX_50_MILLI);
 				
-				//same flag check as above, two need to be true
-				//retro_flag = (f1 && (f2 || f3)) || (f2 && f3);
+				//if any of the flags are true, proceed
 				retro_flag = f1 || f2 || f3;
 				if(retro_flag){
 					sensor_data[24] ++;
