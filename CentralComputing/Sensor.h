@@ -14,25 +14,27 @@
 using namespace std;
 enum Sensor_Type {
 	THERMOCOUPLE,
-	ACCELEROMETER,
+	ACCELEROMETERX,
+	ACCELEROMETERYZ,
 	RIDE_HEIGHT,
 	TAPE_COUNT,
 	POSITION,
 	BRAKE_PRESSURE,
 	BATTERY,
+  CURRENT
 };
 
 enum Sensor_Index_1 {
 	X_ACCELERATION_INDEX = 0,
-	POSITION_INDEX = 1,
-	BRAKE_PRESSURE_INDEX = 2
+	BRAKE_PRESSURE_INDEX = 3,
+	POSITION_INDEX = 1
 };
 
 enum Sensor_Index_2 {
-	BATTERY_CELL_INDEX = 0,
-	TAPE_COUNT_INDEX = 8,
-	THERMOCOUPLE_INDEX = 9,
-	RIDE_HEIGHT_INDEX = 13
+	RIDE_HEIGHT_INDEX = 2,
+	BATTERY_CELL_INDEX = 5,
+	THERMOCOUPLE_INDEX = 7,
+	TAPE_COUNT_INDEX = 12
 };
 
 
@@ -290,6 +292,36 @@ class Battery : public Sensor_Group {
 		Battery(Sensor_Configuration configuration);
 
 		~Battery();
+
+		/**
+		* Receives new data from the XMega or calls simulations
+		**/
+		void update(Spi * spi);
+
+		/**
+		* Resets and recalibrates sensors
+		**/
+		void reset();
+
+
+		const size_t first_index = BATTERY_CELL_INDEX; // index offset to read from spi
+		const size_t device = XMEGA2; //xmega device number (0 or 1)
+		const size_t count = 2; //number of sensors
+
+
+	private:
+		/**
+		* Simulates set values in the vector
+		**/
+		void simulation_1();
+};
+
+class Current : public Sensor_Group {
+
+	public:
+		Current(Sensor_Configuration configuration);
+
+		~Current();
 
 		/**
 		* Receives new data from the XMega or calls simulations

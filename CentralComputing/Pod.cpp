@@ -20,9 +20,16 @@ volatile bool running = true;
 */
 void sensor_loop() {
 	//TODO construct XMEGA transfer object
-	Xmega_Transfer transfer;
+	Xmega_Transfer transfer = {0,X_C_NONE, X_R_ALL};
 	while(running) {
+    transfer.device = 0;
 		sensors->update(transfer);
+    usleep(25000);//sleep 50 milliseconds
+
+    transfer.device = 1;
+		sensors->update(transfer);
+    usleep(25000);//sleep 50 milliseconds
+
 	}
 }
 
@@ -47,12 +54,10 @@ int pod(int argc, char** argv) {
 	thread network_thread(network_loop);
 
 	usleep(50000);
-	raise(SIGINT);
 
 	sensor_thread.join();
 	network_thread.join();
 	delete sensors;	
-
 
 	return 0;	
 } 
@@ -66,7 +71,7 @@ std::tuple<bool, vector<Sensor_Configuration>> parse_input(int argc, char** argv
 	thermo.simulation = 0;
 
 	Sensor_Configuration accel;
-	accel.type = ACCELEROMETER;
+	accel.type = ACCELEROMETERX;
 	accel.simulation = 0;
 
 	Sensor_Configuration brake;
@@ -131,10 +136,4 @@ std::tuple<bool, vector<Sensor_Configuration>> parse_input(int argc, char** argv
 	return std::make_tuple(simulating_sensors != NUM_SENSORS, configs);
 
 }
-
-
-
-
-
-
 

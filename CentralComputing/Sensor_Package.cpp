@@ -2,11 +2,10 @@
 #include <iostream>
 #include <chrono>
 
-
 using namespace std;
 
-
 long long Sensor_Package::start_time = 1;
+
 Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool xmega_connect) {
 	connect = xmega_connect;
 	for(Sensor_Configuration c : configuration){
@@ -15,7 +14,7 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
 			case THERMOCOUPLE:
 				group = new Thermocouple(c);
 				break; //TODO add new sensors here
-			case ACCELEROMETER:
+			case ACCELEROMETERX:
 				group = new Accelerometer(c);
 				break;
 			case BRAKE_PRESSURE:
@@ -48,9 +47,10 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
   * 2,3 == X1
   * 4,5 == X2
   * 6,7 == Brake
-  * 8,9 == Optical
+  * 8,9,10,11 == Optical, Delta
+  * 12,13,14,15 == Optical, tape count
   **/
-  uint8_t bpi1[] = {2,2,2,2,2};
+  uint8_t bpi1[] = {2,2,2,2,4,4};
 
   /**
   * 0,1 == y  i2c 
@@ -69,7 +69,7 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
   **/
   uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
 
-  Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
+  Xmega_Setup x1 = {"/dev/spidev1.0", 6, bpi1, 500000, 8};
   Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
 	
 	if(xmega_connect) {
@@ -96,9 +96,10 @@ long long Sensor_Package::get_current_time() {
 void Sensor_Package::update(Xmega_Transfer & transfer) {
 	//TODO handle transferring in non simulation cases
 
-	if(connect == true) {
+	if(connect) {
 		spi->transfer(transfer);	
 	}
+  
 	for(auto const & pair : sensor_groups){
 		pair.second->update(spi);
 	}
