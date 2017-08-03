@@ -8,6 +8,8 @@
 const uint32_t APROX_HALF_SECOND = 16328;
 const uint32_t APROX_50_MILLI = 1639;
 
+#define COOLDOWN 2
+
 #include "spi_to_bbb.h"
 #include "i2c_sensors.h"
 #include "spi_sensors.h"
@@ -56,19 +58,13 @@ uint32_t retro_1_time = 0;
 uint32_t retro_2_time = 0;
 uint32_t retro_3_time = 0;
 
-ISR(PORTK_INT0_vect){
-	retro_1_flag = 1;
-	retro_1_time = rtc_get_time();
-}
-ISR(PORTF_INT0_vect){
-	retro_2_flag = 1;
-	retro_2_time = rtc_get_time();
-}
-ISR(PORTB_INT0_vect){
-	retro_3_flag = 1;
-	retro_3_time = rtc_get_time();
-}
 
+uint8_t high_1 = 1;
+uint8_t high_2 = 1;
+uint8_t high_3 = 1;
+uint8_t cooldown_1 = 0;
+uint8_t cooldown_2 = 0;
+uint8_t cooldown_3 = 0;
 
 int main (void)
 {
@@ -77,17 +73,9 @@ int main (void)
 	rtc_init();	
 	init_spi_to_bbb();	//Setup SPI on Port C
 	
-	ioport_configure_port_pin(&PORTK, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_SENSE_RISING);
-	PORTK.INT0MASK = PIN2_bm;
-	PORTK.INTCTRL =	PORT_INT0LVL_MED_gc;
-	
-	ioport_configure_port_pin(&PORTF, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_SENSE_RISING);
-	PORTF.INT0MASK = PIN2_bm;
-	PORTF.INTCTRL =	PORT_INT0LVL_MED_gc;
-	
-	ioport_configure_port_pin(&PORTB, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_SENSE_RISING);
-	PORTB.INT0MASK = PIN2_bm;
-	PORTB.INTCTRL =	PORT_INT0LVL_MED_gc;
+	ioport_configure_port_pin(&PORTE, PIN6_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);
+	ioport_configure_port_pin(&PORTE, PIN7_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);
+	ioport_configure_port_pin(&PORTF, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);
 	
 	PMIC.CTRL |= PMIC_MEDLVLEN_bm;
 	PMIC.CTRL |= PMIC_LOLVLEN_bm;
@@ -106,6 +94,7 @@ int main (void)
 	ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 	
 	while (1) {
+		
 		time1= rtc_get_time();
 		//SPIC handler
 		//When this is true, it means we have just received a byte
@@ -114,6 +103,56 @@ int main (void)
 		handle_spi_to_bbb();
 		
 		if(spi_transfer == 0){//Do anything that is not SPI related
+			
+			uint8_t val_1 = (PORTE.IN & PIN6_bm) >> PIN6_bp;
+			
+			if(val_1 && !high_1 ){
+				retro_1_flag = 1;
+				retro_1_time = rtc_get_time();
+				high_1 = 1;
+			}
+			if(!val_1 && high_1){
+				cooldown_1++;
+				if(cooldown_1 > COOLDOWN){
+					high_1 = 0;
+					cooldown_1 = 0;
+				}
+			}
+			if(spi_isr) continue;
+			
+			uint8_t val_2 = (PORTE.IN & PIN7_bm) >> PIN7_bp;
+			
+			if(val_2 && !high_2 ){
+				retro_2_flag = 1;
+				retro_2_time = rtc_get_time();
+				high_2 = 1;
+			}
+			if(!val_2 && high_2){
+				cooldown_2++;
+				if(cooldown_2 > COOLDOWN){
+					high_2 = 0;
+					cooldown_2 = 0;
+				}
+			}
+			
+			if(spi_isr) continue;
+			
+			uint8_t val_3 = (PORTF.IN & PIN2_bm) >> PIN2_bp;
+			
+			if(val_3 && !high_3 ){
+				retro_3_flag = 1;
+				retro_3_time = rtc_get_time();
+				high_3 = 1;
+			}
+			if(!val_3 && high_3){
+				cooldown_3++;
+				if(cooldown_3 > COOLDOWN){
+					high_3 = 0;
+					cooldown_3 = 0;
+				}
+			}
+			
+			if(spi_isr) continue;
 			
 			//Checks if any 2 flags are true
 			uint8_t retro_flag = (retro_1_flag && (retro_2_flag || retro_3_flag)) || (retro_2_flag && retro_3_flag);
