@@ -13,8 +13,8 @@ int Spi_Test::test(int argc, char** argv){
   if(l == '1'){
     uint8_t bpi1[] = {2,2,2,2,4,4};
     Xmega_Setup x1 = {"/dev/spidev1.0", 6, bpi1, 500000, 8};
-    uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
-    Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
+    uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,2,1};
+    Xmega_Setup x2 = {"/dev/spidev1.1", 14, bpi2, 500000, 8};
     Spi spi(&x1, &x2);
     Xmega_Transfer xt = {0,X_C_NONE, X_R_ALL};
 
@@ -107,8 +107,8 @@ int Spi_Test::test(int argc, char** argv){
   else if(l == '2'){
     uint8_t bpi1[] = {2,2,2,2,4,4};
     Xmega_Setup x1 = {"/dev/spidev1.0", 6, bpi1, 500000, 8};
-    uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
-    Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
+    uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,2,1};
+    Xmega_Setup x2 = {"/dev/spidev1.1", 14, bpi2, 500000, 8};
     Spi spi(&x1, &x2);
     Xmega_Transfer xt = {0,X_C_NONE, X_R_ALL};
       
@@ -150,8 +150,8 @@ int Spi_Test::test(int argc, char** argv){
   } else if(l == '3'){
     uint8_t bpi1[] = {2,2,2,2,4,4};
     Xmega_Setup x1 = {"/dev/spidev1.0", 6, bpi1, 500000, 8};
-    uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
-    Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
+    uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,2,1};
+    Xmega_Setup x2 = {"/dev/spidev1.1", 14, bpi2, 500000, 8};
     Spi spi(&x1, &x2);
     Xmega_Transfer xt = {0,X_C_NONE, X_R_ALL};
 
@@ -197,7 +197,8 @@ int Spi_Test::test(int argc, char** argv){
       print_test("THERMO2: %f\n", spi.get_data(1,9)*0.25);
       print_test("THERMO3 external: %f\n", spi.get_data(1,10)*0.25);
       print_test("THERMO3 internal: %f\n", spi.get_data(1,11)*0.0625);
-      print_test("RETRO Count: %d\n", spi.get_data(1,12)) ;
+      print_test("CURRENT in mA: %f\n", spi.get_data(1,12)/10);
+      print_test("RETRO Count: %d\n", spi.get_data(1,13)) ;
     }
 
     return 0;
