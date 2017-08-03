@@ -87,7 +87,7 @@ int main (void)
 	init_adc(&TWIC, 0x4a, ADC_STREAMING);//Read RHS
 	init_adc(&TWIC, 0x4b, ADC_STREAMING);//Read RHS
 	
-	//init_current(&TWIE, 0x40);
+	init_current(&TWIE, 0x40);
 
 	init_thermo_sensors();
 	
@@ -262,10 +262,10 @@ int main (void)
 				set_adc_mux(&TWIE, 0x48, AIN0);
 				
 				//Read current
-				/*if(read_current(&TWIE, 0x40, &recieved_data) == TWI_SUCCESS){
+				if(read_current(&TWIE, 0x40, &recieved_data) == TWI_SUCCESS){
 					sensor_data[24] = recieved_data >> 8;
 					sensor_data[25] = recieved_data;
-				}*/
+				}
 				
 				if(read_adc(&TWIE, 0x48, &recieved_data) == TWI_SUCCESS){
 					sensor_data[10] = recieved_data >> 8;
