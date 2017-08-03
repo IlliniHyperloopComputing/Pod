@@ -17,7 +17,75 @@ void init_chip(TWI_t *twi, uint8_t chip){
 	
 }
 
+const uint8_t calValue[] = {0x10, 0x00}; //4096, with MSB first
+uint16_t current_read_buffer = 0;
+	
+int8_t init_current(TWI_t *twi, uint8_t chip){
+	
+	//initialize the chip on the specified bus
+	init_chip(twi,chip);
+	
+	//Calibrating to 32V 2A. Refer to github listed below
+	
+	//Set Calibration
+	current_write.addr[0]		= INA219_REG_CALIBRATION;
+	current_write.addr_length	= sizeof(uint8_t);
+	current_write.chip			= chip;
+	current_write.buffer		= (void *)calValue;
+	current_write.length		= sizeof(calValue);
+	
+	twi_master_write(twi, &current_write);
+	
+	
+	//Set Configuration
+	const uint16_t config = INA219_CONFIG_BVOLTAGERANGE_32V |
+	INA219_CONFIG_GAIN_8_320MV |
+	INA219_CONFIG_BADCRES_12BIT |
+	INA219_CONFIG_SADCRES_12BIT_1S_532US |
+	INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
+	uint8_t configValue[] = {(config>>8)&0xff, config & 0xff};
+	//ina219_currentDivider_mA = 10; This is for the BBB really. Just putting it hear as a reference
+	
+	current_write.addr[0]		= INA219_REG_CONFIG;
+	current_write.addr_length	= sizeof(uint8_t);
+	current_write.chip			= chip;
+	current_write.buffer		= (void *)configValue;
+	current_write.length		= sizeof(configValue);
+	
+	twi_master_write(twi, &current_write);
+	
+	//Set this variable back up. The Calibration can get wiped sometimes, so it needs to be re-written before a read can happen
+	current_write.addr[0]		= INA219_REG_CALIBRATION;
+	current_write.addr_length	= sizeof(uint8_t);
+	current_write.chip			= chip;
+	current_write.buffer		= (void *)calValue;
+	current_write.length		= sizeof(calValue);
+	
+	//Set up read variable
+	current_read.addr[0]		= INA219_REG_CURRENT;
+	current_read.addr_length	= sizeof(uint8_t);
+	current_read.chip			= chip;
+	current_read.buffer			= (void *)current_read_buffer;
+	current_read.length			= sizeof(current_read_buffer);
+		
+	return 0;
+	
+}
 
+inline int8_t read_current(TWI_t *twi, uint8_t chip, void * buff) {
+
+	// Sometimes a sharp load will reset the INA219, which will
+	// reset the cal register, meaning CURRENT and POWER will
+	// not be available ... avoid this by always setting a cal
+	// value even if it's an unfortunate extra step
+	twi_master_write(twi, &current_write);
+
+	// Now we can safely read the CURRENT register!
+	current_read.chip = chip;
+	current_read.buffer = buff;
+	
+	return twi_master_read(twi, &current_read);
+}
 	
 uint8_t adc_write_bytes[] = {0xc3, 0xe3};
 uint16_t adc_read_buffer = 0;
@@ -58,7 +126,7 @@ int8_t init_adc(TWI_t *twi, uint8_t chip, uint8_t type_of_adc){
 
 }
 
-int8_t set_adc_mux(TWI_t * twi, uint8_t chip, uint8_t mux){
+inline int8_t set_adc_mux(TWI_t * twi, uint8_t chip, uint8_t mux){
 	
 	adc_write.chip = chip;
 	adc_write_bytes[0] = mux;	

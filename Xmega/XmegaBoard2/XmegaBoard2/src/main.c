@@ -37,7 +37,8 @@ index to value
 18,19 == Thermo2
 20,21 == Thermo3 external
 22,23 == Thermo3 internal
-24    == RetroReflective  Interrupt
+24,25 == Current to PCB
+26    == RetroReflective  Interrupt
 */
 
 //lock
@@ -85,6 +86,8 @@ int main (void)
 	init_adc(&TWIC, 0x49, ADC_STREAMING);//Read RHS
 	init_adc(&TWIC, 0x4a, ADC_STREAMING);//Read RHS
 	init_adc(&TWIC, 0x4b, ADC_STREAMING);//Read RHS
+	
+	init_current(&TWIE, 0x40);
 
 	init_thermo_sensors();
 	
@@ -169,7 +172,7 @@ int main (void)
 				//if any of the flags are true, proceed
 				retro_flag = f1 || f2 || f3;
 				if(retro_flag){
-					sensor_data[24] ++;
+					sensor_data[26] ++;
 				}
 				
 				retro_1_flag = 0;
@@ -252,12 +255,18 @@ int main (void)
 				
 			}
 			
-			//Get Batteries!
+			//Get Batteries and Current!
 			if(time5 > APROX_HALF_SECOND*2){
 				time5 = 0;
 				
 				set_adc_mux(&TWIE, 0x48, AIN0);
-				_delay_ms(1);
+				
+				//Read current
+				if(read_current(&TWIE, 0x40, &recieved_data) == TWI_SUCCESS){
+					sensor_data[24] = recieved_data >> 8;
+					sensor_data[25] = recieved_data;
+				}
+				
 				if(read_adc(&TWIE, 0x48, &recieved_data) == TWI_SUCCESS){
 					sensor_data[10] = recieved_data >> 8;
 					sensor_data[11] = recieved_data;
