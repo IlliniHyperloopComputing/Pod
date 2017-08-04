@@ -18,16 +18,15 @@ void init_chip(TWI_t *twi, uint8_t chip){
 }
 
 const uint8_t calValue[] = {0x10, 0x00}; //4096, with MSB first
-uint16_t current_read_buffer = 0;
 	
-int8_t init_current(TWI_t *twi, uint8_t chip){
+uint16_t init_current(TWI_t *twi, uint8_t chip){
 	
 	//initialize the chip on the specified bus
 	init_chip(twi,chip);
 	
 	//Calibrating to 32V 2A. Refer to github listed below
 	
-	//Set Calibration
+	/*//Set Calibration
 	current_write.addr[0]		= INA219_REG_CALIBRATION;
 	current_write.addr_length	= sizeof(uint8_t);
 	current_write.chip			= chip;
@@ -54,21 +53,17 @@ int8_t init_current(TWI_t *twi, uint8_t chip){
 	
 	twi_master_write(twi, &current_write);
 	
-	//Set this variable back up. The Calibration can get wiped sometimes, so it needs to be re-written before a read can happen
-	current_write.addr[0]		= INA219_REG_CALIBRATION;
-	current_write.addr_length	= sizeof(uint8_t);
-	current_write.chip			= chip;
-	current_write.buffer		= (void *)calValue;
-	current_write.length		= sizeof(calValue);
-	
+	*/
+	uint16_t buff;
 	//Set up read variable
-	current_read.addr[0]		= INA219_REG_CURRENT;
-	current_read.addr_length	= sizeof(uint8_t);
+	current_read.addr[0]		= 0;
+	current_read.addr_length	= 0;
 	current_read.chip			= chip;
-	current_read.buffer			= (void *)current_read_buffer;
-	current_read.length			= sizeof(current_read_buffer);
-		
-	return 0;
+	current_read.buffer			= &buff;
+	current_read.length			= 2;
+	return twi_master_read(twi, &current_read);
+	
+	return buff;
 	
 }
 
@@ -78,12 +73,31 @@ inline int8_t read_current(TWI_t *twi, uint8_t chip, void * buff) {
 	// reset the cal register, meaning CURRENT and POWER will
 	// not be available ... avoid this by always setting a cal
 	// value even if it's an unfortunate extra step
+	current_write.addr[0]		= INA219_REG_CALIBRATION;
+	current_write.addr_length	= sizeof(uint8_t);
+	current_write.chip			= chip;
+	current_write.buffer		= (void *)calValue;
+	current_write.length		= sizeof(calValue);
 	twi_master_write(twi, &current_write);
-
-	// Now we can safely read the CURRENT register!
-	current_read.chip = chip;
-	current_read.buffer = buff;
 	
+	// Write the register to read
+	/*uint8_t tmpbuff = INA219_REG_CURRENT;
+	current_write.addr[0]		= 0;
+	current_write.addr_length	= 0;
+	current_write.chip			= chip;
+	current_write.buffer		= (void *)&tmpbuff;
+	current_write.length		= sizeof(tmpbuff);
+	twi_master_write(twi, &current_write);
+	
+	_delay_ms(1);
+	*/
+	
+	//Set up read variable
+	current_read.addr[0]		= 0;
+	current_read.addr_length	= 0;
+	current_read.chip			= chip;
+	current_read.buffer			= buff;
+	current_read.length			= 2;
 	return twi_master_read(twi, &current_read);
 }
 	

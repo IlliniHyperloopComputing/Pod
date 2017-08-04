@@ -87,7 +87,10 @@ int main (void)
 	init_adc(&TWIC, 0x4a, ADC_STREAMING);//Read RHS
 	init_adc(&TWIC, 0x4b, ADC_STREAMING);//Read RHS
 	
-	init_current(&TWIE, 0x40);
+	uint16_t got_val = init_current(&TWIE, 0x40);
+	
+	sensor_data[24] = got_val >> 8;
+	sensor_data[25] = got_val;
 
 	init_thermo_sensors();
 	
@@ -147,6 +150,7 @@ int main (void)
 				retro_3_time = rtc_get_time();
 				high_3 = 1;
 			}
+			
 			if(!val_3 && high_3){
 				cooldown_3++;
 				if(cooldown_3 > COOLDOWN){
@@ -160,7 +164,6 @@ int main (void)
 			//Checks if any 2 flags are true
 			uint8_t retro_flag = (retro_1_flag && (retro_2_flag || retro_3_flag)) || (retro_2_flag && retro_3_flag);
 			if(retro_flag){
-				sensor_data[24] ++;
 				//idea is to see if any two of the times are within 50 mill of eachother.
 				//this math will calculate if the numbers subtracted (which could overflow since uints), plus 50 milliseconds is less than 100 milliseconds. 
 				//the values, if initially overflowed, should wrap back with the addition of 50 milliseconds if a valid time
@@ -262,10 +265,10 @@ int main (void)
 				set_adc_mux(&TWIE, 0x48, AIN0);
 				
 				//Read current
-				if(read_current(&TWIE, 0x40, &recieved_data) == TWI_SUCCESS){
+				/*if(read_current(&TWIE, 0x40, &recieved_data) == TWI_SUCCESS){
 					sensor_data[24] = recieved_data >> 8;
 					sensor_data[25] = recieved_data;
-				}
+				}*/
 				
 				if(read_adc(&TWIE, 0x48, &recieved_data) == TWI_SUCCESS){
 					sensor_data[10] = recieved_data >> 8;

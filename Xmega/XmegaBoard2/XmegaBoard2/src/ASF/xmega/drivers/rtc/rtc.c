@@ -135,7 +135,8 @@ void rtc_set_time(uint32_t time)
  * \note Without this errata this function can block for up to 1 RTC
  *       clock source cycle after waking up from sleep.
  */
-uint32_t rtc_get_time(void)
+__attribute__((always_inline)) 
+inline uint32_t rtc_get_time(void)
 {
 	irqflags_t flags;
 	uint16_t   count_high;

@@ -105,6 +105,7 @@
 
 typedef uint8_t irqflags_t;
 
+__attribute__((always_inline)) 
 static inline irqflags_t cpu_irq_save(void)
 {
 	volatile irqflags_t flags = SREG;
@@ -112,6 +113,7 @@ static inline irqflags_t cpu_irq_save(void)
 	return flags;
 }
 
+__attribute__((always_inline)) 
 static inline void cpu_irq_restore(irqflags_t flags)
 {
 	barrier();

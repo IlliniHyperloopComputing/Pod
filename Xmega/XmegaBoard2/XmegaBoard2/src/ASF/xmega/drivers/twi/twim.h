@@ -133,6 +133,7 @@ static inline status_code_t twi_master_read(TWI_t *twi,
  *                  (see \ref twi_package_t)
  * \return STATUS_OK   If all bytes were written, error code otherwise
  */
+__attribute__((always_inline)) 
 static inline status_code_t twi_master_write(TWI_t *twi,
 		const twi_package_t *package)
 {
