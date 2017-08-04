@@ -22,8 +22,16 @@ void Sensor_Group::refresh_data(Spi * spi) {
 	sensor_group_mutex.lock();
 	for(size_t i = 0; i < count; i++) {
 		uint32_t val = spi->get_data(device, i + first_index);
-		data[i] = val;
+		data[i] = val * translation_array[i];
 	}
 	sensor_group_mutex.unlock();
 	//unlock 
+}
+
+const string & Sensor_Group::get_name(){
+  return name;
+}
+
+const array<string, MAX_SENSORS> & Sensor_Group::get_name_array(){
+  return name_array;
 }

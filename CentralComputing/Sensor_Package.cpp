@@ -15,13 +15,16 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
 				group = new Thermocouple(c);
 				break; //TODO add new sensors here
 			case ACCELEROMETERX:
-				group = new Accelerometer(c);
+				group = new XAccelerometer(c);
+				break;
+			case ACCELEROMETERYZ:
+				group = new YZAccelerometer(c);
 				break;
 			case BRAKE_PRESSURE:
 				group = new Brake_Pressure(c);
 				break;
-			case POSITION:
-				group = new Position(c);
+			case OPTICAL:
+				group = new Optical(c);
 				break;
 			case RIDE_HEIGHT:
 				group = new Ride_Height(c);
@@ -32,8 +35,11 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
 			case BATTERY:
 				group = new Battery(c);
 				break;
+			case CURRENT:
+				group = new Current(c);
+				break;
 			default:
-				cout << "Something went wrong" << endl;
+				cout << "Something went wrong creating sensors. " << endl;
 				group = NULL;
 				break;
 					
@@ -67,10 +73,10 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
   * 22,23 == Thermo3 internal
   * 24    == RetroReflective  Interrupt
   **/
-  uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
+  uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,2,1};
 
   Xmega_Setup x1 = {"/dev/spidev1.0", 6, bpi1, 500000, 8};
-  Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
+  Xmega_Setup x2 = {"/dev/spidev1.1", 14, bpi2, 500000, 8};
 	
 	if(xmega_connect) {
 		spi = new Spi(&x1, &x2);
@@ -114,4 +120,8 @@ void Sensor_Package::reset() {
 
 vector<double> Sensor_Package::get_sensor_data(Sensor_Type type) {
 	return sensor_groups[type]->get_data();
+}
+
+Sensor_Group * Sensor_Package::get_sensor_group(Sensor_Type type) {
+  return sensor_groups[type];
 }

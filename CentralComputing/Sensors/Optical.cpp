@@ -3,19 +3,19 @@
 
 using namespace std;
 
-Position::Position(Sensor_Configuration configuration) : Sensor_Group(configuration) {
+Optical::Optical(Sensor_Configuration configuration) : Sensor_Group(configuration) {
 	
 }
 
-Position::~Position(){
+Optical::~Optical(){
 	//do nothing
 }
 
-void Position::reset() {
+void Optical::reset() {
 	//TODO: implement resetting
 }
 
-void Position::update(Spi * spi) {
+void Optical::update(Spi * spi) {
 
 	switch(simulation) {
 		case 0:
@@ -27,7 +27,7 @@ void Position::update(Spi * spi) {
 	}
 }
 
-void Position::simulation_1() {
+void Optical::simulation_1() {
 	auto start = Sensor_Package::start_time;
 	auto now = Sensor_Package::get_current_time();
 	auto difference = now - start;

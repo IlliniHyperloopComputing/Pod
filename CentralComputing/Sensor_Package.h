@@ -40,6 +40,12 @@ class Sensor_Package {
 		* @return a vector of sensor data
 		**/
 		vector<double> get_sensor_data(Sensor_Type type);
+    
+    /**
+		* Returns a pointer to the specified sensor group
+		* @return a pointer to a sensor group
+		**/
+    Sensor_Group * get_sensor_group(Sensor_Type type);
 
 
 		static long long get_current_time();
