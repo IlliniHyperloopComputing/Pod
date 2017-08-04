@@ -33,7 +33,7 @@ void init_chip(TWI_t *twi, uint8_t chip);
 twi_package_t current_write;
 twi_package_t current_read;
 
-int8_t init_current(TWI_t *twi, uint8_t chip);
+uint16_t init_current(TWI_t *twi, uint8_t chip);
 extern int8_t read_current(TWI_t *twi, uint8_t chip, void * buff);
 
 

@@ -19,7 +19,7 @@ void init_chip(TWI_t *twi, uint8_t chip){
 
 const uint8_t calValue[] = {0x10, 0x00}; //4096, with MSB first
 	
-int8_t init_current(TWI_t *twi, uint8_t chip){
+uint16_t init_current(TWI_t *twi, uint8_t chip){
 	
 	//initialize the chip on the specified bus
 	init_chip(twi,chip);
@@ -53,7 +53,16 @@ int8_t init_current(TWI_t *twi, uint8_t chip){
 	
 	twi_master_write(twi, &current_write);
 	
-	return 0;
+	uint16_t buff;
+	//Set up read variable
+	current_read.addr[0]		= 0;
+	current_read.addr_length	= 0;
+	current_read.chip			= chip;
+	current_read.buffer			= &buff;
+	current_read.length			= 2;
+	return twi_master_read(twi, &current_read);
+	
+	return buff;
 	
 }
 
