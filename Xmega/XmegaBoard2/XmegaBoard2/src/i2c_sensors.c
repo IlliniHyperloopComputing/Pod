@@ -53,9 +53,6 @@ int8_t init_current(TWI_t *twi, uint8_t chip){
 	
 	twi_master_write(twi, &current_write);
 	
-	
-	
-		
 	return 0;
 	
 }

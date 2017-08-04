@@ -94,7 +94,7 @@ int main (void)
 	sei();            // enable global interrupts
 	
 	state = 1;
-	ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
+	//ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 	
 	while (1) {
 		
@@ -265,6 +265,7 @@ int main (void)
 				if(read_current(&TWIE, 0x40, &recieved_data) == TWI_SUCCESS){
 					sensor_data[24] = recieved_data >> 8;
 					sensor_data[25] = recieved_data;
+					ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 				}
 				
 				if(read_adc(&TWIE, 0x48, &recieved_data) == TWI_SUCCESS){
