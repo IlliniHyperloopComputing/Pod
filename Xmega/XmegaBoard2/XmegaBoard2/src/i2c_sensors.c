@@ -26,7 +26,7 @@ uint16_t init_current(TWI_t *twi, uint8_t chip){
 	
 	//Calibrating to 32V 2A. Refer to github listed below
 	
-	//Set Calibration
+	/*//Set Calibration
 	current_write.addr[0]		= INA219_REG_CALIBRATION;
 	current_write.addr_length	= sizeof(uint8_t);
 	current_write.chip			= chip;
@@ -53,6 +53,7 @@ uint16_t init_current(TWI_t *twi, uint8_t chip){
 	
 	twi_master_write(twi, &current_write);
 	
+	*/
 	uint16_t buff;
 	//Set up read variable
 	current_read.addr[0]		= 0;
