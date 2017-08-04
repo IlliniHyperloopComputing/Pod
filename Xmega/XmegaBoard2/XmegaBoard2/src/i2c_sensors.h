@@ -11,6 +11,9 @@
 
 #include <asf.h>
 #include <string.h>
+#define F_CPU 32000000
+#include <util/delay.h>
+
 
 #define ADC_STREAMING 0x42
 #define ADC_SINGLE    0x43
