@@ -74,7 +74,7 @@ inline int8_t read_current(TWI_t *twi, uint8_t chip, void * buff) {
 	twi_master_write(twi, &current_write);
 	
 	// Write the register to read
-	uint8_t tmpbuff = INA219_REG_CURRENT;
+	/*uint8_t tmpbuff = INA219_REG_CURRENT;
 	current_write.addr[0]		= 0;
 	current_write.addr_length	= 0;
 	current_write.chip			= chip;
@@ -83,6 +83,7 @@ inline int8_t read_current(TWI_t *twi, uint8_t chip, void * buff) {
 	twi_master_write(twi, &current_write);
 	
 	_delay_ms(1);
+	*/
 	
 	//Set up read variable
 	current_read.addr[0]		= 0;
