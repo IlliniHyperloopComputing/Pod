@@ -28,10 +28,10 @@ void Sensor_Group::refresh_data(Spi * spi) {
 	//unlock 
 }
 
-const string & Sensor_Group::get_name(){
-  return name;
-}
-
-const array<string, MAX_SENSORS> & Sensor_Group::get_name_array(){
-  return name_array;
+void Sensor_Group::print_data() {
+  cout << "\t" << name << ": " << data.size() << " sensors" << endl;
+  for(uint32_t i = 0; i < data.size(); i++){
+	cout << "\t" << name_array[i] << ":\t"<< data[i] << endl;
+  }
+  cout << endl;
 }

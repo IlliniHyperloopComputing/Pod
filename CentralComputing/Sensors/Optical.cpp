@@ -5,6 +5,13 @@ using namespace std;
 
 Optical::Optical(Sensor_Configuration configuration) : Sensor_Group(configuration) {
 	
+	first_index = OPTICAL_INDEX; // index offset to read from spi
+	device = XMEGA1; //xmega device number (0 or 1)
+	count = 2; //number of sensors
+    translation_array = {{0.0018310542,1}};
+    name = "Optical";
+    name_array = {{"RPM", "Count"}};
+	data = vector<double>(count);		
 }
 
 Optical::~Optical(){
@@ -31,7 +38,6 @@ void Optical::simulation_1() {
 	auto start = Sensor_Package::start_time;
 	auto now = Sensor_Package::get_current_time();
 	auto difference = now - start;
-	cout << difference << endl;
 	
 	//TODO calc some actual value
 	

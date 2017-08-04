@@ -7,6 +7,13 @@ using namespace std;
 //X
 XAccelerometer::XAccelerometer(Sensor_Configuration configuration) : Sensor_Group(configuration) {
 	
+	first_index = X_ACCELERATION_INDEX; // index offset to read from spi
+	device = XMEGA1; //xmega device number (0 or 1)
+	count = 3; //number of sensors
+	data = vector<double>(count);
+    translation_array = {{ADC_TRANS,ADC_TRANS,ADC_TRANS}};
+    name = "X Accel";
+    name_array = {{"X1", "X2", "X3"}};
 }
 
 XAccelerometer::~XAccelerometer(){
@@ -50,6 +57,13 @@ void XAccelerometer::simulation_1() {
 
 YZAccelerometer::YZAccelerometer(Sensor_Configuration configuration) : Sensor_Group(configuration) {
 	
+	first_index = YZ_ACCELERATION_INDEX; // index offset to read from spi
+	device = XMEGA2; //xmega device number (0 or 1)
+	count = 2; //number of sensors
+    translation_array = {{ADC_TRANS,ADC_TRANS,ADC_TRANS}};
+    name = "YZ Accel";
+    name_array = {{"Y", "Z"}};
+	data = vector<double>(count);
 }
 
 YZAccelerometer::~YZAccelerometer(){
@@ -76,7 +90,6 @@ void YZAccelerometer::simulation_1() {
 	auto start = Sensor_Package::start_time;
 	auto now = Sensor_Package::get_current_time();
 	auto difference = now - start;
-	cout << difference << endl;
 	
 	
 	sensor_group_mutex.lock();

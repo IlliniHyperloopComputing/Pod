@@ -7,6 +7,7 @@ using namespace std;
 long long Sensor_Package::start_time = 1;
 
 Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool xmega_connect) {
+
 	connect = xmega_connect;
 	for(Sensor_Configuration c : configuration){
 		Sensor_Group * group;
@@ -118,10 +119,14 @@ void Sensor_Package::reset() {
 	}
 }
 
+void Sensor_Package::print_status() {
+	for(auto const & pair : sensor_groups){
+		Sensor_Group * s = pair.second;
+		s->print_data();
+	}
+}
+
 vector<double> Sensor_Package::get_sensor_data(Sensor_Type type) {
 	return sensor_groups[type]->get_data();
 }
 
-Sensor_Group * Sensor_Package::get_sensor_group(Sensor_Type type) {
-  return sensor_groups[type];
-}
