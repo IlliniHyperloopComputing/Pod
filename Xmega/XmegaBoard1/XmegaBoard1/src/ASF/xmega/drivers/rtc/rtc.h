@@ -118,7 +118,7 @@ typedef void (*rtc_callback_t)(uint32_t time);
 
 void rtc_set_callback(rtc_callback_t callback);
 void rtc_set_time(uint32_t time);
-uint32_t rtc_get_time(void);
+extern uint32_t rtc_get_time(void);
 void rtc_set_alarm(uint32_t time);
 bool rtc_alarm_has_triggered(void);
 
