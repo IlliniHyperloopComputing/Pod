@@ -21,12 +21,22 @@ std::tuple<bool, vector<Sensor_Configuration>> configs;
 * Gets new sensor values from the XMEGA
 */
 void sensor_loop() {
+  int i = 0;
 	Xmega_Transfer transfer = {0,X_C_NONE, X_R_ALL};
 	while(running){
 		
+    transfer.device = 0;
 		sensors->update(transfer);
-		sensors->print_status();
-		usleep(500);
+		usleep(25000);
+
+    transfer.device = 1;
+		sensors->update(transfer);
+		usleep(25000);
+
+    if(i % 10 == 0){
+      sensors->print_status();
+    }
+    i++;
 	}
 
 }

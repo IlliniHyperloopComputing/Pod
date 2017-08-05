@@ -6,7 +6,7 @@ using namespace std;
 Thermocouple::Thermocouple(Sensor_Configuration configuration) : Sensor_Group(configuration) {
 	first_index = THERMOCOUPLE_INDEX;
 	device = XMEGA2;
-	count = 4;
+	count = 5;
 	data = vector<double>(count);	
 	
 	translation_array = {{0.25, 0.25, 0.25, 0.25, 0.0625}};
