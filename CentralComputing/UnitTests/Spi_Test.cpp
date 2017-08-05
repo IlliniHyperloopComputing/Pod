@@ -57,6 +57,8 @@ int Spi_Test::test(int argc, char** argv){
         if(nsec_total > max_n) 
           max_n = nsec_total;
 
+        usleep(25000);//25 milliseconds
+
         xt.device = 1;
         clock_gettime(CLOCK_MONOTONIC,&ts);
         result = spi.transfer(xt);
@@ -64,7 +66,7 @@ int Spi_Test::test(int argc, char** argv){
         if(result & 0b01) err3++;
         if(result & 0b10) err4++;
 
-        usleep(5000);//5 milliseconds
+        usleep(25000);//25 milliseconds
         elapsed2 += (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
         nsec_total = (ts2.tv_sec - ts.tv_sec) + (ts2.tv_nsec-ts.tv_nsec)/1000000000.0;
         if(nsec_total < min_n2) 
