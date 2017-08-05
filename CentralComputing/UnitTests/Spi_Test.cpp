@@ -180,7 +180,7 @@ int Spi_Test::test(int argc, char** argv){
       print_test("X1: %f\n", spi.get_data(0,1)/32768.0*4.096);
       print_test("X2: %f\n", spi.get_data(0,2)/32768.0*4.096);
       print_test("PRESSURE: %f\n", spi.get_data(0,3)/32768.0*4.096);
-      print_test("OPTICAL RPM: %f\n", 60.0 / (spi.get_data(0,4) * 0.00003051757));
+      print_test("OPTICAL RPM: %f\n", (spi.get_data(0,4) * 60 * 0.00003051757));
       print_test("OPTICAL Rotations: %lu\n", spi.get_data(0,5));
 
       print_test("\n");

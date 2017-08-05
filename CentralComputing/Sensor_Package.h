@@ -40,15 +40,23 @@ class Sensor_Package {
 		* @return a vector of sensor data
 		**/
 		vector<double> get_sensor_data(Sensor_Type type);
-
+    
+		/**
+		* Prints the status of all sensors to output.  For debugging only
+		**/
+		void print_status();
 
 		static long long get_current_time();
 		static long long start_time;
 		bool connect;
+
+    static uint8_t * bpi1;
+    static uint8_t * bpi2;
+    static Xmega_Setup x1;
+    static Xmega_Setup x2;
 	private:
 		map<Sensor_Type, Sensor_Group * > sensor_groups;
 		Spi * spi;	
-
 };
 
 #endif

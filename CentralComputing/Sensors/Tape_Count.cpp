@@ -4,6 +4,13 @@
 using namespace std;
 
 Tape_Count::Tape_Count(Sensor_Configuration configuration) : Sensor_Group(configuration) {
+		
+	first_index = TAPE_COUNT_INDEX; // index offset to read from spi
+	device = XMEGA2; //xmega device number (0 or 1)
+	count = 1; //number of sensors
+    translation_array = {{1.0}};
+    name = "Tape Count";
+    name_array = {{"Count"}};
 	data = vector<double>(count);
 	
 }
@@ -32,7 +39,6 @@ void Tape_Count::simulation_1() {
 	auto start = Sensor_Package::start_time;
 	auto now = Sensor_Package::get_current_time();
 	auto difference = now - start;
-	cout << difference << endl;
 	
 	//TODO calc some actual value
 	

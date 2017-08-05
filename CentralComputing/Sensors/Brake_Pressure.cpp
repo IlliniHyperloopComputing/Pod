@@ -5,6 +5,13 @@ using namespace std;
 
 Brake_Pressure::Brake_Pressure(Sensor_Configuration configuration) : Sensor_Group(configuration) {
 	
+	first_index = BRAKE_PRESSURE_INDEX; // index offset to read from spi
+	device = XMEGA1; //xmega device number (0 or 1)
+	count = 1; //number of sensors
+    translation_array = {{ADC_TRANS}};
+    name = "Brake Pressure";
+    name_array = {{"Pressure"}};
+	data = vector<double>(count);		
 }
 
 Brake_Pressure::~Brake_Pressure(){
@@ -31,7 +38,6 @@ void Brake_Pressure::simulation_1() {
 	auto start = Sensor_Package::start_time;
 	auto now = Sensor_Package::get_current_time();
 	auto difference = now - start;
-	cout << difference << endl;
 	
 	//TODO calc some actual value
 	

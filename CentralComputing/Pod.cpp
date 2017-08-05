@@ -15,29 +15,39 @@ Pod_State * state;
 
 volatile bool running = true;
 
+std::tuple<bool, vector<Sensor_Configuration>> configs;
+
 /**
 * Gets new sensor values from the XMEGA
 */
 void sensor_loop() {
-	//TODO construct XMEGA transfer object
+  int i = 0;
 	Xmega_Transfer transfer = {0,X_C_NONE, X_R_ALL};
-	while(running) {
+	while(running){
+		
     transfer.device = 0;
 		sensors->update(transfer);
-    usleep(25000);//sleep 50 milliseconds
+		usleep(25000);
 
     transfer.device = 1;
 		sensors->update(transfer);
-    usleep(25000);//sleep 50 milliseconds
+		usleep(25000);
 
+    if(i % 10 == 0){
+      sensors->print_status();
+    }
+    i++;
 	}
+
 }
 
 void network_loop() {
 	//TODO 
+  return;
 }
 
 void int_handler(int signum) {
+  (void)signum;
 	running = false;
 }
 
@@ -45,7 +55,7 @@ void int_handler(int signum) {
 int pod(int argc, char** argv) {
 	
 	signal(SIGINT, int_handler);
-	auto configs = parse_input(argc, argv);
+	configs = parse_input(argc, argv);
 	state = new Pod_State();
 		
 	sensors = new Sensor_Package(std::get<1>(configs), std::get<0>(configs));
@@ -70,17 +80,21 @@ std::tuple<bool, vector<Sensor_Configuration>> parse_input(int argc, char** argv
 	thermo.type = THERMOCOUPLE;
 	thermo.simulation = 0;
 
-	Sensor_Configuration accel;
-	accel.type = ACCELEROMETERX;
-	accel.simulation = 0;
+	Sensor_Configuration accelx;
+	accelx.type = ACCELEROMETERX;
+	accelx.simulation = 0;
+
+	Sensor_Configuration accelyz;
+	accelyz.type = ACCELEROMETERYZ;
+	accelyz.simulation = 0;
 
 	Sensor_Configuration brake;
 	brake.type = BRAKE_PRESSURE;
 	brake.simulation = 0;
 
-	Sensor_Configuration pos;
-	pos.type = POSITION;
-	pos.simulation = 0;
+	Sensor_Configuration optical;
+	optical.type = OPTICAL;
+	optical.simulation = 0;
 
 	Sensor_Configuration height;
 	height.type = RIDE_HEIGHT;
@@ -94,44 +108,55 @@ std::tuple<bool, vector<Sensor_Configuration>> parse_input(int argc, char** argv
 	battery.type = BATTERY;
 	battery.simulation = 0;
 
+	Sensor_Configuration current;
+	current.type = CURRENT;
+	current.simulation = 0;
+
 	size_t simulating_sensors = 0;
 	int c;
 
-	while((c = getopt(argc, argv, "t:a:b:p:h:c:v:"))!= -1){
+	while((c = getopt(argc, argv, "a:b:c:h:i:o:t:v:y:"))!= -1){
 		switch(c) {
-			case 't':
-				thermo.simulation = atoi(optarg);
-				break;
 			case 'a':
-				accel.simulation = atoi(optarg);
+				accelx.simulation = atoi(optarg);
 				break;
 			case 'b':
 				brake.simulation = atoi(optarg);
 				break;
-			case 'p':
-				pos.simulation = atoi(optarg);
+			case 'c':
+				tape.simulation = atoi(optarg);
 				break;
 			case 'h':
 				height.simulation = atoi(optarg);
 				break;
-			case 'c':
-				tape.simulation = atoi(optarg);
+			case 'i':
+				current.simulation = atoi(optarg);
+				break;
+			case 'o':
+				optical.simulation = atoi(optarg);
+				break;
+			case 't':
+				thermo.simulation = atoi(optarg);
 				break;
 			case 'v':
 				battery.simulation = atoi(optarg);
 				break;
+			case 'y':
+				accelyz.simulation = atoi(optarg);
+				break;
 		}
 		simulating_sensors++;
 	}
-	
 
 	configs.push_back(thermo);
-	configs.push_back(accel);
+	configs.push_back(accelx);
+	configs.push_back(accelyz);
 	configs.push_back(brake);
-	configs.push_back(pos);
+	configs.push_back(optical);
 	configs.push_back(height);
 	configs.push_back(tape);
 	configs.push_back(battery);
+	configs.push_back(current);
 
 	return std::make_tuple(simulating_sensors != NUM_SENSORS, configs);
 

@@ -6,7 +6,16 @@ using namespace std;
 
 long long Sensor_Package::start_time = 1;
 
+static uint8_t bpi1_s[] = {2,2,2,2,4,4};
+static uint8_t bpi2_s[] = {2,2,2,2,2,2,2,2,2,2,2,2,2,1};
+uint8_t * Sensor_Package::bpi1 = bpi1_s;
+uint8_t * Sensor_Package::bpi2 = bpi2_s;
+
+Xmega_Setup Sensor_Package::x1 = {"/dev/spidev1.0", 6, bpi1, 500000, 8};
+Xmega_Setup Sensor_Package::x2 = {"/dev/spidev1.1", 14, bpi2, 500000, 8};
+
 Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool xmega_connect) {
+
 	connect = xmega_connect;
 	for(Sensor_Configuration c : configuration){
 		Sensor_Group * group;
@@ -15,13 +24,16 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
 				group = new Thermocouple(c);
 				break; //TODO add new sensors here
 			case ACCELEROMETERX:
-				group = new Accelerometer(c);
+				group = new XAccelerometer(c);
+				break;
+			case ACCELEROMETERYZ:
+				group = new YZAccelerometer(c);
 				break;
 			case BRAKE_PRESSURE:
 				group = new Brake_Pressure(c);
 				break;
-			case POSITION:
-				group = new Position(c);
+			case OPTICAL:
+				group = new Optical(c);
 				break;
 			case RIDE_HEIGHT:
 				group = new Ride_Height(c);
@@ -32,8 +44,11 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
 			case BATTERY:
 				group = new Battery(c);
 				break;
+			case CURRENT:
+				group = new Current(c);
+				break;
 			default:
-				cout << "Something went wrong" << endl;
+				cout << "Something went wrong creating sensors. " << endl;
 				group = NULL;
 				break;
 					
@@ -50,7 +65,6 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
   * 8,9,10,11 == Optical, Delta
   * 12,13,14,15 == Optical, tape count
   **/
-  uint8_t bpi1[] = {2,2,2,2,4,4};
 
   /**
   * 0,1 == y  i2c 
@@ -67,13 +81,11 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
   * 22,23 == Thermo3 internal
   * 24    == RetroReflective  Interrupt
   **/
-  uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
 
-  Xmega_Setup x1 = {"/dev/spidev1.0", 6, bpi1, 500000, 8};
-  Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
 	
-	if(xmega_connect) {
+	if(connect) {
 		spi = new Spi(&x1, &x2);
+
 	} else {
 		spi = NULL;
 	}
@@ -83,7 +95,10 @@ Sensor_Package::~Sensor_Package() {
 	for(auto const & pair : sensor_groups){
 		delete pair.second;
 	}
-	delete spi;
+
+  if(connect){
+	  delete spi;
+  }
 }
 
 long long Sensor_Package::get_current_time() {
@@ -112,6 +127,14 @@ void Sensor_Package::reset() {
 	}
 }
 
+void Sensor_Package::print_status() {
+	for(auto const & pair : sensor_groups){
+		Sensor_Group * s = pair.second;
+		s->print_data();
+	}
+}
+
 vector<double> Sensor_Package::get_sensor_data(Sensor_Type type) {
 	return sensor_groups[type]->get_data();
 }
+

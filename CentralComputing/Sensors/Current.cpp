@@ -3,29 +3,30 @@
 
 using namespace std;
 
-Battery::Battery(Sensor_Configuration configuration) : Sensor_Group(configuration) {
-	first_index = BATTERY_CELL_INDEX; // index offset to read from spi
+Current::Current(Sensor_Configuration configuration) : Sensor_Group(configuration) {
+
+	first_index = CURRENT_INDEX; // index offset to read from spi
 	device = XMEGA2; //xmega device number (0 or 1)
-	count = 2; //number of sensors
-    translation_array = {{ADC_TRANS, ADC_TRANS}};
-    name = "Battery";
-    name_array = {{"B1", "B2"}};
+	count = 1; //number of sensors
+    translation_array = {{0.1}};
+    name = "Current";
+    name_array = {{"C1"}};
 	data = vector<double>(count);		
 }
 
-Battery::~Battery(){
+Current::~Current(){
 	//do nothing
 }
 
-void Battery::reset() {
+void Current::reset() {
 	//TODO: implement resetting
 }
 
-void Battery::update(Spi * spi) {
+void Current::update(Spi * spi) {
 
 	switch(simulation) {
 		case 0:
-			refresh_data(spi);
+			refresh_data(spi);	
 			break;
 		case 1:
 			simulation_1();
@@ -33,12 +34,11 @@ void Battery::update(Spi * spi) {
 	}
 }
 
-void Battery::simulation_1() {
+void Current::simulation_1() {
 	auto start = Sensor_Package::start_time;
 	auto now = Sensor_Package::get_current_time();
 	auto difference = now - start;
 	
-	//TODO calc some actual value
 	
 	sensor_group_mutex.lock();
 	for(size_t i = 0; i < data.size(); i++) {
@@ -46,3 +46,4 @@ void Battery::simulation_1() {
 	}
 	sensor_group_mutex.unlock();
 }
+

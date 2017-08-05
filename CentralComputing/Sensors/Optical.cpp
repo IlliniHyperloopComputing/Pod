@@ -3,19 +3,26 @@
 
 using namespace std;
 
-Position::Position(Sensor_Configuration configuration) : Sensor_Group(configuration) {
+Optical::Optical(Sensor_Configuration configuration) : Sensor_Group(configuration) {
 	
+	first_index = OPTICAL_INDEX; // index offset to read from spi
+	device = XMEGA1; //xmega device number (0 or 1)
+	count = 2; //number of sensors
+    translation_array = {{0.0018310542,1}};
+    name = "Optical";
+    name_array = {{"RPM", "Count"}};
+	data = vector<double>(count);		
 }
 
-Position::~Position(){
+Optical::~Optical(){
 	//do nothing
 }
 
-void Position::reset() {
+void Optical::reset() {
 	//TODO: implement resetting
 }
 
-void Position::update(Spi * spi) {
+void Optical::update(Spi * spi) {
 
 	switch(simulation) {
 		case 0:
@@ -27,11 +34,10 @@ void Position::update(Spi * spi) {
 	}
 }
 
-void Position::simulation_1() {
+void Optical::simulation_1() {
 	auto start = Sensor_Package::start_time;
 	auto now = Sensor_Package::get_current_time();
 	auto difference = now - start;
-	cout << difference << endl;
 	
 	//TODO calc some actual value
 	
