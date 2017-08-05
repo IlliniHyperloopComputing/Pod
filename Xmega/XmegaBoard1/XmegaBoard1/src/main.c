@@ -131,21 +131,8 @@ int main (void)
 	init_spi_to_bbb();	//Setup SPI on Port C
 	
 	ioport_configure_port_pin(&PORTK, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN );
-	
-	/*PORTK.DIR = 0;//pin 2 is output
-	PORTK.INT0MASK = PIN3_bm;
-	PORTK.INTCTRL = PORT_INT0LVL_MED_gc;
-	PORTK.PIN3CTRL = PORT_OPC_PULLDOWN_gc | PORT_ISC_RISING_gc;
-	*/
-	
-	
 
 	ioport_configure_port_pin(&PORTF, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN );
-	/*PORTF.DIR = 0;
-	PORTF.INT0MASK = PIN2_bm;
-	PORTF.INTCTRL = PORT_INT0LVL_MED_gc;
-	PORTF.PIN2CTRL =  PORT_SETUP_WITH_INVERT;
-	*/
 	
 	PMIC.CTRL |= PMIC_MEDLVLEN_bm;
 	PMIC.CTRL |= PMIC_LOLVLEN_bm;
