@@ -92,6 +92,7 @@ extern "C" {
  * Use this function before any NVM accesses, if you are not certain that
  * any previous operations are finished yet.
  */
+__attribute__((always_inline)) 
 static inline void nvm_wait_until_ready( void )
 {
 	do {

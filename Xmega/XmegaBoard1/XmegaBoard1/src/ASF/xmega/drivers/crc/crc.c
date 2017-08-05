@@ -89,6 +89,7 @@ void crc_io_checksum_byte_add(uint8_t data)
  * \return bit reverted value
  *
  */
+__attribute__((always_inline)) 
 static inline uint32_t crc_bit_revert(uint32_t value)
 {
 	uint32_t result;
@@ -111,6 +112,7 @@ static inline uint32_t crc_bit_revert(uint32_t value)
  * the CHECKSUM registers.
  *
  */
+__attribute__((always_inline)) 
 static inline void crc_reset(void)
 {
 	// Reset module
@@ -133,6 +135,7 @@ static inline void crc_reset(void)
  *
  * \return checksum checksum value
  */
+__attribute__((always_inline)) 
 static inline uint16_t crc16_checksum_read(void)
 {
 	uint16_t checksum;
@@ -154,6 +157,7 @@ static inline uint16_t crc16_checksum_read(void)
  *
  * \return checksum checksum value
  */
+__attribute__((always_inline)) 
 static inline uint32_t crc32_checksum_read(void)
 {
 	uint32_t checksum;
@@ -185,6 +189,7 @@ static inline uint32_t crc32_checksum_read(void)
  *
  * \return checksum checksum value
  */
+__attribute__((always_inline)) 
 static inline uint32_t crc_checksum_read(void)
 {
 	// Wait until the CRC conversion is finished
@@ -212,6 +217,7 @@ static inline uint32_t crc_checksum_read(void)
  *
  * \param source the data source for the CRC module
  */
+__attribute__((always_inline)) 
 static inline void crc_set_source(CRC_SOURCE_t source)
 {
 	CRC_CTRL &= ~CRC_SOURCE_gm;
@@ -238,6 +244,7 @@ static inline void crc_32_enable(void)
  * \brief Disable the CRC module
  *
  */
+__attribute__((always_inline)) 
 static inline void crc_disable(void)
 {
 	crc_set_source(CRC_SOURCE_DISABLE_gc);
@@ -249,6 +256,7 @@ static inline void crc_disable(void)
  *
  * \return checksum checksum value
  */
+__attribute__((always_inline)) 
 static inline uint32_t crc_checksum_complete(void)
 {
 	uint32_t checksum;

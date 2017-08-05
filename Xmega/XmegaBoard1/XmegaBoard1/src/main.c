@@ -35,11 +35,6 @@ uint8_t sensor_data[SENSOR_DATA_SIZE] = {0};
 volatile uint8_t spi_isr = 0;
 uint8_t spi_transfer = 0;
 
-//RTC
-uint32_t time1 = 0;
-uint32_t time2 = 1;
-uint32_t time3 = 2;
-
 volatile uint32_t retro_1_time = 0;
 volatile uint32_t retro_2_time = 0;
 volatile uint32_t retro_1_time_old = 0;
@@ -57,6 +52,77 @@ uint8_t cooldown_2 = 0;
 uint32_t true_delta = UINT32_MAX;
 uint32_t true_rotation_count = 0;
 
+#define PORT_SETUP_WITH_INVERT  (PORT_OPC_PULLDOWN_gc | PORT_INVEN_bm | PORT_ISC_LEVEL_gc)
+#define PORT_SETUP_WITHOUT_INVERT (PORT_OPC_PULLUP_gc | PORT_ISC_LEVEL_gc)
+
+uint8_t is_invert_1 = 1;
+uint8_t is_invert_2 = 1;
+volatile uint8_t flip = 1;
+
+void handle_optical(){
+	uint8_t val_1 = (PORTK.IN & PIN2_bm) >> PIN2_bp;
+
+	if(!high_1){
+		if(val_1){
+			cooldown_1++;
+			if(cooldown_1 > COOLDOWN){
+				retro_1_time = rtc_get_time();
+				delta_1 = retro_1_time - retro_1_time_old;
+				retro_1_time_old = retro_1_time;
+				rotation_count_1++;
+				high_1 = 1;
+				cooldown_1 =0;
+			}
+		}
+		else{
+			cooldown_1 =0;
+		}
+	}
+	else{
+		if(!val_1){
+			cooldown_1++;
+			if(cooldown_1 > COOLDOWN){
+				high_1 = 0;
+				cooldown_1 = 0;
+			}
+		}
+		else{
+			cooldown_1 =0;
+		}
+	}
+
+	uint8_t val_2 = (PORTF.IN & PIN2_bm) >> PIN2_bp;
+	
+	if(!high_2){
+		if(val_2){
+			cooldown_2++;
+			if(cooldown_2 > COOLDOWN){
+				retro_2_time = rtc_get_time();
+				delta_2 = retro_2_time - retro_2_time_old;
+				retro_2_time_old = retro_2_time;
+				rotation_count_1++;
+				high_2 = 1;
+				cooldown_2 =0;
+			}
+		}
+		else{
+			cooldown_2 =0;
+		}
+	}
+	else{
+		if(!val_2){
+			cooldown_2++;
+			if(cooldown_2 > COOLDOWN){
+				high_2 = 0;
+				cooldown_2 = 0;
+			}
+		}
+		else{
+			cooldown_2 =0;
+		}
+	}
+}
+
 int main (void)
 {
 	board_init();	//Init board
@@ -64,12 +130,19 @@ int main (void)
 	rtc_init();	
 	init_spi_to_bbb();	//Setup SPI on Port C
 	
-	ioport_configure_port_pin(&PORTK, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);
+	ioport_configure_port_pin(&PORTK, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN );
 
-	ioport_configure_port_pin(&PORTF, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);
+	ioport_configure_port_pin(&PORTF, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN );
 	
 	PMIC.CTRL |= PMIC_MEDLVLEN_bm;
 	PMIC.CTRL |= PMIC_LOLVLEN_bm;
+	
+	tc_enable(&TCC0);
+	tc_set_overflow_interrupt_callback(&TCC0, handle_optical);
+	tc_set_wgm(&TCC0, TC_WG_NORMAL);
+	tc_write_period(&TCC0, 300);
+	tc_set_overflow_interrupt_level(&TCC0, TC_INT_LVL_LO);
+	tc_write_clock_source(&TCC0, TC_CLKSEL_DIV1_gc);
 	
 	sensor_status = 0;
 	sensor_status |= init_adc(&TWIF, 0x48, ADC_STREAMING) << 0;
@@ -80,7 +153,7 @@ int main (void)
 	sei();            // enable global interrupts
 		
 	state = 1;
-	ioport_set_pin_level(LED_0_PIN, LED_0_ACTIVE);
+	//ioport_set_pin_level(LED_0_PIN, LED_0_ACTIVE);
 	
 	while (1) {
 		
@@ -92,42 +165,6 @@ int main (void)
 		
 		if(spi_transfer == 0){//Do anything that is not SPI related
 			
-			uint8_t val_1 = (PORTK.IN & PIN2_bm) >> PIN2_bp;
-			
-			if(val_1 && !high_1 ){
-				retro_1_time = rtc_get_time();
-				delta_1 = retro_1_time - retro_1_time_old;
-				retro_1_time_old = retro_1_time;
-				rotation_count_1++;
-				high_1 = 1;
-			}
-			if(!val_1 && high_1){
-				cooldown_1++;
-				if(cooldown_1 > COOLDOWN){
-					high_1 = 0;
-					cooldown_1 = 0;
-				}
-			}
-			if(spi_isr) continue;
-			
-			uint8_t val_2 = (PORTF.IN & PIN2_bm) >> PIN2_bp;
-			
-			if(val_2 && !high_2 ){
-				retro_2_time = rtc_get_time();
-				delta_2 = retro_2_time - retro_2_time_old;
-				retro_2_time_old = retro_2_time;
-				rotation_count_2++;
-				high_2 = 1;
-			}
-			if(!val_2 && high_2){
-				cooldown_2++;
-				if(cooldown_2 > COOLDOWN){
-					high_2 = 0;
-					cooldown_2 = 0;
-				}
-			}
-			
-			if(spi_isr) continue;
 			
 			if(delta_1 < delta_2){
 				true_delta = delta_1;
@@ -142,8 +179,8 @@ int main (void)
 				true_rotation_count = rotation_count_2;
 			}
 			memcpy(sensor_data + 8, (char *)&true_delta, 4);
+			if(spi_isr) continue;
 			memcpy(sensor_data + 12, (char *)&true_rotation_count, 4);
-			
 			if(spi_isr) continue;
 						
 			uint8_t recieved_data[2] = {0};
@@ -158,6 +195,8 @@ int main (void)
 				sensor_data[3] = recieved_data[0];
 			}
 			
+			if(spi_isr) continue;
+			
 			if(read_adc(&TWIF, 0x4A, recieved_data ) == TWI_SUCCESS){
 				sensor_data[4] = recieved_data[1];
 				sensor_data[5] = recieved_data[0];
@@ -167,11 +206,7 @@ int main (void)
 				sensor_data[6] = recieved_data[1];
 				sensor_data[7] = recieved_data[0];
 			}
-			if(spi_isr) continue;
-				
 			
-			time2 = rtc_get_time();
-			time3 = time2-time1;
 		
 		}
 	}
