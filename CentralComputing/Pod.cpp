@@ -21,33 +21,14 @@ std::tuple<bool, vector<Sensor_Configuration>> configs;
 * Gets new sensor values from the XMEGA
 */
 void sensor_loop() {
-
-  vector<Sensor_Configuration> configuration = std::get<1>(configs);
-
 	Xmega_Transfer transfer = {0,X_C_NONE, X_R_ALL};
-	while(running) {
-    transfer.device = 0;
+	while(running){
+		
 		sensors->update(transfer);
-    usleep(25000);//sleep 50 milliseconds
-
-    transfer.device = 1;
-		sensors->update(transfer);
-    usleep(25000);//sleep 50 milliseconds
-
-    cout << "Sensors: " << endl;
-	  for(Sensor_Configuration c : configuration){
-      Sensor_Group * s =  sensors->get_sensor_group(c.type);
-      vector<double> d = sensors->get_sensor_data(c.type); 
-
-      
-      cout << "\t" << s->get_name() << ":"<< endl;
-      for(uint32_t i = 0; i < d.size(); i++){
-        cout << "\t" << s->get_name_array()[i] << ":\t"<< d[i] << endl;
-      }
-      cout << endl;
-    }
-    printf("\n");
+		sensors->print_status();
+		usleep(500);
 	}
+
 }
 
 void network_loop() {

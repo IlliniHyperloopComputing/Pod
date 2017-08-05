@@ -41,12 +41,10 @@ class Sensor_Package {
 		**/
 		vector<double> get_sensor_data(Sensor_Type type);
     
-    /**
-		* Returns a pointer to the specified sensor group
-		* @return a pointer to a sensor group
+		/**
+		* Prints the status of all sensors to output.  For debugging only
 		**/
-    Sensor_Group * get_sensor_group(Sensor_Type type);
-
+		void print_status();
 
 		static long long get_current_time();
 		static long long start_time;

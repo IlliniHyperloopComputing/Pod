@@ -24,7 +24,7 @@ enum Sensor_Type {
 	OPTICAL,
 	BRAKE_PRESSURE,
 	BATTERY,
-  CURRENT
+  	CURRENT
 };
 
 enum Sensor_Index_1 {
@@ -44,7 +44,7 @@ enum Sensor_Index_2 {
 
 
 
-static const int NUM_SENSORS = 6;
+static const int NUM_SENSORS = 9;
 
 struct Sensor_Configuration {
 	Sensor_Type type;
@@ -64,14 +64,6 @@ class Sensor_Group {
 
 
 		virtual ~Sensor_Group() = 0;
-
-
-		/**
-		* Connect to a sensor group on an XMEGA
-		* @return connection status
-		*
-		virtual	bool connect() = 0;
-		*/
 		
 		/**
 		* Virtual function implemented by child classes 
@@ -95,17 +87,9 @@ class Sensor_Group {
 		* Helper function
 		* Refreshes the local data array from the spi buffers
 		**/
-		virtual void refresh_data(Spi * spi);	
+		void refresh_data(Spi * spi);	
 
-    /**
-    * Getter for name
-    **/
-    virtual const string & get_name();
-
-    /**
-    * Getter for name
-    **/
-    virtual const array<string, MAX_SENSORS> & get_name_array();
+		void print_data();
 
 
 	protected:
@@ -117,12 +101,12 @@ class Sensor_Group {
 		vector<double> data;
 
 		mutex sensor_group_mutex;
-		const size_t first_index = 0; // index offset to read from spi
-		const size_t device = 0; //xmega device number (0 or 1)
-		const size_t count = 0; //number of sensors
-    const array<double, MAX_SENSORS> translation_array = {{0}};
-    const string name = "Sensor Group";
-    const array<string, MAX_SENSORS> name_array = {{"Sensor Group"}};
+		size_t first_index = 0; // index offset to read from spi
+		size_t device = 0; //xmega device number (0 or 1)
+		size_t count = 0; //number of sensors
+    	array<double, MAX_SENSORS> translation_array = {{0}};
+    	string name = "Sensor Group";
+    	array<string, MAX_SENSORS> name_array = {{"Sensor Group"}};
 
 };
 
@@ -149,23 +133,6 @@ class Thermocouple : public Sensor_Group {
 		**/
 		virtual void refresh_data(Spi * spi);	
 
-    /**
-    * Getter for name
-    **/
-    virtual const string & get_name();
-
-    /**
-    * Getter for name
-    **/
-    virtual const array<string, MAX_SENSORS> & get_name_array();
-
-		const size_t first_index = THERMOCOUPLE_INDEX; // index offset to read from spi
-		const size_t device = XMEGA2; //xmega device number (0 or 1)
-		const size_t count = 4; //number of sensors
-    const array<double, MAX_SENSORS> translation_array = {{0.25, 0.25, 0.25, 0.25, 0.0625}};
-    const string name = "Thermocouple";
-    const array<string, MAX_SENSORS> name_array = {{"T1", "T2", "T3", "T4 Ext", "T4 Int"}};
-
 	private:
 		/**
 		* Simulates set values in the vector
@@ -190,12 +157,6 @@ class XAccelerometer : public Sensor_Group {
 		**/
 		void reset();
 
-		const size_t first_index = X_ACCELERATION_INDEX; // index offset to read from spi
-		const size_t device = XMEGA1; //xmega device number (0 or 1)
-		const size_t count = 3; //number of sensors
-    const array<double, MAX_SENSORS> translation_array = {{ADC_TRANS,ADC_TRANS,ADC_TRANS}};
-    const string name = "X Accel";
-    const array<string, MAX_SENSORS> name_array = {{"X1", "X2", "X3"}};
 
 	private:
 		/**
@@ -221,12 +182,6 @@ class YZAccelerometer : public Sensor_Group {
 		**/
 		void reset();
 
-		const size_t first_index = YZ_ACCELERATION_INDEX; // index offset to read from spi
-		const size_t device = XMEGA2; //xmega device number (0 or 1)
-		const size_t count = 2; //number of sensors
-    const array<double, MAX_SENSORS> translation_array = {{ADC_TRANS,ADC_TRANS,ADC_TRANS}};
-    const string name = "YZ Accel";
-    const array<string, MAX_SENSORS> name_array = {{"Y", "Z"}};
 
 	private:
 		/**
@@ -253,12 +208,6 @@ class Ride_Height : public Sensor_Group {
 		void reset();
 
 		
-		const size_t first_index = RIDE_HEIGHT_INDEX; // index offset to read from spi
-		const size_t device = XMEGA2; //xmega device number (0 or 1)
-		const size_t count = 3; //number of sensors
-    const array<double, MAX_SENSORS> translation_array = {{ADC_TRANS,ADC_TRANS,ADC_TRANS}};
-    const string name = "Ride Height";
-    const array<string, MAX_SENSORS> name_array = {{"RH1", "RH2", "RH3"}};
 
 	private:
 		/**
@@ -285,13 +234,6 @@ class Tape_Count : public Sensor_Group {
 		**/
 		void reset();
 
-		
-		const size_t first_index = TAPE_COUNT_INDEX; // index offset to read from spi
-		const size_t device = XMEGA2; //xmega device number (0 or 1)
-		const size_t count = 1; //number of sensors
-    const array<double, MAX_SENSORS> translation_array = {{1.0}};
-    const string name = "Tape Count";
-    const array<string, MAX_SENSORS> name_array = {{"Count"}};
 
 	private:
 		/**
@@ -318,12 +260,6 @@ class Optical : public Sensor_Group {
 		void reset();
 
 
-		const size_t first_index = OPTICAL_INDEX; // index offset to read from spi
-		const size_t device = XMEGA1; //xmega device number (0 or 1)
-		const size_t count = 2; //number of sensors
-    const array<double, MAX_SENSORS> translation_array = {{0.0018310542,1}};
-    const string name = "Optical";
-    const array<string, MAX_SENSORS> name_array = {{"RPM", "Count"}};
 
 	private:
 		/**
@@ -350,12 +286,6 @@ class Brake_Pressure : public Sensor_Group {
 		void reset();
 
 
-		const size_t first_index = BRAKE_PRESSURE_INDEX; // index offset to read from spi
-		const size_t device = XMEGA1; //xmega device number (0 or 1)
-		const size_t count = 1; //number of sensors
-    const array<double, MAX_SENSORS> translation_array = {{ADC_TRANS}};
-    const string name = "Brake Pressure";
-    const array<string, MAX_SENSORS> name_array = {{"Pressure"}};
 
 	private:
 		/**
@@ -383,12 +313,6 @@ class Battery : public Sensor_Group {
 		void reset();
 
 
-		const size_t first_index = BATTERY_CELL_INDEX; // index offset to read from spi
-		const size_t device = XMEGA2; //xmega device number (0 or 1)
-		const size_t count = 2; //number of sensors
-    const array<double, MAX_SENSORS> translation_array = {{ADC_TRANS, ADC_TRANS}};
-    const string name = "Battery";
-    const array<string, MAX_SENSORS> name_array = {{"B1", "B2"}};
 
 	private:
 		/**
@@ -415,12 +339,6 @@ class Current : public Sensor_Group {
 		void reset();
 
 
-		const size_t first_index = CURRENT_INDEX; // index offset to read from spi
-		const size_t device = XMEGA2; //xmega device number (0 or 1)
-		const size_t count = 1; //number of sensors
-    const array<double, MAX_SENSORS> translation_array = {{0.1}};
-    const string name = "Current";
-    const array<string, MAX_SENSORS> name_array = {{"C1"}};
 
 
 	private:
