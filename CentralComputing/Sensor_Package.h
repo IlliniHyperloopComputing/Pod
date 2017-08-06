@@ -27,8 +27,9 @@ class Sensor_Package {
 		/**
 		* Calls update on every sensor group
 		* @param transfer the Xmega transfer struct
+		* @return status of transfer
 		**/
-		void update(Xmega_Transfer & transfer);
+		uint8_t update(Xmega_Transfer & transfer);
 
 		/**
 		* Sends a reset command to each sensor group
@@ -45,6 +46,19 @@ class Sensor_Package {
 		* Prints the status of all sensors to output.  For debugging only
 		**/
 		void print_status();
+
+		/**
+		* Get xmega sensor status from specific device
+		* @return uint8_t sensor_status
+		**/
+    uint8_t get_sensor_status(uint8_t device);
+
+		/**
+		* Get xmega state from specific device
+		* @return uint8_t state
+		**/
+    uint8_t get_state(uint8_t device);
+
 
 		static long long get_current_time();
 		static long long start_time;

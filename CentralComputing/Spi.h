@@ -34,8 +34,7 @@ enum Xmega_Transmission_Failure_t: uint8_t {
 
 enum Xmega_Command_t: uint8_t {
   //No Command
-  X_C_NONE = 0,
-  X_C_COLLECT = 1,
+  X_C_NONE = 1,
   X_C_MANUAL_BRAKE = 2,
   //TODO: Add others as needed
 };

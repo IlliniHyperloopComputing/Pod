@@ -39,8 +39,8 @@ uint16_t accel_1 = 0;
 uint16_t accel_2 = 0;
 uint16_t accel_3 = 0;
 
-#define SET_BRAKE_LOW()   PORTK.OUT &= !(PIN3_bm)
-#define SET_BRAKE_HIGH()  PORTK.OUT |= (PIN3_bm)
+#define SET_BRAKE_LOW()   //PORTK.OUT &= !(PIN3_bm)
+#define SET_BRAKE_HIGH()  //PORTK.OUT |= (PIN3_bm)
 
 
 /*
@@ -207,7 +207,7 @@ int main (void)
 					true_accel = accel_1;
 				}
 				else if(accel_2 > accel_3){
-					true_accel = accel_3
+					true_accel = accel_3;
 				}
 				else{
 					true_accel = accel_2;
