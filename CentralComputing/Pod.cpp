@@ -14,8 +14,11 @@ Sensor_Package * sensors;
 Pod_State * state;
 
 volatile bool running = true;
+volatile bool send_manual_brake = false;
 
-std::tuple<bool, vector<Sensor_Configuration>> configs;
+int consecutive_errors_1 = 0;
+int consecutive_errors_2 = 0;
+
 
 /**
 * Gets new sensor values from the XMEGA
@@ -24,18 +27,47 @@ void sensor_loop() {
   int i = 0;
 	Xmega_Transfer transfer = {0,X_C_NONE, X_R_ALL};
 	while(running){
-		
-    transfer.device = 0;
-		sensors->update(transfer);
-		usleep(25000);
 
-    transfer.device = 1;
-		sensors->update(transfer);
-		usleep(25000);
-
-    if(i % 10 == 0){
-      sensors->print_status();
+    //Xmega1
+	  transfer.device = 0;
+    if(send_manual_brake){
+      transfer.cmd = X_C_MANUAL_BRAKE;
+      send_manual_brake = 0;
     }
+    else{
+      transfer.cmd = X_C_NONE;
+    }
+    uint8_t stat = sensors->update(transfer);
+    if(stat != X_TF_NONE){
+      consecutive_errors_1++;
+    }
+    else{
+      consecutive_errors_1 = 0;
+    }
+
+    //Sleep for 25 milliseconds
+    usleep(25000);
+
+    //Xmega2
+    transfer.device = 1;
+    transfer.cmd = X_C_NONE;
+    sensors->update(transfer);
+    if(stat != X_TF_NONE){
+      consecutive_errors_2++;
+    }
+    else{
+      consecutive_errors_2 = 0;
+    }
+
+
+    if(i % 5 == 0){
+      cout << "=============================="<< endl;
+      sensors->print_status();
+      printf("Xmega1 State: %d \t Xmega2 State: %d \n", sensors->get_state(0), sensors->get_state(1));
+      printf("Xmega1 Sensor_Status: %x Xmega2 Sensor_Status: %x\n", sensors->get_sensor_status(0), sensors->get_sensor_status(1));
+      printf("Consecutive1: %d \t Consecutive2: %d\n", consecutive_errors_1, consecutive_errors_2);
+    }
+
     i++;
 	}
 
@@ -48,14 +80,28 @@ void network_loop() {
 
 void int_handler(int signum) {
   (void)signum;
-	running = false;
+  running = false;
+  return;
 }
 
+//Send SIGUSR1 (10, 16, 30)
+void cmd_handler(int signum) {
+  (void)signum;
+  send_manual_brake = 1;
+}
 
 int pod(int argc, char** argv) {
-	
-	signal(SIGINT, int_handler);
-	configs = parse_input(argc, argv);
+    
+  struct sigaction act;
+  memset(&act, 0, sizeof(struct sigaction));
+
+  act.sa_handler = &int_handler;
+  sigaction(SIGINT, &act, NULL);
+
+  act.sa_handler = &cmd_handler;
+  sigaction(SIGUSR1, &act, NULL);
+
+	auto configs = parse_input(argc, argv);
 	state = new Pod_State();
 		
 	sensors = new Sensor_Package(std::get<1>(configs), std::get<0>(configs));

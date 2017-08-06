@@ -33,5 +33,4 @@ void Sensor_Group::print_data() {
   for(uint32_t i = 0; i < data.size(); i++){
 	cout << "\t" << name_array[i] << ":\t"<< data[i] << endl;
   }
-  cout << endl;
 }

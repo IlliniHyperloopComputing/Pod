@@ -108,15 +108,19 @@ long long Sensor_Package::get_current_time() {
 	return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
 }
 
-void Sensor_Package::update(Xmega_Transfer & transfer) {
+uint8_t Sensor_Package::update(Xmega_Transfer & transfer) {
 	//TODO handle transferring in non simulation cases
 
 	if(connect) {
-		spi->transfer(transfer);	
-	}
-  
-	for(auto const & pair : sensor_groups){
-		pair.second->update(spi);
+		uint8_t status = spi->transfer(transfer);	
+
+    if(status == X_TF_NONE){
+      for(auto const & pair : sensor_groups){
+        pair.second->update(spi);
+      }
+    }
+
+    return status;
 	}
 }
 
@@ -133,6 +137,15 @@ void Sensor_Package::print_status() {
 		s->print_data();
 	}
 }
+
+uint8_t Sensor_Package::get_sensor_status(uint8_t device){
+  return spi->get_sensor_status(device);
+}
+
+uint8_t Sensor_Package::get_state(uint8_t device){
+  return spi->get_state(device);
+}
+
 
 vector<double> Sensor_Package::get_sensor_data(Sensor_Type type) {
 	return sensor_groups[type]->get_data();
