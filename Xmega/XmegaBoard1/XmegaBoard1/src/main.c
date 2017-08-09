@@ -39,8 +39,8 @@ uint16_t accel_1 = 0;
 uint16_t accel_2 = 0;
 uint16_t accel_3 = 0;
 
-#define SET_BRAKE_LOW()   //PORTK.OUT &= !(PIN3_bm)
-#define SET_BRAKE_HIGH()  //PORTK.OUT |= (PIN3_bm)
+#define SET_BRAKE_LOW()   PORTK.OUT &= !(PIN3_bm)
+#define SET_BRAKE_HIGH()  PORTK.OUT |= (PIN3_bm)
 
 
 /*
@@ -173,7 +173,7 @@ int main (void)
 		
 	state = STATE_COLLECT;
 	
-	ioport_set_pin_level(LED_0_PIN, LED_0_ACTIVE);
+	//ioport_set_pin_level(LED_0_PIN, LED_0_ACTIVE);
 	while (1) {
 		
 		//SPIC handler
@@ -220,6 +220,7 @@ int main (void)
 				if(recv_cmd == STATE_MANUAL_BRAKE){
 					brake_manual_start = rtc_get_time();
 					SET_BRAKE_HIGH();
+					ioport_set_pin_level(LED_0_PIN, LED_0_INACTIVE);
 					state = recv_cmd;
 				}
 				recv_cmd = 0;
@@ -233,6 +234,7 @@ int main (void)
 				
 				if(rtc_get_time() - brake_manual_start >= APROX_HALF_SECOND ){
 					SET_BRAKE_LOW();
+					ioport_set_pin_level(LED_0_PIN, LED_0_INACTIVE);
 					state = STATE_COLLECT;
 				}
 				recv_cmd = 0;
