@@ -39,8 +39,9 @@ uint16_t accel_1 = 0;
 uint16_t accel_2 = 0;
 uint16_t accel_3 = 0;
 
-#define SET_BRAKE_LOW()   PORTK.OUT &= !(PIN3_bm)
-#define SET_BRAKE_HIGH()  PORTK.OUT |= (PIN3_bm)
+//EXT3-7
+#define SET_BRAKE_LOW()   PORTD.OUT &= !(PIN5_bm)
+#define SET_BRAKE_HIGH()  PORTD.OUT |= (PIN5_bm)
 
 
 /*
@@ -151,7 +152,7 @@ int main (void)
 	
 	ioport_configure_port_pin(&PORTK, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN );
 	ioport_configure_port_pin(&PORTF, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN );
-	ioport_configure_port_pin(&PORTK, PIN3_bm, IOPORT_DIR_OUTPUT | IOPORT_TOTEM | IOPORT_INIT_LOW );
+	ioport_configure_port_pin(&PORTD, PIN5_bm, IOPORT_DIR_OUTPUT | IOPORT_TOTEM | IOPORT_INIT_LOW );
 	
 	PMIC.CTRL |= PMIC_MEDLVLEN_bm;
 	PMIC.CTRL |= PMIC_LOLVLEN_bm;
