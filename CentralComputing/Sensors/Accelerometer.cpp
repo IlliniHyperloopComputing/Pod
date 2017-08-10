@@ -40,7 +40,6 @@ void XAccelerometer::simulation_1() {
 	auto start = Sensor_Package::start_time;
 	auto now = Sensor_Package::get_current_time();
 	auto difference = now - start;
-	cout << difference << endl;
 	
 	
 	sensor_group_mutex.lock();

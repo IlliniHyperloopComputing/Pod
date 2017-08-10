@@ -39,6 +39,18 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
 			case CURRENT:
 				group = new Current(c);
 				break;
+			case TRUE_POSITION:
+				group = new True_Position(c, this);
+				break;
+			case TRUE_VELOCITY:
+				group = new True_Velocity(c, this);
+				break;
+			case TRUE_ACCELERATION:
+				group = new True_Acceleration(c, this);
+				break;
+			case PULL_TAB:
+				group = new Pull_Tab(c);
+				break;
 			default:
 				cout << "Something went wrong creating sensors. " << endl;
 				group = NULL;
@@ -95,6 +107,7 @@ Sensor_Package::~Sensor_Package() {
 
 long long Sensor_Package::get_current_time() {
 
+	return 0;
 	auto now = std::chrono::system_clock::now();
 	auto duration = now.time_since_epoch();
 	return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
