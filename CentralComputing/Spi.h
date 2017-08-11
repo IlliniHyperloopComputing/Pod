@@ -34,9 +34,13 @@ enum Xmega_Transmission_Failure_t: uint8_t {
 
 enum Xmega_Command_t: uint8_t {
   //No Command
-  X_C_NONE = 1,
+  X_C_NONE = 0,
+  //No Command
+  X_C_COLLECT = 1,
+  //Manual Brake  (short birst)
   X_C_MANUAL_BRAKE = 2,
-  //TODO: Add others as needed
+  //PID brake, using brake pressure as the variable
+  X_C_PID_BRAKE = 3,
 };
 
 enum Xmega_Request_t: uint8_t {
