@@ -16,6 +16,7 @@
 
 #define STATE_COLLECT 1
 #define STATE_MANUAL_BRAKE 2
+#define STATE_PID_BRAKE 3
 
 #define ACCEL_MIN (1000)
 #define ACCEL_MAX (10000)
@@ -42,7 +43,8 @@ uint16_t accel_3 = 0;
 //EXT3-7
 #define SET_BRAKE_LOW()   PORTD.OUT &= !(PIN5_bm)
 #define SET_BRAKE_HIGH()  PORTD.OUT |= (PIN5_bm)
-
+#define MAX_BRAKE_PRESSURE 0
+#define MAX_BRAKE_TIME 10
 
 /*
 0,1 == X0
@@ -53,6 +55,10 @@ uint16_t accel_3 = 0;
 12,13,14,15 == Optical. Rotation count
 
 */
+#define ADC0_bp 0
+#define ADC1_bp 1
+#define ADC2_bp 3
+#define BRAKE_bp 4
 
 //lock
 volatile uint8_t spi_isr = 0;
@@ -77,7 +83,7 @@ uint32_t true_rotation_count = 0;
 uint16_t true_accel = 0;
 
 uint32_t brake_manual_start = 0;
-
+uint32_t brake_pid_start = 0;
 
 void handle_optical(){
 	uint8_t val_1 = (PORTK.IN & PIN2_bm) >> PIN2_bp;
@@ -165,10 +171,10 @@ int main (void)
 	tc_write_clock_source(&TCC0, TC_CLKSEL_DIV1_gc);
 	
 	sensor_status = 0;
-	sensor_status |= init_adc(&TWIF, ACCEL_SENSOR_1, ADC_STREAMING) << 0;
-	sensor_status |= init_adc(&TWIF, ACCEL_SENSOR_2, ADC_STREAMING) << 1;
-	sensor_status |= init_adc(&TWIF, ACCEL_SENSOR_3, ADC_STREAMING) << 2;
-	sensor_status |= init_adc(&TWIF, BRAKE_SENSOR_1, ADC_STREAMING) << 3;	
+	init_adc(&TWIF, ACCEL_SENSOR_1, ADC_STREAMING);
+	init_adc(&TWIF, ACCEL_SENSOR_2, ADC_STREAMING);
+	init_adc(&TWIF, ACCEL_SENSOR_3, ADC_STREAMING);
+	init_adc(&TWIF, BRAKE_SENSOR_1, ADC_STREAMING);	
 	
 	sei();            // enable global interrupts
 		
@@ -186,10 +192,10 @@ int main (void)
 		if(spi_transfer == 0){//Do anything that is not SPI related
 			
 			//Sensor sanity check
-			sensor_status |= (accel_1 < ACCEL_MIN || accel_1 > ACCEL_MAX) << 0;
-			sensor_status |= (accel_2 < ACCEL_MIN || accel_2 > ACCEL_MAX) << 1;
-			sensor_status |= (accel_3 < ACCEL_MIN || accel_3 > ACCEL_MAX) << 2;
-			sensor_status |= (brake_pressure < BRAKE_MIN || brake_pressure > BRAKE_MAX) << 3;
+			sensor_status |= (accel_1 < ACCEL_MIN || accel_1 > ACCEL_MAX) << ADC0_bp;
+			sensor_status |= (accel_2 < ACCEL_MIN || accel_2 > ACCEL_MAX) << ADC1_bp;
+			sensor_status |= (accel_3 < ACCEL_MIN || accel_3 > ACCEL_MAX) << ADC2_bp;
+			sensor_status |= (brake_pressure < BRAKE_MIN || brake_pressure > BRAKE_MAX) << BRAKE_bp;
 			
 			//Select median accelerometer
 			if(accel_1 > accel_2){
@@ -221,23 +227,47 @@ int main (void)
 				if(recv_cmd == STATE_MANUAL_BRAKE){
 					brake_manual_start = rtc_get_time();
 					SET_BRAKE_HIGH();
-					ioport_set_pin_level(LED_0_PIN, LED_0_INACTIVE);
+					ioport_set_pin_level(LED_0_PIN, LED_0_ACTIVE);
+					state = recv_cmd;
+				}
+				else if(recv_cmd == STATE_PID_BRAKE){
+					brake_pid_start = rtc_get_time();
 					state = recv_cmd;
 				}
 				recv_cmd = 0;
 			}
 			else if(state == STATE_MANUAL_BRAKE){
-				//Switch to 
+				//Switch to default state
 				if(recv_cmd == STATE_COLLECT){
 					brake_manual_start = 0;//set this to zero to trigger the following if()
 					state = STATE_COLLECT;
 				}
 				
-				if(rtc_get_time() - brake_manual_start >= APROX_HALF_SECOND ){
+				if((rtc_get_time() - brake_manual_start) >= APROX_HALF_SECOND ){
 					SET_BRAKE_LOW();
 					ioport_set_pin_level(LED_0_PIN, LED_0_INACTIVE);
 					state = STATE_COLLECT;
 				}
+				recv_cmd = 0;
+			}
+			else if(state == STATE_PID_BRAKE){
+				if(recv_cmd == STATE_COLLECT){
+					brake_pid_start = 0;//set this to zero to trigger the following if()
+					state = STATE_COLLECT;
+				}
+				
+				//Check if we are under are maximum time to apply the brakes
+				//check if we are under under max brake pressure
+				//check the sensor does not have an error
+				uint8_t cond = (rtc_get_time() - brake_pid_start >= MAX_BRAKE_TIME) && (brake_pressure < MAX_BRAKE_PRESSURE) && ((sensor_status >> BRAKE_bp) & 0x1);
+				if(cond){
+					SET_BRAKE_HIGH();
+				}
+				else{
+					SET_BRAKE_LOW();
+				}
+				
+				
 				recv_cmd = 0;
 			}
 			
@@ -289,10 +319,10 @@ int main (void)
 				sensor_data[7] = recieved_data[0];
 				brake_pressure |= recieved_data[1];
 				brake_pressure |= recieved_data[0] << 8;
-				
 			}
-			
-		
+			else{
+				brake_pressure = 0;
+			}
 		}
 	}
 }
