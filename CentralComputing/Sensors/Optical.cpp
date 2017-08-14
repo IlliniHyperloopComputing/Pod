@@ -47,3 +47,18 @@ void Optical::simulation_1() {
 	}
 	sensor_group_mutex.unlock();
 }
+
+uint8_t *  Optical::get_data_buffer() {
+	uint8_t * buffer = (uint8_t * )malloc(get_buffer_size());
+	
+	memcpy(buffer, &data[0], sizeof(double));
+	uint16_t value = data[1];
+	memcpy(buffer + sizeof(double), &value, sizeof(uint16_t));
+	
+	return buffer;
+}
+
+size_t Optical::get_buffer_size() {
+	// double + uint16_t 
+	return sizeof(double) + sizeof(uint16_t);
+}

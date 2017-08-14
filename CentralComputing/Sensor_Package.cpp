@@ -107,7 +107,6 @@ Sensor_Package::~Sensor_Package() {
 
 long long Sensor_Package::get_current_time() {
 
-	return 0;
 	auto now = std::chrono::system_clock::now();
 	auto duration = now.time_since_epoch();
 	return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
@@ -133,6 +132,12 @@ void Sensor_Package::reset() {
 }
 
 void Sensor_Package::print_status() {
+	
+	auto start = Sensor_Package::start_time;
+	auto now = Sensor_Package::get_current_time();
+	auto difference = now - start;
+	cout << "\n----------------Sensor Status at time " << difference << "----------------\n" << endl;
+	
 	for(auto const & pair : sensor_groups){
 		Sensor_Group * s = pair.second;
 		s->print_data();

@@ -7,9 +7,9 @@ Pull_Tab::Pull_Tab(Sensor_Configuration configuration) : Sensor_Group(configurat
 	count = 1;
 	data = vector<double>(count);	
 	
-	translation_array = {{0.25, 0.25, 0.25, 0.25, 0.0625}};
+	translation_array = {{1.0 }};
 	name = "Pull_Tab";
-	name_array = {{"T1", "T2", "T3", "T4 Ext", "T4 Int"}};
+	name_array = {{"Tab"}};
 }
 
 Pull_Tab::~Pull_Tab(){
@@ -46,4 +46,16 @@ void Pull_Tab::simulation_1() {
 		data[i] = i;
 	}
 	sensor_group_mutex.unlock();
+}
+
+uint8_t *  Pull_Tab::get_data_buffer() {
+	uint8_t * buffer = (uint8_t * )malloc(get_buffer_size());
+	buffer[0] = data[0];	
+
+	return buffer;
+}
+
+size_t Pull_Tab::get_buffer_size() {
+	// 1 * uint16_t
+	return 1 * sizeof(uint8_t);
 }

@@ -84,6 +84,16 @@ class Sensor_Group {
 		virtual void reset() = 0;
 
 		/**
+		* Gets all data and stores it into a buffer
+		**/
+		virtual uint8_t * get_data_buffer() = 0;
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		virtual size_t get_buffer_size() = 0;
+
+		/**
 		* Returns all available sensor data
 		**/
 		virtual vector<double> get_data();
@@ -137,11 +147,17 @@ class Thermocouple : public Sensor_Group {
 		**/
 		void reset();
 
-		/** 
-		* Helper function
-		* Refreshes the local data array from the spi buffers
+		/**
+		* Gets all data and stores it into a buffer
 		**/
-		virtual void refresh_data(Spi * spi);	
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
+
+
 
 	private:
 		/**
@@ -166,6 +182,15 @@ class XAccelerometer : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 
 	private:
@@ -191,6 +216,15 @@ class YZAccelerometer : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 
 	private:
@@ -216,6 +250,15 @@ class Ride_Height : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 		
 
@@ -243,6 +286,15 @@ class Tape_Count : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 
 	private:
@@ -268,6 +320,15 @@ class Optical : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 
 
@@ -294,6 +355,15 @@ class Brake_Pressure : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 	private:
 		/**
@@ -319,6 +389,15 @@ class Battery : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 
 
@@ -345,6 +424,15 @@ class Current : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 
 
@@ -372,6 +460,15 @@ class Pull_Tab : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 
 	private:
@@ -391,6 +488,15 @@ class True_Sensor : public Sensor_Group {
 
 		void update(Spi * spi);
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 	
 	protected:
 		Sensor_Package * package;

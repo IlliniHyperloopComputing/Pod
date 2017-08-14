@@ -33,7 +33,7 @@ void sensor_loop() {
 		
 		sensors->update(transfer);
 		//sensors->print_status();
-		usleep(500);
+		usleep(10000);
 	}
 
 }
@@ -75,10 +75,11 @@ void read_loop() {
 	cout << "Read thread startup!" << endl;
 
 	char command_buffer = -1;
-	while(running && (read(clientFD, &command_buffer, 1) != -1)) {
+	while(running && (read(clientFD, &command_buffer, 1) > 0)) {
 		// TODO: parse command buffer, set up transfer or change states if necessary
-		usleep(500);
+		cout << "Received: " << command_buffer << endl;
 		command_buffer = -1;
+		usleep(10000);
 	}
 
 	cout << "Read thread exiting!" << endl;
@@ -91,6 +92,8 @@ void write_loop() {
 	bool active_connection = true;
 	while(active_connection && running) {
 		usleep(500);		
+		// TODO get status report, write to output
+
 	
 	}
 	cout << "Write thread exiting!" << endl;
