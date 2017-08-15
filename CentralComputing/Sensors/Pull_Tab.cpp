@@ -50,7 +50,10 @@ void Pull_Tab::simulation_1() {
 
 uint8_t *  Pull_Tab::get_data_buffer() {
 	uint8_t * buffer = (uint8_t * )malloc(get_buffer_size());
+
+	sensor_group_mutex.lock();
 	buffer[0] = data[0];	
+	sensor_group_mutex.unlock();
 
 	return buffer;
 }

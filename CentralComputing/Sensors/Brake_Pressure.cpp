@@ -49,11 +49,13 @@ void Brake_Pressure::simulation_1() {
 }
 
 uint8_t *  Brake_Pressure::get_data_buffer() {
+	sensor_group_mutex.lock();
 	uint8_t * buffer = (uint8_t * )malloc(get_buffer_size());
 	for(size_t i = 0; i < count; i++){
 		uint16_t value = data[i];
 		memcpy(buffer + i * sizeof(uint16_t), &value, sizeof(uint16_t));
 	}
+	sensor_group_mutex.unlock();
 
 	return buffer;
 }

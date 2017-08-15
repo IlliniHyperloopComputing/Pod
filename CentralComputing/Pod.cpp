@@ -3,6 +3,7 @@
 #include "Pod_State.h"
 #include <thread>
 #include <csignal>
+#include <mutex>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -13,6 +14,7 @@
 #include <unistd.h>
 #include <poll.h>
 
+
 using namespace std;
 
 Sensor_Package * sensors;
@@ -21,6 +23,7 @@ Pod_State * state;
 volatile bool running = true;
 int socketfd;
 int clientFD;
+
 
 std::tuple<bool, vector<Sensor_Configuration>> configs;
 
@@ -92,9 +95,8 @@ void write_loop() {
 	bool active_connection = true;
 	while(active_connection && running) {
 		usleep(500);		
-		// TODO get status report, write to output
-
-	
+		uint8_t * data = sensors->get_sensor_data_packet();	
+		write_all_to_socket(clientFD, data, sensors->get_sensor_data_packet_size());	
 	}
 	cout << "Write thread exiting!" << endl;
 }
@@ -286,7 +288,7 @@ ssize_t read_all_from_socket(int socket, char *buffer, size_t count) {
 	return bytes_read;
 }
 
-ssize_t write_all_to_socket(int socket, const char *buffer, size_t count) {
+ssize_t write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
 	size_t bytes_written = 0;
 	while(bytes_written != count){
 		//fprintf(stderr,"Writing to socket\n");

@@ -71,8 +71,10 @@ void True_Acceleration::update(Spi * spi) {
 }
 
 uint8_t *  True_Sensor::get_data_buffer() {
+	sensor_group_mutex.lock();
 	uint8_t * buffer = (uint8_t * )malloc(get_buffer_size());
 	memcpy(buffer, &data[0], sizeof(double));
+	sensor_group_mutex.unlock();
 	return buffer;
 }
 

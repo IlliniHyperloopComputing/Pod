@@ -49,10 +49,12 @@ void Current::simulation_1() {
 
 uint8_t *  Current::get_data_buffer() {
 	uint8_t * buffer = (uint8_t * )malloc(get_buffer_size());
+	sensor_group_mutex.lock();
 	for(size_t i = 0; i < count; i++){
 		uint16_t value = data[i];
 		memcpy(buffer + i * sizeof(uint16_t), &value, sizeof(uint16_t));
 	}
+	sensor_group_mutex.unlock();
 
 	return buffer;
 }

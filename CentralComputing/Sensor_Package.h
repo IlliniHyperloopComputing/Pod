@@ -56,9 +56,17 @@ class Sensor_Package {
 		
 		/**
 		* Formats data into a network packet
-		* @return a buffer contain
+		* @return a buffer containing the data for all sensors
 		**/
-		char * get_sensor_data_packet(Sensor_Type type);
+		uint8_t * get_sensor_data_packet();
+
+		/**
+		* Gets the size of the network data packet
+		* @return the size
+		**/
+		size_t get_sensor_data_packet_size();
+
+		
 		
 		
 		static long long start_time;

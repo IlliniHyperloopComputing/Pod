@@ -50,10 +50,12 @@ void Optical::simulation_1() {
 
 uint8_t *  Optical::get_data_buffer() {
 	uint8_t * buffer = (uint8_t * )malloc(get_buffer_size());
+	sensor_group_mutex.lock();
 	
 	memcpy(buffer, &data[0], sizeof(double));
 	uint16_t value = data[1];
 	memcpy(buffer + sizeof(double), &value, sizeof(uint16_t));
+	sensor_group_mutex.unlock();
 	
 	return buffer;
 }
