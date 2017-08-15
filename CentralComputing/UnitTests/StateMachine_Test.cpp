@@ -126,9 +126,6 @@ bool StateMachine_Test::process(string word, Pod_State& pod) {
 	else if ( word == "MOVE_SAFE_MODE" || word == "MV_S_M") {
 		pod.move_safe_mode();
 	}
-	else if ( word == "MOVE_FLIGHT_ACCELERATION" || word == "MV_F_A") {
-		pod.move_flight_acceleration();
-	}
 	else if ( word == "EMERGENCY_BRAKE" || word == "E_BRAKE" ) {
 		pod.emergency_brake();
 	}
@@ -236,10 +233,6 @@ void StateMachine_Test::random(int num, Pod_State& pod) {
 		else if ( r == 2 ) {
 			cout << "~move_safe_mode"<< endl;
 			pod.move_safe_mode();
-		}
-		else if ( r == 3 ) {
-			cout << "~move_flight_acceleration"<< endl;
-			pod.move_flight_acceleration();
 		}
 		else if ( r == 4 ) {
 			cout << "~emergency_brake"<< endl;
