@@ -120,13 +120,13 @@ void Pod_State::brake() {
 
 
 // State Machine State functions
-void ST_Pod_Startup() {
+void Pod_State::ST_Pod_Startup() {
 	std::cout << "Entering: Pod Startup" << std::endl;
 	//std::cout << GetCurrentState() << std::endl;
 	// TODO implement here
 }
 
-void ST_Safety_Setup() {
+void Pod_State::ST_Safety_Setup() {
 	std::cout << "Entering: Safety Setup" << std::endl;
 	//std::cout << GetCurrentState() << std::endl;
 	// TODO implement here

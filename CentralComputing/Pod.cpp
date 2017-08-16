@@ -13,16 +13,19 @@
 #include <netdb.h>
 #include <unistd.h>
 #include <poll.h>
+#include <SafeQueue.hpp>
 
 
 using namespace std;
 
 Sensor_Package * sensors;
 Pod_State * state;
+mutex state_mutex;
 
 volatile bool running = true;
 int socketfd;
 int clientFD;
+SafeQueue<Xmega_Command_t> * command_queue;
 
 
 std::tuple<bool, vector<Sensor_Configuration>> configs;
@@ -33,7 +36,7 @@ std::tuple<bool, vector<Sensor_Configuration>> configs;
 void sensor_loop() {
 	Xmega_Transfer transfer = {0,X_C_NONE, X_R_ALL};
 	while(running){
-		
+		transfer.cmd = command_queue->dequeue();		
 		sensors->update(transfer);
 		//sensors->print_status();
 		usleep(10000);
@@ -81,6 +84,7 @@ void read_loop() {
 	while(running && (read(clientFD, &command_buffer, 1) > 0)) {
 		// TODO: parse command buffer, set up transfer or change states if necessary
 		cout << "Received: " << command_buffer << endl;
+		parse_command(command_buffer);
 		command_buffer = -1;
 		usleep(10000);
 	}
@@ -89,14 +93,47 @@ void read_loop() {
 	
 }
 
+void parse_command(char command){
+	Command c = (Command)command;
+	state_mutex.lock();
+	switch(c) {
+		case SAFETY_SETUP:
+			state->move_safety_setup();
+			break;
+		case SAFE_MODE:
+			state->move_safe_mode();
+			break;
+		case FUNCTIONAL_TEST:
+			state->move_functional_tests();
+			break;
+		case LAUNCH_READY:
+			state->move_launch_ready();
+			break;
+		case BRAKE:
+			state->brake();
+			break;
+		case EMERGENCY_BRAKE:
+			state->emergency_brake();
+			break;
+		case RESET_SENSORS:
+			command_queue->enqueue(X_C_RESET);
+			break;
+		case CALIBRATE_SENSORS:
+			command_queue->enqueue(X_C_CALIBRATE);
+			break;	
+	}
+	state_mutex.unlock();
+}
+
 void write_loop() {
 
 	cout << "Write thread startup!" << endl;
 	bool active_connection = true;
 	while(active_connection && running) {
-		usleep(500);		
+		usleep(10000);		
 		uint8_t * data = sensors->get_sensor_data_packet();	
-		write_all_to_socket(clientFD, data, sensors->get_sensor_data_packet_size());	
+		int result = write_all_to_socket(clientFD, data, sensors->get_sensor_data_packet_size());	
+		active_connection = result != -1;
 	}
 	cout << "Write thread exiting!" << endl;
 }
@@ -117,9 +154,9 @@ int pod(int argc, char** argv) {
 	sigemptyset( &a.sa_mask );
 	sigaction( SIGINT, &a, NULL );
 	configs = parse_input(argc, argv);
-	state = new Pod_State();
-		
+	state = new Pod_State();	
 	sensors = new Sensor_Package(std::get<1>(configs), std::get<0>(configs));
+	command_queue = new SafeQueue<Xmega_Command_t>();
 	printf("Created sensor package\n");
 	thread sensor_thread(sensor_loop);
 

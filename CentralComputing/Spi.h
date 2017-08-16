@@ -36,6 +36,9 @@ enum Xmega_Command_t: uint8_t {
   //No Command
   X_C_NONE = 0,
   //TODO: Add others as needed
+  X_C_RESET = 1,
+  X_C_CALIBRATE = 2,
+  X_C_BRAKE = 3
 };
 
 enum Xmega_Request_t: uint8_t {
