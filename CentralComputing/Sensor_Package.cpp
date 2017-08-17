@@ -154,10 +154,8 @@ size_t Sensor_Package::get_sensor_data_packet_size() {
 	for(auto & pair : sensor_groups) {
 			size += pair.second->get_buffer_size() + 1;
 			count += 1;
-		
-
 	}
-	cout << count << endl;
+	size += 11;	//Space for Xmega Responding and Pod State
 	return size;
 }
 
@@ -166,13 +164,26 @@ uint8_t * Sensor_Package::get_sensor_data_packet() {
 	uint8_t * buffer = (uint8_t *) malloc(get_sensor_data_packet_size());
 	size_t index = 0;
 	for(auto & pair : sensor_groups) {
-//		if(pair.first == RIDE_HEIGHT || pair.first == THERMOCOUPLE || pair.first == BATTERY || pair.first == TRUE_POSITION || pair.first == PULL_TAB || pair.first == OPTICAL || pair.first == TRUE_VELOCITY || pair.first == ACCELEROMETERX || pair.first == CURRENT || pair.first == TRUE_ACCELERATION ) {
 			buffer[index] = pair.first;
 			uint8_t * data = pair.second->get_data_buffer();
 			size_t data_size = pair.second->get_buffer_size();
 			memcpy(buffer + index + 1, data, data_size);
 			index += data_size + 1;
 			free(data);
+	}
+	//Xmega State
+	memset(buffer + index, 0, 11);
+	buffer[index] = XMEGA_STATE;
+	buffer[index + 3] = XMEGA_STATUS;
+	buffer[index + 6] = XMEGA_RESPONDING;
+	buffer[index + 9] = POD_STATE;
+	if(connect){
+		buffer[index + 1] = spi->get_state(XMEGA1);
+		buffer[index + 2] = spi->get_state(XMEGA2);
+		buffer[index + 4] = spi->get_sensor_status(XMEGA1);
+		buffer[index + 5] = spi->get_sensor_status(XMEGA2);
+		
+		// TODO: Set up XMEGA Responding buffer
 	}
 
 	return buffer;

@@ -127,7 +127,11 @@ void write_loop() {
 	while(active_connection && running) {
 		usleep(1000000);		
 		uint8_t * data = sensors->get_sensor_data_packet();	
-		int result = write_all_to_socket(clientFD, data, sensors->get_sensor_data_packet_size());	
+		size_t size = sensors->get_sensor_data_packet_size();
+		state_mutex.lock();
+		data[size-1] = state->get_current_state();
+		state_mutex.unlock();
+		int result = write_all_to_socket(clientFD, data, size);	
 		free(data);
 		active_connection = result != -1;
 	}
