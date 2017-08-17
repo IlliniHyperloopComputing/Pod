@@ -150,9 +150,14 @@ vector<double> Sensor_Package::get_sensor_data(Sensor_Type type) {
 
 size_t Sensor_Package::get_sensor_data_packet_size() {
 	size_t size = 0;
+	size_t count = 0;
 	for(auto & pair : sensor_groups) {
-		size += pair.second->get_buffer_size() + 1;
+			size += pair.second->get_buffer_size() + 1;
+			count += 1;
+		
+
 	}
+	cout << count << endl;
 	return size;
 }
 
@@ -161,12 +166,13 @@ uint8_t * Sensor_Package::get_sensor_data_packet() {
 	uint8_t * buffer = (uint8_t *) malloc(get_sensor_data_packet_size());
 	size_t index = 0;
 	for(auto & pair : sensor_groups) {
-		buffer[index] = pair.first;
-		uint8_t * data = pair.second->get_data_buffer();
-		size_t data_size = pair.second->get_buffer_size();
-		memcpy(buffer + index + 1, data, data_size);
-		index += data_size;
-		free(data);
+//		if(pair.first == RIDE_HEIGHT || pair.first == THERMOCOUPLE || pair.first == BATTERY || pair.first == TRUE_POSITION || pair.first == PULL_TAB || pair.first == OPTICAL || pair.first == TRUE_VELOCITY || pair.first == ACCELEROMETERX || pair.first == CURRENT || pair.first == TRUE_ACCELERATION ) {
+			buffer[index] = pair.first;
+			uint8_t * data = pair.second->get_data_buffer();
+			size_t data_size = pair.second->get_buffer_size();
+			memcpy(buffer + index + 1, data, data_size);
+			index += data_size + 1;
+			free(data);
 	}
 
 	return buffer;

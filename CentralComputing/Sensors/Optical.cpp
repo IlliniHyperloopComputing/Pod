@@ -42,25 +42,29 @@ void Optical::simulation_1() {
 	//TODO calc some actual value
 	
 	sensor_group_mutex.lock();
+	/*
 	for(size_t i = 0; i < data.size(); i++) {
 		data[i] = i;
-	}
+	}*/
+	data[0] = 450;
+	data[1] = 400;
 	sensor_group_mutex.unlock();
 }
+
 
 uint8_t *  Optical::get_data_buffer() {
 	uint8_t * buffer = (uint8_t * )malloc(get_buffer_size());
 	sensor_group_mutex.lock();
 	
 	memcpy(buffer, &data[0], sizeof(double));
-	uint16_t value = data[1];
-	memcpy(buffer + sizeof(double), &value, sizeof(uint16_t));
+	uint32_t value = data[1];
+	memcpy(buffer + sizeof(double), &value, sizeof(uint32_t));
 	sensor_group_mutex.unlock();
 	
 	return buffer;
 }
 
 size_t Optical::get_buffer_size() {
-	// double + uint16_t 
-	return sizeof(double) + sizeof(uint16_t);
+	// double + uint32_t; 
+	return sizeof(double) + sizeof(uint32_t);
 }

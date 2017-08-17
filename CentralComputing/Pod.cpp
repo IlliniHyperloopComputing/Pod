@@ -46,33 +46,28 @@ void sensor_loop() {
 
 void network_loop() {
 
+	cout << "Server listening on socket " << socketfd << endl;
+	struct pollfd p;
+	p.fd = socketfd;
+	p.events = POLLIN;
+	int ret = 0;
 	while(running) {
-		
-		cout << "Server listening on socket " << socketfd << endl;
-		struct pollfd p;
-		p.fd = socketfd;
-		p.events = POLLIN;
-		int ret = 0;
-		while(ret == 0){
-			ret = poll(&p, 1, 1000);
-			if(ret == 1) {
-				clientFD = accept(socketfd, NULL, NULL);
-				if(clientFD > 0){
-					cout << "Connected!" << endl;
-					thread read_thread(read_loop);
-					thread write_thread(write_loop);
+		ret = poll(&p, 1, 1000);
+		if(ret == 1) {
+			clientFD = accept(socketfd, NULL, NULL);
+			if(clientFD > 0){
+				cout << "Connected!" << endl;
+				thread read_thread(read_loop);
+				thread write_thread(write_loop);
 
-					read_thread.join();
-					write_thread.join();
-				} else {
-					cout << "Accept failed, aborting" << endl;
-					break;
-				}
+				read_thread.join();
+				write_thread.join();
+				cout << "Waiting for another connection" << endl;
+			} else {
+				cout << "Accept failed, aborting" << endl;
+				break;
 			}
 		}
-		if(ret == -1)
-			break;
-
 	}
 	cout << "Network thread exiting!" << endl;
 }
@@ -82,8 +77,7 @@ void read_loop() {
 
 	char command_buffer = -1;
 	while(running && (read(clientFD, &command_buffer, 1) > 0)) {
-		// TODO: parse command buffer, set up transfer or change states if necessary
-		cout << "Received: " << command_buffer << endl;
+		cout << "Received: " << (int)command_buffer << endl;
 		parse_command(command_buffer);
 		command_buffer = -1;
 		usleep(10000);
@@ -123,6 +117,7 @@ void parse_command(char command){
 			break;	
 	}
 	state_mutex.unlock();
+	cout << "Current state is : " << state->get_current_state_string() << endl;
 }
 
 void write_loop() {
@@ -130,20 +125,26 @@ void write_loop() {
 	cout << "Write thread startup!" << endl;
 	bool active_connection = true;
 	while(active_connection && running) {
-		usleep(10000);		
+		usleep(1000000);		
 		uint8_t * data = sensors->get_sensor_data_packet();	
 		int result = write_all_to_socket(clientFD, data, sensors->get_sensor_data_packet_size());	
+		free(data);
 		active_connection = result != -1;
 	}
 	cout << "Write thread exiting!" << endl;
 }
 
 void int_handler(int signum) {
-  (void)signum;
+	(void)signum;
 	running = false;
 	close(socketfd);
 	close(clientFD);
 	cout << "Closing!" << endl;
+}
+
+void pipe_handler(int signum) {
+	(void)signum;
+
 }
 
 
@@ -153,6 +154,8 @@ int pod(int argc, char** argv) {
 	a.sa_flags = 0;
 	sigemptyset( &a.sa_mask );
 	sigaction( SIGINT, &a, NULL );
+
+	signal(SIGPIPE, pipe_handler);
 	configs = parse_input(argc, argv);
 	state = new Pod_State();	
 	sensors = new Sensor_Package(std::get<1>(configs), std::get<0>(configs));
@@ -336,7 +339,7 @@ ssize_t write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
 			fprintf(stderr, "Disconnected\n");
 			return 0;
 		} else if(bytes == -1 && errno != EINTR){
-			fprintf(stderr, "Failure!\n");
+			fprintf(stderr, "Write failure!\n");
 			return -1;
 		}
 	}

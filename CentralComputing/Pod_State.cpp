@@ -12,8 +12,8 @@ Pod_State::E_States Pod_State::get_current_state() {
 void Pod_State::move_safety_setup() {
 
 	BEGIN_TRANSITION_MAP							/* Current state */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Pod_Startup */
-		TRANSITION_MAP_ENTRY(ST_SAFETY_SETUP)     	/* Safety Setup */
+		TRANSITION_MAP_ENTRY(ST_SAFETY_SETUP)			/* Pod_Startup */
+		TRANSITION_MAP_ENTRY(EVENT_IGNORED)     	/* Safety Setup */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Safe Mode */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Functional test */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Launch ready */
