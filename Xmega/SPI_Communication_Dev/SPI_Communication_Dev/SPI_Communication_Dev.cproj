@@ -32,10 +32,11 @@
           <option id="common.boards" value="Add" config="" content-id="Atmel.ASF" />
           <option id="common.services.basic.clock" value="Add" config="" content-id="Atmel.ASF" />
           <option id="common.services.ioport" value="Add" config="" content-id="Atmel.ASF" />
+          <option id="common.services.basic.twi" value="Add" config="" content-id="Atmel.ASF" />
           <option id="xmega.drivers.crc" value="Add" config="" content-id="Atmel.ASF" />
           <option id="xmega.drivers.ioport" value="Add" config="" content-id="Atmel.ASF" />
-          <option id="common.services.basic.twi" value="Add" config="" content-id="Atmel.ASF" />
           <option id="xmega.drivers.twi" value="Add" config="both" content-id="Atmel.ASF" />
+          <option id="xmega.drivers.rtc" value="Add" config="" content-id="Atmel.ASF" />
           <option id="common.applications.user_application.xplained_pro" value="Add" config="" content-id="Atmel.ASF" />
           <option id="common.utils" value="Add" config="" content-id="Atmel.ASF" />
         </options>
@@ -92,6 +93,14 @@
           <file path="src/ASF/xmega/drivers/twi/twi_common.h" framework="" version="3.32.0" source="xmega\drivers\twi\twi_common.h" changed="False" content-id="Atmel.ASF" />
           <file path="src/Config/conf_twim.h" framework="" version="3.32.0" source="xmega\drivers\twi\module_config\conf_twim.h" changed="False" content-id="Atmel.ASF" />
           <file path="src/ASF/common/services/twi/twi_slave.h" framework="" version="3.32.0" source="common\services\twi\twi_slave.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/drivers/rtc/rtc.c" framework="" version="3.32.0" source="xmega\drivers\rtc\rtc.c" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/drivers/rtc/rtc.h" framework="" version="3.32.0" source="xmega\drivers\rtc\rtc.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/Config/conf_rtc.h" framework="" version="3.32.0" source="xmega\drivers\rtc\module_config\conf_rtc.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/xmega/drivers/sleep/sleep.h" framework="" version="3.32.0" source="xmega\drivers\sleep\sleep.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/sleepmgr/xmega/sleepmgr.c" framework="" version="3.32.0" source="common\services\sleepmgr\xmega\sleepmgr.c" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/sleepmgr/sleepmgr.h" framework="" version="3.32.0" source="common\services\sleepmgr\sleepmgr.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/ASF/common/services/sleepmgr/xmega/sleepmgr.h" framework="" version="3.32.0" source="common\services\sleepmgr\xmega\sleepmgr.h" changed="False" content-id="Atmel.ASF" />
+          <file path="src/Config/conf_sleepmgr.h" framework="" version="3.32.0" source="common\services\sleepmgr\xmega\module_config\conf_sleepmgr.h" changed="False" content-id="Atmel.ASF" />
         </files>
         <documentation help="http://asf.atmel.com/docs/3.32.0/common.applications.user_application.xplained_pro.xmega_a1u_xplained_pro/html/index.html" />
         <offline-documentation help="" />
@@ -118,6 +127,28 @@
       <ToolName>EDBG</ToolName>
     </com_atmel_avrdbg_tool_edbg>
     <avrtoolinterfaceclock>4000000</avrtoolinterfaceclock>
+    <com_atmel_avrdbg_tool_simulator>
+      <ToolOptions xmlns="">
+        <InterfaceProperties>
+        </InterfaceProperties>
+        <InterfaceName>PDI</InterfaceName>
+      </ToolOptions>
+      <ToolType xmlns="">com.atmel.avrdbg.tool.simulator</ToolType>
+      <ToolNumber xmlns="">
+      </ToolNumber>
+      <ToolName xmlns="">Simulator</ToolName>
+    </com_atmel_avrdbg_tool_simulator>
+    <custom>
+      <ToolOptions xmlns="">
+        <InterfaceProperties>
+        </InterfaceProperties>
+        <InterfaceName>PDI</InterfaceName>
+      </ToolOptions>
+      <ToolType xmlns="">custom</ToolType>
+      <ToolNumber xmlns="">
+      </ToolNumber>
+      <ToolName xmlns="">Custom Programming Tool</ToolName>
+    </custom>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
     <ToolchainSettings>
@@ -153,6 +184,9 @@
             <Value>../src/ASF/common/services/clock</Value>
             <Value>../src/ASF/common/services/twi</Value>
             <Value>../src/ASF/xmega/drivers/twi</Value>
+            <Value>../src/ASF/xmega/drivers/rtc</Value>
+            <Value>../src/ASF/xmega/drivers/sleep</Value>
+            <Value>../src/ASF/common/services/sleepmgr</Value>
           </ListValues>
         </avrgcc.compiler.directories.IncludePaths>
         <avrgcc.compiler.optimization.level>Optimize for size (-Os)</avrgcc.compiler.optimization.level>
@@ -186,6 +220,9 @@
             <Value>../src/ASF/common/services/clock</Value>
             <Value>../src/ASF/common/services/twi</Value>
             <Value>../src/ASF/xmega/drivers/twi</Value>
+            <Value>../src/ASF/xmega/drivers/rtc</Value>
+            <Value>../src/ASF/xmega/drivers/sleep</Value>
+            <Value>../src/ASF/common/services/sleepmgr</Value>
           </ListValues>
         </avrgcc.assembler.general.IncludePaths>
       </AvrGcc>
@@ -225,6 +262,9 @@
             <Value>../src/ASF/common/services/clock</Value>
             <Value>../src/ASF/common/services/twi</Value>
             <Value>../src/ASF/xmega/drivers/twi</Value>
+            <Value>../src/ASF/xmega/drivers/rtc</Value>
+            <Value>../src/ASF/xmega/drivers/sleep</Value>
+            <Value>../src/ASF/common/services/sleepmgr</Value>
           </ListValues>
         </avrgcc.compiler.directories.IncludePaths>
         <avrgcc.compiler.optimization.level>Optimize (-O1)</avrgcc.compiler.optimization.level>
@@ -233,7 +273,8 @@
         <avrgcc.compiler.optimization.AllocateBytesNeededForEnum>True</avrgcc.compiler.optimization.AllocateBytesNeededForEnum>
         <avrgcc.compiler.optimization.DebugLevel>Maximum (-g3)</avrgcc.compiler.optimization.DebugLevel>
         <avrgcc.compiler.warnings.AllWarnings>True</avrgcc.compiler.warnings.AllWarnings>
-        <avrgcc.compiler.miscellaneous.OtherFlags>-std=gnu99 -fno-strict-aliasing -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -mrelax</avrgcc.compiler.miscellaneous.OtherFlags>
+        <avrgcc.compiler.warnings.ExtraWarnings>True</avrgcc.compiler.warnings.ExtraWarnings>
+        <avrgcc.compiler.miscellaneous.OtherFlags>-std=gnu99 -fno-strict-aliasing -Wstrict-prototypes -Wmissing-prototypes -Werror-implicit-function-declaration -Wpointer-arith -mrelax -Winline</avrgcc.compiler.miscellaneous.OtherFlags>
         <avrgcc.linker.libraries.Libraries>
           <ListValues>
             <Value>libm</Value>
@@ -259,6 +300,9 @@
             <Value>../src/ASF/common/services/clock</Value>
             <Value>../src/ASF/common/services/twi</Value>
             <Value>../src/ASF/xmega/drivers/twi</Value>
+            <Value>../src/ASF/xmega/drivers/rtc</Value>
+            <Value>../src/ASF/xmega/drivers/sleep</Value>
+            <Value>../src/ASF/common/services/sleepmgr</Value>
           </ListValues>
         </avrgcc.assembler.general.IncludePaths>
         <avrgcc.assembler.debugging.DebugLevel>Default (-Wa,-g)</avrgcc.assembler.debugging.DebugLevel>
@@ -275,6 +319,8 @@
     <Folder Include="src\ASF\common\services\clock\xmega\" />
     <Folder Include="src\ASF\common\services\ioport\" />
     <Folder Include="src\ASF\common\services\ioport\xmega\" />
+    <Folder Include="src\ASF\common\services\sleepmgr\" />
+    <Folder Include="src\ASF\common\services\sleepmgr\xmega\" />
     <Folder Include="src\ASF\common\services\twi\" />
     <Folder Include="src\ASF\common\services\twi\xmega_twi\" />
     <Folder Include="src\ASF\common\utils\" />
@@ -287,6 +333,8 @@
     <Folder Include="src\ASF\xmega\drivers\cpu\" />
     <Folder Include="src\ASF\xmega\drivers\crc\" />
     <Folder Include="src\ASF\xmega\drivers\nvm\" />
+    <Folder Include="src\ASF\xmega\drivers\rtc\" />
+    <Folder Include="src\ASF\xmega\drivers\sleep\" />
     <Folder Include="src\ASF\xmega\drivers\twi\" />
     <Folder Include="src\ASF\xmega\utils\" />
     <Folder Include="src\ASF\xmega\utils\assembler\" />
@@ -295,6 +343,36 @@
     <Folder Include="src\config\" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="src\ASF\common\services\sleepmgr\sleepmgr.h">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="src\ASF\common\services\sleepmgr\xmega\sleepmgr.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="src\ASF\common\services\sleepmgr\xmega\sleepmgr.h">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="src\ASF\xmega\drivers\rtc\rtc.c">
+      <SubType>compile</SubType>
+    </Compile>
+    <None Include="src\ASF\xmega\drivers\rtc\rtc.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\config\conf_rtc.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\ASF\xmega\drivers\sleep\sleep.h">
+      <SubType>compile</SubType>
+    </None>
+    <None Include="src\config\conf_sleepmgr.h">
+      <SubType>compile</SubType>
+    </None>
+    <Compile Include="src\circular_buffer.h">
+      <SubType>compile</SubType>
+    </Compile>
+    <Compile Include="src\circular_buffer.c">
+      <SubType>compile</SubType>
+    </Compile>
     <Compile Include="src\spi_to_bbb.c">
       <SubType>compile</SubType>
     </Compile>

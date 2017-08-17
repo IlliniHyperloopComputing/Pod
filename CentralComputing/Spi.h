@@ -19,7 +19,7 @@
 #include "Crc.h"
 
 #define CRC_PASS 0xAA
-#define SLEEP_TIME 18
+#define SLEEP_TIME 10 //12 gets 3.87
 
 using namespace std;
 
@@ -36,15 +36,18 @@ enum Xmega_Command_t: uint8_t {
   //No Command
   X_C_NONE = 0,
   //TODO: Add others as needed
+  X_C_RESET = 1,
+  X_C_CALIBRATE = 2,
+  X_C_BRAKE = 3
 };
 
 enum Xmega_Request_t: uint8_t {
   //Read num bytes as described in Xmega_Setup
-  X_R_SENSOR = 0,
+  //X_R_SENSOR = 0,
   //Read byte to determine if any Xmega sensor error
-  X_R_SENSOR_STATUS = 1,
+  //X_R_SENSOR_STATUS = 1,
   //What state is the Xmega in. Reads a byte
-  X_R_STATE = 2,
+  //X_R_STATE = 2,
   //Read All of the above at once
   X_R_ALL = 3,
   //None
@@ -230,16 +233,21 @@ class Spi {
     * To solve this problem the reads for each Xmega are interlaced. That
     * seems to do the trick. Using usleep() seems like it would also work.
     *
+    * Update on above paragraph: Interlaced Read/Writes between Xmegas 
+    * are no longer a thing. That was a crazy idea, which would save a 
+    * little bit of time in exchange for SO MUCH HASSLE. So I moved to
+    * a talking to a single Xmega per call to transfer()
+    *
     *
     *
     * First, write the appropriate data.
     * 1 start byte, 1 command byte, 1 request byte, and 2 bytes for CRC
-    * Using 0xAA as start byte. Why? Because command or request will never
-    * equal 0xAA. Also, 0xAA is easy to see on an Oscilliscope, and 
+    * Using 0xAA as start byte. Why? Because command or request will (should) 
+    * never equal 0xAA. Also, 0xAA is easy to see on an Oscilliscope, and 
     * less likely to appear by mistake than 0xFF or 0x00 ... at least
     * I think so. Whatever. 
     *
-    * A start byte is needed so the Xmega knows a transfer is about
+    * A start byte (0xAA) is needed so the Xmega knows a transfer is about
     * to happen, and can start pipelining the correct data. 
     * 
     * Need to send 5 bytes before reading
@@ -258,11 +266,7 @@ class Spi {
     * @param request_type   Xmega_Transfer describing transfer
     * @return failure mode   0b00000000 == no failure
     *                        0b00000001 == x1 send failure
-    *                        0b00000010 == x2 send failure
-    *                        0b00000100 == x1 recieve failure
-    *                        0b00001000 == x2 recieve failure
-    *                        These codes are bitwise ORed together
-    *                        Send/Recieve errors from the same board are exclusive
+    *                        0b00000010 == x2 recieve failure
     * 
     **/
     int transfer(Xmega_Transfer &transfer);

@@ -5,39 +5,56 @@
 #include <vector>
 #include <thread>
 #include <mutex>
+
 #include "Spi.h"
 
 #define XMEGA1 0
 #define XMEGA2 1
 
+#define MAX_SENSORS 30
+#define ADC_TRANS (1.0/32768.0 * 4.096)
+
 
 using namespace std;
+
 enum Sensor_Type {
-	THERMOCOUPLE,
-	ACCELEROMETER,
-	RIDE_HEIGHT,
+	ACCELEROMETERX,
 	TAPE_COUNT,
-	POSITION,
+	OPTICAL,
 	BRAKE_PRESSURE,
+	THERMOCOUPLE,
+	ACCELEROMETERYZ,
+	RIDE_HEIGHT,
 	BATTERY,
+	CURRENT,
+	PULL_TAB,
+	TRUE_POSITION,
+	TRUE_VELOCITY,
+	TRUE_ACCELERATION,
+	XMEGA_STATE,
+	XMEGA_STATUS,
+	XMEGA_RESPONDING,
+	POD_STATE,
 };
 
 enum Sensor_Index_1 {
 	X_ACCELERATION_INDEX = 0,
-	POSITION_INDEX = 1,
-	BRAKE_PRESSURE_INDEX = 2
+	BRAKE_PRESSURE_INDEX = 3,
+	OPTICAL_INDEX = 4 
 };
 
 enum Sensor_Index_2 {
-	BATTERY_CELL_INDEX = 0,
-	TAPE_COUNT_INDEX = 8,
-	THERMOCOUPLE_INDEX = 9,
-	RIDE_HEIGHT_INDEX = 13
+  YZ_ACCELERATION_INDEX = 0,
+	RIDE_HEIGHT_INDEX = 2,
+	BATTERY_CELL_INDEX = 5,
+	THERMOCOUPLE_INDEX = 7,
+  CURRENT_INDEX = 12,
+	TAPE_COUNT_INDEX = 13
 };
 
 
 
-static const int NUM_SENSORS = 6;
+static const int NUM_SENSORS = 10;
 
 struct Sensor_Configuration {
 	Sensor_Type type;
@@ -57,14 +74,6 @@ class Sensor_Group {
 
 
 		virtual ~Sensor_Group() = 0;
-
-
-		/**
-		* Connect to a sensor group on an XMEGA
-		* @return connection status
-		*
-		virtual	bool connect() = 0;
-		*/
 		
 		/**
 		* Virtual function implemented by child classes 
@@ -73,7 +82,6 @@ class Sensor_Group {
 		**/
 		virtual void update(Spi * spi) = 0;
 
-
 		/**
 		* Recalibrates and resets all sensors in the group.
 		* May not do anything for some sensors
@@ -81,9 +89,19 @@ class Sensor_Group {
 		virtual void reset() = 0;
 
 		/**
+		* Gets all data and stores it into a buffer
+		**/
+		virtual uint8_t * get_data_buffer() = 0;
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		virtual size_t get_buffer_size() = 0;
+
+		/**
 		* Returns all available sensor data
 		**/
-		vector<double> get_data();
+		virtual vector<double> get_data();
 
 		/** 
 		* Helper function
@@ -91,7 +109,11 @@ class Sensor_Group {
 		**/
 		void refresh_data(Spi * spi);	
 
-
+		/**
+		* Prints data to standard out
+		* Used for debugging only
+		**/
+		void print_data();
 
 
 
@@ -104,10 +126,12 @@ class Sensor_Group {
 		vector<double> data;
 
 		mutex sensor_group_mutex;
-		const size_t first_index = 0; // index offset to read from spi
-		const size_t device = 0; //xmega device number (0 or 1)
-		const size_t count = 0; //number of sensors
-
+		size_t first_index = 0; // index offset to read from spi
+		size_t device = 0; //xmega device number (0 or 1)
+		size_t count = 0; //number of sensors
+    	array<double, MAX_SENSORS> translation_array = {{0}};
+    	string name = "Sensor Group";
+    	array<string, MAX_SENSORS> name_array = {{"Sensor Group"}};
 
 };
 
@@ -128,9 +152,17 @@ class Thermocouple : public Sensor_Group {
 		**/
 		void reset();
 
-		const size_t first_index = THERMOCOUPLE_INDEX; // index offset to read from spi
-		const size_t device = XMEGA2; //xmega device number (0 or 1)
-		const size_t count = 4; //number of sensors
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
+
+
 
 	private:
 		/**
@@ -139,12 +171,12 @@ class Thermocouple : public Sensor_Group {
 		void simulation_1();
 };
 
-class Accelerometer : public Sensor_Group {
+class XAccelerometer : public Sensor_Group {
 
 	public:
-		Accelerometer(Sensor_Configuration configuration);
+		XAccelerometer(Sensor_Configuration configuration);
 
-		~Accelerometer();
+		~XAccelerometer();
 
 		/**
 		* Receives new data from the XMega or calls simulations
@@ -155,10 +187,50 @@ class Accelerometer : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
 
-		const size_t first_index = X_ACCELERATION_INDEX; // index offset to read from spi
-		const size_t device = XMEGA1; //xmega device number (0 or 1)
-		const size_t count = 3; //number of sensors
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
+
+
+	private:
+		/**
+		* Simulates set values in the vector
+		**/
+		void simulation_1();
+};
+
+class YZAccelerometer : public Sensor_Group {
+
+	public:
+		YZAccelerometer(Sensor_Configuration configuration);
+
+		~YZAccelerometer();
+
+		/**
+		* Receives new data from the XMega or calls simulations
+		**/
+		void update(Spi * spi);
+
+		/**
+		* Resets and recalibrates sensors
+		**/
+		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
+
 
 	private:
 		/**
@@ -183,11 +255,17 @@ class Ride_Height : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 		
-		const size_t first_index = RIDE_HEIGHT_INDEX; // index offset to read from spi
-		const size_t device = XMEGA2; //xmega device number (0 or 1)
-		const size_t count = 3; //number of sensors
 
 	private:
 		/**
@@ -213,11 +291,16 @@ class Tape_Count : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
 
-		
-		const size_t first_index = TAPE_COUNT_INDEX; // index offset to read from spi
-		const size_t device = XMEGA2; //xmega device number (0 or 1)
-		const size_t count = 1; //number of sensors
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
+
 
 	private:
 		/**
@@ -226,12 +309,12 @@ class Tape_Count : public Sensor_Group {
 		void simulation_1();
 };
 
-class Position : public Sensor_Group {
+class Optical : public Sensor_Group {
 
 	public:
-		Position(Sensor_Configuration configuration);
+		Optical(Sensor_Configuration configuration);
 
-		~Position();
+		~Optical();
 
 		/**
 		* Receives new data from the XMega or calls simulations
@@ -242,11 +325,17 @@ class Position : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 
-		const size_t first_index = POSITION_INDEX; // index offset to read from spi
-		const size_t device = XMEGA1; //xmega device number (0 or 1)
-		const size_t count = 1; //number of sensors
 
 	private:
 		/**
@@ -271,11 +360,16 @@ class Brake_Pressure : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
 
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
-		const size_t first_index = BRAKE_PRESSURE_INDEX; // index offset to read from spi
-		const size_t device = XMEGA1; //xmega device number (0 or 1)
-		const size_t count = 1; //number of sensors
 	private:
 		/**
 		* Simulates set values in the vector
@@ -300,11 +394,16 @@ class Battery : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
 
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
-		const size_t first_index = BATTERY_CELL_INDEX; // index offset to read from spi
-		const size_t device = XMEGA2; //xmega device number (0 or 1)
-		const size_t count = 2; //number of sensors
 
 
 	private:
@@ -312,6 +411,123 @@ class Battery : public Sensor_Group {
 		* Simulates set values in the vector
 		**/
 		void simulation_1();
+};
+
+class Current : public Sensor_Group {
+
+	public:
+		Current(Sensor_Configuration configuration);
+
+		~Current();
+
+		/**
+		* Receives new data from the XMega or calls simulations
+		**/
+		void update(Spi * spi);
+
+		/**
+		* Resets and recalibrates sensors
+		**/
+		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
+
+
+
+
+	private:
+		/**
+		* Simulates set values in the vector
+		**/
+		void simulation_1();
+};
+
+class Pull_Tab : public Sensor_Group {
+
+	public:
+		Pull_Tab(Sensor_Configuration configuration);
+
+		~Pull_Tab();
+
+		/**
+		* Receives new data from the XMega or calls simulations
+		**/
+		void update(Spi * spi);
+
+		/**
+		* Resets and recalibrates sensors
+		**/
+		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
+
+
+	private:
+		/**
+		* Simulates set values in the vector
+		**/
+		void simulation_1();
+};
+
+class Sensor_Package; 
+
+class True_Sensor : public Sensor_Group {
+
+	public:
+		True_Sensor(Sensor_Configuration configuration, Sensor_Package * pack);
+		~True_Sensor();
+
+		void update(Spi * spi);
+		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
+	
+	protected:
+		Sensor_Package * package;
+};
+
+
+class True_Position : public True_Sensor {
+	public:	
+		True_Position(Sensor_Configuration configuration, Sensor_Package * pack);
+		void update(Spi * spi);
+};
+
+
+
+class True_Acceleration : public True_Sensor {
+
+	public:	
+		True_Acceleration(Sensor_Configuration configuration, Sensor_Package * pack);
+		void update(Spi * spi);
+};
+
+class True_Velocity : public True_Sensor {
+
+	public:	
+		True_Velocity(Sensor_Configuration configuration, Sensor_Package * pack);
+		void update(Spi * spi);
 };
 
 

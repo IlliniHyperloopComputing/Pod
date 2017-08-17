@@ -12,10 +12,10 @@ WARNINGS 	:= -Wall -Wextra
 
 CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP -IStateMachineCompact/ -IUnitTests/ -I. -D_GNU_SOURCE -pthread -DDEBUG 
 CFLAGS_RELEASE 	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP -IStateMachineCompact/ -IUnitTests/ -I. -D_GNU_SOURCE -pthread -DNDEBUG
-CFlAGS_T 				:= $(CFLAGS_RELEASE) -DTEST_POD
+CFlAGS_T 				:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP -IStateMachineCompact/ -IUnitTests/ -I. -D_GNU_SOURCE -pthread -DTEST_POD #-DDEBUG
 
-# Set up linker
-LDFLAGS := -pthread
+#Set up linker
+LDFLAGS := -pthread #-static
 LD_NORM := $(CXX_NORM)
 LD_BBB  := $(CXX_BBB)
 
@@ -134,7 +134,7 @@ clean:
 
 .PHONY: push
 push: $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)
-	scp $(POD_CROSS) root@192.168.137.100:~/
+	scp $(POD_CROSS)   root@192.168.137.100:~/
 	scp $(POD_CROSS_D) root@192.168.137.100:~/
 	scp $(POD_CROSS_T) root@192.168.137.100:~/
 

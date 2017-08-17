@@ -83,15 +83,16 @@ int Spi::transfer(Xmega_Transfer &xt){
   tx_buff[4] = (uint8_t) (send_crc>>8);
 
   int sent_properly = 0;
-  int max_passes = 3;
+  int max_passes = 10;
   int passes = 0;
   while(!sent_properly && passes < max_passes){
-    if(passes > 0){
-      print_debug("Sending to Xmega: passes: %d send_properly: %d\n", passes, sent_properly);
+    if(passes > 0 /*|| send_result == 0x4A */){
+      //print_debug("Sending to Xmega: passes: %d send_properly: %d\n", passes, sent_properly);
+      usleep(SLEEP_TIME);
     }
     //send to Xmegas
     print_debug("wval: \t");
-    for(int i = 0; i < 5;i++){
+    for(int i = 0; i < sizeof(tx_buff);i++){
       usleep(SLEEP_TIME);
       int wval = write(xd->fd, tx_buff + i, 1);
       print_debug("%d, tx: %x\t", wval, tx_buff[i]);
@@ -99,12 +100,18 @@ int Spi::transfer(Xmega_Transfer &xt){
     print_debug("\n");
 
     //read ACK or NACK from Xmegas to confirm sent data properly
-    usleep(SLEEP_TIME*10);
-    //read(x1->fd, &send_result, 1);
-    read(xd->fd, &send_result, 1);
+    usleep(SLEEP_TIME);
+
+    //Read twice to get value from Xmega. Its a pipeline issue on its side
+    //it needs and extra cycle to correctly place the data into the output buffer
+    int rval = read(xd->fd, &send_result, 1);
+    rval = read(xd->fd, &send_result, 1);
+    print_debug("rval: %d\n", rval);
+    print_debug("read: %x\n", send_result);
+    
 
     //Determine if another attempt is needed
-    sent_properly = send_result == CRC_PASS;
+    sent_properly = (send_result == CRC_PASS) ;
 
     passes++;
   }
@@ -121,18 +128,19 @@ int Spi::transfer(Xmega_Transfer &xt){
   //Setup size of data to read in
   uint8_t bytes_to_read = 0;
   
-  if(xt.req == X_R_SENSOR){
+  /*if(xt.req == X_R_SENSOR){
     bytes_to_read = xd->num_bytes;
   }
   else if(xt.req == X_R_SENSOR_STATUS || xt.req == X_R_STATE){
     bytes_to_read = 1;
   }
-  else if(xt.req == X_R_ALL){
+  else*/ if(xt.req == X_R_ALL){
     bytes_to_read = xd->num_bytes+2;
   }
   else{
     bytes_to_read = 0;
   }
+  print_debug("Num bytes to read: %d\n",bytes_to_read);
 
   //Read data
   //Reading happens once. If it fails, then it failes
@@ -151,7 +159,7 @@ int Spi::transfer(Xmega_Transfer &xt){
   while(idx < bytes_to_read ){
     usleep(SLEEP_TIME);
     read(xd->fd, rx_buff+idx, 1);
-    print_test("Reading: idx:%d\t, rx_buff: %x\n",idx, rx_buff[idx]);
+    print_debug("Reading: idx:%d\t, rx_buff: %x\n",idx, rx_buff[idx]);
     idx++;
   }
 
@@ -160,7 +168,7 @@ int Spi::transfer(Xmega_Transfer &xt){
   //Calculate CRC
   uint16_t calc_crc = 0; 
   calc_crc = Crc::CRCCCITT(rx_buff, bytes_to_read, 0);
-  print_test("Calc x1 crc: data: 0x%x\n", calc_crc);
+  print_debug("Calc x1 crc: data: 0x%x\n", calc_crc);
 
   //Used to store incoming CRC
   uint16_t rx_crc = 0;
@@ -172,7 +180,7 @@ int Spi::transfer(Xmega_Transfer &xt){
     read(xd->fd, rx_buff+ bytes_to_read + idx_crc, 1);
     rx_crc |= rx_buff[bytes_to_read + idx_crc] << (idx_crc * 8);
     idx_crc++;
-    print_test("crc: data: 0x%x\n", rx_crc);
+    print_debug("crc: data: 0x%x\n", rx_crc);
   }
 
   //Check CRC accuracy 
@@ -182,18 +190,18 @@ int Spi::transfer(Xmega_Transfer &xt){
   }
 
   //Copy in the data!
-  if(xt.req == X_R_SENSOR || xt.req == X_R_ALL){
+  if(/*xt.req == X_R_SENSOR || */ xt.req == X_R_ALL){
     memcpy(xd->buff, &rx_buff, bytes_to_read);
   }
 
   //Set appropriate sensor_state or state
-  if(xt.req == X_R_SENSOR_STATUS){
+  /*if(xt.req == X_R_SENSOR_STATUS){
     xd->sensor_status = rx_buff[0];
   }
   else if(xt.req == X_R_STATE){
     xd->state = rx_buff[0];
   }
-  else if(xt.req == X_R_ALL){
+  else*/ if(xt.req == X_R_ALL){
     xd->sensor_status = rx_buff[bytes_to_read-2];
     xd->state = rx_buff[bytes_to_read-1];
   }

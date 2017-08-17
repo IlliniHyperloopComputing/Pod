@@ -2,12 +2,12 @@
 #include <iostream>
 #include <chrono>
 
-
 using namespace std;
 
-
 long long Sensor_Package::start_time = 1;
+
 Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool xmega_connect) {
+
 	connect = xmega_connect;
 	for(Sensor_Configuration c : configuration){
 		Sensor_Group * group;
@@ -15,14 +15,17 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
 			case THERMOCOUPLE:
 				group = new Thermocouple(c);
 				break; //TODO add new sensors here
-			case ACCELEROMETER:
-				group = new Accelerometer(c);
+			case ACCELEROMETERX:
+				group = new XAccelerometer(c);
+				break;
+			case ACCELEROMETERYZ:
+				group = new YZAccelerometer(c);
 				break;
 			case BRAKE_PRESSURE:
 				group = new Brake_Pressure(c);
 				break;
-			case POSITION:
-				group = new Position(c);
+			case OPTICAL:
+				group = new Optical(c);
 				break;
 			case RIDE_HEIGHT:
 				group = new Ride_Height(c);
@@ -33,8 +36,23 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
 			case BATTERY:
 				group = new Battery(c);
 				break;
+			case CURRENT:
+				group = new Current(c);
+				break;
+			case TRUE_POSITION:
+				group = new True_Position(c, this);
+				break;
+			case TRUE_VELOCITY:
+				group = new True_Velocity(c, this);
+				break;
+			case TRUE_ACCELERATION:
+				group = new True_Acceleration(c, this);
+				break;
+			case PULL_TAB:
+				group = new Pull_Tab(c);
+				break;
 			default:
-				cout << "Something went wrong" << endl;
+				cout << "Something went wrong creating sensors. " << endl;
 				group = NULL;
 				break;
 					
@@ -48,9 +66,10 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
   * 2,3 == X1
   * 4,5 == X2
   * 6,7 == Brake
-  * 8,9 == Optical
+  * 8,9,10,11 == Optical, Delta
+  * 12,13,14,15 == Optical, tape count
   **/
-  uint8_t bpi1[] = {2,2,2,2,2};
+  uint8_t bpi1[] = {2,2,2,2,4,4};
 
   /**
   * 0,1 == y  i2c 
@@ -67,10 +86,10 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
   * 22,23 == Thermo3 internal
   * 24    == RetroReflective  Interrupt
   **/
-  uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,1};
+  uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,2,1};
 
-  Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
-  Xmega_Setup x2 = {"/dev/spidev1.1", 13, bpi2, 500000, 8};
+  Xmega_Setup x1 = {"/dev/spidev1.0", 6, bpi1, 500000, 8};
+  Xmega_Setup x2 = {"/dev/spidev1.1", 14, bpi2, 500000, 8};
 	
 	if(xmega_connect) {
 		spi = new Spi(&x1, &x2);
@@ -96,9 +115,10 @@ long long Sensor_Package::get_current_time() {
 void Sensor_Package::update(Xmega_Transfer & transfer) {
 	//TODO handle transferring in non simulation cases
 
-	if(connect == true) {
+	if(connect) {
 		spi->transfer(transfer);	
 	}
+  
 	for(auto const & pair : sensor_groups){
 		pair.second->update(spi);
 	}
@@ -111,6 +131,67 @@ void Sensor_Package::reset() {
 	}
 }
 
+void Sensor_Package::print_status() {
+	
+	auto start = Sensor_Package::start_time;
+	auto now = Sensor_Package::get_current_time();
+	auto difference = now - start;
+	cout << "\n----------------Sensor Status at time " << difference << "----------------\n" << endl;
+	
+	for(auto const & pair : sensor_groups){
+		Sensor_Group * s = pair.second;
+		s->print_data();
+	}
+}
+
 vector<double> Sensor_Package::get_sensor_data(Sensor_Type type) {
 	return sensor_groups[type]->get_data();
 }
+
+size_t Sensor_Package::get_sensor_data_packet_size() {
+	size_t size = 0;
+	size_t count = 0;
+	for(auto & pair : sensor_groups) {
+			size += pair.second->get_buffer_size() + 1;
+			count += 1;
+	}
+	size += 11;	//Space for Xmega Responding and Pod State
+	return size;
+}
+
+uint8_t * Sensor_Package::get_sensor_data_packet() {
+	
+	uint8_t * buffer = (uint8_t *) malloc(get_sensor_data_packet_size());
+	size_t index = 0;
+	for(auto & pair : sensor_groups) {
+			buffer[index] = pair.first;
+			uint8_t * data = pair.second->get_data_buffer();
+			size_t data_size = pair.second->get_buffer_size();
+			memcpy(buffer + index + 1, data, data_size);
+			index += data_size + 1;
+			free(data);
+	}
+	//Xmega State
+	memset(buffer + index, 0, 11);
+	buffer[index] = XMEGA_STATE;
+	buffer[index + 3] = XMEGA_STATUS;
+	buffer[index + 6] = XMEGA_RESPONDING;
+	buffer[index + 9] = POD_STATE;
+	if(connect){
+		buffer[index + 1] = spi->get_state(XMEGA1);
+		buffer[index + 2] = spi->get_state(XMEGA2);
+		buffer[index + 4] = spi->get_sensor_status(XMEGA1);
+		buffer[index + 5] = spi->get_sensor_status(XMEGA2);
+		
+		// TODO: Set up XMEGA Responding buffer
+	}
+
+	return buffer;
+
+	
+}
+
+
+
+
+

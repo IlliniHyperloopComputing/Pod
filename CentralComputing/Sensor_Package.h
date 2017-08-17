@@ -41,8 +41,34 @@ class Sensor_Package {
 		**/
 		vector<double> get_sensor_data(Sensor_Type type);
 
+    
+		/**
+		* Prints the status of all sensors to output.  For debugging only
+		**/
+		void print_status();
 
+		/**
+		* Gets the current time since program startup
+		* @return a long long representing the number of microseconds since startup
+		**/
 		static long long get_current_time();
+
+		
+		/**
+		* Formats data into a network packet
+		* @return a buffer containing the data for all sensors
+		**/
+		uint8_t * get_sensor_data_packet();
+
+		/**
+		* Gets the size of the network data packet
+		* @return the size
+		**/
+		size_t get_sensor_data_packet_size();
+
+		
+		
+		
 		static long long start_time;
 		bool connect;
 	private:

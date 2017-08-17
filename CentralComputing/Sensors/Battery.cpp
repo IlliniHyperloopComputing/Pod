@@ -4,6 +4,12 @@
 using namespace std;
 
 Battery::Battery(Sensor_Configuration configuration) : Sensor_Group(configuration) {
+	first_index = BATTERY_CELL_INDEX; // index offset to read from spi
+	device = XMEGA2; //xmega device number (0 or 1)
+	count = 2; //number of sensors
+    translation_array = {{ADC_TRANS, ADC_TRANS}};
+    name = "Battery";
+    name_array = {{"B1", "B2"}};
 	data = vector<double>(count);		
 }
 
@@ -31,7 +37,6 @@ void Battery::simulation_1() {
 	auto start = Sensor_Package::start_time;
 	auto now = Sensor_Package::get_current_time();
 	auto difference = now - start;
-	cout << difference << endl;
 	
 	//TODO calc some actual value
 	
@@ -40,4 +45,21 @@ void Battery::simulation_1() {
 		data[i] = i;
 	}
 	sensor_group_mutex.unlock();
+}
+
+uint8_t *  Battery::get_data_buffer() {
+	sensor_group_mutex.lock();
+	uint8_t * buffer = (uint8_t * )malloc(get_buffer_size());
+	for(size_t i = 0; i < count; i++){
+		uint16_t value = data[i];
+		memcpy(buffer + i * sizeof(uint16_t), &value, sizeof(uint16_t));
+	}
+	sensor_group_mutex.unlock();
+
+	return buffer;
+}
+
+size_t Battery::get_buffer_size() {
+	// 2 * uint16_t
+	return 2 * sizeof(uint16_t);
 }
