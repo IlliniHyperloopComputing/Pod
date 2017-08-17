@@ -188,6 +188,7 @@ int pod(int argc, char** argv) {
 		perror("listen");
 		exit(1);
 	}
+	free(result);
 
 	cout << "Starting network thread" << endl;
 	thread network_thread(network_loop);
@@ -196,6 +197,8 @@ int pod(int argc, char** argv) {
 	sensor_thread.join();
 	network_thread.join();
 	delete sensors;	
+	delete state;
+	delete command_queue;
 
 	return 0;	
 } 
