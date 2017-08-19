@@ -279,8 +279,6 @@ int main (void)
 			//Don't need to do this very Frequently. Temperatures don't change that fast
 			//We should make it a second eventually. Simply don't need lots of temperature data
 			if(time4 > APROX_HALF_SECOND*4 ){
-				//PORTK.OUT = PIN2_bm & flipper;
-				//flipper = !flipper;
 				
 				time4 = 0;
 				uint16_t value;
@@ -312,9 +310,7 @@ int main (void)
 			//Get Batteries and Current!
 			if(time5 > APROX_HALF_SECOND*2){
 				time5 = 0;
-				
-				set_adc_mux(&TWIE, 0x48, AIN0);
-				
+	
 				//Read current
 				/*if(read_current(&TWIE, 0x40, &recieved_data) == TWI_SUCCESS){
 					sensor_data[24] = recieved_data >> 8;
@@ -333,10 +329,12 @@ int main (void)
 					sensor_data[13] = recieved_data;
 				}
 				
+				
 			}
 			
 			
 		}
+		time3 = rtc_get_time() - time1;
 		time4 += time3;
 		time5 += time3;
 	}
