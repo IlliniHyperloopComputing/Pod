@@ -8,7 +8,7 @@ Tape_Count::Tape_Count(Sensor_Configuration configuration) : Sensor_Group(config
 	first_index = TAPE_COUNT_INDEX; // index offset to read from spi
 	device = XMEGA2; //xmega device number (0 or 1)
 	count = 1; //number of sensors
-    translation_array = {{1.0}};
+    translation_array = {{NO_TRANS}};
     name = "Tape Count";
     name_array = {{"Count"}};
 	data = vector<double>(count);

@@ -7,9 +7,14 @@ Pull_Tab::Pull_Tab(Sensor_Configuration configuration) : Sensor_Group(configurat
 	count = 1;
 	data = vector<double>(count);	
 	
-	translation_array = {{1.0 }};
+	translation_array = {{NO_TRANS }};
 	name = "Pull_Tab";
 	name_array = {{"Tab"}};
+
+
+  //Setup GPIO 60 so we can read it in
+  system("echo \"gpio60\" > /sys/gpio/gpio");
+  system("echo \"in\" > /sys/gpio/gpio60/direction");
 }
 
 Pull_Tab::~Pull_Tab(){

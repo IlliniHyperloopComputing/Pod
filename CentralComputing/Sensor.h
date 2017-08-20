@@ -12,7 +12,14 @@
 #define XMEGA2 1
 
 #define MAX_SENSORS 30
-#define ADC_TRANS (1.0/32768.0 * 4.096)
+
+
+#define ADC_TRANS adc_trans
+#define NO_TRANS  no_trans
+#define CURRENT_TRANS current_trans 
+#define RPM_TRANS rpm_trans 
+#define THERMO_EXT_TRANS thermo_ext_trans
+#define THERMO_INT_TRANS thermo_int_trans
 
 
 using namespace std;
@@ -115,6 +122,16 @@ class Sensor_Group {
 		**/
 		void print_data();
 
+    /**
+    * Translation function definitions 
+    **/
+    static double no_trans(double x);
+    static double adc_trans(double x);
+    static double current_trans(double x);
+    static double rpm_trans(double x);
+    static double thermo_ext_trans(double x);
+    static double thermo_int_trans(double x);
+
 
 
 	protected:
@@ -129,9 +146,9 @@ class Sensor_Group {
 		size_t first_index = 0; // index offset to read from spi
 		size_t device = 0; //xmega device number (0 or 1)
 		size_t count = 0; //number of sensors
-    	array<double, MAX_SENSORS> translation_array = {{0}};
-    	string name = "Sensor Group";
-    	array<string, MAX_SENSORS> name_array = {{"Sensor Group"}};
+    array<double (*)(double), MAX_SENSORS> translation_array = {{no_trans}};
+    string name = "Sensor Group";
+    array<string, MAX_SENSORS> name_array = {{"Sensor Group"}};
 
 };
 

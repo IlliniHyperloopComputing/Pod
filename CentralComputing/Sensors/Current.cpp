@@ -8,9 +8,9 @@ Current::Current(Sensor_Configuration configuration) : Sensor_Group(configuratio
 	first_index = CURRENT_INDEX; // index offset to read from spi
 	device = XMEGA2; //xmega device number (0 or 1)
 	count = 1; //number of sensors
-    translation_array = {{0.1}};
-    name = "Current";
-    name_array = {{"C1"}};
+  translation_array = {{CURRENT_TRANS}};
+  name = "Current";
+  name_array = {{"C1"}};
 	data = vector<double>(count);		
 }
 

@@ -8,7 +8,7 @@ Optical::Optical(Sensor_Configuration configuration) : Sensor_Group(configuratio
 	first_index = OPTICAL_INDEX; // index offset to read from spi
 	device = XMEGA1; //xmega device number (0 or 1)
 	count = 2; //number of sensors
-    translation_array = {{0.0018310542,1}};
+    translation_array = {{RPM_TRANS,NO_TRANS}};
     name = "Optical";
     name_array = {{"RPM", "Count"}};
 	data = vector<double>(count);		

@@ -15,7 +15,6 @@
 #include <poll.h>
 #include <SafeQueue.hpp>
 
-
 using namespace std;
 
 Sensor_Package * sensors;
@@ -97,13 +96,25 @@ void sensor_loop() {
     //Need to transition from the Acceleration state to the Coast state 
     //Need to transition from the Coast state to the Brake state (not emergency brake, just normal brake)
 
+    
     if(state->get_current_state() == Pod_State::ST_LAUNCH_READY){
+      //The stragety here is to detect a positive acceleration for at least a half a second. Then switch over to the Acceleration state
 			//state->accelerate();
+      //Need to add in error checking here too
+      //if we detect that the accelerometer is BAD, then we need to do something about it!
+
+      double accel = sensors->get_sensor_data(TRUE_ACCELERATION)[0];
+
+      //if(
+
     }
     else if(state->get_current_state() == Pod_State::ST_FLIGHT_ACCEL){
+      //Wait until the pull tab
 			//state->coast();
     }
     else if(state->get_current_state() == Pod_State::ST_FLIGHT_COAST){
+      //Wait a specific amoutn of time or distance 
+      
 			//state->brake();
     }
 	}

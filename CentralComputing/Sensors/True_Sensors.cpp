@@ -7,6 +7,7 @@ True_Sensor::True_Sensor(Sensor_Configuration configuration, Sensor_Package * pa
 	package = pack; 
 	count = 1;
 	data = vector<double>(count);	
+  translation_array = {{NO_TRANS}};
 }
 
 
@@ -62,10 +63,37 @@ void True_Velocity::update(Spi * spi) {
 }
 
 void True_Acceleration::update(Spi * spi) {
+  (void) spi;
 	vector<double> accel = package->get_sensor_data(ACCELEROMETERX);
 	sensor_group_mutex.lock();
 
-	// TODO: calculate official value
+  double true_accel = 0;
+
+  //Official Acceleration is simply the median of the three values
+  if(accel[0] > accel[1]){
+    if(accel[1] > accel[2]){
+      true_accel = accel[1];
+    }
+    else if(accel[0] > accel[2]){
+      true_accel = accel[2];
+    }
+    else{
+      true_accel = accel[0];
+    }
+  }
+  else{
+    if(accel[0] > accel[2]){
+      true_accel = accel[0];
+    }
+    else if(accel[1] > accel[2]){
+      true_accel = accel[2];
+    }
+    else{
+      true_accel = accel[1];
+    }
+  }
+
+  data[0] = true_accel;
 
 	sensor_group_mutex.unlock();
 }
