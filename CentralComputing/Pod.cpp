@@ -85,8 +85,27 @@ void sensor_loop() {
       printf("Xmega1 Sensor_Status: %x Xmega2 Sensor_Status: %x\n", sensors->get_sensor_status(0), sensors->get_sensor_status(1));
       printf("Consecutive1: %d \t Consecutive2: %d\n", consecutive_errors_1, consecutive_errors_2);
     }
-
     i++;
+
+
+    //////////////////////////
+    //////////////////////////
+    //Software Transitions
+    //This is where the magic happens
+    //////////////////////////
+    //Need to transition from the "Ready to Launch" state to the Acceleration state
+    //Need to transition from the Acceleration state to the Coast state 
+    //Need to transition from the Coast state to the Brake state (not emergency brake, just normal brake)
+
+    if(state->get_current_state() == Pod_State::ST_LAUNCH_READY){
+			//state->accelerate();
+    }
+    else if(state->get_current_state() == Pod_State::ST_FLIGHT_ACCEL){
+			//state->coast();
+    }
+    else if(state->get_current_state() == Pod_State::ST_FLIGHT_COAST){
+			//state->brake();
+    }
 	}
 }
 
@@ -197,12 +216,6 @@ void pipe_handler(int signum) {
 	(void)signum;
 }
 
-//Send SIGUSR1 (10, 16, 30)
-void cmd_handler(int signum) {
-  (void)signum;
-  send_manual_brake = 1;
-}
-
 int pod(int argc, char** argv) {
     
   struct sigaction act;
@@ -210,9 +223,6 @@ int pod(int argc, char** argv) {
 
   act.sa_handler = &int_handler;
   sigaction(SIGINT, &act, NULL);
-
-  act.sa_handler = &cmd_handler;
-  sigaction(SIGUSR1, &act, NULL);
 
   act.sa_handler = &pipe_handler;
 	sigaction(SIGPIPE, &act, NULL);
