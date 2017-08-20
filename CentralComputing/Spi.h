@@ -41,6 +41,12 @@ enum Xmega_Command_t: uint8_t {
   X_C_MANUAL_BRAKE = 2,
   //PID brake, using brake pressure as the variable
   X_C_PID_BRAKE = 3,
+  //Reset the Sensors. (Really just resets the data kept by the Xmega)
+  X_C_RESET = 4,
+  //Calibrate the Sensors if possible
+  X_C_CALIBRATE = 5,
+  //Calibrate the Sensors if possible
+  X_C_INIT_DEADMAN = 6,
 };
 
 enum Xmega_Request_t: uint8_t {

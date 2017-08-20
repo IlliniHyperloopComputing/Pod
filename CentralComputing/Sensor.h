@@ -5,6 +5,7 @@
 #include <vector>
 #include <thread>
 #include <mutex>
+
 #include "Spi.h"
 
 #define XMEGA1 0
@@ -15,16 +16,25 @@
 
 
 using namespace std;
+
 enum Sensor_Type {
-	THERMOCOUPLE,
 	ACCELEROMETERX,
-	ACCELEROMETERYZ,
-	RIDE_HEIGHT,
 	TAPE_COUNT,
 	OPTICAL,
 	BRAKE_PRESSURE,
+	THERMOCOUPLE,
+	ACCELEROMETERYZ,
+	RIDE_HEIGHT,
 	BATTERY,
-  	CURRENT
+	CURRENT,
+	PULL_TAB,
+	TRUE_POSITION,
+	TRUE_VELOCITY,
+	TRUE_ACCELERATION,
+	XMEGA_STATE,
+	XMEGA_STATUS,
+	XMEGA_RESPONDING,
+	POD_STATE,
 };
 
 enum Sensor_Index_1 {
@@ -44,7 +54,7 @@ enum Sensor_Index_2 {
 
 
 
-static const int NUM_SENSORS = 9;
+static const int NUM_SENSORS = 10;
 
 struct Sensor_Configuration {
 	Sensor_Type type;
@@ -79,6 +89,16 @@ class Sensor_Group {
 		virtual void reset() = 0;
 
 		/**
+		* Gets all data and stores it into a buffer
+		**/
+		virtual uint8_t * get_data_buffer() = 0;
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		virtual size_t get_buffer_size() = 0;
+
+		/**
 		* Returns all available sensor data
 		**/
 		virtual vector<double> get_data();
@@ -89,7 +109,12 @@ class Sensor_Group {
 		**/
 		void refresh_data(Spi * spi);	
 
+		/**
+		* Prints data to standard out
+		* Used for debugging only
+		**/
 		void print_data();
+
 
 
 	protected:
@@ -127,11 +152,17 @@ class Thermocouple : public Sensor_Group {
 		**/
 		void reset();
 
-		/** 
-		* Helper function
-		* Refreshes the local data array from the spi buffers
+		/**
+		* Gets all data and stores it into a buffer
 		**/
-		virtual void refresh_data(Spi * spi);	
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
+
+
 
 	private:
 		/**
@@ -156,6 +187,15 @@ class XAccelerometer : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 
 	private:
@@ -181,6 +221,15 @@ class YZAccelerometer : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 
 	private:
@@ -206,6 +255,15 @@ class Ride_Height : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 		
 
@@ -233,6 +291,15 @@ class Tape_Count : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 
 	private:
@@ -258,6 +325,15 @@ class Optical : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 
 
@@ -284,8 +360,15 @@ class Brake_Pressure : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
 
-
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 	private:
 		/**
@@ -311,6 +394,15 @@ class Battery : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 
 
@@ -337,6 +429,15 @@ class Current : public Sensor_Group {
 		* Resets and recalibrates sensors
 		**/
 		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
 
 
 
@@ -346,6 +447,87 @@ class Current : public Sensor_Group {
 		* Simulates set values in the vector
 		**/
 		void simulation_1();
+};
+
+class Pull_Tab : public Sensor_Group {
+
+	public:
+		Pull_Tab(Sensor_Configuration configuration);
+
+		~Pull_Tab();
+
+		/**
+		* Receives new data from the XMega or calls simulations
+		**/
+		void update(Spi * spi);
+
+		/**
+		* Resets and recalibrates sensors
+		**/
+		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
+
+
+	private:
+		/**
+		* Simulates set values in the vector
+		**/
+		void simulation_1();
+};
+
+class Sensor_Package; 
+
+class True_Sensor : public Sensor_Group {
+
+	public:
+		True_Sensor(Sensor_Configuration configuration, Sensor_Package * pack);
+		~True_Sensor();
+
+		void update(Spi * spi);
+		void reset();
+		/**
+		* Gets all data and stores it into a buffer
+		**/
+		uint8_t * get_data_buffer();
+
+		/**
+		* Calculates the size of the buffer for each sensor
+		**/
+		size_t get_buffer_size();
+	
+	protected:
+		Sensor_Package * package;
+};
+
+
+class True_Position : public True_Sensor {
+	public:	
+		True_Position(Sensor_Configuration configuration, Sensor_Package * pack);
+		void update(Spi * spi);
+};
+
+
+
+class True_Acceleration : public True_Sensor {
+
+	public:	
+		True_Acceleration(Sensor_Configuration configuration, Sensor_Package * pack);
+		void update(Spi * spi);
+};
+
+class True_Velocity : public True_Sensor {
+
+	public:	
+		True_Velocity(Sensor_Configuration configuration, Sensor_Package * pack);
+		void update(Spi * spi);
 };
 
 

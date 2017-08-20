@@ -40,7 +40,6 @@ void XAccelerometer::simulation_1() {
 	auto start = Sensor_Package::start_time;
 	auto now = Sensor_Package::get_current_time();
 	auto difference = now - start;
-	cout << difference << endl;
 	
 	
 	sensor_group_mutex.lock();
@@ -50,6 +49,22 @@ void XAccelerometer::simulation_1() {
 	sensor_group_mutex.unlock();
 }
 
+uint8_t *  XAccelerometer::get_data_buffer() {
+	sensor_group_mutex.lock();
+	uint8_t * buffer = (uint8_t * )malloc(get_buffer_size());
+	for(size_t i = 0; i < count; i++){
+		uint16_t value = data[i];
+		memcpy(buffer + i * sizeof(uint16_t), &value, sizeof(uint16_t));
+	}
+	sensor_group_mutex.unlock();
+
+	return buffer;
+}
+
+size_t XAccelerometer::get_buffer_size() {
+	// 3 * uint16_t
+	return 3 * sizeof(uint16_t);
+}
 
 
 ///////////////////////////////////////////////////////////////
@@ -97,4 +112,21 @@ void YZAccelerometer::simulation_1() {
 		data[i] = i;
 	}
 	sensor_group_mutex.unlock();
+}
+
+uint8_t *  YZAccelerometer::get_data_buffer() {
+	sensor_group_mutex.lock();
+	uint8_t * buffer = (uint8_t * )malloc(get_buffer_size());
+	for(size_t i = 0; i < count; i++){
+		uint16_t value = data[i];
+		memcpy(buffer + i * sizeof(uint16_t), &value, sizeof(uint16_t));
+	}
+	sensor_group_mutex.unlock();
+
+	return buffer;
+}
+
+size_t YZAccelerometer::get_buffer_size() {
+	// 2 * uint16_t
+	return 2 * sizeof(uint16_t);
 }

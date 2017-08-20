@@ -34,16 +34,6 @@ void Thermocouple::update(Spi * spi) {
 	}
 }
 
-void Thermocouple::refresh_data(Spi * spi) {
-	//lock mutex
-	sensor_group_mutex.lock();
-	for(size_t i = 0; i < count; i++) {
-		uint32_t val = spi->get_data(device, i + first_index);
-		data[i] = val * translation_array[i];
-	}
-	sensor_group_mutex.unlock();
-	//unlock 
-}
 
 
 void Thermocouple::simulation_1() {
@@ -52,10 +42,26 @@ void Thermocouple::simulation_1() {
 	auto difference = now - start;
 	
 	//TODO calc some actual value
-	
 	sensor_group_mutex.lock();
 	for(size_t i = 0; i < data.size(); i++) {
 		data[i] = i;
 	}
 	sensor_group_mutex.unlock();
+}
+
+uint8_t *  Thermocouple::get_data_buffer() {
+	sensor_group_mutex.lock();
+	uint8_t * buffer = (uint8_t * )malloc(get_buffer_size());
+	for(size_t i = 0; i < count; i++){
+		uint16_t value = data[i];
+		memcpy(buffer + i * sizeof(uint16_t), &value, sizeof(uint16_t));
+	}
+	sensor_group_mutex.unlock();
+
+	return buffer;
+}
+
+size_t Thermocouple::get_buffer_size() {
+	// 5 * uint16_t
+	return 5 * sizeof(uint16_t);
 }

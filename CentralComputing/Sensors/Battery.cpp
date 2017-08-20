@@ -46,3 +46,20 @@ void Battery::simulation_1() {
 	}
 	sensor_group_mutex.unlock();
 }
+
+uint8_t *  Battery::get_data_buffer() {
+	sensor_group_mutex.lock();
+	uint8_t * buffer = (uint8_t * )malloc(get_buffer_size());
+	for(size_t i = 0; i < count; i++){
+		uint16_t value = data[i];
+		memcpy(buffer + i * sizeof(uint16_t), &value, sizeof(uint16_t));
+	}
+	sensor_group_mutex.unlock();
+
+	return buffer;
+}
+
+size_t Battery::get_buffer_size() {
+	// 2 * uint16_t
+	return 2 * sizeof(uint16_t);
+}

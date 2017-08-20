@@ -47,6 +47,18 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
 			case CURRENT:
 				group = new Current(c);
 				break;
+			case TRUE_POSITION:
+				group = new True_Position(c, this);
+				break;
+			case TRUE_VELOCITY:
+				group = new True_Velocity(c, this);
+				break;
+			case TRUE_ACCELERATION:
+				group = new True_Acceleration(c, this);
+				break;
+			case PULL_TAB:
+				group = new Pull_Tab(c);
+				break;
 			default:
 				cout << "Something went wrong creating sensors. " << endl;
 				group = NULL;
@@ -122,6 +134,12 @@ uint8_t Sensor_Package::update(Xmega_Transfer & transfer) {
 
     return status;
 	}
+  else{
+    for(auto const & pair : sensor_groups){
+      pair.second->update(spi);
+    }
+    return 0;
+  }
 }
 
 
@@ -132,6 +150,12 @@ void Sensor_Package::reset() {
 }
 
 void Sensor_Package::print_status() {
+	
+	auto start = Sensor_Package::start_time;
+	auto now = Sensor_Package::get_current_time();
+	auto difference = now - start;
+	cout << "\n----------------Sensor Status at time " << difference << "----------------\n" << endl;
+	
 	for(auto const & pair : sensor_groups){
 		Sensor_Group * s = pair.second;
 		s->print_data();
@@ -139,15 +163,74 @@ void Sensor_Package::print_status() {
 }
 
 uint8_t Sensor_Package::get_sensor_status(uint8_t device){
-  return spi->get_sensor_status(device);
+	if(connect){
+    return spi->get_sensor_status(device);
+  }
+  else{
+    return 0;
+  }
+
+
 }
 
 uint8_t Sensor_Package::get_state(uint8_t device){
-  return spi->get_state(device);
+	if(connect){
+    return spi->get_state(device);
+  }
+  else{
+    return 0;
+  }
 }
 
 
 vector<double> Sensor_Package::get_sensor_data(Sensor_Type type) {
 	return sensor_groups[type]->get_data();
 }
+
+size_t Sensor_Package::get_sensor_data_packet_size() {
+	size_t size = 0;
+	size_t count = 0;
+	for(auto & pair : sensor_groups) {
+			size += pair.second->get_buffer_size() + 1;
+			count += 1;
+	}
+	size += 11;	//Space for Xmega Responding and Pod State
+	return size;
+}
+
+uint8_t * Sensor_Package::get_sensor_data_packet() {
+	
+	uint8_t * buffer = (uint8_t *) malloc(get_sensor_data_packet_size());
+	size_t index = 0;
+	for(auto & pair : sensor_groups) {
+			buffer[index] = pair.first;
+			uint8_t * data = pair.second->get_data_buffer();
+			size_t data_size = pair.second->get_buffer_size();
+			memcpy(buffer + index + 1, data, data_size);
+			index += data_size + 1;
+			free(data);
+	}
+	//Xmega State
+	memset(buffer + index, 0, 11);
+	buffer[index] = XMEGA_STATE;
+	buffer[index + 3] = XMEGA_STATUS;
+	buffer[index + 6] = XMEGA_RESPONDING;
+	buffer[index + 9] = POD_STATE;
+	if(connect){
+		buffer[index + 1] = spi->get_state(XMEGA1);
+		buffer[index + 2] = spi->get_state(XMEGA2);
+		buffer[index + 4] = spi->get_sensor_status(XMEGA1);
+		buffer[index + 5] = spi->get_sensor_status(XMEGA2);
+		
+		// TODO: Set up XMEGA Responding buffer
+	}
+
+	return buffer;
+
+	
+}
+
+
+
+
 

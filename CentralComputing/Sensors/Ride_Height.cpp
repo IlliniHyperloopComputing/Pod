@@ -47,3 +47,20 @@ void Ride_Height::simulation_1() {
 	}
 	sensor_group_mutex.unlock();
 }
+
+uint8_t *  Ride_Height::get_data_buffer() {
+	sensor_group_mutex.lock();
+	uint8_t * buffer = (uint8_t * )malloc(get_buffer_size());
+	for(size_t i = 0; i < count; i++){
+		uint16_t value = data[i];
+		memcpy(buffer + i * sizeof(uint16_t), &value, sizeof(uint16_t));
+	}
+	sensor_group_mutex.unlock();
+
+	return buffer;
+}
+
+size_t Ride_Height::get_buffer_size() {
+	// 3 * uint16_t
+	return 3 * sizeof(uint16_t);
+}
