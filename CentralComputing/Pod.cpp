@@ -1,6 +1,7 @@
 #include "Sensor_Package.h"
 #include "Pod.h"
 #include "Pod_State.h"
+#include "Utils.h"
 #include <thread>
 #include <csignal>
 #include <mutex>
@@ -267,6 +268,25 @@ void pipe_handler(int signum) {
 }
 
 int pod(int argc, char** argv) {
+
+  //Setup GPIO input/output pins 
+  print_debug("Checking Device tree for GPIO initialization\n");
+  system("echo 60 > /sys/class/gpio/export 2>/dev/null");
+  int val = system("grep 12_27 < /sys/devices/platform/bone_capemgr/slots");
+  if(val != 0){
+    print_debug("Echo-ing correct device tree setup\n");
+    system("echo bspm_P9_12_27 > /sys/devices/platform/bone_capemgr/slots");
+    print_debug("Sleeping for 1 second to make sure kernel has time complete setup\n");
+    usleep(1000000);
+  }
+  system("echo 48 > /sys/class/gpio/export 2>/dev/null");
+  val = system("grep 15_f < /sys/devices/platform/bone_capemgr/slots");
+  if(val != 0){
+    print_debug("Echo-ing correct device tree setup\n");
+    system("echo bspm_P9_15_f > /sys/devices/platform/bone_capemgr/slots");
+    print_debug("Sleeping for 1 second to make sure kernel has time complete setup\n");
+    usleep(1000000);
+  }
     
   struct sigaction act;
   memset(&act, 0, sizeof(struct sigaction));

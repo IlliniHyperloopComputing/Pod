@@ -127,11 +127,11 @@ uint8_t Sensor_Package::update(Xmega_Transfer & transfer) {
 	if(connect) {
 		uint8_t status = spi->transfer(transfer);	
 
-    if(status == X_TF_NONE){
+    //if(status == X_TF_NONE){
       for(auto const & pair : sensor_groups){
         pair.second->update(spi);
       }
-    }
+    //}
 
     return status;
 	}
