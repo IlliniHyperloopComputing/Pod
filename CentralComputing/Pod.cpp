@@ -32,6 +32,18 @@ int clientFD;
 SafeQueue<Xmega_Command_t> * command_queue;
 
 
+//Read to Launch state variables
+#define MIN_ACCELERATION 0.2
+#define DEBOUNCE_TIME  300 //300 ms
+long long acc_start_time = 0;
+bool continuous = false;
+
+//Coast state variables
+#define INIT_BRAKE_DISTANCE 400  //TODO
+#define INIT_BRAKE_TIME     4000 //TODO
+bool recorded_coast_start_time = false;
+long long coast_start_time = 0;
+
 /**
 * Gets new sensor values from the XMEGA
 */
@@ -61,8 +73,8 @@ void sensor_loop() {
       cmd_to_send = X_C_NONE;//Don't need to resend the command
     }
 
-    //Sleep for 25 milliseconds
-    usleep(25000);
+    //Sleep for 15 milliseconds
+    usleep(15000);
 
     //
     //Xmega2
@@ -98,24 +110,51 @@ void sensor_loop() {
 
     
     if(state->get_current_state() == Pod_State::ST_LAUNCH_READY){
-      //The stragety here is to detect a positive acceleration for at least a half a second. Then switch over to the Acceleration state
-			//state->accelerate();
+      //The stragety here is to detect a positive acceleration (debounced for half a second ish). Then switch over to the Acceleration state
       //Need to add in error checking here too
       //if we detect that the accelerometer is BAD, then we need to do something about it!
 
       double accel = sensors->get_sensor_data(TRUE_ACCELERATION)[0];
 
-      //if(
+      if(accel > MIN_ACCELERATION){
+        //record starting time
+        if(continuous == false){
+          acc_start_time = sensors->get_current_time();
+        }
+        //Check debounced time
+        if((sensors->get_current_time() - acc_start_time) > DEBOUNCE_TIME){
+          //Switch states!
+			    state->accelerate();
+        }
+      }
+      else{
+        continuous = false;
+      }
 
     }
     else if(state->get_current_state() == Pod_State::ST_FLIGHT_ACCEL){
       //Wait until the pull tab
-			//state->coast();
+      double pull_tab = sensors->get_sensor_data(PULL_TAB)[0];
+
+      //Check if Pull tab is disconnected
+      if(pull_tab == 0){
+        //Switch states! Pull tab is disconnected
+			  state->coast();
+      }
     }
     else if(state->get_current_state() == Pod_State::ST_FLIGHT_COAST){
       //Wait a specific amoutn of time or distance 
+      double distance = sensors->get_sensor_data(TRUE_POSITION)[0];
       
-			//state->brake();
+      if(!recorded_coast_start_time){
+        coast_start_time = sensors->get_current_time();
+      }
+
+      long long elapsed_time = sensors->get_current_time() - coast_start_time;
+
+      if((distance > INIT_BRAKE_DISTANCE) || (elapsed_time > INIT_BRAKE_TIME)){
+			  state->brake();
+      }
     }
 	}
 }

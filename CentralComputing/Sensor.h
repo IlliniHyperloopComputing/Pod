@@ -510,6 +510,7 @@ class True_Sensor : public Sensor_Group {
 
 		void update(Spi * spi);
 		void reset();
+
 		/**
 		* Gets all data and stores it into a buffer
 		**/
@@ -522,6 +523,11 @@ class True_Sensor : public Sensor_Group {
 	
 	protected:
 		Sensor_Package * package;
+
+    double calibrated_baseline = 0;
+    const int total_samples = 100;
+    int current_sample = 0;
+    bool calibrated = false;
 };
 
 
@@ -532,12 +538,13 @@ class True_Position : public True_Sensor {
 };
 
 
-
 class True_Acceleration : public True_Sensor {
 
 	public:	
 		True_Acceleration(Sensor_Configuration configuration, Sensor_Package * pack);
 		void update(Spi * spi);
+
+    const double volts_per_g = 0.330;
 };
 
 class True_Velocity : public True_Sensor {

@@ -17,10 +17,13 @@ True_Sensor::~True_Sensor() {
 
 
 void True_Sensor::reset() {
-	
+  calibrated_baseline = 0;
+  current_sample = total_samples;
+  calibrated = false;
 }
 
 void True_Sensor::update(Spi * spi) {
+  (void) spi;
 	sensor_group_mutex.lock();
 	data[0] = 0;
 	sensor_group_mutex.unlock();
@@ -44,6 +47,7 @@ True_Acceleration::True_Acceleration(Sensor_Configuration configuration, Sensor_
 }
 
 void True_Position::update(Spi * spi) {
+  (void) spi;
 	vector<double> optical = package->get_sensor_data(OPTICAL);
 	vector<double> tape = package->get_sensor_data(TAPE_COUNT);
 	sensor_group_mutex.lock();
@@ -54,6 +58,7 @@ void True_Position::update(Spi * spi) {
 }
 
 void True_Velocity::update(Spi * spi) {
+  (void) spi;
 
 	vector<double> optical = package->get_sensor_data(OPTICAL);
 	sensor_group_mutex.lock();
@@ -91,6 +96,26 @@ void True_Acceleration::update(Spi * spi) {
     else{
       true_accel = accel[1];
     }
+  }
+
+
+  if(current_sample > 0){
+    calibrated_baseline += true_accel;
+    current_sample--;
+
+    if(current_sample == 0){
+      calibrated_baseline /= total_samples;
+      calibrated = true;
+    }
+  }
+
+  if(calibrated){
+    //calibrated minus true_accel 
+    //to account for having the X-axis backwards
+    true_accel = (calibrated_baseline - true_accel) / volts_per_g;
+  }
+  else{
+    true_accel = 0;
   }
 
   data[0] = true_accel;

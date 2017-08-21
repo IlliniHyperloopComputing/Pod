@@ -8,7 +8,9 @@ StateMachine_Test::StateMachine_Test(){
 }
 
 int StateMachine_Test::test(int argc, char** argv) {
-	Pod_State pod;
+  SafeQueue<Xmega_Command_t> * command_queue;
+	command_queue = new SafeQueue<Xmega_Command_t>();
+	Pod_State pod(command_queue);
 	// argument vector
 	vector<string> args(argv, argv + argc);
 
