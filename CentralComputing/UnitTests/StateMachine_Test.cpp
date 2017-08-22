@@ -10,7 +10,10 @@ StateMachine_Test::StateMachine_Test(){
 int StateMachine_Test::test(int argc, char** argv) {
   SafeQueue<Xmega_Command_t> * command_queue;
 	command_queue = new SafeQueue<Xmega_Command_t>();
-	Pod_State pod(command_queue);
+  Sensor_Package * sensors;
+	auto configs = parse_input(argc, argv);
+	sensors = new Sensor_Package(std::get<1>(configs), std::get<0>(configs));
+	Pod_State pod(command_queue,sensors);
 	// argument vector
 	vector<string> args(argv, argv + argc);
 

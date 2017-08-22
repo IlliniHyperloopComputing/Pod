@@ -5,6 +5,8 @@
 #include <iostream>
 #include <string>
 #include <SafeQueue.hpp>
+#include "Sensor.h"
+#include "Sensor_Package.h"
 
 class Pod_State : public StateMachine {
 	public:
@@ -25,9 +27,10 @@ class Pod_State : public StateMachine {
 		/** 
 		* Constructs a pod state machine
 		**/
-		Pod_State(SafeQueue<Xmega_Command_t> * cmd_queue) 
+		Pod_State(SafeQueue<Xmega_Command_t> * cmd_queue, Sensor_Package * sen) 
       : StateMachine(ST_MAX_STATES), 
-        command_queue(cmd_queue)
+        command_queue(cmd_queue),
+        sensors(sen)
     {}
 
 		// returns the current state as an enum
@@ -88,6 +91,7 @@ class Pod_State : public StateMachine {
 		END_STATE_MAP
 
     SafeQueue<Xmega_Command_t> * command_queue;
+    Sensor_Package * sensors;
 
 };
 

@@ -36,15 +36,13 @@ enum Xmega_Command_t: uint8_t {
   //No Command
   X_C_NONE = 0,
   //No Command
-  X_C_COLLECT = 1,
+  X_C_COLLECT = 2,
   //Manual Brake  (short birst)
-  X_C_MANUAL_BRAKE = 2,
+  X_C_MANUAL_BRAKE = 3,
   //PID brake, using brake pressure as the variable
-  X_C_PID_BRAKE = 3,
+  X_C_PID_BRAKE = 4,
   //Reset the Sensors. (Really just resets the data kept by the Xmega)
-  X_C_RESET = 4,
-  //Calibrate the Sensors if possible
-  X_C_CALIBRATE = 5,
+  X_C_RESET = 5,
   //Calibrate the Sensors if possible
   X_C_INIT_DEADMAN = 6,
 };
@@ -165,6 +163,7 @@ typedef struct Xmega_Data_ {
   **/
   uint8_t sensor_status;
   uint8_t state;
+  int consecutive_errors = 0;
 
 } Xmega_Data;
 
@@ -309,6 +308,15 @@ class Spi {
     *                 Value of 0 or 1 
     **/
     uint8_t get_state(uint8_t device);
+
+    /**
+    * Getter function returning if the device is responding 
+    * specified device.
+    * No Spi transfer happens here.
+    * @param device   which Xmega?
+    *                 Value of 0 or 1 
+    **/
+    uint8_t get_responding(uint8_t device);
 
   private:
 

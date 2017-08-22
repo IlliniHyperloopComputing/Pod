@@ -134,7 +134,7 @@ clean:
 
 .PHONY: push
 push: $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)
-	scp $(POD_CROSS)   root@192.168.137.100:~/
-	scp $(POD_CROSS_D) root@192.168.137.100:~/
-	scp $(POD_CROSS_T) root@192.168.137.100:~/
+	scp $(POD_CROSS)   pod@192.168.137.100:~/
+	scp $(POD_CROSS_D) pod@192.168.137.100:~/
+	scp $(POD_CROSS_T) pod@192.168.137.100:~/
 

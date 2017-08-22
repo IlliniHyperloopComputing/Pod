@@ -8,6 +8,7 @@
 
 #include "Sensor.h"
 #include "Spi.h"
+#include "Utils.h"
 
 using namespace std;
 

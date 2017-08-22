@@ -141,6 +141,8 @@ void Pod_State::ST_Safe_Mode() {
 
 void Pod_State::ST_Functional_Test() {
 	std::cout << "Entering: Functional Test" << std::endl;
+  command_queue->enqueue(X_C_RESET);
+  sensors->reset();
   //Do nothing on transition into this state
 }
 

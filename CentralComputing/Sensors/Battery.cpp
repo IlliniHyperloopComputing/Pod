@@ -7,7 +7,7 @@ Battery::Battery(Sensor_Configuration configuration) : Sensor_Group(configuratio
 	first_index = BATTERY_CELL_INDEX; // index offset to read from spi
 	device = XMEGA2; //xmega device number (0 or 1)
 	count = 2; //number of sensors
-    translation_array = {{ADC_TRANS, ADC_TRANS}};
+    translation_array = {{NO_TRANS, NO_TRANS}};
     name = "Battery";
     name_array = {{"B1", "B2"}};
 	data = vector<double>(count);		

@@ -31,7 +31,7 @@ lengths = {
 	Type.ACCELEROMETERYZ : 4,
 	Type.RIDE_HEIGHT : 6,
 	Type.BATTERY : 4,
-	Type.CURRENT : 2,
+	Type.CURRENT : 4,
 	Type.PULL_TAB : 1,
 	Type.TRUE_POSITION : 8,
 	Type.TRUE_VELOCITY : 8,

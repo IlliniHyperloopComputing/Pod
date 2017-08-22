@@ -8,7 +8,7 @@ Brake_Pressure::Brake_Pressure(Sensor_Configuration configuration) : Sensor_Grou
 	first_index = BRAKE_PRESSURE_INDEX; // index offset to read from spi
 	device = XMEGA1; //xmega device number (0 or 1)
 	count = 1; //number of sensors
-    translation_array = {{ADC_TRANS}};
+    translation_array = {{NO_TRANS}};
     name = "Brake Pressure";
     name_array = {{"Pressure"}};
 	data = vector<double>(count);		

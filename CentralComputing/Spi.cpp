@@ -121,10 +121,12 @@ int Spi::transfer(Xmega_Transfer &xt){
   
   //return if not sent properly
   if(!sent_properly){
+    xd->consecutive_errors++;
     return 1;
   }
 
   if(xt.req == X_R_NONE){
+    xd->consecutive_errors = 0;
     return 0;
   }
   
@@ -189,6 +191,7 @@ int Spi::transfer(Xmega_Transfer &xt){
   //Check CRC accuracy 
   //Return if they are not equal
   if(calc_crc != rx_crc){
+    xd->consecutive_errors++;
     return 2;
   }
 
@@ -208,7 +211,7 @@ int Spi::transfer(Xmega_Transfer &xt){
     xd->sensor_status = rx_buff[bytes_to_read-2];
     xd->state = rx_buff[bytes_to_read-1];
   }
-
+  xd->consecutive_errors = 0;
   return 0;
 }
 
@@ -223,8 +226,8 @@ uint32_t Spi::get_data(uint8_t device, int idx){
     xd = x2;
     xs = x2_setup;
   }
-  //print_debug("Xmega_Data: %p \t Xmega_Setup: %p \t device: %d \t idx: %d\n", xd, xs, device, idx);
-  //print_debug("Bytes per item: %d\n", xs->bytes_per_item[idx]);
+  print_debug("Xmega_Data: %p \t Xmega_Setup: %p \t device: %d \t idx: %d\n", xd, xs, device, idx);
+  print_debug("Bytes per item: %d\n", xs->bytes_per_item[idx]);
 
   assert(idx < xs->num_items);
 
@@ -232,10 +235,11 @@ uint32_t Spi::get_data(uint8_t device, int idx){
   uint32_t tmp = 0;
   for(int i = 0; i < xs->bytes_per_item[idx]; i++){
     //Assert to ensure no buffer overflow
-    //print_debug("idx: %d \t offset_lookup: %d \t num_bytes:%d\n", i,xd->offset_lookup[idx], xd->num_bytes); 
     assert(xd->offset_lookup[idx] + i < xd->num_bytes);
+    print_debug("idx: %d \t offset_lookup: %d \t num_bytes:%d\n", i,xd->offset_lookup[idx], xd->num_bytes); 
     tmp |= xd->buff[xd->offset_lookup[idx] + i] << (i * 8);
   }
+  print_debug("returning now from spi_get_data\n");
 
   return tmp;
 }
@@ -257,6 +261,18 @@ uint8_t Spi::get_state(uint8_t device){
   }
   else if(device == 1){
     return x2->state;  
+  }
+
+  return 0;
+}
+
+uint8_t Spi::get_responding(uint8_t device){
+  const int max_errors = 30;
+  if(device == 0){
+    return ((x1->consecutive_errors)<max_errors);  
+  }
+  else if(device == 1){
+    return ((x2->consecutive_errors) < max_errors);  
   }
 
   return 0;

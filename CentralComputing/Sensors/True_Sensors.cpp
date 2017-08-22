@@ -17,9 +17,11 @@ True_Sensor::~True_Sensor() {
 
 
 void True_Sensor::reset() {
+	sensor_group_mutex.lock();
   calibrated_baseline = 0;
   current_sample = total_samples;
   calibrated = false;
+	sensor_group_mutex.unlock();
 }
 
 void True_Sensor::update(Spi * spi) {
@@ -112,7 +114,7 @@ void True_Acceleration::update(Spi * spi) {
   if(calibrated){
     //calibrated minus true_accel 
     //to account for having the X-axis backwards
-    true_accel = (calibrated_baseline - true_accel) / volts_per_g;
+    true_accel = adc_trans(calibrated_baseline - true_accel) / volts_per_g;
   }
   else{
     true_accel = 0;

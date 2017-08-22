@@ -1,4 +1,5 @@
 #include "Sensor.h"
+#include "Utils.h"
 #include <iostream>
 
 using namespace std;
@@ -21,6 +22,7 @@ void Sensor_Group::refresh_data(Spi * spi) {
 	//lock mutex
 	sensor_group_mutex.lock();
 	for(size_t i = 0; i < count; i++) {
+    print_debug("spi->get_data()\n");
 		uint32_t val = spi->get_data(device, i + first_index);
 		data[i] = translation_array[i](val);
 	}

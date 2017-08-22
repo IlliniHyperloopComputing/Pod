@@ -81,7 +81,7 @@ void sensor_loop() {
     //Xmega2
     transfer.device = 1;
     transfer.cmd = X_C_NONE;
-    sensors->update(transfer);
+    stat = sensors->update(transfer);
     if(stat != X_TF_NONE){
       consecutive_errors_2++;
     }
@@ -89,8 +89,7 @@ void sensor_loop() {
       consecutive_errors_2 = 0;
     }
 
-
-    if(i % 10 == 0){
+    if(i % 30 == 0){
       cout << "=============================="<< endl;
       sensors->print_status();
       printf("Xmega1 State: %d \t Xmega2 State: %d \n", sensors->get_state(0), sensors->get_state(1));
@@ -226,10 +225,11 @@ void parse_command(char command){
 			state->emergency_brake();
 			break;
 		case RESET_SENSORS:
-			command_queue->enqueue(X_C_RESET);
+      command_queue->enqueue(X_C_RESET);
+      sensors->reset();
 			break;
 		case CALIBRATE_SENSORS:
-			command_queue->enqueue(X_C_CALIBRATE);
+      cout << "This command does nothing and needs to be removed"<<endl;
 			break;	
 	}
 	state_mutex.unlock();
@@ -242,7 +242,7 @@ void write_loop() {
 	bool active_connection = true;
 	while(active_connection && running) {
     //TODO Change speed of writing
-		usleep(1000000);		
+		usleep(100000);		
 		uint8_t * data = sensors->get_sensor_data_packet();	
 		size_t size = sensors->get_sensor_data_packet_size();
 		state_mutex.lock();
@@ -302,12 +302,16 @@ int pod(int argc, char** argv) {
 	sensors = new Sensor_Package(std::get<1>(configs), std::get<0>(configs));
 	command_queue = new SafeQueue<Xmega_Command_t>();
 
-	state = new Pod_State(command_queue);
+	state = new Pod_State(command_queue, sensors);
 
 	printf("Created sensor package\n");
 	thread sensor_thread(sensor_loop);
 
 	socketfd = socket(AF_INET, SOCK_STREAM, 0);
+  int enable = 1;
+  if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
+    perror("setsockopt(SO_REUSEADDR) failed");
+  }
 
 	struct addrinfo hints, *result;
 	memset(&hints, 0, sizeof(hints));

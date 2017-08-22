@@ -8,12 +8,12 @@ using namespace std;
 long long Sensor_Package::start_time = 1;
 
 static uint8_t bpi1_s[] = {2,2,2,2,4,4};
-static uint8_t bpi2_s[] = {2,2,2,2,2,2,2,2,2,2,2,2,2,1};
+static uint8_t bpi2_s[] = {2,2,2,2,2,2,2,2,2,2,2,2,2,2,1};
 uint8_t * Sensor_Package::bpi1 = bpi1_s;
 uint8_t * Sensor_Package::bpi2 = bpi2_s;
 
 Xmega_Setup Sensor_Package::x1 = {"/dev/spidev1.0", 6, bpi1, 500000, 8};
-Xmega_Setup Sensor_Package::x2 = {"/dev/spidev1.1", 14, bpi2, 500000, 8};
+Xmega_Setup Sensor_Package::x2 = {"/dev/spidev1.1", 15, bpi2, 500000, 8};
 
 Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool xmega_connect) {
 
@@ -125,13 +125,16 @@ uint8_t Sensor_Package::update(Xmega_Transfer & transfer) {
 	//TODO handle transferring in non simulation cases
 
 	if(connect) {
+    print_debug("Calling spi->transfer()\n");
 		uint8_t status = spi->transfer(transfer);	
 
     //if(status == X_TF_NONE){
+    print_debug("Updating indivitudal sensors\n");
       for(auto const & pair : sensor_groups){
         pair.second->update(spi);
       }
     //}
+    print_debug("done indivitudal sensors\n");
 
     return status;
 	}
@@ -222,17 +225,11 @@ uint8_t * Sensor_Package::get_sensor_data_packet() {
 		buffer[index + 2] = spi->get_state(XMEGA2);
 		buffer[index + 4] = spi->get_sensor_status(XMEGA1);
 		buffer[index + 5] = spi->get_sensor_status(XMEGA2);
+		buffer[index + 7] = spi->get_responding(XMEGA1);
+		buffer[index + 8] = spi->get_responding(XMEGA2);
 		
-		// TODO: Set up XMEGA Responding buffer
 	}
 
 	return buffer;
-
-	
 }
-
-
-
-
-
 
