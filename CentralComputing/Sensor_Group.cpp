@@ -41,7 +41,7 @@ double Sensor_Group::no_trans(double x){
   return x;
 }
 double Sensor_Group::adc_trans(double x){
-  return (x/32769.0 * 4.096);
+  return (x/32768.0 * 4.096);
 }
 
 double Sensor_Group::current_trans(double x){

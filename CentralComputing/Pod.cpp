@@ -39,6 +39,11 @@ SafeQueue<Xmega_Command_t> * command_queue;
 long long acc_start_time = 0;
 bool continuous = false;
 
+//Accel state variables
+#define INIT_COAST_TIME 4000 //TODO
+bool recorded_accel_start_time = false;
+long long accel_start_time = 0;
+
 //Coast state variables
 #define INIT_BRAKE_DISTANCE 400  //TODO
 #define INIT_BRAKE_TIME     4000 //TODO
@@ -136,8 +141,14 @@ void sensor_loop() {
       //Wait until the pull tab
       double pull_tab = sensors->get_sensor_data(PULL_TAB)[0];
 
+      if(!recorded_accel_start_time){
+        accel_start_time = sensors->get_current_time();
+      }
+
+      long long elapsed_time = sensors->get_current_time() - accel_start_time;
+
       //Check if Pull tab is disconnected
-      if(pull_tab == 0){
+      if((pull_tab == 0) && (elapsed_time > INIT_COAST_TIME )){
         //Switch states! Pull tab is disconnected
 			  state->coast();
       }
@@ -152,7 +163,7 @@ void sensor_loop() {
 
       long long elapsed_time = sensors->get_current_time() - coast_start_time;
 
-      if((distance > INIT_BRAKE_DISTANCE) || (elapsed_time > INIT_BRAKE_TIME)){
+      if((distance > INIT_BRAKE_DISTANCE) && (elapsed_time > INIT_BRAKE_TIME)){
 			  state->brake();
       }
     }
