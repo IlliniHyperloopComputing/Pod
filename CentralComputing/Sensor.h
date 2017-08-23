@@ -220,6 +220,8 @@ class XAccelerometer : public Sensor_Group {
 		* Simulates set values in the vector
 		**/
 		void simulation_1();
+
+    void simulation_2();
 };
 
 class YZAccelerometer : public Sensor_Group {

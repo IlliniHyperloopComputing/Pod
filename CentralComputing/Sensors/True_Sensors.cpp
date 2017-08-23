@@ -1,5 +1,10 @@
 #include "../Sensor_Package.h"
+#include <math.h>
 #include <iostream>
+
+#define TAPE_DISTANCE 30.48
+#define ENCODER_RADIUS 0.0635
+#define SECONDS 60
 
 using namespace std;
 
@@ -54,7 +59,10 @@ void True_Position::update(Spi * spi) {
 	vector<double> tape = package->get_sensor_data(TAPE_COUNT);
 	sensor_group_mutex.lock();
 
-	//TODO calculate official value
+  double tape_count_distance = tape[0] * TAPE_DISTANCE; //distance in meters measured by counted tapes
+  double optical_distance = optical[1] * ENCODER_RADIUS * 2 * M_PI; //distance in meters measured by optical encoder
+
+  data[0] = max(tape_count_distance, optical_distance);
 	sensor_group_mutex.unlock();
 	
 }
@@ -64,8 +72,9 @@ void True_Velocity::update(Spi * spi) {
 
 	vector<double> optical = package->get_sensor_data(OPTICAL);
 	sensor_group_mutex.lock();
-
-	// TODO: calculate official value
+  double rpm = optical[0];
+  data[0] = rpm / SECONDS * 2 * M_PI * ENCODER_RADIUS;
+  
 	sensor_group_mutex.unlock();
 }
 
