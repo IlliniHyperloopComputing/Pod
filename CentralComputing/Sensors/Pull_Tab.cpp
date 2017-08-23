@@ -46,6 +46,9 @@ void Pull_Tab::update(Spi * spi) {
 		case 1:
 			simulation_1();
 			break;
+		case 2:
+			simulation_2();
+			break;
 	}
 }
 
@@ -63,6 +66,23 @@ void Pull_Tab::simulation_1() {
 		data[i] = i;
 	}
 	sensor_group_mutex.unlock();
+}
+void Pull_Tab::simulation_2() {
+  
+	auto start = Sensor_Package::start_time;
+	auto now = Sensor_Package::get_current_time();
+	auto difference = now - start;
+  sensor_group_mutex.lock();
+  if(difference < 30 * 1000){
+    data[0] = 1;
+  } else if(difference < 45 * 1000) {
+    data[0] = 1;
+  } else if(difference < 60 * 1000) { 
+    data[0] = 0;
+  } else {
+  }
+  
+  sensor_group_mutex.unlock();
 }
 
 uint8_t *  Pull_Tab::get_data_buffer() {

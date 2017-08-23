@@ -112,8 +112,8 @@ Sensor_Package::~Sensor_Package() {
   if(connect){
 	  delete spi;
   }
-}
 
+}
 long long Sensor_Package::get_current_time() {
 
 	auto now = std::chrono::system_clock::now();
@@ -148,6 +148,7 @@ uint8_t Sensor_Package::update(Xmega_Transfer & transfer) {
 
 
 void Sensor_Package::reset() {
+  
 	for(auto const & pair : sensor_groups){
 		pair.second->reset();
 	}

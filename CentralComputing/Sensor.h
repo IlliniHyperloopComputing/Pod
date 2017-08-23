@@ -220,6 +220,8 @@ class XAccelerometer : public Sensor_Group {
 		* Simulates set values in the vector
 		**/
 		void simulation_1();
+
+    void simulation_2();
 };
 
 class YZAccelerometer : public Sensor_Group {
@@ -324,6 +326,7 @@ class Tape_Count : public Sensor_Group {
 		* Simulates set values in the vector
 		**/
 		void simulation_1();
+    void simulation_2();
 };
 
 class Optical : public Sensor_Group {
@@ -359,6 +362,7 @@ class Optical : public Sensor_Group {
 		* Simulates set values in the vector
 		**/
 		void simulation_1();
+    void simulation_2();
 };
 
 class Brake_Pressure : public Sensor_Group {
@@ -498,6 +502,7 @@ class Pull_Tab : public Sensor_Group {
 		* Simulates set values in the vector
 		**/
 		void simulation_1();
+    void simulation_2();
 };
 
 class Sensor_Package; 
