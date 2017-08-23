@@ -23,11 +23,11 @@
 #define CMD_INIT_DEADMAN 6
 #define STATE_MANUAL_REVERSE_BRAKE 7
 
-#define ACCEL_MIN (4800) 
-#define ACCEL_MAX (21000)
+#define ACCEL_MIN (4800) //-3 g
+#define ACCEL_MAX (21000) //3 g
 
-#define BRAKE_MIN (1000)
-#define BRAKE_MAX (10000)
+#define BRAKE_MIN (2776) //50 psi
+#define BRAKE_MAX (19305) //350 pis
 
 #define ACCEL_SENSOR_1  (0x48)
 #define ACCEL_SENSOR_2  (0x49)
