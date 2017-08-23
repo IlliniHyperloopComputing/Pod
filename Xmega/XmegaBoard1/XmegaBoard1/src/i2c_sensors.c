@@ -58,7 +58,8 @@ int8_t init_adc(TWI_t *twi, uint8_t chip, uint8_t type_of_adc){
 
 }
 
-int8_t set_adc_mux(TWI_t * twi, uint8_t chip, uint8_t mux){
+__attribute__((always_inline))
+inline int8_t set_adc_mux(TWI_t * twi, uint8_t chip, uint8_t mux){
 	
 	adc_write.chip = chip;
 	adc_write_bytes[0] = mux;	
@@ -66,6 +67,7 @@ int8_t set_adc_mux(TWI_t * twi, uint8_t chip, uint8_t mux){
 	return twi_master_write(twi, &adc_write);
 }
 
+__attribute__((always_inline))
 inline int8_t read_adc(TWI_t * twi, uint8_t chip, void * buff){
 	
 	adc_read.chip = chip;

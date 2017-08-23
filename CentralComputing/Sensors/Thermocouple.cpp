@@ -9,7 +9,7 @@ Thermocouple::Thermocouple(Sensor_Configuration configuration) : Sensor_Group(co
 	count = 5;
 	data = vector<double>(count);	
 	
-	translation_array = {{0.25, 0.25, 0.25, 0.25, 0.0625}};
+	translation_array = {{NO_TRANS,NO_TRANS,NO_TRANS,NO_TRANS,NO_TRANS}};
 	name = "Thermocouple";
 	name_array = {{"T1", "T2", "T3", "T4 Ext", "T4 Int"}};
 }

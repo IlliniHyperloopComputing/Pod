@@ -8,6 +8,7 @@
 
 #include "Sensor.h"
 #include "Spi.h"
+#include "Utils.h"
 
 using namespace std;
 
@@ -27,8 +28,9 @@ class Sensor_Package {
 		/**
 		* Calls update on every sensor group
 		* @param transfer the Xmega transfer struct
+		* @return status of transfer
 		**/
-		void update(Xmega_Transfer & transfer);
+		uint8_t update(Xmega_Transfer & transfer);
 
 		/**
 		* Sends a reset command to each sensor group
@@ -48,6 +50,19 @@ class Sensor_Package {
 		void print_status();
 
 		/**
+		* Get xmega sensor status from specific device
+		* @return uint8_t sensor_status
+		**/
+    uint8_t get_sensor_status(uint8_t device);
+
+		/**
+		* Get xmega state from specific device
+		* @return uint8_t state
+		**/
+    uint8_t get_state(uint8_t device);
+
+
+    /**
 		* Gets the current time since program startup
 		* @return a long long representing the number of microseconds since startup
 		**/
@@ -71,10 +86,14 @@ class Sensor_Package {
 		
 		static long long start_time;
 		bool connect;
+
+    static uint8_t * bpi1;
+    static uint8_t * bpi2;
+    static Xmega_Setup x1;
+    static Xmega_Setup x2;
 	private:
 		map<Sensor_Type, Sensor_Group * > sensor_groups;
 		Spi * spi;	
-
 };
 
 #endif

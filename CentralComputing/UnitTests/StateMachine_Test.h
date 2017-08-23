@@ -7,6 +7,7 @@
 
 //Any other dependencies 
 #include "Pod_State.h"
+#include "Pod.h"
 #include "Sensor.h"
 #include <iostream>
 #include <unistd.h>

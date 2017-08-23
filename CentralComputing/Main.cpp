@@ -5,6 +5,7 @@
 
 int main(int argc, char** argv) {
 
+  //Set frequency to max
   system("cpufreq-set -f 1000MHz");
 
   #ifdef TEST_POD

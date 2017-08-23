@@ -8,7 +8,7 @@ Ride_Height::Ride_Height(Sensor_Configuration configuration) : Sensor_Group(conf
 	first_index = RIDE_HEIGHT_INDEX; // index offset to read from spi
 	device = XMEGA2; //xmega device number (0 or 1)
 	count = 3; //number of sensors
-    translation_array = {{ADC_TRANS,ADC_TRANS,ADC_TRANS}};
+    translation_array = {{NO_TRANS,NO_TRANS,NO_TRANS}};
     name = "Ride Height";
     name_array = {{"RH1", "RH2", "RH3"}};
 	data = vector<double>(count);		

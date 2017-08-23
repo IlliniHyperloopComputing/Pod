@@ -11,7 +11,7 @@ XAccelerometer::XAccelerometer(Sensor_Configuration configuration) : Sensor_Grou
 	device = XMEGA1; //xmega device number (0 or 1)
 	count = 3; //number of sensors
 	data = vector<double>(count);
-    translation_array = {{ADC_TRANS,ADC_TRANS,ADC_TRANS}};
+    translation_array = {{NO_TRANS,NO_TRANS,NO_TRANS}};
     name = "X Accel";
     name_array = {{"X1", "X2", "X3"}};
 }
@@ -75,7 +75,7 @@ YZAccelerometer::YZAccelerometer(Sensor_Configuration configuration) : Sensor_Gr
 	first_index = YZ_ACCELERATION_INDEX; // index offset to read from spi
 	device = XMEGA2; //xmega device number (0 or 1)
 	count = 2; //number of sensors
-    translation_array = {{ADC_TRANS,ADC_TRANS,ADC_TRANS}};
+    translation_array = {{NO_TRANS,NO_TRANS,NO_TRANS}};
     name = "YZ Accel";
     name_array = {{"Y", "Z"}};
 	data = vector<double>(count);

@@ -1,6 +1,7 @@
 #include "Sensor_Package.h"
 #include "Pod.h"
 #include "Pod_State.h"
+#include "Utils.h"
 #include <thread>
 #include <csignal>
 #include <mutex>
@@ -15,7 +16,6 @@
 #include <poll.h>
 #include <SafeQueue.hpp>
 
-
 using namespace std;
 
 Sensor_Package * sensors;
@@ -23,25 +23,151 @@ Pod_State * state;
 mutex state_mutex;
 
 volatile bool running = true;
+volatile bool send_manual_brake = false;
+Xmega_Command_t cmd_to_send = X_C_NONE;
+
+int consecutive_errors_1 = 0;
+int consecutive_errors_2 = 0;
 int socketfd;
 int clientFD;
 SafeQueue<Xmega_Command_t> * command_queue;
 
 
-std::tuple<bool, vector<Sensor_Configuration>> configs;
+//Read to Launch state variables
+#define MIN_ACCELERATION 0.2
+#define DEBOUNCE_TIME  300 //300 ms
+long long acc_start_time = 0;
+bool continuous = false;
+
+//Accel state variables
+#define INIT_COAST_TIME 4000 //TODO
+bool recorded_accel_start_time = false;
+long long accel_start_time = 0;
+
+//Coast state variables
+#define INIT_BRAKE_DISTANCE 400  //TODO
+#define INIT_BRAKE_TIME     4000 //TODO
+bool recorded_coast_start_time = false;
+long long coast_start_time = 0;
 
 /**
 * Gets new sensor values from the XMEGA
 */
 void sensor_loop() {
+  int i = 0;
 	Xmega_Transfer transfer = {0,X_C_NONE, X_R_ALL};
 	while(running){
-		transfer.cmd = command_queue->dequeue();		
-		sensors->update(transfer);
-		//sensors->print_status();
-		usleep(10000);
-	}
 
+		Xmega_Command_t recv_cmd = command_queue->dequeue();		
+
+    //
+    //Xmega1
+	  transfer.device = 0;
+
+    //Set cmd_to_send if we have a new command to send 
+    if(recv_cmd != X_C_NONE){
+      cmd_to_send = recv_cmd;
+    }
+
+    transfer.cmd = cmd_to_send;
+    uint8_t stat = sensors->update(transfer);
+    if(stat != X_TF_NONE){
+      consecutive_errors_1++;
+    }
+    else{
+      consecutive_errors_1 = 0;
+      cmd_to_send = X_C_NONE;//Don't need to resend the command
+    }
+
+    //Sleep for 15 milliseconds
+    usleep(15000);
+
+    //
+    //Xmega2
+    transfer.device = 1;
+    transfer.cmd = X_C_NONE;
+    stat = sensors->update(transfer);
+    if(stat != X_TF_NONE){
+      consecutive_errors_2++;
+    }
+    else{
+      consecutive_errors_2 = 0;
+    }
+
+    if(i % 30 == 0){
+      cout << "=============================="<< endl;
+      sensors->print_status();
+      printf("Xmega1 State: %d \t Xmega2 State: %d \n", sensors->get_state(0), sensors->get_state(1));
+      printf("Xmega1 Sensor_Status: %x Xmega2 Sensor_Status: %x\n", sensors->get_sensor_status(0), sensors->get_sensor_status(1));
+      printf("Consecutive1: %d \t Consecutive2: %d\n", consecutive_errors_1, consecutive_errors_2);
+    }
+    i++;
+
+
+    //////////////////////////
+    //////////////////////////
+    //Software Transitions
+    //This is where the magic happens
+    //////////////////////////
+    //Need to transition from the "Ready to Launch" state to the Acceleration state
+    //Need to transition from the Acceleration state to the Coast state 
+    //Need to transition from the Coast state to the Brake state (not emergency brake, just normal brake)
+
+    
+    if(state->get_current_state() == Pod_State::ST_LAUNCH_READY){
+      //The stragety here is to detect a positive acceleration (debounced for half a second ish). Then switch over to the Acceleration state
+      //Need to add in error checking here too
+      //if we detect that the accelerometer is BAD, then we need to do something about it!
+
+      double accel = sensors->get_sensor_data(TRUE_ACCELERATION)[0];
+
+      if(accel > MIN_ACCELERATION){
+        //record starting time
+        if(continuous == false){
+          acc_start_time = sensors->get_current_time();
+        }
+        //Check debounced time
+        if((sensors->get_current_time() - acc_start_time) > DEBOUNCE_TIME){
+          //Switch states!
+			    state->accelerate();
+        }
+      }
+      else{
+        continuous = false;
+      }
+
+    }
+    else if(state->get_current_state() == Pod_State::ST_FLIGHT_ACCEL){
+      //Wait until the pull tab
+      double pull_tab = sensors->get_sensor_data(PULL_TAB)[0];
+
+      if(!recorded_accel_start_time){
+        accel_start_time = sensors->get_current_time();
+      }
+
+      long long elapsed_time = sensors->get_current_time() - accel_start_time;
+
+      //Check if Pull tab is disconnected
+      if((pull_tab == 0) && (elapsed_time > INIT_COAST_TIME )){
+        //Switch states! Pull tab is disconnected
+			  state->coast();
+      }
+    }
+    else if(state->get_current_state() == Pod_State::ST_FLIGHT_COAST){
+      //Wait a specific amoutn of time or distance 
+      double distance = sensors->get_sensor_data(TRUE_POSITION)[0];
+      
+      if(!recorded_coast_start_time){
+        coast_start_time = sensors->get_current_time();
+      }
+
+      long long elapsed_time = sensors->get_current_time() - coast_start_time;
+
+      if((distance > INIT_BRAKE_DISTANCE) && (elapsed_time > INIT_BRAKE_TIME)){
+			  state->brake();
+      }
+    }
+	}
 }
 
 void network_loop() {
@@ -110,10 +236,11 @@ void parse_command(char command){
 			state->emergency_brake();
 			break;
 		case RESET_SENSORS:
-			command_queue->enqueue(X_C_RESET);
+      command_queue->enqueue(X_C_RESET);
+      sensors->reset();
 			break;
 		case CALIBRATE_SENSORS:
-			command_queue->enqueue(X_C_CALIBRATE);
+      cout << "This command does nothing and needs to be removed"<<endl;
 			break;	
 	}
 	state_mutex.unlock();
@@ -125,7 +252,8 @@ void write_loop() {
 	cout << "Write thread startup!" << endl;
 	bool active_connection = true;
 	while(active_connection && running) {
-		usleep(1000000);		
+    //TODO Change speed of writing
+		usleep(100000);		
 		uint8_t * data = sensors->get_sensor_data_packet();	
 		size_t size = sensors->get_sensor_data_packet_size();
 		state_mutex.lock();
@@ -139,7 +267,7 @@ void write_loop() {
 }
 
 void int_handler(int signum) {
-	(void)signum;
+  (void)signum;
 	running = false;
 	close(socketfd);
 	close(clientFD);
@@ -148,26 +276,53 @@ void int_handler(int signum) {
 
 void pipe_handler(int signum) {
 	(void)signum;
-
 }
 
-
 int pod(int argc, char** argv) {
-	struct sigaction a;
-	a.sa_handler = int_handler;
-	a.sa_flags = 0;
-	sigemptyset( &a.sa_mask );
-	sigaction( SIGINT, &a, NULL );
 
-	signal(SIGPIPE, pipe_handler);
-	configs = parse_input(argc, argv);
-	state = new Pod_State();	
+  //Setup GPIO input/output pins 
+  print_debug("Checking Device tree for GPIO initialization\n");
+  system("echo 60 > /sys/class/gpio/export 2>/dev/null");
+  int val = system("grep 12_27 < /sys/devices/platform/bone_capemgr/slots");
+  if(val != 0){
+    print_debug("Echo-ing correct device tree setup\n");
+    system("echo bspm_P9_12_27 > /sys/devices/platform/bone_capemgr/slots");
+    print_debug("Sleeping for 1 second to make sure kernel has time complete setup\n");
+    usleep(1000000);
+  }
+  system("echo 48 > /sys/class/gpio/export 2>/dev/null");
+  val = system("grep 15_f < /sys/devices/platform/bone_capemgr/slots");
+  if(val != 0){
+    print_debug("Echo-ing correct device tree setup\n");
+    system("echo bspm_P9_15_f > /sys/devices/platform/bone_capemgr/slots");
+    print_debug("Sleeping for 1 second to make sure kernel has time complete setup\n");
+    usleep(1000000);
+  }
+    
+  struct sigaction act;
+  memset(&act, 0, sizeof(struct sigaction));
+
+  act.sa_handler = &int_handler;
+  sigaction(SIGINT, &act, NULL);
+
+  act.sa_handler = &pipe_handler;
+	sigaction(SIGPIPE, &act, NULL);
+
+	auto configs = parse_input(argc, argv);
+
 	sensors = new Sensor_Package(std::get<1>(configs), std::get<0>(configs));
 	command_queue = new SafeQueue<Xmega_Command_t>();
+
+	state = new Pod_State(command_queue, sensors);
+
 	printf("Created sensor package\n");
 	thread sensor_thread(sensor_loop);
 
 	socketfd = socket(AF_INET, SOCK_STREAM, 0);
+  int enable = 1;
+  if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
+    perror("setsockopt(SO_REUSEADDR) failed");
+  }
 
 	struct addrinfo hints, *result;
 	memset(&hints, 0, sizeof(hints));
@@ -272,6 +427,7 @@ std::tuple<bool, vector<Sensor_Configuration>> parse_input(int argc, char** argv
 				break;
 			case 'c':
 				tape.simulation = atoi(optarg);
+        cout << "tape sim with opt: " << tape.simulation << endl;
 				break;
 			case 'h':
 				height.simulation = atoi(optarg);

@@ -27,6 +27,9 @@ Spi::Spi(Xmega_Setup * x1s, Xmega_Setup * x2s){
   //2 extra bytes for 16-bit CRC checksum
   x1->buff = new uint8_t [x1->num_bytes + 2 + 2];
   x2->buff = new uint8_t [x2->num_bytes + 2 + 2];
+  
+  memset(x1->buff, 0, x1->num_bytes + 2 + 2);
+  memset(x2->buff, 0, x2->num_bytes + 2 + 2);
 
   //Setup SPI on each Xmega
   if(setup_spi()){
@@ -118,10 +121,12 @@ int Spi::transfer(Xmega_Transfer &xt){
   
   //return if not sent properly
   if(!sent_properly){
+    xd->consecutive_errors++;
     return 1;
   }
 
   if(xt.req == X_R_NONE){
+    xd->consecutive_errors = 0;
     return 0;
   }
   
@@ -186,6 +191,7 @@ int Spi::transfer(Xmega_Transfer &xt){
   //Check CRC accuracy 
   //Return if they are not equal
   if(calc_crc != rx_crc){
+    xd->consecutive_errors++;
     return 2;
   }
 
@@ -205,7 +211,7 @@ int Spi::transfer(Xmega_Transfer &xt){
     xd->sensor_status = rx_buff[bytes_to_read-2];
     xd->state = rx_buff[bytes_to_read-1];
   }
-
+  xd->consecutive_errors = 0;
   return 0;
 }
 
@@ -220,16 +226,20 @@ uint32_t Spi::get_data(uint8_t device, int idx){
     xd = x2;
     xs = x2_setup;
   }
+  print_debug("Xmega_Data: %p \t Xmega_Setup: %p \t device: %d \t idx: %d\n", xd, xs, device, idx);
+  print_debug("Bytes per item: %d\n", xs->bytes_per_item[idx]);
 
   assert(idx < xs->num_items);
 
   //Pull the correct data
   uint32_t tmp = 0;
-  for(int i = 0; i< xs->bytes_per_item[idx] ; i++){
+  for(int i = 0; i < xs->bytes_per_item[idx]; i++){
     //Assert to ensure no buffer overflow
     assert(xd->offset_lookup[idx] + i < xd->num_bytes);
+    print_debug("idx: %d \t offset_lookup: %d \t num_bytes:%d\n", i,xd->offset_lookup[idx], xd->num_bytes); 
     tmp |= xd->buff[xd->offset_lookup[idx] + i] << (i * 8);
   }
+  print_debug("returning now from spi_get_data\n");
 
   return tmp;
 }
@@ -251,6 +261,18 @@ uint8_t Spi::get_state(uint8_t device){
   }
   else if(device == 1){
     return x2->state;  
+  }
+
+  return 0;
+}
+
+uint8_t Spi::get_responding(uint8_t device){
+  const int max_errors = 30;
+  if(device == 0){
+    return ((x1->consecutive_errors)<max_errors);  
+  }
+  else if(device == 1){
+    return ((x2->consecutive_errors) < max_errors);  
   }
 
   return 0;
@@ -324,10 +346,13 @@ void Spi::setup_offset(Xmega_Data * xd, Xmega_Setup * xs){
   assert(xs->bytes_per_item[0] <= 4); //Assert bytes_per_index is at most 
   xd->num_bytes = xs->bytes_per_item[0];
   xd->offset_lookup[0] = 0;
+  print_debug("Xmega_data: %p \t Xmega_setup: %p\n", xd, xs);
   for(int i=1; i<xs->num_items; i++){
     assert(xs->bytes_per_item[i] <= 4); //Assert bytes_per_index is at most 4
     xd->num_bytes += xs->bytes_per_item[i];
     xd->offset_lookup[i] = xd->offset_lookup[i-1] + xs->bytes_per_item[i-1];
+    print_debug("XD idx: %d \t offset_lookup: %d \t Bytes_per_item: %d\n", i, xd->offset_lookup[i], xs->bytes_per_item[i]);
   }
+  print_debug("XD num bytes: %d\n", xd->num_bytes);
 
 }

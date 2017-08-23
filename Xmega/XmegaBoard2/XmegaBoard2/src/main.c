@@ -67,6 +67,96 @@ uint8_t cooldown_1 = 0;
 uint8_t cooldown_2 = 0;
 uint8_t cooldown_3 = 0;
 
+void handle_optical(){
+	uint8_t val_1 = (PORTE.IN & PIN6_bm) >> PIN6_bp;
+
+	if(!high_1){
+		if(val_1){
+			cooldown_1++;
+			if(cooldown_1 > COOLDOWN){
+				retro_1_time = rtc_get_time();
+				retro_1_flag = 1;
+				retro_1_time = rtc_get_time();
+				high_1 = 1;
+				cooldown_1 =0;
+			}
+		}
+		else{
+			cooldown_1 =0;
+		}
+	}
+	else{
+		if(!val_1){
+			cooldown_1++;
+			if(cooldown_1 > COOLDOWN){
+				high_1 = 0;
+				cooldown_1 = 0;
+			}
+		}
+		else{
+			cooldown_1 =0;
+		}
+	}
+
+	uint8_t val_2 = (PORTE.IN & PIN7_bm) >> PIN7_bp;
+	
+	if(!high_2){
+		if(val_2){
+			cooldown_2++;
+			if(cooldown_2 > COOLDOWN){
+				retro_2_flag = 1;
+				retro_2_time = rtc_get_time();
+				high_2 = 1;
+				cooldown_2 =0;
+			}
+		}
+		else{
+			cooldown_2 =0;
+		}
+	}
+	else{
+		if(!val_2){
+			cooldown_2++;
+			if(cooldown_2 > COOLDOWN){
+				high_2 = 0;
+				cooldown_2 = 0;
+			}
+		}
+		else{
+			cooldown_2 =0;
+		}
+	}
+	
+	uint8_t val_3 = (PORTF.IN & PIN2_bm) >> PIN2_bp;
+	if(!high_3){
+		if(val_3){
+			cooldown_3++;
+			if(cooldown_3 > COOLDOWN){
+				retro_3_flag = 1;
+				retro_3_time = rtc_get_time();
+				high_3 = 1;
+				cooldown_3 =0;
+			}
+		}
+		else{
+			cooldown_3 =0;
+		}
+	}
+	else{
+		if(!val_3){
+			cooldown_3++;
+			if(cooldown_3 > COOLDOWN){
+				high_3 = 0;
+				cooldown_3 = 0;
+			}
+		}
+		else{
+			cooldown_3 =0;
+		}
+	}
+		
+}
+
 int main (void)
 {
 	board_init();	//Init board
@@ -86,6 +176,15 @@ int main (void)
 	init_adc(&TWIC, 0x49, ADC_STREAMING);//Read RHS
 	init_adc(&TWIC, 0x4a, ADC_STREAMING);//Read RHS
 	init_adc(&TWIC, 0x4b, ADC_STREAMING);//Read RHS
+
+		
+	tc_enable(&TCC0);
+	tc_set_overflow_interrupt_callback(&TCC0, handle_optical);
+	tc_set_wgm(&TCC0, TC_WG_NORMAL);
+	tc_write_period(&TCC0, 300);
+	tc_set_overflow_interrupt_level(&TCC0, TC_INT_LVL_LO);
+	tc_write_clock_source(&TCC0, TC_CLKSEL_DIV1_gc);
+	
 	
 	uint16_t got_val = init_current(&TWIE, 0x40);
 	
@@ -109,57 +208,6 @@ int main (void)
 		handle_spi_to_bbb();
 		
 		if(spi_transfer == 0){//Do anything that is not SPI related
-			
-			uint8_t val_1 = (PORTE.IN & PIN6_bm) >> PIN6_bp;
-			
-			if(val_1 && !high_1 ){
-				retro_1_flag = 1;
-				retro_1_time = rtc_get_time();
-				high_1 = 1;
-			}
-			if(!val_1 && high_1){
-				cooldown_1++;
-				if(cooldown_1 > COOLDOWN){
-					high_1 = 0;
-					cooldown_1 = 0;
-				}
-			}
-			if(spi_isr) continue;
-			
-			uint8_t val_2 = (PORTE.IN & PIN7_bm) >> PIN7_bp;
-			
-			if(val_2 && !high_2 ){
-				retro_2_flag = 1;
-				retro_2_time = rtc_get_time();
-				high_2 = 1;
-			}
-			if(!val_2 && high_2){
-				cooldown_2++;
-				if(cooldown_2 > COOLDOWN){
-					high_2 = 0;
-					cooldown_2 = 0;
-				}
-			}
-			
-			if(spi_isr) continue;
-			
-			uint8_t val_3 = (PORTF.IN & PIN2_bm) >> PIN2_bp;
-			
-			if(val_3 && !high_3 ){
-				retro_3_flag = 1;
-				retro_3_time = rtc_get_time();
-				high_3 = 1;
-			}
-			
-			if(!val_3 && high_3){
-				cooldown_3++;
-				if(cooldown_3 > COOLDOWN){
-					high_3 = 0;
-					cooldown_3 = 0;
-				}
-			}
-			
-			if(spi_isr) continue;
 			
 			//Checks if any 2 flags are true
 			uint8_t retro_flag = (retro_1_flag && (retro_2_flag || retro_3_flag)) || (retro_2_flag && retro_3_flag);
@@ -231,6 +279,7 @@ int main (void)
 			//Don't need to do this very Frequently. Temperatures don't change that fast
 			//We should make it a second eventually. Simply don't need lots of temperature data
 			if(time4 > APROX_HALF_SECOND*4 ){
+				
 				time4 = 0;
 				uint16_t value;
 
@@ -261,9 +310,7 @@ int main (void)
 			//Get Batteries and Current!
 			if(time5 > APROX_HALF_SECOND*2){
 				time5 = 0;
-				
-				set_adc_mux(&TWIE, 0x48, AIN0);
-				
+	
 				//Read current
 				/*if(read_current(&TWIE, 0x40, &recieved_data) == TWI_SUCCESS){
 					sensor_data[24] = recieved_data >> 8;
@@ -282,12 +329,12 @@ int main (void)
 					sensor_data[13] = recieved_data;
 				}
 				
+				
 			}
 			
 			
 		}
-		time2 = rtc_get_time();
-		time3 = time2-time1;
+		time3 = rtc_get_time() - time1;
 		time4 += time3;
 		time5 += time3;
 	}

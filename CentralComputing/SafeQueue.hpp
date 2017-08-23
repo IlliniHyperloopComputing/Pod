@@ -4,6 +4,7 @@
 #include <queue>
 #include <mutex>
 #include <condition_variable>
+#include "Spi.h"
 
 // A threadsafe-queue.
 template <class T>

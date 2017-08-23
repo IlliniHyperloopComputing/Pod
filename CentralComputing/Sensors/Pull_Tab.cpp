@@ -7,7 +7,7 @@ Pull_Tab::Pull_Tab(Sensor_Configuration configuration) : Sensor_Group(configurat
 	count = 1;
 	data = vector<double>(count);	
 	
-	translation_array = {{1.0 }};
+	translation_array = {{NO_TRANS }};
 	name = "Pull_Tab";
 	name_array = {{"Tab"}};
 }
@@ -21,10 +21,27 @@ void Pull_Tab::reset() {
 }
 
 void Pull_Tab::update(Spi * spi) {
+  (void) spi;
 
 	switch(simulation) {
 		case 0:
-			// TODO : Read from GPIO pin
+    {    
+      int fd = open("/sys/class/gpio/gpio60/value", O_RDONLY);
+      if(fd > 0){
+        char buf = 'z'; 
+        read(fd, &buf, 1);
+        close(fd);
+        if(buf == '1'){
+          data[0] = 1;
+        }
+        else if(buf == '0'){
+          data[0] = 0;
+        }
+      }
+      else{
+        perror("Error opening gpio60 value pin: ");
+      }
+    }
 			break;
 		case 1:
 			simulation_1();
