@@ -242,6 +242,19 @@ void parse_command(char command){
     case CALIBRATE_SENSORS:
       cout << "This command does nothing and needs to be removed"<<endl;
       break;  
+    case MANUAL_BRAKE:
+      if(state->get_current_state() == Pod_State::ST_FUNCTIONAL_TEST) {
+        cout << "Manual brake!" << endl;
+        command_queue->enqueue(X_C_MANUAL_BRAKE);
+      }
+      break;
+    case MANUAL_BRAKE_REVERSE:
+      
+      if(state->get_current_state() == Pod_State::ST_FUNCTIONAL_TEST) {
+        cout << "Manual brake reverse!" << endl;
+        command_queue->enqueue(X_C_MANUAL_BRAKE_REVERSE);
+      }
+      
   }
   state_mutex.unlock();
   cout << "Current state is : " << state->get_current_state_string() << endl;
