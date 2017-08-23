@@ -152,9 +152,6 @@ void Sensor_Package::reset() {
 	for(auto const & pair : sensor_groups){
 		pair.second->reset();
 	}
-  if(!connect){
-    start_time = get_current_time();
-  }
 }
 
 void Sensor_Package::print_status() {

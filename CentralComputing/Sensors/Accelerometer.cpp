@@ -33,6 +33,9 @@ void XAccelerometer::update(Spi * spi) {
 		case 1:
 			simulation_1();
 			break;
+     case 2:
+      simulation_2();
+      break;
 	}
 }
 
@@ -64,6 +67,29 @@ uint8_t *  XAccelerometer::get_data_buffer() {
 size_t XAccelerometer::get_buffer_size() {
 	// 3 * uint16_t
 	return 3 * sizeof(uint16_t);
+}
+void XAccelerometer::simulation_2() {
+  
+	auto start = Sensor_Package::start_time;
+	auto now = Sensor_Package::get_current_time();
+	auto difference = now - start;
+  sensor_group_mutex.lock();
+  if(difference < 30 * 1000) {
+    data[0] = 1600;
+    data[1] = 1600;
+    data[2] = 1600;
+  } else if(difference < 45 * 1000) {
+    data[0] = 1000;
+    data[1] = 1000;
+    data[2] = 1000;
+  } else if(difference < 60 * 1000) {
+    data[0] = 0;
+    data[1] = 0;
+    data[2] = 0;
+  } else {
+  }
+  
+  sensor_group_mutex.unlock();
 }
 
 

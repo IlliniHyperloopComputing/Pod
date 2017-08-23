@@ -32,6 +32,9 @@ void Tape_Count::update(Spi * spi) {
 		case 1:
 			simulation_1();
 			break;
+    case 2:
+      simulation_2();
+      break;
 	}
 }
 
@@ -47,6 +50,24 @@ void Tape_Count::simulation_1() {
 		data[i] = 20.0;
 	}
 	sensor_group_mutex.unlock();
+}
+void Tape_Count::simulation_2() {
+  
+	auto start = Sensor_Package::start_time;
+	auto now = Sensor_Package::get_current_time();
+	auto difference = now - start;
+  sensor_group_mutex.lock();
+  if(difference < 30 * 1000){
+    data[0] = 0;
+  } else if(difference < 45 * 1000) {
+    data[0] = difference/1000;
+  } else if(difference < 60 * 1000) { 
+    data[0] = difference/1000;
+  } else {
+    data[0] = difference/1000;
+  }
+  
+  sensor_group_mutex.unlock();
 }
 
 uint8_t *  Tape_Count::get_data_buffer() {
