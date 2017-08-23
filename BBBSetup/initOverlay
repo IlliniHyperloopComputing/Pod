@@ -1,0 +1,18 @@
+#!/bin/bash
+
+echo "Compiling the overlays from .dts to .dtbo"
+ 
+dtc -O dtb -o BB-SPI-M-01-00A0.dtbo -b 0 -@ BB-SPI-M-01-00A0.dts
+dtc -O dtb -o bspm_P9_12_27-00A0.dtbo -b 0 -@ bspm_P9_12_27-00A0.dts
+dtc -O dtb -o bspm_P9_15_f-00A0.dtbo -b 0 -@ bspm_P9_15_f-00A0.dts
+
+cp BB-SPI-M-01-00A0.dtbo /lib/firmware
+cp bspm_P9_12_27-00A0.dtbo /lib/firmware
+cp bspm_P9_15_f-00A0.dtbo  /lib/firmware
+
+cat /sys/devices/platform/bone_capemgr/slots
+
+echo BB-SPI-M-01 > /sys/devices/platform/bone_capemgr/slots
+echo bspm_P9_12_27 > /sys/devices/platform/bone_capemgr/slots
+echo bspm_P9_15_f  > /sys/devices/platform/bone_capemgr/slots
+
