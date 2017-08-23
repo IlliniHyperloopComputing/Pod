@@ -14,12 +14,17 @@
 #define COOLDOWN 2
 #define APROX_HALF_SECOND  (16328)
 
-#define STATE_COLLECT 1
-#define STATE_MANUAL_BRAKE 2
-#define STATE_PID_BRAKE 3
+#define NO_CMD 0
+#define STATE_UNINIT  1
+#define STATE_COLLECT 2
+#define STATE_MANUAL_BRAKE 3
+#define STATE_PID_BRAKE 4
+#define CMD_RESET 5
+#define CMD_INIT_DEADMAN 6
+#define STATE_MANUAL_REVERSE_BRAKE 7
 
-#define ACCEL_MIN (1000)
-#define ACCEL_MAX (10000)
+#define ACCEL_MIN (4800) 
+#define ACCEL_MAX (21000)
 
 #define BRAKE_MIN (1000)
 #define BRAKE_MAX (10000)
@@ -41,10 +46,23 @@ uint16_t accel_2 = 0;
 uint16_t accel_3 = 0;
 
 //EXT3-7
+#define INIT_BRAKE_PIN()  ioport_configure_port_pin(&PORTD, PIN5_bm, IOPORT_DIR_OUTPUT | IOPORT_TOTEM | IOPORT_INIT_LOW )
 #define SET_BRAKE_LOW()   PORTD.OUT &= !(PIN5_bm)
 #define SET_BRAKE_HIGH()  PORTD.OUT |= (PIN5_bm)
 #define MAX_BRAKE_PRESSURE 0
 #define MAX_BRAKE_TIME 10
+
+//Brake flip-flop switch
+//EXT2-9 , PB6
+#define INIT_BRAKE_FLIP_FLOP_PIN() ioport_configure_port_pin(&PORTB, PIN6_bm, IOPORT_DIR_OUTPUT | IOPORT_TOTEM | IOPORT_INIT_LOW )
+#define SET_BRAKE_FLIP_FLOP_LOW()  PORTB.OUT &= !(PIN6_bm)
+#define SET_BRAKE_FLIP_FLOP_HIGH() PORTB.OUT |= (PIN6_bm)
+
+//Deadman Switch
+//PK3 EXT3-10
+#define INIT_DEADMAN_PIN() ioport_configure_port_pin(&PORTK, PIN3_bm, IOPORT_DIR_OUTPUT | IOPORT_TOTEM | IOPORT_INIT_LOW )
+#define SET_DEADMAN_HIGH() PORTK.OUT |= (PIN3_bm)
+uint8_t deadman_started = 0;
 
 /*
 0,1 == X0
@@ -83,6 +101,7 @@ uint32_t true_rotation_count = 0;
 uint16_t true_accel = 0;
 
 uint32_t brake_manual_start = 0;
+uint32_t brake_manual_reverse_start = 0;
 uint32_t brake_pid_start = 0;
 
 void handle_optical(){
@@ -158,11 +177,14 @@ int main (void)
 	
 	ioport_configure_port_pin(&PORTK, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN );
 	ioport_configure_port_pin(&PORTF, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN );
-	ioport_configure_port_pin(&PORTD, PIN5_bm, IOPORT_DIR_OUTPUT | IOPORT_TOTEM | IOPORT_INIT_LOW );
+	INIT_BRAKE_PIN();
+	INIT_BRAKE_FLIP_FLOP_PIN();
+	INIT_DEADMAN_PIN();
 	
 	PMIC.CTRL |= PMIC_MEDLVLEN_bm;
 	PMIC.CTRL |= PMIC_LOLVLEN_bm;
 	
+	//Enable periodic interrupts
 	tc_enable(&TCC0);
 	tc_set_overflow_interrupt_callback(&TCC0, handle_optical);
 	tc_set_wgm(&TCC0, TC_WG_NORMAL);
@@ -178,7 +200,7 @@ int main (void)
 	
 	sei();            // enable global interrupts
 		
-	state = STATE_COLLECT;
+	state = STATE_UNINIT;
 	
 	//ioport_set_pin_level(LED_0_PIN, LED_0_ACTIVE);
 	while (1) {
@@ -191,11 +213,111 @@ int main (void)
 		
 		if(spi_transfer == 0){//Do anything that is not SPI related
 			
+			if(deadman_started){
+				wdt_reset();
+			}
+			
 			//Sensor sanity check
 			sensor_status |= (accel_1 < ACCEL_MIN || accel_1 > ACCEL_MAX) << ADC0_bp;
 			sensor_status |= (accel_2 < ACCEL_MIN || accel_2 > ACCEL_MAX) << ADC1_bp;
 			sensor_status |= (accel_3 < ACCEL_MIN || accel_3 > ACCEL_MAX) << ADC2_bp;
 			sensor_status |= (brake_pressure < BRAKE_MIN || brake_pressure > BRAKE_MAX) << BRAKE_bp;
+			
+			
+			//State Machine
+			if(state == STATE_UNINIT){
+				if(recv_cmd == CMD_INIT_DEADMAN){
+					state = STATE_COLLECT;
+					SET_DEADMAN_HIGH();
+					wdt_set_timeout_period(WDT_TIMEOUT_PERIOD_250CLK);
+					wdt_enable();
+					deadman_started = 1;
+					ioport_set_pin_level(LED_0_PIN, LED_0_ACTIVE);
+				}
+				recv_cmd = 0;
+			}
+			else if(state == STATE_COLLECT){
+				//Turn on Manual Brake
+				if(recv_cmd == STATE_MANUAL_BRAKE){
+					brake_manual_start = rtc_get_time();
+					SET_BRAKE_HIGH();
+					
+					state = recv_cmd;
+				}
+				else if(recv_cmd == STATE_MANUAL_REVERSE_BRAKE){
+					brake_manual_reverse_start = rtc_get_time();
+					SET_BRAKE_FLIP_FLOP_HIGH();
+					state = recv_cmd;
+				}
+				else if(recv_cmd == STATE_PID_BRAKE){
+					brake_pid_start = rtc_get_time();
+					state = recv_cmd;
+				}
+				else if(recv_cmd == CMD_RESET){
+					//Need to reset any of the sensors that accumulate data / have history
+					//Specifically this is just the optical tape count
+					rotation_count_1 = 0;
+					rotation_count_2 = 0;
+					true_rotation_count = 0;
+				}
+				recv_cmd = 0;
+			}
+			else if(state == STATE_MANUAL_BRAKE){
+				//Switch to default state
+				if(recv_cmd == STATE_COLLECT){
+					brake_manual_start = 0;//set this to zero to trigger the following if()
+					state = STATE_COLLECT;
+				}
+				
+				if((rtc_get_time() - brake_manual_start) >= APROX_HALF_SECOND ){
+					SET_BRAKE_LOW();
+					state = STATE_COLLECT;
+				}
+				recv_cmd = 0;
+			}
+			else if(state == STATE_MANUAL_REVERSE_BRAKE){
+				if(recv_cmd == STATE_COLLECT){
+					brake_manual_reverse_start = 0;//set this to zero to trigger the following if()
+					state = STATE_COLLECT;
+				}
+				
+				uint32_t elapsed_time = rtc_get_time() - brake_manual_reverse_start;
+				
+				if( elapsed_time >= 3*APROX_HALF_SECOND ){// turn off brake
+					SET_BRAKE_LOW();
+					_delay_ms(1);
+					SET_BRAKE_FLIP_FLOP_LOW();
+					state = STATE_COLLECT;
+				}
+				else if(elapsed_time >= 2*APROX_HALF_SECOND ){// turn on brake
+					SET_BRAKE_HIGH();
+				}
+				recv_cmd = 0;
+				
+			}
+			else if(state == STATE_PID_BRAKE){
+				if(recv_cmd == STATE_COLLECT){
+					brake_pid_start = 0;//set this to zero to trigger the following if()
+					state = STATE_COLLECT;
+				}
+				
+				//Check if we are under are maximum time to apply the brakes
+				//check if we are under under max brake pressure
+				//check the sensor does not have an error
+				uint8_t cond = (rtc_get_time() - brake_pid_start) <= MAX_BRAKE_TIME;
+				cond &&= brake_pressure < MAX_BRAKE_PRESSURE;
+				cond &&= !((sensor_status >> BRAKE_bp) & 0x1);
+				
+				if(cond){
+					SET_BRAKE_HIGH();
+				}
+				else{
+					SET_BRAKE_LOW();
+					state = STATE_COLLECT;
+				}
+				
+				recv_cmd = 0;
+			}
 			
 			//Select median accelerometer
 			if(accel_1 > accel_2){
@@ -221,71 +343,24 @@ int main (void)
 				}
 			}
 			
-			//State Machine
-			if(state == STATE_COLLECT){
-				//Turn on Manual Brake
-				if(recv_cmd == STATE_MANUAL_BRAKE){
-					brake_manual_start = rtc_get_time();
-					SET_BRAKE_HIGH();
-					ioport_set_pin_level(LED_0_PIN, LED_0_ACTIVE);
-					state = recv_cmd;
-				}
-				else if(recv_cmd == STATE_PID_BRAKE){
-					brake_pid_start = rtc_get_time();
-					state = recv_cmd;
-				}
-				recv_cmd = 0;
-			}
-			else if(state == STATE_MANUAL_BRAKE){
-				//Switch to default state
-				if(recv_cmd == STATE_COLLECT){
-					brake_manual_start = 0;//set this to zero to trigger the following if()
-					state = STATE_COLLECT;
-				}
-				
-				if((rtc_get_time() - brake_manual_start) >= APROX_HALF_SECOND ){
-					SET_BRAKE_LOW();
-					ioport_set_pin_level(LED_0_PIN, LED_0_INACTIVE);
-					state = STATE_COLLECT;
-				}
-				recv_cmd = 0;
-			}
-			else if(state == STATE_PID_BRAKE){
-				if(recv_cmd == STATE_COLLECT){
-					brake_pid_start = 0;//set this to zero to trigger the following if()
-					state = STATE_COLLECT;
-				}
-				
-				//Check if we are under are maximum time to apply the brakes
-				//check if we are under under max brake pressure
-				//check the sensor does not have an error
-				uint8_t cond = (rtc_get_time() - brake_pid_start >= MAX_BRAKE_TIME) && (brake_pressure < MAX_BRAKE_PRESSURE) && ((sensor_status >> BRAKE_bp) & 0x1);
-				if(cond){
-					SET_BRAKE_HIGH();
-				}
-				else{
-					SET_BRAKE_LOW();
-				}
-				
-				
-				recv_cmd = 0;
-			}
-			
 			//Select correct speed data
-			if(delta_1 < delta_2){
+			if(delta_1 > delta_2){
 				true_delta = delta_1;
 			}
 			else{
 				true_delta = delta_2;
 			}				
+			//Select correct rotation count value
 			if(rotation_count_1 > rotation_count_2){
 				true_rotation_count = rotation_count_1;
 			}
 			else{
 				true_rotation_count = rotation_count_2;
 			}
+			//Store speed and rotations value
 			memcpy(sensor_data + 8, (char *)&true_delta, 4);
 			memcpy(sensor_data + 12, (char *)&true_rotation_count, 4);
+			
 			if(spi_isr) continue;
 						
 			//Read in Sensors
@@ -297,12 +372,20 @@ int main (void)
 				accel_1 |= recieved_data[1];
 				accel_1 |= recieved_data[0] << 8;
 			}
+			else{
+				//Set brake pressure to 0 to indicate that there is a fault
+				accel_1 = 0;
+			}
 			
 			if(read_adc(&TWIF, ACCEL_SENSOR_2, recieved_data ) == TWI_SUCCESS){
 				sensor_data[2] = recieved_data[1];
 				sensor_data[3] = recieved_data[0];
 				accel_2 |= recieved_data[1];
 				accel_2 |= recieved_data[0] << 8;
+			}
+			else{
+				//Set brake pressure to 0 to indicate that there is a fault
+				accel_2 = 0;
 			}
 			
 			if(spi_isr) continue;
@@ -313,6 +396,10 @@ int main (void)
 				accel_3 |= recieved_data[1];
 				accel_3 |= recieved_data[0] << 8;
 			}
+			else{
+				//Set brake pressure to 0 to indicate that there is a fault
+				accel_3 = 0;
+			}
 			
 			if(read_adc(&TWIF, BRAKE_SENSOR_1, recieved_data ) == TWI_SUCCESS){
 				sensor_data[6] = recieved_data[1];
@@ -321,6 +408,7 @@ int main (void)
 				brake_pressure |= recieved_data[0] << 8;
 			}
 			else{
+				//Set brake pressure to 0 to indicate that there is a fault
 				brake_pressure = 0;
 			}
 		}

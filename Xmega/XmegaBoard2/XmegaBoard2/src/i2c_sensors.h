@@ -17,6 +17,8 @@
 
 #define ADC_STREAMING 0x42
 #define ADC_SINGLE    0x43
+#define ADC_COMPARE_0_1 0x8f
+#define ADC_COMPARE_2_3 0xbf
 #define AIN0  0xc3
 #define AIN1  0xd3
 #define AIN2  0xe3
@@ -50,9 +52,10 @@ twi_package_t adc_read;
  * 4: Comparator mode. 0=default
  * 3: Comparator polarity. 0=default
  * 2: Comparator Latch. 0=Non latching comparator
- * 1: Comparator queue and disable. 00=Assert after one conversion
+ * 1:0: Comparator queue and disable. 00=Assert after one conversion
  **/
 int8_t init_adc(TWI_t *twi, uint8_t chip, uint8_t type_of_adc);
+void configure_adc(TWI_t *twi, uint8_t chip, uint8_t config);
 extern int8_t set_adc_mux(TWI_t * twi, uint8_t chip, uint8_t mux);
 extern int8_t read_adc(TWI_t *twi, uint8_t chip, void * buff );
 

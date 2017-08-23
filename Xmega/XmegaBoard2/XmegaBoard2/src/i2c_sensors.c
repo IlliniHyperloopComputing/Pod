@@ -104,13 +104,18 @@ inline int8_t read_current(TWI_t *twi, uint8_t chip, void * buff) {
 uint8_t adc_write_bytes[] = {0xc3, 0xe3};
 uint16_t adc_read_buffer = 0;
 
+void configure_adc(TWI_t *twi, uint8_t chip, uint8_t config){
+	
+
+	
+}
+
 int8_t init_adc(TWI_t *twi, uint8_t chip, uint8_t type_of_adc){
 	
 	//initialize the chip on the specified bus
 	init_chip(twi, chip);
 	
 	adc_write_bytes[0] = type_of_adc;
-	
 	//set up and write config settings
 	adc_write.addr[0]		= 0x01;
 	adc_write.addr_length	= sizeof(uint8_t);

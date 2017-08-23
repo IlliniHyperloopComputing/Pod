@@ -38,7 +38,9 @@ index to value
 20,21 == Thermo3 external
 22,23 == Thermo3 internal
 24,25 == Current to PCB
-26    == RetroReflective  Interrupt
+26,27 == Current to brakes
+28    == RetroReflective  Interrupt
+
 */
 
 //lock
@@ -171,11 +173,13 @@ int main (void)
 	PMIC.CTRL |= PMIC_MEDLVLEN_bm;
 	PMIC.CTRL |= PMIC_LOLVLEN_bm;
 	
+	init_adc(&TWIE, 0x4B, ADC_SINGLE);//Read Battery Voltages
+	init_adc(&TWIE, 0x49, ADC_COMPARE_0_1);//Read Currents
 	init_adc(&TWIC, 0x48, ADC_SINGLE);//Read Y, Z accel
-	init_adc(&TWIE, 0x48, ADC_SINGLE);//Read Battery Voltages
 	init_adc(&TWIC, 0x49, ADC_STREAMING);//Read RHS
 	init_adc(&TWIC, 0x4a, ADC_STREAMING);//Read RHS
 	init_adc(&TWIC, 0x4b, ADC_STREAMING);//Read RHS
+	
 
 		
 	tc_enable(&TCC0);
@@ -196,7 +200,7 @@ int main (void)
 	sei();            // enable global interrupts
 	
 	state = 1;
-	ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
+	
 	
 	while (1) {
 		
@@ -223,7 +227,7 @@ int main (void)
 				//if any of the flags are true, proceed
 				retro_flag = f1 || f2 || f3;
 				if(retro_flag){
-					sensor_data[26] ++;
+					sensor_data[28] ++;
 				}
 				
 				retro_1_flag = 0;
@@ -283,53 +287,89 @@ int main (void)
 				time4 = 0;
 				uint16_t value;
 
-				value = thermo_external_temp(read_thermo(0));
+				uint32_t rt = read_thermo(0);
+				value = thermo_external_temp(rt);
 				sensor_data[14] = value >> 0;
 				sensor_data[15] = value >> 8;
+				
+				value = thermo_internal_temp(rt);
+				sensor_data[22] = value >> 0;
+				sensor_data[23] = value >> 8;
+				
 				
 				value = thermo_external_temp(read_thermo(1));
 				sensor_data[16] = value >> 0;
 				sensor_data[17] = value >> 8;
 				
+		
+				
 				value = thermo_external_temp(read_thermo(2));
 				sensor_data[18] = value >> 0;
 				sensor_data[19] = value >> 8;
 				
-				uint32_t rt = read_thermo(3);
+				rt= read_thermo(3);
 				value = thermo_external_temp(rt);
 				sensor_data[20] = value >> 0;
 				sensor_data[21] = value >> 8;
 
-				value = thermo_internal_temp(rt);
-				sensor_data[22] = value >> 0;
-				sensor_data[23] = value >> 8;
+				
 
 				
 			}
 			
+			if(spi_isr) continue;		
+			
 			//Get Batteries and Current!
-			if(time5 > APROX_HALF_SECOND*2){
+			if(time5 > APROX_HALF_SECOND/2){
 				time5 = 0;
 	
 				//Read current
-				/*if(read_current(&TWIE, 0x40, &recieved_data) == TWI_SUCCESS){
-					sensor_data[24] = recieved_data >> 8;
-					sensor_data[25] = recieved_data;
-				}*/
 				
-				if(read_adc(&TWIE, 0x48, &recieved_data) == TWI_SUCCESS){
+				//			
+				
+				
+				//Read Voltage
+				if(read_adc(&TWIE, 0x4B, &recieved_data) == TWI_SUCCESS){
 					sensor_data[10] = recieved_data >> 8;
 					sensor_data[11] = recieved_data;
 				}
-
-				set_adc_mux(&TWIE, 0x48, AIN1);
-				_delay_ms(1);
-				if(read_adc(&TWIE, 0x48, &recieved_data) == TWI_SUCCESS){
+				
+				
+				//Set mux to read other voltage
+				set_adc_mux(&TWIE, 0x4B, AIN1);
+				
+				//Read current #1
+				if(read_adc(&TWIE, 0x49, &recieved_data) == TWI_SUCCESS){
+					sensor_data[24] = recieved_data >> 8;
+					sensor_data[25] = recieved_data;
+				}
+				
+				//Set mux to read other current
+				set_adc_mux(&TWIE, 0x49, ADC_COMPARE_2_3);
+				
+				//Read other battery voltage
+				if(read_adc(&TWIE, 0x4B, &recieved_data) == TWI_SUCCESS){
 					sensor_data[12] = recieved_data >> 8;
 					sensor_data[13] = recieved_data;
+					
+					ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 				}
 				
 				
+				_delay_ms(1);
+				//Read current #2
+				if(read_adc(&TWIE, 0x49, &recieved_data) == TWI_SUCCESS){
+					sensor_data[26] = recieved_data >> 8;
+					sensor_data[27] = recieved_data;
+					
+					
+				}
+				
+				//Set mux to read voltage
+				set_adc_mux(&TWIE, 0x4B, AIN0);
+				
+				//Set mux to read current
+				set_adc_mux(&TWIE, 0x49, ADC_COMPARE_0_1);				
 			}
 			
 			
