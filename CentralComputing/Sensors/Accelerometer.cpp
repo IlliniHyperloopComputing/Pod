@@ -92,6 +92,16 @@ void XAccelerometer::simulation_2() {
   sensor_group_mutex.unlock();
 }
 
+bool XAccelerometer::greenlight() {
+  vector<double> data = get_data();  
+  double minimum = 4800;
+  double maximum = 21000;
+  bool ret = true;
+  for(double val : data){
+    ret &= inRange(val, minimum, maximum);
+  }
+  return ret;
+}
 
 ///////////////////////////////////////////////////////////////
 //YZ
@@ -155,4 +165,8 @@ uint8_t *  YZAccelerometer::get_data_buffer() {
 size_t YZAccelerometer::get_buffer_size() {
 	// 2 * uint16_t
 	return 2 * sizeof(uint16_t);
+}
+
+bool YZAccelerometer::greenlight() {
+  return true;
 }

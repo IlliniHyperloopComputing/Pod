@@ -65,3 +65,7 @@ size_t Thermocouple::get_buffer_size() {
 	// 5 * uint16_t
 	return 5 * sizeof(uint16_t);
 }
+
+bool Thermocouple::greenlight() {
+  return true;
+}
