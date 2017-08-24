@@ -41,6 +41,8 @@ typedef struct datagram {
   uint32_t stripe_count;
   
 } datagram;
+static uint16_t VALID_STATE = 0b0001111111111111;
+static double TUNNEL_LENGTH_M = 1219.2;
 
 
 ssize_t read_all_from_socket(int socket, char * buffer, size_t count);
