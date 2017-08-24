@@ -15,6 +15,9 @@
 #include <unistd.h>
 #include <poll.h>
 #include <SafeQueue.hpp>
+#include <net/if.h>
+#include <ifaddrs.h>
+#include <arpa/inet.h>
 
 using namespace std;
 
@@ -30,6 +33,8 @@ int consecutive_errors_1 = 0;
 int consecutive_errors_2 = 0;
 int socketfd;
 int clientFD;
+int udp_sock;
+sockaddr_storage addrDest = {};
 SafeQueue<Xmega_Command_t> * command_queue;
 
 
@@ -224,6 +229,7 @@ void parse_command(char command){
       state->move_safe_mode();
       break;
     case FUNCTIONAL_TEST:
+      //TODO Check validity
       state->move_functional_tests();
       break;
     case LAUNCH_READY:
@@ -264,9 +270,9 @@ void write_loop() {
 
   cout << "Write thread startup!" << endl;
   bool active_connection = true;
+  long long time = sensors->get_current_time();
   while(active_connection && running) {
-    //TODO Change speed of writing
-    usleep(100000);   
+    usleep(10000);   
     uint8_t * data = sensors->get_sensor_data_packet(); 
     size_t size = sensors->get_sensor_data_packet_size();
     state_mutex.lock();
@@ -275,6 +281,28 @@ void write_loop() {
     int result = write_all_to_socket(clientFD, data, size); 
     free(data);
     active_connection = result != -1;
+
+    long long elapsed = sensors->get_current_time() - time;
+    if(elapsed > 100) {
+      //write the object
+      time = sensors->get_current_time();
+      datagram dgram = {
+        0,
+        0, // FIX
+        htonl(((int)sensors->get_sensor_data(TRUE_ACCELERATION)[0])),
+        htonl(((int)sensors->get_sensor_data(TRUE_POSITION)[0])),
+        htonl(((int)sensors->get_sensor_data(TRUE_VELOCITY)[0])),
+        0,
+        0,
+        0,
+        0,
+        0 
+      };
+      int bytes_sent = sendto(udp_sock, &dgram, sizeof(dgram), 0, (sockaddr*)&addrDest, sizeof(addrDest));
+      if(bytes_sent < sizeof(dgram)){
+        cout << "Full message not sent" << endl;
+      }
+    }
   }
   cout << "Write thread exiting!" << endl;
 }
@@ -357,10 +385,34 @@ int pod(int argc, char** argv) {
     exit(1);
   }
   free(result);
+  if((udp_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+    perror("Cannot create socket");
+    exit(1);
+  }
+  sockaddr_in myaddr = {};
+  myaddr.sin_family = AF_INET;
+  int res = bind(udp_sock, (sockaddr*)&myaddr, sizeof(myaddr));
+  if(res == -1) {
+    perror("Bind fails");
+    exit(1);
+  }
+  addrinfo* result_list = NULL;
+  addrinfo udp_hints = {};
+  udp_hints.ai_family = AF_INET;
+  udp_hints.ai_socktype = SOCK_DGRAM;
+  char * hostname = "localhost";
+  char * port = "8000";
+  res = getaddrinfo(hostname, port, &udp_hints, &result_list);
+  if(res != 0) {
+    perror("Could not getaddrinfo");
+    exit(1);
+  }
+  memcpy(&addrDest, result_list->ai_addr, result_list->ai_addrlen);
+  freeaddrinfo(result_list);
 
   cout << "Starting network thread" << endl;
   thread network_thread(network_loop);
-
+  
 
   sensor_thread.join();
   network_thread.join();
