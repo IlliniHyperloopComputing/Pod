@@ -64,3 +64,13 @@ size_t Brake_Pressure::get_buffer_size() {
 	// 1 * uint16_t
 	return 1 * sizeof(uint16_t);
 }
+bool Brake_Pressure::greenlight() {
+  vector<double> data = get_data();  
+  double minimum = 1800;
+  double maximum = 10000;
+  bool ret = true;
+  for(double val : data){
+    ret &= inRange(val, minimum, maximum);
+  }
+  return ret;
+}

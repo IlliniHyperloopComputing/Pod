@@ -87,3 +87,7 @@ size_t Optical::get_buffer_size() {
   // double + uint32_t; 
   return sizeof(double) + sizeof(uint32_t);
 }
+
+bool Optical::greenlight() {
+  return true;
+}

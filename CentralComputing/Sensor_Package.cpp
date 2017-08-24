@@ -199,14 +199,18 @@ size_t Sensor_Package::get_sensor_data_packet_size() {
 			size += pair.second->get_buffer_size() + 1;
 			count += 1;
 	}
-	size += 11;	//Space for Xmega Responding and Pod State
+	size += 14;	//Space for Xmega Responding, Pod State, and Greenlights
 	return size;
 }
 
 uint8_t * Sensor_Package::get_sensor_data_packet() {
 	
 	uint8_t * buffer = (uint8_t *) malloc(get_sensor_data_packet_size());
-	size_t index = 0;
+	size_t index = 1;
+  buffer[0] = SENSOR_STATUS;
+  uint16_t status = greenlight();
+  memcpy(buffer + index, &status, sizeof(uint16_t));
+  index += sizeof(uint16_t);
 	for(auto & pair : sensor_groups) {
 			buffer[index] = pair.first;
 			uint8_t * data = pair.second->get_data_buffer();
@@ -232,5 +236,17 @@ uint8_t * Sensor_Package::get_sensor_data_packet() {
 	}
 
 	return buffer;
+}
+
+uint16_t Sensor_Package::greenlight() {
+  uint16_t ret = 0;
+  for(auto & pair : sensor_groups) {
+    
+    uint16_t green = pair.second->greenlight(); 
+    green <<= pair.first;
+    ret |= green;
+  }
+
+  return ret;
 }
 
