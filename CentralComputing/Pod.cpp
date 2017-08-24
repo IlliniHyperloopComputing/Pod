@@ -61,6 +61,7 @@ long long coast_start_time = 0;
 void sensor_loop() {
   int i = 0;
   Xmega_Transfer transfer = {0,X_C_NONE, X_R_ALL};
+  long long time = sensors->get_current_time();
   while(running){
 
     Xmega_Command_t recv_cmd = command_queue->dequeue();    
@@ -172,6 +173,28 @@ void sensor_loop() {
     }
 
     state_mutex.unlock(); 
+
+    long long elapsed = sensors->get_current_time() - time;
+    if(elapsed > 100) {
+      //write the object
+      time = sensors->get_current_time();
+      datagram dgram = {
+        0,
+        0, // FIX
+        htonl(((int)sensors->get_sensor_data(TRUE_ACCELERATION)[0])),
+        htonl(((int)sensors->get_sensor_data(TRUE_POSITION)[0])),
+        htonl(((int)sensors->get_sensor_data(TRUE_VELOCITY)[0])),
+        0,
+        0,
+        0,
+        0,
+        0 
+      };
+      int bytes_sent = sendto(udp_sock, &dgram, sizeof(dgram), 0, (sockaddr*)&addrDest, sizeof(addrDest));
+      if(bytes_sent < sizeof(dgram)){
+        cout << "Full message not sent" << endl;
+      }
+    }
   }
 }
 
@@ -270,7 +293,6 @@ void write_loop() {
 
   cout << "Write thread startup!" << endl;
   bool active_connection = true;
-  long long time = sensors->get_current_time();
   while(active_connection && running) {
     usleep(10000);   
     uint8_t * data = sensors->get_sensor_data_packet(); 
@@ -282,27 +304,6 @@ void write_loop() {
     free(data);
     active_connection = result != -1;
 
-    long long elapsed = sensors->get_current_time() - time;
-    if(elapsed > 100) {
-      //write the object
-      time = sensors->get_current_time();
-      datagram dgram = {
-        0,
-        0, // FIX
-        htonl(((int)sensors->get_sensor_data(TRUE_ACCELERATION)[0])),
-        htonl(((int)sensors->get_sensor_data(TRUE_POSITION)[0])),
-        htonl(((int)sensors->get_sensor_data(TRUE_VELOCITY)[0])),
-        0,
-        0,
-        0,
-        0,
-        0 
-      };
-      int bytes_sent = sendto(udp_sock, &dgram, sizeof(dgram), 0, (sockaddr*)&addrDest, sizeof(addrDest));
-      if(bytes_sent < sizeof(dgram)){
-        cout << "Full message not sent" << endl;
-      }
-    }
   }
   cout << "Write thread exiting!" << endl;
 }
