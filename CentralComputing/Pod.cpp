@@ -183,6 +183,7 @@ void sensor_loop() {
     if(elapsed > 100) {
       //write the object
       time = sensors->get_current_time();
+
       uint8_t spx_state;
       state_mutex.lock();
       if(sensors->greenlight() != VALID_STATE){
@@ -287,6 +288,7 @@ void parse_command(char command){
       accel_start_time = 0;
       break;
     case FUNCTIONAL_TEST:
+      //TODO Check validity
       state->move_functional_tests();
       break;
     case LAUNCH_READY:
