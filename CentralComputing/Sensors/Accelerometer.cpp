@@ -75,13 +75,13 @@ void XAccelerometer::simulation_2() {
 	auto difference = now - start;
   sensor_group_mutex.lock();
   if(difference < 30 * 1000) {
-    data[0] = 1600;
-    data[1] = 1600;
-    data[2] = 1600;
+    data[0] = 7000;
+    data[1] = 7000;
+    data[2] = 7000;
   } else if(difference < 45 * 1000) {
-    data[0] = 1000;
-    data[1] = 1000;
-    data[2] = 1000;
+    data[0] = 5000;
+    data[1] = 5000;
+    data[2] = 5000;
   } else if(difference < 60 * 1000) {
     data[0] = 0;
     data[1] = 0;
