@@ -202,7 +202,7 @@ int main (void)
 		
 	state = STATE_UNINIT;
 	
-	//ioport_set_pin_level(LED_0_PIN, LED_0_ACTIVE);
+	ioport_set_pin_level(LED_0_PIN, LED_0_ACTIVE);
 	while (1) {
 		
 		//SPIC handler
@@ -305,8 +305,8 @@ int main (void)
 				//check if we are under under max brake pressure
 				//check the sensor does not have an error
 				uint8_t cond = (rtc_get_time() - brake_pid_start) <= MAX_BRAKE_TIME;
-				cond &&= brake_pressure < MAX_BRAKE_PRESSURE;
-				cond &&= !((sensor_status >> BRAKE_bp) & 0x1);
+				cond &= brake_pressure < MAX_BRAKE_PRESSURE;
+				cond &= !((sensor_status >> BRAKE_bp) & 0x1);
 				
 				if(cond){
 					SET_BRAKE_HIGH();

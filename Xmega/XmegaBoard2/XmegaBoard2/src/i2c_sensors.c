@@ -19,21 +19,26 @@ void init_chip(TWI_t *twi, uint8_t chip){
 
 const uint8_t calValue[] = {0x10, 0x00}; //4096, with MSB first
 	
+uint8_t calibration_buff[] = {INA219_REG_CALIBRATION, 0x10, 0x00};
+uint8_t config_buff[] = {INA219_REG_CONFIG, 0x10, 0x00};
+	
 uint16_t init_current(TWI_t *twi, uint8_t chip){
 	
 	//initialize the chip on the specified bus
 	init_chip(twi,chip);
 	
+	
 	//Calibrating to 32V 2A. Refer to github listed below
 	
-	/*//Set Calibration
-	current_write.addr[0]		= INA219_REG_CALIBRATION;
-	current_write.addr_length	= sizeof(uint8_t);
+	//Set Calibration
+	current_write.addr[0]		= 0;
+	current_write.addr_length	= 0;
 	current_write.chip			= chip;
-	current_write.buffer		= (void *)calValue;
-	current_write.length		= sizeof(calValue);
+	current_write.buffer		= (void *)calibration_buff;
+	current_write.length		= sizeof(calibration_buff);
 	
 	twi_master_write(twi, &current_write);
+	
 	
 	
 	//Set Configuration
@@ -42,29 +47,20 @@ uint16_t init_current(TWI_t *twi, uint8_t chip){
 	INA219_CONFIG_BADCRES_12BIT |
 	INA219_CONFIG_SADCRES_12BIT_1S_532US |
 	INA219_CONFIG_MODE_SANDBVOLT_CONTINUOUS;
-	uint8_t configValue[] = {(config>>8)&0xff, config & 0xff};
+	//uint8_t configValue[] = {(config>>8)&0xff, config & 0xff};
 	//ina219_currentDivider_mA = 10; This is for the BBB really. Just putting it hear as a reference
+	config_buff[1] = (config>>8)&0xff;
+	config_buff[2] = (config & 0xff);
 	
-	current_write.addr[0]		= INA219_REG_CONFIG;
-	current_write.addr_length	= sizeof(uint8_t);
+	current_write.addr[0]		= 0;
+	current_write.addr_length	= 0;
 	current_write.chip			= chip;
-	current_write.buffer		= (void *)configValue;
-	current_write.length		= sizeof(configValue);
+	current_write.buffer		= (void *)config_buff;
+	current_write.length		= sizeof(config_buff);
 	
 	twi_master_write(twi, &current_write);
 	
-	*/
-	uint16_t buff;
-	//Set up read variable
-	current_read.addr[0]		= 0;
-	current_read.addr_length	= 0;
-	current_read.chip			= chip;
-	current_read.buffer			= &buff;
-	current_read.length			= 2;
-	return twi_master_read(twi, &current_read);
-	
-	return buff;
-	
+	return 0;
 }
 
 inline int8_t read_current(TWI_t *twi, uint8_t chip, void * buff) {
@@ -73,15 +69,17 @@ inline int8_t read_current(TWI_t *twi, uint8_t chip, void * buff) {
 	// reset the cal register, meaning CURRENT and POWER will
 	// not be available ... avoid this by always setting a cal
 	// value even if it's an unfortunate extra step
-	current_write.addr[0]		= INA219_REG_CALIBRATION;
-	current_write.addr_length	= sizeof(uint8_t);
+	//Set Calibration
+	current_write.addr[0]		= 0;
+	current_write.addr_length	= 0;
 	current_write.chip			= chip;
-	current_write.buffer		= (void *)calValue;
-	current_write.length		= sizeof(calValue);
+	current_write.buffer		= (void *)calibration_buff;
+	current_write.length		= sizeof(calibration_buff);
+	
 	twi_master_write(twi, &current_write);
 	
 	// Write the register to read
-	/*uint8_t tmpbuff = INA219_REG_CURRENT;
+	uint8_t tmpbuff = INA219_REG_CURRENT;
 	current_write.addr[0]		= 0;
 	current_write.addr_length	= 0;
 	current_write.chip			= chip;
@@ -89,8 +87,7 @@ inline int8_t read_current(TWI_t *twi, uint8_t chip, void * buff) {
 	current_write.length		= sizeof(tmpbuff);
 	twi_master_write(twi, &current_write);
 	
-	_delay_ms(1);
-	*/
+	_delay_ms(2);	
 	
 	//Set up read variable
 	current_read.addr[0]		= 0;

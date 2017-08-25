@@ -10,16 +10,16 @@
 void init_thermo_sensors(void){	
 
 	//Init pins first
-
+	//PA3, PK0, PD5, PK2
 
 	//Chip select pin PF0
-	ioport_configure_port_pin(&PORTF, PIN0_bm, IOPORT_INIT_HIGH | IOPORT_DIR_OUTPUT);
+	ioport_configure_port_pin(&PORTA, PIN3_bm, IOPORT_INIT_HIGH | IOPORT_DIR_OUTPUT);
 	//Chip select pin PF1
-	ioport_configure_port_pin(&PORTF, PIN1_bm, IOPORT_INIT_HIGH | IOPORT_DIR_OUTPUT);
+	ioport_configure_port_pin(&PORTK, PIN0_bm, IOPORT_INIT_HIGH | IOPORT_DIR_OUTPUT);
 	//Chip select pin PR1
-	ioport_configure_port_pin(&PORTR, PIN1_bm, IOPORT_INIT_HIGH | IOPORT_DIR_OUTPUT);
+	ioport_configure_port_pin(&PORTD, PIN5_bm, IOPORT_INIT_HIGH | IOPORT_DIR_OUTPUT);
 	//Chip select pin PF3
-	ioport_configure_port_pin(&PORTF, PIN3_bm, IOPORT_INIT_HIGH | IOPORT_DIR_OUTPUT);
+	ioport_configure_port_pin(&PORTK, PIN2_bm, IOPORT_INIT_HIGH | IOPORT_DIR_OUTPUT);
 	
 	//The SS pin MUST be high. otherwise will switch into slave mode
 	//CANNOT USE PF4
@@ -37,10 +37,10 @@ void init_thermo_sensors(void){
 
 	//Init Spi interface
 
-	spi_pf0.id = IOPORT_CREATE_PIN(PORTF, 0);
-	spi_pf1.id = IOPORT_CREATE_PIN(PORTF, 1);
-	spi_pr1.id = IOPORT_CREATE_PIN(PORTR, 1);
-	spi_pf3.id = IOPORT_CREATE_PIN(PORTF, 3);
+	spi_pf0.id = IOPORT_CREATE_PIN(PORTA, 3);
+	spi_pf1.id = IOPORT_CREATE_PIN(PORTK, 0);
+	spi_pr1.id = IOPORT_CREATE_PIN(PORTD, 2);
+	spi_pf3.id = IOPORT_CREATE_PIN(PORTK, 2);
 
 	spi_master_init(&SPIF);
 	

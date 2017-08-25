@@ -173,8 +173,12 @@ int main (void)
 	PMIC.CTRL |= PMIC_MEDLVLEN_bm;
 	PMIC.CTRL |= PMIC_LOLVLEN_bm;
 	
-	init_adc(&TWIE, 0x4B, ADC_SINGLE);//Read Battery Voltages
-	init_adc(&TWIE, 0x49, ADC_COMPARE_0_1);//Read Currents
+	
+	
+	init_adc(&TWIF, 0x49, ADC_SINGLE);//Read Battery Voltages
+	set_adc_mux(&TWIF, 0x49, AIN0);
+	
+	//init_adc(&TWIE, 0x49, ADC_COMPARE_0_1);//Read Currents
 	init_adc(&TWIC, 0x48, ADC_SINGLE);//Read Y, Z accel
 	init_adc(&TWIC, 0x49, ADC_STREAMING);//Read RHS
 	init_adc(&TWIC, 0x4a, ADC_STREAMING);//Read RHS
@@ -190,10 +194,10 @@ int main (void)
 	tc_write_clock_source(&TCC0, TC_CLKSEL_DIV1_gc);
 	
 	
-	uint16_t got_val = init_current(&TWIE, 0x40);
 	
-	sensor_data[24] = got_val >> 8;
-	sensor_data[25] = got_val;
+	uint16_t got_val = init_current(&TWIF, 0x41);
+	
+	
 
 	init_thermo_sensors();
 	
@@ -292,16 +296,9 @@ int main (void)
 				sensor_data[14] = value >> 0;
 				sensor_data[15] = value >> 8;
 				
-				value = thermo_internal_temp(rt);
-				sensor_data[22] = value >> 0;
-				sensor_data[23] = value >> 8;
-				
-				
 				value = thermo_external_temp(read_thermo(1));
 				sensor_data[16] = value >> 0;
 				sensor_data[17] = value >> 8;
-				
-		
 				
 				value = thermo_external_temp(read_thermo(2));
 				sensor_data[18] = value >> 0;
@@ -310,67 +307,44 @@ int main (void)
 				rt= read_thermo(3);
 				value = thermo_external_temp(rt);
 				sensor_data[20] = value >> 0;
-				sensor_data[21] = value >> 8;
-
-				
-
-				
+				sensor_data[21] = value >> 8;	
+				value = thermo_internal_temp(rt);
+				sensor_data[22] = value >> 0;
+				sensor_data[23] = value >> 8;			
 			}
 			
-			if(spi_isr) continue;		
+			if(spi_isr) continue;	
+			
+			
 			
 			//Get Batteries and Current!
 			if(time5 > APROX_HALF_SECOND/2){
 				time5 = 0;
-	
-				//Read current
-				
-				//			
-				
 				
 				//Read Voltage
-				if(read_adc(&TWIE, 0x4B, &recieved_data) == TWI_SUCCESS){
+				if(read_adc(&TWIF, 0x49, &recieved_data) == TWI_SUCCESS){
 					sensor_data[10] = recieved_data >> 8;
 					sensor_data[11] = recieved_data;
 				}
+				set_adc_mux(&TWIF, 0x49, AIN2);
 				
 				
-				//Set mux to read other voltage
-				set_adc_mux(&TWIE, 0x4B, AIN1);
-				
-				//Read current #1
-				if(read_adc(&TWIE, 0x49, &recieved_data) == TWI_SUCCESS){
+				//Read Current
+				if(read_current(&TWIF, 0x41, &recieved_data) == TWI_SUCCESS){
 					sensor_data[24] = recieved_data >> 8;
 					sensor_data[25] = recieved_data;
-				}
-				
-				//Set mux to read other current
-				set_adc_mux(&TWIE, 0x49, ADC_COMPARE_2_3);
+				}		
 				
 				//Read other battery voltage
-				if(read_adc(&TWIE, 0x4B, &recieved_data) == TWI_SUCCESS){
+				if(read_adc(&TWIF, 0x49, &recieved_data) == TWI_SUCCESS){
 					sensor_data[12] = recieved_data >> 8;
 					sensor_data[13] = recieved_data;
-					
-					ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 				}
-				
-				
-				_delay_ms(1);
-				//Read current #2
-				if(read_adc(&TWIE, 0x49, &recieved_data) == TWI_SUCCESS){
-					sensor_data[26] = recieved_data >> 8;
-					sensor_data[27] = recieved_data;
-					
-					
-				}
-				
 				//Set mux to read voltage
-				set_adc_mux(&TWIE, 0x4B, AIN0);
-				
-				//Set mux to read current
-				set_adc_mux(&TWIE, 0x49, ADC_COMPARE_0_1);				
+				set_adc_mux(&TWIF, 0x49, AIN0);
+						
 			}
+			
 			
 			
 		}
