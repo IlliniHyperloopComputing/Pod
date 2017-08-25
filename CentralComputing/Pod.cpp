@@ -48,12 +48,12 @@ static uint16_t VALID_STATE = 8191;
 static double TUNNEL_LENGTH_M = 1219.2;
 
 //Accel state variables
-#define INIT_COAST_TIME (4000) //TODO
+#define MINIMUM_ACCEL_TIME (5000) 
 long long accel_start_time = 0;
 
 //Coast state variables
-#define INIT_BRAKE_DISTANCE (800)  //TODO
-#define INIT_BRAKE_TIME     (4000) //TODO
+#define MAXIMUM_COAST_DISTANCE (812)  
+#define MAXIMUM_COAST_TIME     (15000) 
 long long coast_start_time = 0;
 
 /**
@@ -155,7 +155,7 @@ void sensor_loop() {
       long long elapsed_time = sensors->get_current_time() - accel_start_time;
 
       //Check if Pull tab is disconnected
-      if((pull_tab == 0) && (elapsed_time > INIT_COAST_TIME )){
+      if((pull_tab == 0) && (elapsed_time > MINIMUM_ACCEL_TIME )){
         //Switch states! Pull tab is disconnected
         state->coast();
         coast_start_time = sensors->get_current_time();
@@ -166,7 +166,7 @@ void sensor_loop() {
       double distance = sensors->get_sensor_data(TRUE_POSITION)[0];
       double velocity = sensors->get_sensor_data(TRUE_VELOCITY)[0];
       long long elapsed_time = sensors->get_current_time() - coast_start_time;
-      bool emergency_condition = (distance > INIT_BRAKE_DISTANCE) && (elapsed_time > INIT_BRAKE_TIME);
+      bool emergency_condition = (distance > MAXIMUM_COAST_DISTANCE) && (elapsed_time > MAXIMUM_COAST_TIME);
       double distance_remaining = TUNNEL_LENGTH_M - distance;
 
       double v_2 = velocity * velocity;
