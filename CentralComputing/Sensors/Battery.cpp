@@ -63,3 +63,7 @@ size_t Battery::get_buffer_size() {
 	// 2 * uint16_t
 	return 2 * sizeof(uint16_t);
 }
+
+bool Battery::greenlight() {
+   return true;
+}

@@ -28,6 +28,22 @@ enum Command {
   MANUAL_BRAKE_REVERSE
 };
 
+typedef struct datagram {
+  uint8_t team_id;
+  uint8_t status;
+  int acceleration;
+  int position;
+  int velocity;
+  int battery_voltage;
+  int battery_current;
+  int battery_temperature;
+  int pod_temperature;
+  uint32_t stripe_count;
+  
+} datagram;
+static uint16_t VALID_STATE = 0b0001111111111111;
+static double TUNNEL_LENGTH_M = 1219.2;
+
 
 ssize_t read_all_from_socket(int socket, char * buffer, size_t count);
 ssize_t write_all_to_socket(int socket, uint8_t * buffer, size_t count);

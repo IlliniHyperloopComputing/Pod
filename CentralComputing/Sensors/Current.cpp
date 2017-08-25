@@ -63,3 +63,7 @@ size_t Current::get_buffer_size() {
 	// 2 * uint16_t
 	return 2 * sizeof(uint16_t);
 }
+
+bool Current::greenlight(){
+  return true;
+}

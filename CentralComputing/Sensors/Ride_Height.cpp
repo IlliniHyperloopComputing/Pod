@@ -64,3 +64,6 @@ size_t Ride_Height::get_buffer_size() {
 	// 3 * uint16_t
 	return 3 * sizeof(uint16_t);
 }
+bool Ride_Height::greenlight() {
+  return true;
+}

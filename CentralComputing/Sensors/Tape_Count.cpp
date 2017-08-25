@@ -86,3 +86,7 @@ size_t Tape_Count::get_buffer_size() {
 	// 1 * uint16_t
 	return 1 * sizeof(uint16_t);
 }
+
+bool Tape_Count::greenlight() {
+  return true;
+}
