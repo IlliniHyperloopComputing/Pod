@@ -54,6 +54,7 @@ long long accel_start_time = 0;
 //Coast state variables
 #define MAXIMUM_COAST_DISTANCE (812)  
 #define MAXIMUM_COAST_TIME     (15000) 
+#define MINIMUM_COAST_TIME     (5000) 
 long long coast_start_time = 0;
 
 /**
@@ -101,7 +102,7 @@ void sensor_loop() {
       consecutive_errors_2 = 0;
     }
 
-    if(i % 100 == 0){
+    if(i % 150 == 0){
       cout << "=============================="<< endl;
       state_mutex.lock();
       cout << "State = " << state->get_current_state_string() << endl; 
@@ -166,13 +167,13 @@ void sensor_loop() {
       double distance = sensors->get_sensor_data(TRUE_POSITION)[0];
       double velocity = sensors->get_sensor_data(TRUE_VELOCITY)[0];
       long long elapsed_time = sensors->get_current_time() - coast_start_time;
-      bool emergency_condition = (distance > MAXIMUM_COAST_DISTANCE) && (elapsed_time > MAXIMUM_COAST_TIME);
+      bool emergency_condition = (distance > MAXIMUM_COAST_DISTANCE) || (elapsed_time > MAXIMUM_COAST_TIME);
       double distance_remaining = TUNNEL_LENGTH_M - distance;
 
       double v_2 = velocity * velocity;
       bool ideal_condition = v_2 > 5 * distance_remaining;
       
-      if(emergency_condition || ideal_condition){
+      if((emergency_condition || ideal_condition) && (elapsed_time > MINIMUM_COAST_TIME) ){  
         state->brake();
       }
     }
@@ -236,6 +237,10 @@ void network_loop() {
         thread read_thread(read_loop);
         thread write_thread(write_loop);
         
+
+        read_thread.join();
+        write_thread.join();
+
         // Handle disconnects
         state_mutex.lock();
         state->move_safe_mode();
@@ -248,8 +253,6 @@ void network_loop() {
         }
         state_mutex.unlock();
 
-        read_thread.join();
-        write_thread.join();
         cout << "Waiting for another connection" << endl;
       } else {
         cout << "Accept failed, aborting" << endl;
