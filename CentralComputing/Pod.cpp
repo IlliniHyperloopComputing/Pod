@@ -353,7 +353,6 @@ void write_loop() {
     } else {
       coast_time = now - coast_start_time;
     }
-    cout << coast_time << endl;
     memcpy(data+size + 1, &coast_time, sizeof(uint32_t));
     data[size + 1 + sizeof(uint32_t)] = Sensor_Type::ACCELERATION_TIME;
 
