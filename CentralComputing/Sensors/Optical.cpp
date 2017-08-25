@@ -7,8 +7,8 @@ Optical::Optical(Sensor_Configuration configuration) : Sensor_Group(configuratio
   
   first_index = OPTICAL_INDEX; // index offset to read from spi
   device = XMEGA1; //xmega device number (0 or 1)
-  count = 2; //number of sensors
-    translation_array = {{RPM_TRANS,NO_TRANS}};
+  count = 3; //number of sensors
+    translation_array = {{RPM_TRANS,NO_TRANS, NO_TRANS}};
     name = "Optical";
     name_array = {{"RPM", "Count"}};
   data = vector<double>(count);   
@@ -27,6 +27,10 @@ void Optical::update(Spi * spi) {
   switch(simulation) {
     case 0:
       refresh_data(spi);
+      if(data[2] > 500) { 
+        data[0] = 0;
+
+      }
       break;
     case 1:
       simulation_1();
@@ -47,6 +51,7 @@ void Optical::simulation_1() {
   }*/
   data[0] = 450;
   data[1] = 400;
+  data[2] = 0;
   sensor_group_mutex.unlock();
 }
 
@@ -56,6 +61,7 @@ void Optical::simulation_2() {
   auto now = Sensor_Package::get_current_time();
   auto difference = now - start;
   sensor_group_mutex.lock();
+  data[2] = 0;
   if(difference < 30 * 1000){
     data[0] = 0;
     data[1] = 0;
