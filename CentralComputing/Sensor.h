@@ -42,6 +42,9 @@ enum Sensor_Type {
 	XMEGA_STATUS,
 	XMEGA_RESPONDING,
 	POD_STATE,
+  SENSOR_STATUS,
+  ACCELERATION_TIME, //uint32
+  COAST_TIME, //uint32
 };
 
 enum Sensor_Index_1 {
@@ -123,6 +126,16 @@ class Sensor_Group {
 		void print_data();
 
     /**
+    * Determines if the sensor is ready, if the value on the sensor is within a good range
+    **/
+    virtual bool greenlight() = 0;
+
+    /**
+    * Deetermines if a given value is between a range
+    **/
+    static bool inRange(double value, double minimum, double maximum);
+
+    /**
     * Translation function definitions 
     **/
     static double no_trans(double x);
@@ -179,6 +192,10 @@ class Thermocouple : public Sensor_Group {
 		**/
 		size_t get_buffer_size();
 
+    /**
+    * Returns true if the sensor is reporting values in range
+    **/
+    bool greenlight();
 
 
 	private:
@@ -214,6 +231,10 @@ class XAccelerometer : public Sensor_Group {
 		**/
 		size_t get_buffer_size();
 
+    /**
+    * Returns true if the sensor is reporting values in range
+    **/
+    bool greenlight();
 
 	private:
 		/**
@@ -250,6 +271,10 @@ class YZAccelerometer : public Sensor_Group {
 		**/
 		size_t get_buffer_size();
 
+    /**
+    * Returns true if the sensor is reporting values in range
+    **/
+    bool greenlight();
 
 	private:
 		/**
@@ -285,6 +310,10 @@ class Ride_Height : public Sensor_Group {
 		size_t get_buffer_size();
 
 		
+    /**
+    * Returns true if the sensor is reporting values in range
+    **/
+    bool greenlight();
 
 	private:
 		/**
@@ -320,6 +349,10 @@ class Tape_Count : public Sensor_Group {
 		**/
 		size_t get_buffer_size();
 
+    /**
+    * Returns true if the sensor is reporting values in range
+    **/
+    bool greenlight();
 
 	private:
 		/**
@@ -356,6 +389,10 @@ class Optical : public Sensor_Group {
 		size_t get_buffer_size();
 
 
+    /**
+    * Returns true if the sensor is reporting values in range
+    **/
+    bool greenlight();
 
 	private:
 		/**
@@ -391,6 +428,10 @@ class Brake_Pressure : public Sensor_Group {
 		**/
 		size_t get_buffer_size();
 
+    /**
+    * Returns true if the sensor is reporting values in range
+    **/
+    bool greenlight();
 	private:
 		/**
 		* Simulates set values in the vector
@@ -426,6 +467,10 @@ class Battery : public Sensor_Group {
 		size_t get_buffer_size();
 
 
+    /**
+    * Returns true if the sensor is reporting values in range
+    **/
+    bool greenlight();
 
 	private:
 		/**
@@ -462,6 +507,10 @@ class Current : public Sensor_Group {
 
 
 
+    /**
+    * Returns true if the sensor is reporting values in range
+    **/
+    bool greenlight();
 
 	private:
 		/**
@@ -497,6 +546,10 @@ class Pull_Tab : public Sensor_Group {
 		size_t get_buffer_size();
 
 
+    /**
+    * Returns true if the sensor is reporting values in range
+    **/
+    bool greenlight();
 	private:
 		/**
 		* Simulates set values in the vector
@@ -525,6 +578,10 @@ class True_Sensor : public Sensor_Group {
 		* Calculates the size of the buffer for each sensor
 		**/
 		size_t get_buffer_size();
+    /**
+    * Returns true if the sensor is reporting values in range
+    **/
+    bool greenlight();
 	
 	protected:
 		Sensor_Package * package;
@@ -540,6 +597,10 @@ class True_Position : public True_Sensor {
 	public:	
 		True_Position(Sensor_Configuration configuration, Sensor_Package * pack);
 		void update(Spi * spi);
+    /**
+    * Returns true if the sensor is reporting values in range
+    **/
+    bool greenlight();
 };
 
 
@@ -548,6 +609,10 @@ class True_Acceleration : public True_Sensor {
 	public:	
 		True_Acceleration(Sensor_Configuration configuration, Sensor_Package * pack);
 		void update(Spi * spi);
+    /**
+    * Returns true if the sensor is reporting values in range
+    **/
+    bool greenlight();
 
     const double volts_per_g = 0.330;
 };
@@ -557,6 +622,10 @@ class True_Velocity : public True_Sensor {
 	public:	
 		True_Velocity(Sensor_Configuration configuration, Sensor_Package * pack);
 		void update(Spi * spi);
+    /**
+    * Returns true if the sensor is reporting values in range
+    **/
+    bool greenlight();
 };
 
 

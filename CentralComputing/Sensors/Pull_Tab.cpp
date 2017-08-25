@@ -99,3 +99,7 @@ size_t Pull_Tab::get_buffer_size() {
 	// 1 * uint16_t
 	return 1 * sizeof(uint8_t);
 }
+
+bool Pull_Tab::greenlight() {
+  return true;
+}

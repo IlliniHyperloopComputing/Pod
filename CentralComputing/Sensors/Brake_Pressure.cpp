@@ -35,15 +35,11 @@ void Brake_Pressure::update(Spi * spi) {
 }
 
 void Brake_Pressure::simulation_1() {
-	auto start = Sensor_Package::start_time;
-	auto now = Sensor_Package::get_current_time();
-	auto difference = now - start;
 	
-	//TODO calc some actual value
 	
 	sensor_group_mutex.lock();
 	for(size_t i = 0; i < data.size(); i++) {
-		data[i] = i;
+		data[i] = 2000;
 	}
 	sensor_group_mutex.unlock();
 }
@@ -63,4 +59,14 @@ uint8_t *  Brake_Pressure::get_data_buffer() {
 size_t Brake_Pressure::get_buffer_size() {
 	// 1 * uint16_t
 	return 1 * sizeof(uint16_t);
+}
+bool Brake_Pressure::greenlight() {
+  vector<double> data = get_data();  
+  double minimum = 1800;
+  double maximum = 10000;
+  bool ret = true;
+  for(double val : data){
+    ret &= inRange(val, minimum, maximum);
+  }
+  return ret;
 }

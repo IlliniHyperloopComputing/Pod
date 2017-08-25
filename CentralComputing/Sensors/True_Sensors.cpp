@@ -145,3 +145,16 @@ uint8_t *  True_Sensor::get_data_buffer() {
 size_t True_Sensor::get_buffer_size() {
 	return sizeof(double);
 }
+
+bool True_Acceleration::greenlight() {
+  return true;
+}
+bool True_Velocity::greenlight() {
+  return true;
+}
+bool True_Position::greenlight() {
+  return true;
+}
+bool True_Sensor::greenlight() {
+  return true;
+}
