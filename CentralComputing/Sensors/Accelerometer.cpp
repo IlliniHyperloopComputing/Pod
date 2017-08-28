@@ -75,13 +75,13 @@ void XAccelerometer::simulation_2() {
 	auto difference = now - start;
   sensor_group_mutex.lock();
   if(difference < 30 * 1000) {
-    data[0] = 1600;
-    data[1] = 1600;
-    data[2] = 1600;
+    data[0] = 7000;
+    data[1] = 7000;
+    data[2] = 7000;
   } else if(difference < 45 * 1000) {
-    data[0] = 1000;
-    data[1] = 1000;
-    data[2] = 1000;
+    data[0] = 5000;
+    data[1] = 5000;
+    data[2] = 5000;
   } else if(difference < 60 * 1000) {
     data[0] = 0;
     data[1] = 0;
@@ -92,6 +92,16 @@ void XAccelerometer::simulation_2() {
   sensor_group_mutex.unlock();
 }
 
+bool XAccelerometer::greenlight() {
+  vector<double> data = get_data();  
+  double minimum = 4800;
+  double maximum = 21000;
+  bool ret = true;
+  for(double val : data){
+    ret &= inRange(val, minimum, maximum);
+  }
+  return ret;
+}
 
 ///////////////////////////////////////////////////////////////
 //YZ
@@ -155,4 +165,8 @@ uint8_t *  YZAccelerometer::get_data_buffer() {
 size_t YZAccelerometer::get_buffer_size() {
 	// 2 * uint16_t
 	return 2 * sizeof(uint16_t);
+}
+
+bool YZAccelerometer::greenlight() {
+  return true;
 }

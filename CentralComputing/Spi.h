@@ -37,7 +37,7 @@ enum Xmega_Command_t: uint8_t {
   X_C_NONE = 0,
   //No Command
   X_C_COLLECT = 2,
-  //Manual Brake  (short birst)
+  //Manual Brake  (short burst)
   X_C_MANUAL_BRAKE = 3,
   //PID brake, using brake pressure as the variable
   X_C_PID_BRAKE = 4,
@@ -45,6 +45,8 @@ enum Xmega_Command_t: uint8_t {
   X_C_RESET = 5,
   //Calibrate the Sensors if possible
   X_C_INIT_DEADMAN = 6,
+  //Manual Brake releasing pressure
+  X_C_MANUAL_BRAKE_REVERSE = 7
 };
 
 enum Xmega_Request_t: uint8_t {

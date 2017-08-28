@@ -23,8 +23,24 @@ enum Command {
 	BRAKE,
 	EMERGENCY_BRAKE,
 	RESET_SENSORS,
-	CALIBRATE_SENSORS
+	CALIBRATE_SENSORS,
+  MANUAL_BRAKE,
+  MANUAL_BRAKE_REVERSE
 };
+
+typedef struct datagram {
+  uint8_t team_id;
+  uint8_t status;
+  int acceleration;
+  int position;
+  int velocity;
+  int battery_voltage;
+  int battery_current;
+  int battery_temperature;
+  int pod_temperature;
+  uint32_t stripe_count;
+  
+} datagram;
 
 
 ssize_t read_all_from_socket(int socket, char * buffer, size_t count);

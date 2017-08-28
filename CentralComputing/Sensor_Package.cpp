@@ -7,12 +7,12 @@ using namespace std;
 
 long long Sensor_Package::start_time = 1;
 
-static uint8_t bpi1_s[] = {2,2,2,2,4,4};
+static uint8_t bpi1_s[] = {2,2,2,2,4,4,4};
 static uint8_t bpi2_s[] = {2,2,2,2,2,2,2,2,2,2,2,2,2,2,1};
 uint8_t * Sensor_Package::bpi1 = bpi1_s;
 uint8_t * Sensor_Package::bpi2 = bpi2_s;
 
-Xmega_Setup Sensor_Package::x1 = {"/dev/spidev1.0", 6, bpi1, 500000, 8};
+Xmega_Setup Sensor_Package::x1 = {"/dev/spidev1.0", 7, bpi1, 500000, 8};
 Xmega_Setup Sensor_Package::x2 = {"/dev/spidev1.1", 15, bpi2, 500000, 8};
 
 Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool xmega_connect) {
@@ -77,6 +77,7 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
   * 6,7 == Brake
   * 8,9,10,11 == Optical, Delta
   * 12,13,14,15 == Optical, tape count
+  * 16,17,18,19 == Optical, tape count
   **/
 
   /**
@@ -199,14 +200,18 @@ size_t Sensor_Package::get_sensor_data_packet_size() {
 			size += pair.second->get_buffer_size() + 1;
 			count += 1;
 	}
-	size += 11;	//Space for Xmega Responding and Pod State
+	size += 14;	//Space for Xmega Responding, Pod State, and Greenlights
 	return size;
 }
 
 uint8_t * Sensor_Package::get_sensor_data_packet() {
 	
 	uint8_t * buffer = (uint8_t *) malloc(get_sensor_data_packet_size());
-	size_t index = 0;
+	size_t index = 1;
+  buffer[0] = SENSOR_STATUS;
+  uint16_t status = greenlight();
+  memcpy(buffer + index, &status, sizeof(uint16_t));
+  index += sizeof(uint16_t);
 	for(auto & pair : sensor_groups) {
 			buffer[index] = pair.first;
 			uint8_t * data = pair.second->get_data_buffer();
@@ -232,5 +237,17 @@ uint8_t * Sensor_Package::get_sensor_data_packet() {
 	}
 
 	return buffer;
+}
+
+uint16_t Sensor_Package::greenlight() {
+  uint16_t ret = 0;
+  for(auto & pair : sensor_groups) {
+    
+    uint16_t green = pair.second->greenlight(); 
+    green <<= pair.first;
+    ret |= green;
+  }
+
+  return ret;
 }
 

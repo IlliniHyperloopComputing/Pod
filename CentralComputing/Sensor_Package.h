@@ -81,6 +81,11 @@ class Sensor_Package {
 		**/
 		size_t get_sensor_data_packet_size();
 
+    /**
+    * Returns a uint16_t where the value at each bit refers to the sensor status for each sensor
+    */
+    uint16_t greenlight();
+
 		
 		
 		

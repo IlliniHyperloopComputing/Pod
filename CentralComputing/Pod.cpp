@@ -2,6 +2,7 @@
 #include "Pod.h"
 #include "Pod_State.h"
 #include "Utils.h"
+#include "Sensor.h"
 #include <thread>
 #include <csignal>
 #include <mutex>
@@ -15,6 +16,9 @@
 #include <unistd.h>
 #include <poll.h>
 #include <SafeQueue.hpp>
+#include <net/if.h>
+#include <ifaddrs.h>
+#include <arpa/inet.h>
 
 using namespace std;
 
@@ -25,29 +29,33 @@ mutex state_mutex;
 volatile bool running = true;
 volatile bool send_manual_brake = false;
 Xmega_Command_t cmd_to_send = X_C_NONE;
+Xmega_Command_t cmd_to_send_2 = X_C_NONE;
 
 int consecutive_errors_1 = 0;
 int consecutive_errors_2 = 0;
 int socketfd;
 int clientFD;
+int udp_sock;
+sockaddr_storage addrDest = {};
 SafeQueue<Xmega_Command_t> * command_queue;
 
 
-//Read to Launch state variables
-#define MIN_ACCELERATION 0.2
-#define DEBOUNCE_TIME  300 //300 ms
+//Ready to Launch state variables
+#define MIN_ACCELERATION (0.2)
+#define DEBOUNCE_TIME  (300) //300 ms
 long long acc_start_time = 0;
 bool continuous = false;
+static uint16_t VALID_STATE = 8191;
+static double TUNNEL_LENGTH_M = 1219.2;
 
 //Accel state variables
-#define INIT_COAST_TIME 4000 //TODO
-bool recorded_accel_start_time = false;
+#define MINIMUM_ACCEL_TIME (5000) 
 long long accel_start_time = 0;
 
 //Coast state variables
-#define INIT_BRAKE_DISTANCE 400  //TODO
-#define INIT_BRAKE_TIME     4000 //TODO
-bool recorded_coast_start_time = false;
+#define MAXIMUM_COAST_DISTANCE (812)  
+#define MAXIMUM_COAST_TIME     (15000) 
+#define MINIMUM_COAST_TIME     (5000) 
 long long coast_start_time = 0;
 
 /**
@@ -56,6 +64,7 @@ long long coast_start_time = 0;
 void sensor_loop() {
   int i = 0;
   Xmega_Transfer transfer = {0,X_C_NONE, X_R_ALL};
+  long long time = sensors->get_current_time();
   while(running){
 
     Xmega_Command_t recv_cmd = command_queue->dequeue();    
@@ -85,16 +94,23 @@ void sensor_loop() {
     //
     //Xmega2
     transfer.device = 1;
-    transfer.cmd = X_C_NONE;
+
+    if(recv_cmd != X_C_NONE){
+      cmd_to_send_2 = recv_cmd;
+    }
+
+    transfer.cmd = cmd_to_send_2;
+
     stat = sensors->update(transfer);
     if(stat != X_TF_NONE){
       consecutive_errors_2++;
     }
     else{
       consecutive_errors_2 = 0;
+      cmd_to_send_2 = X_C_NONE;//Don't need to resend the command
     }
 
-    if(i % 30 == 0){
+    if(i % 20 == 0){
       cout << "=============================="<< endl;
       state_mutex.lock();
       cout << "State = " << state->get_current_state_string() << endl; 
@@ -148,7 +164,7 @@ void sensor_loop() {
       long long elapsed_time = sensors->get_current_time() - accel_start_time;
 
       //Check if Pull tab is disconnected
-      if((pull_tab == 0) && (elapsed_time > INIT_COAST_TIME )){
+      if((pull_tab == 0) && (elapsed_time > MINIMUM_ACCEL_TIME )){
         //Switch states! Pull tab is disconnected
         state->coast();
         coast_start_time = sensors->get_current_time();
@@ -157,16 +173,59 @@ void sensor_loop() {
     else if(state->get_current_state() == Pod_State::ST_FLIGHT_COAST){
       //Wait a specific amoutn of time or distance 
       double distance = sensors->get_sensor_data(TRUE_POSITION)[0];
-      
-
+      double velocity = sensors->get_sensor_data(TRUE_VELOCITY)[0];
       long long elapsed_time = sensors->get_current_time() - coast_start_time;
+      bool emergency_condition = (distance > MAXIMUM_COAST_DISTANCE) || (elapsed_time > MAXIMUM_COAST_TIME);
+      double distance_remaining = TUNNEL_LENGTH_M - distance;
 
-      if((distance > INIT_BRAKE_DISTANCE) && (elapsed_time > INIT_BRAKE_TIME)){
+      double v_2 = velocity * velocity;
+      bool ideal_condition = v_2 > 5 * distance_remaining;
+      
+      if((emergency_condition || ideal_condition) && (elapsed_time > MINIMUM_COAST_TIME) ){  
         state->brake();
       }
     }
 
     state_mutex.unlock(); 
+
+    long long elapsed = sensors->get_current_time() - time;
+    if(elapsed > 100) {
+      //write the object
+      time = sensors->get_current_time();
+
+      uint8_t spx_state;
+      state_mutex.lock();
+      if(sensors->greenlight() != VALID_STATE){
+        spx_state = 0;
+      } else if(state->get_current_state() == Pod_State::ST_LAUNCH_READY){
+        spx_state = 2;
+      } else if(state->get_current_state() == Pod_State::ST_FLIGHT_ACCEL){
+        spx_state = 3;
+      } else if(state->get_current_state() == Pod_State::ST_FLIGHT_COAST){
+        spx_state = 4;
+      } else if(state->get_current_state() == Pod_State::ST_FLIGHT_BRAKE){
+        spx_state = 5;
+      } else {
+        spx_state = 1;
+      }
+      state_mutex.unlock();
+      datagram dgram = {
+        0,
+        spx_state,
+        htonl((int)(sensors->get_sensor_data(TRUE_ACCELERATION)[0] * 980.665)),
+        htonl((int)(sensors->get_sensor_data(TRUE_POSITION)[0] * 100)),
+        htonl((int)(sensors->get_sensor_data(TRUE_VELOCITY)[0] * 100)),
+        0,
+        0,
+        0,
+        0,
+        0 
+      };
+      int bytes_sent = sendto(udp_sock, &dgram, sizeof(dgram), 0, (sockaddr*)&addrDest, sizeof(addrDest));
+      if(bytes_sent < sizeof(dgram)){
+        cout << "Full message not sent" << endl;
+      }
+    }
   }
 }
 
@@ -185,9 +244,23 @@ void network_loop() {
         cout << "Connected!" << endl;
         thread read_thread(read_loop);
         thread write_thread(write_loop);
+        
 
         read_thread.join();
         write_thread.join();
+
+        // Handle disconnects
+        state_mutex.lock();
+        state->move_safe_mode();
+        if(state->get_current_state() == Pod_State::ST_FLIGHT_COAST) { 
+          /*
+          while(sensors->get_current_time() - coast_start_time > 5000) {
+            usleep(1000);
+          }*/
+          state->brake();
+        }
+        state_mutex.unlock();
+
         cout << "Waiting for another connection" << endl;
       } else {
         cout << "Accept failed, aborting" << endl;
@@ -222,12 +295,21 @@ void parse_command(char command){
       break;
     case SAFE_MODE:
       state->move_safe_mode();
+      coast_start_time = 0;
+      accel_start_time = 0;
       break;
     case FUNCTIONAL_TEST:
+      //TODO Check validity
       state->move_functional_tests();
       break;
     case LAUNCH_READY:
-      state->move_launch_ready();
+    {
+      
+      uint16_t greenlight = sensors->greenlight();
+      if(greenlight == VALID_STATE){
+        state->move_launch_ready();      
+      }
+    }
       break;
     case BRAKE:
       state->brake();
@@ -242,6 +324,18 @@ void parse_command(char command){
     case CALIBRATE_SENSORS:
       cout << "This command does nothing and needs to be removed"<<endl;
       break;  
+    case MANUAL_BRAKE:
+      if(state->get_current_state() == Pod_State::ST_FUNCTIONAL_TEST) {
+        cout << "Manual brake!" << endl;
+        command_queue->enqueue(X_C_MANUAL_BRAKE);
+      }
+      break;
+    case MANUAL_BRAKE_REVERSE:    
+      if(state->get_current_state() == Pod_State::ST_FUNCTIONAL_TEST) {
+        cout << "Manual brake reverse!" << endl;
+        command_queue->enqueue(X_C_MANUAL_BRAKE_REVERSE);
+      }
+      
   }
   state_mutex.unlock();
   cout << "Current state is : " << state->get_current_state_string() << endl;
@@ -252,21 +346,45 @@ void write_loop() {
   cout << "Write thread startup!" << endl;
   bool active_connection = true;
   while(active_connection && running) {
-    //TODO Change speed of writing
-    usleep(100000);   
+    usleep(100000);
     uint8_t * data = sensors->get_sensor_data_packet(); 
     size_t size = sensors->get_sensor_data_packet_size();
+    //Add state information
     state_mutex.lock();
     data[size-1] = state->get_current_state();
     state_mutex.unlock();
-    int result = write_all_to_socket(clientFD, data, size); 
+
+    //Add timing information
+    data = (uint8_t *)realloc(data, sensors->get_sensor_data_packet_size() + 10);
+    data[size] = Sensor_Type::COAST_TIME;
+    long long now = sensors->get_current_time();
+    uint32_t coast_time, accel_time;
+    if(coast_start_time == 0){
+      coast_time = 0;
+    } else {
+      coast_time = now - coast_start_time;
+    }
+    memcpy(data+size + 1, &coast_time, sizeof(uint32_t));
+    data[size + 1 + sizeof(uint32_t)] = Sensor_Type::ACCELERATION_TIME;
+
+    if(accel_start_time == 0){
+      accel_time = 0;
+    } else {
+      accel_time = now - accel_start_time;
+    }
+    memcpy(data+size+2+sizeof(uint32_t), &accel_time, sizeof(uint32_t));
+
+
+    int result = write_all_to_socket(clientFD, data, size + 10); 
     free(data);
     active_connection = result != -1;
+
   }
   cout << "Write thread exiting!" << endl;
 }
 
 void int_handler(int signum) {
+
   (void)signum;
   running = false;
   close(socketfd);
@@ -344,10 +462,34 @@ int pod(int argc, char** argv) {
     exit(1);
   }
   free(result);
+  if((udp_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
+    perror("Cannot create socket");
+    exit(1);
+  }
+  sockaddr_in myaddr = {};
+  myaddr.sin_family = AF_INET;
+  int res = bind(udp_sock, (sockaddr*)&myaddr, sizeof(myaddr));
+  if(res == -1) {
+    perror("Bind fails");
+    exit(1);
+  }
+  addrinfo* result_list = NULL;
+  addrinfo udp_hints = {};
+  udp_hints.ai_family = AF_INET;
+  udp_hints.ai_socktype = SOCK_DGRAM;
+  char * hostname = "localhost";
+  char * port = "8000";
+  res = getaddrinfo(hostname, port, &udp_hints, &result_list);
+  if(res != 0) {
+    perror("Could not getaddrinfo");
+    exit(1);
+  }
+  memcpy(&addrDest, result_list->ai_addr, result_list->ai_addrlen);
+  freeaddrinfo(result_list);
 
   cout << "Starting network thread" << endl;
   thread network_thread(network_loop);
-
+  
 
   sensor_thread.join();
   network_thread.join();

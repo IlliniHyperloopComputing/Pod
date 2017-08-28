@@ -15,6 +15,7 @@ extern uint8_t state;
 extern uint8_t sensor_data[SENSOR_DATA_SIZE];
 extern volatile uint8_t spi_isr;
 extern uint8_t spi_transfer;
+extern uint8_t recv_cmd;
 
 #define SPI_TX_START 0xAA
 #define SPI_CRC_PASS 0xAA
@@ -104,7 +105,7 @@ void handle_spi_to_bbb(){
 			}
 		}
 		else if(cmd_finished){
-			
+			recv_cmd = cmd_data[1];
 			memcpy(send_data,sensor_data,SENSOR_DATA_SIZE);
 			send_data[SENSOR_DATA_SIZE] = sensor_status;
 			send_data[SENSOR_DATA_SIZE+1] = state;

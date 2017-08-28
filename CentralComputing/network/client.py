@@ -29,38 +29,44 @@ def threaded_listen(conn):
         id = Type(unpack('B', d)[0])
         length = lengths[id]
         data = conn.recv(length)
-        string = parse_data(id, length, data)	
+        string = parse_data(id, length, data) 
     conn.close()
     set_socket(None)
     set_listen_thread(None)
 
 def parse_data(id, length, data):
-	print(names[id])
-	if id == Type.OPTICAL:
-		# [double][uint32]
-		double = unpack('d', data[0:8])[0]
-		count = unpack('I', data[8:12])[0]
-		print("RPM : " + str(double))
-		print("Count : " + str(count))
-		pass
-	elif id == Type.TRUE_POSITION or id == Type.TRUE_VELOCITY or id == Type.TRUE_ACCELERATION:
-		# [double]
-		value = unpack('d', data)[0]
-		print("Value : " + str(value))
-	elif id == Type.PULL_TAB or id == Type.XMEGA_STATE or id == Type.XMEGA_STATUS or id == Type.XMEGA_RESPONDING or id == Type.POD_STATE:
-		# multiple [uint8]
-		count = length
-		for i in range(0, count):
-			value = unpack('B', data[i:i+1])[0]
-			print(str(i) + " : " + str(value))
-	else:
-		# multiple [uint16]
-		count = length//2
-		for i in range(0, count):
-			value = unpack('H', data[i*2:i*2+2])[0]
-			print(str(i) + " : " + str(value))
-	
-	print()
+  print(names[id])
+  if id == Type.OPTICAL:
+    # [double][uint32]
+    double = unpack('d', data[0:8])[0]
+    count = unpack('I', data[8:12])[0]
+    print("RPM : " + str(double))
+    print("Count : " + str(count))
+    pass
+  elif id == Type.TRUE_POSITION or id == Type.TRUE_VELOCITY or id == Type.TRUE_ACCELERATION:
+    # [double]
+    value = unpack('d', data)[0]
+    print("Value : " + str(value))
+  elif id == Type.PULL_TAB or id == Type.XMEGA_STATE or id == Type.XMEGA_STATUS or id == Type.XMEGA_RESPONDING or id == Type.POD_STATE:
+    # multiple [uint8]
+    count = length
+    for i in range(0, count):
+      value = unpack('B', data[i:i+1])[0]
+      print(str(i) + " : " + str(value))
+  elif id == Type.SENSOR_STATUS:
+    value = unpack('H', data[0:2])[0]
+    print("Value : " + str(bin(value)))
+  elif id == Type.COAST_TIME or id == Type.ACCEL_TIME:
+    value = unpack('I', data[0:4])[0]
+    print("value : " + str(value))
+  else:
+    # multiple [uint16]
+    count = length//2
+    for i in range(0, count):
+      value = unpack('H', data[i*2:i*2+2])[0]
+      print(str(i) + " : " + str(value))
+  
+  print()
 
 def start_listening():
     try:
