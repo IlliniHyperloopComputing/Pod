@@ -22,6 +22,7 @@
 #define CMD_RESET 5
 #define CMD_INIT_DEADMAN 6
 #define STATE_MANUAL_REVERSE_BRAKE 7
+#define STATE_MANUAL_REVERSE_BRAKE_NEXT 8
 
 #define ACCEL_MIN (4800) //-3 g
 #define ACCEL_MAX (21000) //3 g
@@ -46,17 +47,20 @@ uint16_t accel_2 = 0;
 uint16_t accel_3 = 0;
 
 //EXT3-7
-#define INIT_BRAKE_PIN()  ioport_configure_port_pin(&PORTD, PIN5_bm, IOPORT_DIR_OUTPUT | IOPORT_TOTEM | IOPORT_INIT_LOW )
-#define SET_BRAKE_LOW()   PORTD.OUT &= !(PIN5_bm)
-#define SET_BRAKE_HIGH()  PORTD.OUT |= (PIN5_bm)
+#define INIT_BRAKE_PIN()  ioport_configure_port_pin(&PORTD, PIN5_bm, IOPORT_DIR_OUTPUT | IOPORT_TOTEM | IOPORT_INIT_LOW ); \
+						  ioport_configure_port_pin(&PORTK, PIN1_bm, IOPORT_DIR_OUTPUT | IOPORT_TOTEM | IOPORT_INIT_LOW );
+#define SET_BRAKE_LOW()   PORTD.OUT &= !(PIN5_bm);  \
+					      PORTK.OUT &= !(PIN1_bm); 
+#define SET_BRAKE_HIGH()  PORTD.OUT |= (PIN5_bm);   \
+						  PORTK.OUT |= (PIN1_bm);
 #define MAX_BRAKE_PRESSURE 0
 #define MAX_BRAKE_TIME 10
 
 //Brake flip-flop switch
 //EXT2-9 , PB6
-#define INIT_BRAKE_FLIP_FLOP_PIN() ioport_configure_port_pin(&PORTB, PIN6_bm, IOPORT_DIR_OUTPUT | IOPORT_TOTEM | IOPORT_INIT_LOW )
-#define SET_BRAKE_FLIP_FLOP_LOW()  PORTB.OUT &= !(PIN6_bm)
-#define SET_BRAKE_FLIP_FLOP_HIGH() PORTB.OUT |= (PIN6_bm)
+#define INIT_BRAKE_FLIP_FLOP_PIN() ioport_configure_port_pin(&PORTK, PIN0_bm, IOPORT_DIR_OUTPUT | IOPORT_TOTEM | IOPORT_INIT_LOW )
+#define SET_BRAKE_FLIP_FLOP_LOW()  PORTK.OUT &= !(PIN0_bm)
+#define SET_BRAKE_FLIP_FLOP_HIGH() PORTK.OUT |= (PIN0_bm)
 
 //Deadman Switch
 //PK3 EXT3-10
@@ -71,6 +75,7 @@ uint8_t deadman_started = 0;
 6,7 == Brake
 8,9,10,11   == Optical. Delta between strips
 12,13,14,15 == Optical. Rotation count
+16,17,18,19 == Optical time since last strip
 
 */
 #define ADC0_bp 0
@@ -90,6 +95,10 @@ volatile uint32_t delta_1 = UINT32_MAX;
 volatile uint32_t delta_2 = UINT32_MAX;
 volatile uint32_t rotation_count_1 = 0;
 volatile uint32_t rotation_count_2 = 0;
+
+volatile uint32_t time_since_last_1 = 0;
+volatile uint32_t time_since_last_2 = 0;
+volatile uint32_t true_time_since_last = 0;
 
 uint8_t high_1 = 1;
 uint8_t high_2 = 1;
@@ -175,8 +184,8 @@ int main (void)
 	rtc_init();	
 	init_spi_to_bbb();	//Setup SPI on Port C
 	
-	ioport_configure_port_pin(&PORTK, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN );
-	ioport_configure_port_pin(&PORTF, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN );
+	ioport_configure_port_pin(&PORTK, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN );//ext3-9
+	ioport_configure_port_pin(&PORTF, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN );//ext2-13
 	INIT_BRAKE_PIN();
 	INIT_BRAKE_FLIP_FLOP_PIN();
 	INIT_DEADMAN_PIN();
@@ -202,7 +211,17 @@ int main (void)
 		
 	state = STATE_UNINIT;
 	
+	//retro_1_time = rtc_get_time();
+	//retro_2_time = rtc_get_time();
+	
+	state = STATE_COLLECT;
+	SET_DEADMAN_HIGH();
+	wdt_set_timeout_period(WDT_TIMEOUT_PERIOD_250CLK);
+	wdt_enable();
+	deadman_started = 1;
+	
 	ioport_set_pin_level(LED_0_PIN, LED_0_ACTIVE);
+	
 	while (1) {
 		
 		//SPIC handler
@@ -218,6 +237,7 @@ int main (void)
 			}
 			
 			//Sensor sanity check
+			sensor_status = 0;
 			sensor_status |= (accel_1 < ACCEL_MIN || accel_1 > ACCEL_MAX) << ADC0_bp;
 			sensor_status |= (accel_2 < ACCEL_MIN || accel_2 > ACCEL_MAX) << ADC1_bp;
 			sensor_status |= (accel_3 < ACCEL_MIN || accel_3 > ACCEL_MAX) << ADC2_bp;
@@ -227,12 +247,7 @@ int main (void)
 			//State Machine
 			if(state == STATE_UNINIT){
 				if(recv_cmd == CMD_INIT_DEADMAN){
-					state = STATE_COLLECT;
-					SET_DEADMAN_HIGH();
-					wdt_set_timeout_period(WDT_TIMEOUT_PERIOD_250CLK);
-					wdt_enable();
-					deadman_started = 1;
-					ioport_set_pin_level(LED_0_PIN, LED_0_ACTIVE);
+					
 				}
 				recv_cmd = 0;
 			}
@@ -241,6 +256,7 @@ int main (void)
 				if(recv_cmd == STATE_MANUAL_BRAKE){
 					brake_manual_start = rtc_get_time();
 					SET_BRAKE_HIGH();
+					
 					
 					state = recv_cmd;
 				}
@@ -269,7 +285,7 @@ int main (void)
 					state = STATE_COLLECT;
 				}
 				
-				if((rtc_get_time() - brake_manual_start) >= APROX_HALF_SECOND ){
+				if((rtc_get_time() - brake_manual_start) >= ((uint32_t)APROX_HALF_SECOND*3.2 )){
 					SET_BRAKE_LOW();
 					state = STATE_COLLECT;
 				}
@@ -282,15 +298,27 @@ int main (void)
 				}
 				
 				uint32_t elapsed_time = rtc_get_time() - brake_manual_reverse_start;
+				if(elapsed_time >= APROX_HALF_SECOND ){// turn on brake
+					state = STATE_MANUAL_REVERSE_BRAKE_NEXT;
+					SET_BRAKE_HIGH();
+					brake_manual_reverse_start = rtc_get_time();
+				}
+				recv_cmd = 0;
 				
-				if( elapsed_time >= 3*APROX_HALF_SECOND ){// turn off brake
-					SET_BRAKE_LOW();
-					_delay_ms(1);
-					SET_BRAKE_FLIP_FLOP_LOW();
+			}
+			else if(state == STATE_MANUAL_REVERSE_BRAKE_NEXT){
+				if(recv_cmd == STATE_COLLECT){
+					brake_manual_reverse_start = 0;//set this to zero to trigger the following if()
 					state = STATE_COLLECT;
 				}
-				else if(elapsed_time >= 2*APROX_HALF_SECOND ){// turn on brake
-					SET_BRAKE_HIGH();
+				
+				uint32_t elapsed_time = rtc_get_time() - brake_manual_reverse_start;
+				
+				if( elapsed_time >= ((uint32_t)APROX_HALF_SECOND * 6.5) ){// turn off brake
+					state = STATE_COLLECT;
+					SET_BRAKE_LOW();
+					SET_BRAKE_FLIP_FLOP_LOW();
+					
 				}
 				recv_cmd = 0;
 				
@@ -343,12 +371,14 @@ int main (void)
 				}
 			}
 			
+			if(spi_isr) continue;
+			
 			//Select correct speed data
 			if(delta_1 > delta_2){
-				true_delta = delta_1;
+				true_delta = delta_2;
 			}
 			else{
-				true_delta = delta_2;
+				true_delta = delta_1;
 			}				
 			//Select correct rotation count value
 			if(rotation_count_1 > rotation_count_2){
@@ -357,9 +387,25 @@ int main (void)
 			else{
 				true_rotation_count = rotation_count_2;
 			}
+			
+			if(spi_isr) continue;
+			
+			uint32_t tmp1 = rtc_get_time();
+			time_since_last_1 = tmp1-retro_1_time;
+			time_since_last_2 = tmp1-retro_2_time;
+			
+			if(time_since_last_1 > time_since_last_2){
+				true_time_since_last = time_since_last_2;
+			}
+			else{
+				true_time_since_last = time_since_last_1;
+			}
+			
+			if(spi_isr) continue;
 			//Store speed and rotations value
 			memcpy(sensor_data + 8, (char *)&true_delta, 4);
 			memcpy(sensor_data + 12, (char *)&true_rotation_count, 4);
+			memcpy(sensor_data + 16, (char *)&true_time_since_last, 4);
 			
 			if(spi_isr) continue;
 						

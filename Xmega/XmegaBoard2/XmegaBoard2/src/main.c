@@ -43,6 +43,17 @@ index to value
 
 */
 
+#define NO_CMD 0
+#define STATE_UNINIT  1
+#define STATE_COLLECT 2
+#define STATE_MANUAL_BRAKE 3
+#define STATE_PID_BRAKE 4
+#define CMD_RESET 5
+#define CMD_INIT_DEADMAN 6
+#define STATE_MANUAL_REVERSE_BRAKE 7
+
+uint8_t recv_cmd;
+
 //lock
 volatile uint8_t spi_isr = 0;
 uint8_t spi_transfer = 0;
@@ -166,9 +177,9 @@ int main (void)
 	rtc_init();	
 	init_spi_to_bbb();	//Setup SPI on Port C
 	
-	ioport_configure_port_pin(&PORTE, PIN6_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);
-	ioport_configure_port_pin(&PORTE, PIN7_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);
-	ioport_configure_port_pin(&PORTF, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);
+	ioport_configure_port_pin(&PORTE, PIN6_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);//EXT1-5
+	ioport_configure_port_pin(&PORTE, PIN7_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);//EXT1-6
+	ioport_configure_port_pin(&PORTF, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);//EXT2-13
 	
 	PMIC.CTRL |= PMIC_MEDLVLEN_bm;
 	PMIC.CTRL |= PMIC_LOLVLEN_bm;
@@ -205,6 +216,7 @@ int main (void)
 	
 	state = 1;
 	
+	ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 	
 	while (1) {
 		
@@ -216,6 +228,13 @@ int main (void)
 		handle_spi_to_bbb();
 		
 		if(spi_transfer == 0){//Do anything that is not SPI related
+			
+			if(recv_cmd == CMD_RESET){
+				//Need to reset any of the sensors that accumulate data / have history
+				//Specifically this is just the optical tape count
+				sensor_data[28] = 0;
+			}
+			recv_cmd = 0;
 			
 			//Checks if any 2 flags are true
 			uint8_t retro_flag = (retro_1_flag && (retro_2_flag || retro_3_flag)) || (retro_2_flag && retro_3_flag);
