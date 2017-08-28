@@ -27,7 +27,7 @@ void Optical::update(Spi * spi) {
   switch(simulation) {
     case 0:
       refresh_data(spi);
-      if(data[2] > 500) { 
+      if(data[2] > (32000*2)) { 
         data[0] = 0;
 
       }

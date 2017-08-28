@@ -29,6 +29,7 @@ mutex state_mutex;
 volatile bool running = true;
 volatile bool send_manual_brake = false;
 Xmega_Command_t cmd_to_send = X_C_NONE;
+Xmega_Command_t cmd_to_send_2 = X_C_NONE;
 
 int consecutive_errors_1 = 0;
 int consecutive_errors_2 = 0;
@@ -93,16 +94,23 @@ void sensor_loop() {
     //
     //Xmega2
     transfer.device = 1;
-    transfer.cmd = X_C_NONE;
+
+    if(recv_cmd != X_C_NONE){
+      cmd_to_send_2 = recv_cmd;
+    }
+
+    transfer.cmd = cmd_to_send_2;
+
     stat = sensors->update(transfer);
     if(stat != X_TF_NONE){
       consecutive_errors_2++;
     }
     else{
       consecutive_errors_2 = 0;
+      cmd_to_send_2 = X_C_NONE;//Don't need to resend the command
     }
 
-    if(i % 150 == 0){
+    if(i % 20 == 0){
       cout << "=============================="<< endl;
       state_mutex.lock();
       cout << "State = " << state->get_current_state_string() << endl; 
