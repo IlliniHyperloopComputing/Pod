@@ -21,7 +21,9 @@ class Type(Enum):
   XMEGA_STATUS = 14
   XMEGA_RESPONDING = 15
   POD_STATE = 16
-  SENSOR_STATUS = 17;
+  SENSOR_STATUS = 17
+  ACCEL_TIME = 18
+  COAST_TIME = 19
 
 lengths = {
   Type.ACCELEROMETERX : 6,
@@ -42,6 +44,8 @@ lengths = {
   Type.XMEGA_RESPONDING : 2,
   Type.POD_STATE : 1,
   Type.SENSOR_STATUS : 2,
+  Type.COAST_TIME : 4,
+  Type.ACCEL_TIME : 4
 }
 names = {
   Type.ACCELEROMETERX : "x_accelerometer",
@@ -62,6 +66,8 @@ names = {
   Type.XMEGA_RESPONDING : "xmega_responding",
   Type.POD_STATE : "pod_state",
   Type.SENSOR_STATUS : "sensor_status",
+  Type.COAST_TIME : "coast_time",
+  Type.ACCEL_TIME : "accel_time"
 
 }
 def get_type(val):

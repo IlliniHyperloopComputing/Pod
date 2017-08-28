@@ -43,6 +43,8 @@ enum Sensor_Type {
 	XMEGA_RESPONDING,
 	POD_STATE,
   SENSOR_STATUS,
+  ACCELERATION_TIME, //uint32
+  COAST_TIME, //uint32
 };
 
 enum Sensor_Index_1 {

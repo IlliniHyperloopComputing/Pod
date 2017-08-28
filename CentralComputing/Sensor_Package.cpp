@@ -7,12 +7,12 @@ using namespace std;
 
 long long Sensor_Package::start_time = 1;
 
-static uint8_t bpi1_s[] = {2,2,2,2,4,4};
+static uint8_t bpi1_s[] = {2,2,2,2,4,4,4};
 static uint8_t bpi2_s[] = {2,2,2,2,2,2,2,2,2,2,2,2,2,2,1};
 uint8_t * Sensor_Package::bpi1 = bpi1_s;
 uint8_t * Sensor_Package::bpi2 = bpi2_s;
 
-Xmega_Setup Sensor_Package::x1 = {"/dev/spidev1.0", 6, bpi1, 500000, 8};
+Xmega_Setup Sensor_Package::x1 = {"/dev/spidev1.0", 7, bpi1, 500000, 8};
 Xmega_Setup Sensor_Package::x2 = {"/dev/spidev1.1", 15, bpi2, 500000, 8};
 
 Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool xmega_connect) {
@@ -77,6 +77,7 @@ Sensor_Package::Sensor_Package(vector<Sensor_Configuration> configuration, bool 
   * 6,7 == Brake
   * 8,9,10,11 == Optical, Delta
   * 12,13,14,15 == Optical, tape count
+  * 16,17,18,19 == Optical, tape count
   **/
 
   /**

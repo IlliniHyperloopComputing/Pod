@@ -49,7 +49,7 @@ double Sensor_Group::current_trans(double x){
 }
 
 double Sensor_Group::rpm_trans(double x){
-  return 1.0/(x / 32768.0);
+  return 60.0/(x / 32768.0);
 }
 
 double Sensor_Group::thermo_ext_trans(double x){

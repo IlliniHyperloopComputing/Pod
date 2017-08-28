@@ -56,6 +56,9 @@ def parse_data(id, length, data):
   elif id == Type.SENSOR_STATUS:
     value = unpack('H', data[0:2])[0]
     print("Value : " + str(bin(value)))
+  elif id == Type.COAST_TIME or id == Type.ACCEL_TIME:
+    value = unpack('I', data[0:4])[0]
+    print("value : " + str(value))
   else:
     # multiple [uint16]
     count = length//2

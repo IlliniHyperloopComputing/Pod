@@ -35,15 +35,11 @@ void Brake_Pressure::update(Spi * spi) {
 }
 
 void Brake_Pressure::simulation_1() {
-	auto start = Sensor_Package::start_time;
-	auto now = Sensor_Package::get_current_time();
-	auto difference = now - start;
 	
-	//TODO calc some actual value
 	
 	sensor_group_mutex.lock();
 	for(size_t i = 0; i < data.size(); i++) {
-		data[i] = i;
+		data[i] = 2000;
 	}
 	sensor_group_mutex.unlock();
 }
