@@ -1,8 +1,11 @@
 #ifdef XMEGA_H
 #define XMEGA_h
 
+#include "Spi.h"
+
 enum Xmega_Command {
   // TODO list all possible commands
+  X_PLACEHOLDER
 }
 
 class Xmega {
@@ -22,12 +25,13 @@ class Xmega {
     /**
     * Writes a command to the Xmegas
     * Note: The command is not sent immediately
+    * @param command the command to be run
     **/
-    void write(Xmega_Command);
+    void write(Xmega_Command command);
 
 
   private:
-    Spi * spi;
+    //Spi * spi;
     /**
     * updates the internal buffers and sends the most recent command
     */

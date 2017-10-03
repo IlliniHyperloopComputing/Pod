@@ -4,6 +4,8 @@
 #include "Sensor.h"
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <cstdint>
+
 
 using namespace std;
 
@@ -12,30 +14,33 @@ using namespace std;
 #define SETUP_SUCCESS 0
 
 #define WRITE_FAILURE -1
+
+
+enum Network_Command_ID {
+  //state transitions 
+	SAFETY_SETUP,
+	SAFE_MODE,
+	FUNCTIONAL_TEST,
+	LAUNCH_READY,
+	BRAKE,
+	EMERGENCY_BRAKE,
+  //propulsion 
+  LAUNCH 
+  //xmega handling
+};
 /*
   A network command is returned by read and parsed within Pod.cpp
  */
 struct Network_Command {
   //state transtitions
-  Network_Command_ID id,
-  uint8_t value
+  Network_Command_ID id;
+  uint8_t value;
 };
 
-enum Network_Command_ID {
-  //state transitions
-
-  //propulsion 
-
-  //braking
-
-  //xmega handling
-};
 
 class Network {
-  
-
    public:
-      
+  
       Network(Sensor * sensor);
       /**
       * Starts the TCP server
@@ -83,11 +88,16 @@ class Network {
       void send_packet();
 
     private:
-      Sensor * sensor;
-      int socketfd;
-      int clientfd;
-      int udp_socket;
-      sockaddr_storage addr_dest = {};
+      #if SIMULATION
+          //private simulation implementation variables and functions
+
+      #else 
+          Sensor * sensor;
+          int socketfd;
+          int clientfd;
+          int udp_socket;
+          sockaddr_storage addr_dest = {};
+      #endif
  
 };
 
