@@ -6,13 +6,16 @@
 #include <string.h>
 #include "Data.hpp"
 #include <mutex>
+#include <vector>
 
-//a data ID is the identifier for a query
 /**Every Data_ID needs:
-  1. A Raw_Data struct that holds all the relevant raw data for that query
-  2. A Calculation Function to convert the relevant raw data to a "true" or "actual" value
-  3. A Parsing Function to pull the important data out of the data buffers and update the raw_data 
-  4. A Network Function to convert the Data and Raw_Data into a network buffer to be sent
+  1. A Raw_Data_Struct that holds all the relevant raw data for that query
+  2. A Calculated_Data_Struct that holds all the calculated data
+  3. A Calculation Function to convert the relevant raw data to a "true" or "actual" value
+  4. A Parsing Function to pull the important data out of the data buffers and update the raw_data 
+
+  Some Data_ID require:
+  A function to convert calculated data 
 **/
 enum Data_ID {
   DISTANCE,
@@ -26,12 +29,15 @@ enum Data_ID {
 };
 
 // A calculation function takes in a pointer to raw data and converts it to real units
-typedef double (*calculation_func_t)(Raw_Data *);
-typedef Raw_Data * (*parse_func_t)(uint8_t *);
+typedef Arbitrary_Data (*calculation_func_t)(Arbitrary_Data);
+// A parse function takes in a pointer to a buffer, and memcpys the relevant data onto an existing arbitrary data
+typedef void (*parse_func_t)(uint8_t * buffer, Arbitrary_Data data);
 // Calculation  map takes in a Data_ID and gives a calculation function
 typedef std::map<Data_ID, calculation_func_t> calculation_map_t;
-// Raw data map maps a data_id to a raw_data *
-typedef std::map<Data_ID, Raw_Data *> raw_data_map_t;
+// Raw data map maps a data_id to some raw_data *
+typedef std::map<Data_ID, Arbitrary_Data > raw_data_map_t;
+// Parse function map maps a Data_ID to a parsing function
+typedef std::map<Data_ID, parse_func_t> parse_map_t;
 
 
 class Sensor { 
@@ -59,7 +65,13 @@ class Sensor {
       Xmega * xmega;
       calculation_map_t calculation_map;
       raw_data_map_t raw_data_map;
-      Raw_Data * get_raw_data(Data_ID id);
+      parse_map_t parse_map;
+
+
+      Arbitrary_Data get_raw_data(Data_ID id);
+      std::vector<Data_ID> ids;
+      uint8_t * data_buffer;
+
     #endif
     std::mutex sensor_mutex;
 
