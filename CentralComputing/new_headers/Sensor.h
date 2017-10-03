@@ -59,10 +59,8 @@ class Sensor {
     Data * get_data(Data_ID id);
 
   private: 
-    #if SIMULATION
 
-    #else
-      Xmega * xmega;
+      //Xmega * xmega;
       calculation_map_t calculation_map;
       raw_data_map_t raw_data_map;
       parse_map_t parse_map;
@@ -72,7 +70,6 @@ class Sensor {
       std::vector<Data_ID> ids;
       uint8_t * data_buffer;
 
-    #endif
     std::mutex sensor_mutex;
 
 };

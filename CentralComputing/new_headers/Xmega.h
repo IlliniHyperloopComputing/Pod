@@ -36,6 +36,8 @@ class Xmega {
     * updates the internal buffers and sends the most recent command
     */
     void update();
+    uint8_t * buffer;
+    
 }
 
 #endif
