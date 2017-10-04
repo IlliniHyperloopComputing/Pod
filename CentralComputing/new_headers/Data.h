@@ -10,7 +10,6 @@ struct Arbitrary_Data {
   uint8_t * data;
 };
 
-
 // Data structs hold calculated data and the raw data
 // Data structs are returned by the get_data function
 struct Data { 
@@ -18,6 +17,7 @@ struct Data {
   Arbitrary_Data raw;
 };
 
+// ------------------- CLEANUP FUNCTIONS --------------
 static void cleanup(Arbitrary_Data d){
   free(d.data);
 }
@@ -34,5 +34,5 @@ static void cleanup(Data * d){
   free(d);
 }
 
-
+static Arbitrary_Data null_data = {0, NULL};
 #endif
