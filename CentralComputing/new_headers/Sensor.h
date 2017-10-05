@@ -42,7 +42,12 @@ typedef std::map<Data_ID, parse_func_t> parse_map_t;
 
 class Sensor { 
   public:
-    
+     
+    /**
+    * Default constructor
+    **/
+    Sensor(Xmega * xmega);
+
     /**
     * Updates the buffers with the most recent data
     * Note: may not do anything
@@ -59,8 +64,11 @@ class Sensor {
     Data * get_data(Data_ID id);
 
   private: 
+    #if SIM
 
-      //Xmega * xmega;
+
+    #else 
+      Xmega * xmega;
       calculation_map_t calculation_map;
       raw_data_map_t raw_data_map;
       parse_map_t parse_map;
@@ -69,6 +77,8 @@ class Sensor {
       Arbitrary_Data get_raw_data(Data_ID id);
       std::vector<Data_ID> ids;
       uint8_t * data_buffer;
+
+    #endif
 
     std::mutex sensor_mutex;
 

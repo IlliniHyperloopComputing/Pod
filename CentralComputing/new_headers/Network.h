@@ -2,12 +2,11 @@
 #define NETWORK_H
 
 #include "Sensor.h"
+#include "Utils.h"
 #include <sys/socket.h>
 #include <sys/types.h>
-#include <cstdint>
 
 
-using namespace std;
 
 
 #define SETUP_FAILURE -1
@@ -18,6 +17,7 @@ using namespace std;
 
 enum Network_Command_ID {
   //state transitions 
+  NONE,
 	SAFETY_SETUP,
 	SAFE_MODE,
 	FUNCTIONAL_TEST,
@@ -40,8 +40,12 @@ struct Network_Command {
 
 class Network {
    public:
-  
+      /**
+      Constructor that sets up a network object
+      **/
       Network(Sensor * sensor);
+
+
       /**
       * Starts the TCP server
       * @param hostname the IP address to connect to
@@ -61,20 +65,24 @@ class Network {
       /**
       * Blocking call--waits for client to connect
       * Exits if socket is closed`
+      * @return the clientfd or -1
       */
-      void accept();
+      int accept();
  
       /**
       * Reads from socketfd, parses read bytes into a Network_Command struct
-      * @return the command struct to be parsed and sent
+      * Note: blocking command, will wait on read until something is sent or FD is closed
+      * @param buffer a pointer to the network command that was read
+      * @return the number of bytes read
       **/
-      Network_Command read_command(); 
+      int read_command(Network_Command * buffer); 
 
       /** 
       * Collects data from sensor, writes to socket
       * @return bytes written or -1 if failed
       **/
-      uint8_t write_data();
+      int write_data();
+
 
       /**
       * Closes the socket, ending all transmission with the LabView
@@ -88,7 +96,7 @@ class Network {
       void send_packet();
 
     private:
-      #if SIMULATION
+      #if SIM
           //private simulation implementation variables and functions
 
       #else 

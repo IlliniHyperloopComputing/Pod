@@ -2,6 +2,7 @@
 #define DATA_H
 #include <string.h>
 #include <vector>
+#include "Utils.h"
 
 // a struct containing arbitrary data
 // Arbitrary data structs are held in the raw_data map and updated on update_buffers

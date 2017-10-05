@@ -1,5 +1,9 @@
 #include "Sensor.h"
 
+Sensor::Sensor(Xmega * xmega) : xmega(xmega){
+
+}
+
 Data * Sensor::get_data(Data_ID id){
   Arbitrary_Data raw_data = get_raw_data(id);
   calculation_func_t f = calculation_map[id];

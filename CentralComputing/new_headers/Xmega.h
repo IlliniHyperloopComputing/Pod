@@ -1,4 +1,4 @@
-#ifdef XMEGA_H
+#ifndef XMEGA_H
 #define XMEGA_h
 
 #include "Spi.h"
@@ -6,7 +6,7 @@
 enum Xmega_Command {
   // TODO list all possible commands
   X_PLACEHOLDER
-}
+};
 
 class Xmega {
   public:
@@ -31,14 +31,14 @@ class Xmega {
 
 
   private:
-    //Spi * spi;
+    Spi * spi;
     /**
     * updates the internal buffers and sends the most recent command
     */
     void update();
     uint8_t * buffer;
     
-}
+};
 
 #endif
 
