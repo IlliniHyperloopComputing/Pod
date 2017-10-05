@@ -22,6 +22,7 @@ Arbitrary_Data Sensor::get_raw_data(Data_ID id){
   raw.size = raw_data_map[id].size;
   raw.data = (uint8_t *) malloc(raw.size);
   memcpy(raw.data, raw_data_map[id].data, raw.size);
+  sensor_mutex.unlock();
   return raw;
 }
 
