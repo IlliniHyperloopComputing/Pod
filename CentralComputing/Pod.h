@@ -7,9 +7,6 @@
 
 int pod(int argc, char** argv);
 
-
-std::tuple<bool, vector<Sensor_Configuration>> parse_input(int argc, char** argv);
-
 void sensor_loop();
 void network_loop();
 void read_loop();
