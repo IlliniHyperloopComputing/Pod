@@ -53,7 +53,7 @@ class Sensor {
     * Note: may not do anything
     * Note: dirty bit/timers
     * Note: maybe should be private? **/
-    void update_buffer();
+    void update_buffers();
 
     /**
     * Returns a pointer to a struct corresponding to the scaled data for the Sensor_ID
