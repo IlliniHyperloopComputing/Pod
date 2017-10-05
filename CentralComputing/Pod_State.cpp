@@ -127,23 +127,15 @@ void Pod_State::ST_Pod_Startup() {
 
 void Pod_State::ST_Safety_Setup() {
 	std::cout << "Entering: Safety Setup" << std::endl;
-  //Command Xmega to start its deadman switch
-  command_queue->enqueue(X_C_INIT_DEADMAN);
-  //TODO Setup the BBB
 }
 
 void Pod_State::ST_Safe_Mode() {
 	std::cout << "Entering: Safe Mode" << std::endl;
-  //Command Xmega to not be using the brakes
-  command_queue->enqueue(X_C_COLLECT);
-  //TODO safe the BBB
 }
 
 void Pod_State::ST_Functional_Test() {
 	std::cout << "Entering: Functional Test" << std::endl;
-  command_queue->enqueue(X_C_RESET);
-  sensors->reset();
-  //Do nothing on transition into this state
+ //Do nothing on transition into this state
 }
 
 void Pod_State::ST_Launch_Ready() {
@@ -163,6 +155,4 @@ void Pod_State::ST_Flight_Coast() {
 
 void Pod_State::ST_Flight_Brake() {
 	std::cout << "Entering: Flight Brake" << std::endl;
-  //Send command to Xmega to PID brake
-  command_queue->enqueue(X_C_PID_BRAKE);
 }
