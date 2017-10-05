@@ -1,4 +1,4 @@
-#ifndef SIM
+#if SIM
 #include "Xmega.h"
 
 Xmega::Xmega() {

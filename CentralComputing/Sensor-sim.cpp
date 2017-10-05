@@ -1,6 +1,6 @@
-#ifndef SIM
-#include "Sensor.h"
+#if SIM
 
+#include "Sensor.h"
 Sensor::Sensor(Xmega * xmega) : xmega(xmega){
 
 }
@@ -34,5 +34,4 @@ void Sensor::update_buffers() {
     fun(data_buffer, raw); 
   }
 }
-
 #endif

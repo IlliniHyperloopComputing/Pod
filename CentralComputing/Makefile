@@ -8,12 +8,12 @@ OBJ := $(patsubst %.cpp, %.o, $(SRC))
 # Set up compiler
 CXX_NORM	:= g++
 CXX_BBB 	:= arm-linux-gnueabihf-g++
-WARNINGS 	:= -Wall -Wextra
+WARNINGS 	:= -Wall -Wextra -pedantic
 
 INCLUDE_DIRS	:= -I. -I./Sensor_Aux -I./StateMachineCompact -I./network
-CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG 
 CFLAGS_RELEASE 	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG
-CFlAGS_T 	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DTEST_POD #-DDEBUG
+CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG 
+CFLAGS_SIM 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG -DSIM
 
 #Set up linker
 LDFLAGS := -pthread -lm -static-libgcc -static-libstdc++
@@ -22,14 +22,14 @@ LD_BBB  := $(CXX_BBB)
 
 # Define all executables
 POD = build
-POD_D = build-debug
-POD_T = build-test
+POD_D = dbuild
+POD_T = sbuild
 POD_CROSS = cross
-POD_CROSS_D = cross-debug
-POD_CROSS_T = cross-test
+POD_CROSS_D = dcross
+POD_CROSS_T = scross
 
 .PHONY: all
-all : msg mkdir_obj $(POD_D)
+all : msg mkdir_obj msg_d $(POD_D) msg_s $(POD_T)
 
 .PHONY: msg
 msg : 
@@ -58,11 +58,23 @@ msg :
 	$(info =             ___/  /___  /__/   /  / /__/   /  / /  /                    )
 	$(info =          __ __/______/ /______/__/ /______/__/ /__/                     )  
 
+.PHONY: msg_d
+msg_d : 
+	$(info  =====================)
+	$(info  ===Compiling Debug===)
+	$(info  =====================)
+
+.PHONY: msg_s
+msg_s : 
+	$(info  =====================)
+	$(info  ===Compiling   Sim===)
+	$(info  =====================)
+
 .PHONY: mkdir_obj
 mkdir_obj:
 	@mkdir -p $(OBJ_DIR)
 	@mkdir -p $(OBJ_DIR)/Sensor_Aux
-	@echo $(OBJ:%.o=$(OBJ_DIR)/%-build-debug.o)
+	@mkdir -p $(OBJ_DIR)/StateMachineCompact
  
 ####
 # All Build Rules are similar, except for different names and slightly different paths. 
@@ -100,13 +112,13 @@ $(OBJ_DIR)/%-build-debug.o : %.cpp
 # build-test
 #####
 $(POD_T) : CXX 		= $(CXX_NORM)
-$(POD_T) : CFLAGS  	= $(CFlAGS_T)
+$(POD_T) : CFLAGS  	= $(CFLAGS_SIM)
 $(POD_T) : LD  		= $(LD_NORM)
 $(POD_T) : build-$(POD_T)
-build-$(POD_T) : $(OBJ:%.o=$(OBJ_DIR)/%-build-test.o)
+build-$(POD_T) : $(OBJ:%.o=$(OBJ_DIR)/%-build-sim.o)
 	$(CXX) $? $(LDFLAGS) -o $(POD_T)
 
-$(OBJ_DIR)/%-build-test.o : %.cpp
+$(OBJ_DIR)/%-build-sim.o : %.cpp
 	$(LD) $? $(CFLAGS) -o $@
 
 #####
@@ -139,19 +151,20 @@ $(OBJ_DIR)/%-cross-debug.o : %.cpp
 # cross-test
 #####
 $(POD_CROSS_T) : CXX 	= $(CXX_BBB)
-$(POD_CROSS_T) : CFLAGS = $(CFlAGS_T)
+$(POD_CROSS_T) : CFLAGS = $(CFLAGS_SIM)
 $(POD_CROSS_T) : LD  	= $(LD_BBB)
 $(POD_CROSS_T) : build-$(POD_CROSS_T)
-build-$(POD_CROSS_T) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-test.o)
+build-$(POD_CROSS_T) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-sim.o)
 	$(CXX) $? $(LDFLAGS) -o $(POD_CROSS_T)
 
-$(OBJ_DIR)/%-cross-test.o : %.cpp
+$(OBJ_DIR)/%-cross-sim.o : %.cpp
 	$(LD) $? $(CFLAGS) -o $@
 
 .PHONY: clean
 clean:
-	rm -f $(OBJ_DIR)/*.o $(OBJ_DIR)/Sensor_Aux/*.o $(POD) $(POD_D) $(POD_T) $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)
-	rm -f $(OBJ_DIR)/*.d $(OBJ_DIR)/Sensor_Aux/*.o
+	rm -f $(POD) $(POD_D) $(POD_T) $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)
+	rm -f $(OBJ_DIR)/*.o $(OBJ_DIR)/Sensor_Aux/*.o 	$(OBJ_DIR)/StateMachineCompact/*.o
+	rm -f $(OBJ_DIR)/*.d $(OBJ_DIR)/Sensor_Aux/*.o  $(OBJ_DIR)/StateMachineCompact/*.d
 
 .PHONY: push
 push: $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)
