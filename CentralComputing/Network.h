@@ -98,12 +98,6 @@ class Network {
     private:
       #if SIM
           //private simulation implementation variables and functions
-          Sensor * sensor;
-          int socketfd;
-          int clientfd;
-          int udp_socket;
-          sockaddr_storage addr_dest = {};
-
       #else 
           
           Sensor * sensor;
