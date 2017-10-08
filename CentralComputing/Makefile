@@ -8,7 +8,7 @@ OBJ := $(patsubst %.cpp, %.o, $(SRC))
 # Set up compiler
 CXX_NORM	:= g++
 CXX_BBB 	:= arm-linux-gnueabihf-g++
-WARNINGS 	:= -Wall -Wextra -pedantic
+WARNINGS 	:= -Wall -Wextra -pedantic -Wdouble-promotion -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Wundef -Wno-unused
 
 INCLUDE_DIRS	:= -I. -I./Sensor_Aux -I./StateMachineCompact -I./network
 CFLAGS_RELEASE 	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG
