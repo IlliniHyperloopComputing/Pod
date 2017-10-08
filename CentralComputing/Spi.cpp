@@ -28,8 +28,8 @@ Spi::Spi(Xmega_Setup * x1s, Xmega_Setup * x2s){
   x1->buff = new uint8_t [x1->num_bytes + 2 + 2];
   x2->buff = new uint8_t [x2->num_bytes + 2 + 2];
   
-  memset(x1->buff, 0, x1->num_bytes + 2 + 2);
-  memset(x2->buff, 0, x2->num_bytes + 2 + 2);
+  memset(x1->buff, 0, (size_t)x1->num_bytes + 2 + 2);
+  memset(x2->buff, 0, (size_t)x2->num_bytes + 2 + 2);
 
   //Setup SPI on each Xmega
   if(setup_spi()){
@@ -95,7 +95,7 @@ int Spi::transfer(Xmega_Transfer &xt){
     }
     //send to Xmegas
     print_debug("wval: \t");
-    for(int i = 0; i < sizeof(tx_buff);i++){
+    for(size_t i = 0; i < sizeof(tx_buff);i++){
       usleep(SLEEP_TIME);
       int wval = write(xd->fd, tx_buff + i, 1);
       print_debug("%d, tx: %x\t", wval, tx_buff[i]);
@@ -157,9 +157,8 @@ int Spi::transfer(Xmega_Transfer &xt){
   //bytes_to_read* +2 and there you go. But you need aditional ifs
   //However, I think its simpler to just have two loops
 
-  //Create buffers that are big enough for size of incoming data
-  uint8_t rx_buff[bytes_to_read+2];
-  memset(&rx_buff, 0, bytes_to_read+2);
+  //Setup buffer that are big enough for size of incoming data
+  memset(&rx_buff, 0, (size_t)bytes_to_read+2);
   uint8_t idx = 0;
   while(idx < bytes_to_read ){
     usleep(SLEEP_TIME);
@@ -233,11 +232,11 @@ uint32_t Spi::get_data(uint8_t device, int idx){
 
   //Pull the correct data
   uint32_t tmp = 0;
-  for(int i = 0; i < xs->bytes_per_item[idx]; i++){
+  for(uint8_t i = 0; i < xs->bytes_per_item[idx]; i++){
     //Assert to ensure no buffer overflow
     assert(xd->offset_lookup[idx] + i < xd->num_bytes);
     print_debug("idx: %d \t offset_lookup: %d \t num_bytes:%d\n", i,xd->offset_lookup[idx], xd->num_bytes); 
-    tmp |= xd->buff[xd->offset_lookup[idx] + i] << (i * 8);
+    tmp |= (uint8_t)(xd->buff[xd->offset_lookup[idx] + i] << (i * 8));
   }
   print_debug("returning now from spi_get_data\n");
 
@@ -269,7 +268,7 @@ uint8_t Spi::get_state(uint8_t device){
 uint8_t Spi::get_responding(uint8_t device){
   const int max_errors = 30;
   if(device == 0){
-    return ((x1->consecutive_errors)<max_errors);  
+    return ((x1->consecutive_errors) < max_errors);  
   }
   else if(device == 1){
     return ((x2->consecutive_errors) < max_errors);  

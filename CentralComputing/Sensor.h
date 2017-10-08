@@ -64,7 +64,7 @@ class Sensor {
     Data * get_data(Data_ID id);
 
   private: 
-    #if SIM
+    #ifdef SIM
       Xmega * xmega;
       calculation_map_t calculation_map;
       raw_data_map_t raw_data_map;

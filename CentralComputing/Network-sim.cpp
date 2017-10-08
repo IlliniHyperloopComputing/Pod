@@ -1,4 +1,4 @@
-#if SIM
+#ifdef SIM
 #include "Network.h"
 
 Network::Network(Sensor * sensor) : sensor(sensor) {

@@ -96,7 +96,7 @@ class Network {
       void send_packet();
 
     private:
-      #if SIM
+      #ifdef SIM
           //private simulation implementation variables and functions
           Sensor * sensor;
           int socketfd;
