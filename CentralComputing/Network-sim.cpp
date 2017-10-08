@@ -1,15 +1,15 @@
 #ifdef SIM
 #include "Network.h"
 
-Network::Network(Sensor * sensor) : sensor(sensor) {
+Network::Network(Sensor * sen) : sensor(sen) {
 
 }
 
-uint8_t Network::start_server(char * hostname, char * port){
+uint8_t Network::start_server(const char * hostname, const char * port){
   return 0;
 }
 
-uint8_t Network::start_udp(char * hostname, char * port){
+uint8_t Network::start_udp(const char * hostname, const char * port){
   return 0;
 }
 

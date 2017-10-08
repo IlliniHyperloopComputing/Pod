@@ -85,9 +85,9 @@ int Spi::transfer(Xmega_Transfer &xt){
   tx_buff[3] = (uint8_t) send_crc;
   tx_buff[4] = (uint8_t) (send_crc>>8);
 
-  int sent_properly = 0;
-  int max_passes = 10;
-  int passes = 0;
+  uint8_t sent_properly = 0;
+  const uint8_t max_passes = 10;
+  uint8_t passes = 0;
   while(!sent_properly && passes < max_passes){
     if(passes > 0 /*|| send_result == 0x4A */){
       //print_debug("Sending to Xmega: passes: %d send_properly: %d\n", passes, sent_properly);
@@ -285,7 +285,8 @@ int Spi::setup_spi(){
   print_debug("Exit value from grep: %d\n",spi_device_tree);
   if(spi_device_tree != 0){
     print_debug("Echo-ing correct device tree setup\n");
-    system("echo BB-SPI-M-01 > /sys/devices/platform/bone_capemgr/slots");
+    int ret = system("echo BB-SPI-M-01 > /sys/devices/platform/bone_capemgr/slots");
+    print_debug("system() returns: %d\n", ret);
     print_debug("Sleeping for 2 seconds to make sure kernel has time complete setup\n");
     usleep(2000000);
   }

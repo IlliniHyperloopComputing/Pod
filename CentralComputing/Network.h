@@ -43,7 +43,7 @@ class Network {
       /**
       Constructor that sets up a network object
       **/
-      Network(Sensor * sensor);
+      Network(Sensor * sen);
 
 
       /**
@@ -52,7 +52,7 @@ class Network {
       * @param port the port to connect to
       * @return SETUP_SUCCESS  or SETUP_FAILURE
       **/
-      uint8_t start_server(char * hostname, char * port);
+      uint8_t start_server(const char * hostname, const char * port);
 
       /**
       * Starts UDP server
@@ -60,7 +60,7 @@ class Network {
       * @param port the port
       * @return SETUP_SUCCESS or SETUP_FAILURE
       **/
-      uint8_t start_udp(char * hostname, char * port);
+      uint8_t start_udp(const char * hostname, const char * port);
 
       /**
       * Blocking call--waits for client to connect
