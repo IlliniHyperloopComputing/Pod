@@ -1,9 +1,4 @@
-#include "Network.h"
-#include "Sensor.h"
-#include "Utils.h"
-#include <thread>
-#include <iostream>
-
+#include "Pod.h"
 
 using namespace std;
 Sensor * sensor;
@@ -15,7 +10,7 @@ bool running = true;
 void write_loop(){
   int written = 0;
   while(running && written >= 0){
-    int written = network->write_data();
+    written = network->write_data();
   }
 }
 
@@ -23,7 +18,7 @@ void read_loop(){
   int read = 0; 
   Network_Command buffer;
   while (running && read >= 0){
-    int read = network->read_command(&buffer);
+    read = network->read_command(&buffer);
     //Parse buffer and perform actions
   }
 }
@@ -57,7 +52,9 @@ int main(){
   xmega = new Xmega(); 
   sensor = new Sensor(xmega);
   network = new Network(sensor);
-  network->start_server("test", "test");
+  const char* host = "127.0.0.1";
+  const char* port = "8080";
+  network->start_server(host, port);
 
   thread network_thread(network_loop);
   thread xmega_thread(xmega_loop);

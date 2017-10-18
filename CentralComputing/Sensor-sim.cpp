@@ -1,4 +1,4 @@
-#if SIM
+#ifdef SIM
 
 #include "Sensor.h"
 Sensor::Sensor(Xmega * xmega) {
