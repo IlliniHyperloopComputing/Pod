@@ -26,6 +26,8 @@ enum Data_ID {
   //etc etc
 };
 
+//You can think of Arbitrary Data as a uint8_t * in most circumstances, it just also gives a size
+
 // A calculation function takes in a pointer to raw data and converts it to real units
 typedef Arbitrary_Data (*calculation_func_t)(Arbitrary_Data);
 // A parse function takes in a pointer to a buffer, and memcpys the relevant data onto an existing arbitrary data
