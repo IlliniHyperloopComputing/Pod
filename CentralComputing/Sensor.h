@@ -64,7 +64,21 @@ class Sensor {
     Data * get_data(Data_ID id);
 
   private: 
+<<<<<<< HEAD
     #if SIM
+=======
+    #ifdef SIM
+      Xmega * xmega;
+      calculation_map_t calculation_map;
+      raw_data_map_t raw_data_map;
+      parse_map_t parse_map;
+
+
+      Arbitrary_Data get_raw_data(Data_ID id);
+      std::vector<Data_ID> ids;
+      uint8_t * data_buffer;
+
+>>>>>>> pod3
 
     #else 
       Xmega * xmega;

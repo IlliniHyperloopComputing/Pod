@@ -20,6 +20,7 @@
 
 #define CRC_PASS 0xAA
 #define SLEEP_TIME 10 //12 gets 3.87
+#define RX_BUFF_SIZE 128
 
 using namespace std;
 
@@ -343,6 +344,8 @@ class Spi {
     //Storage of all data that isn't data
     Xmega_Data * x1;
     Xmega_Data * x2;
+
+    uint8_t rx_buff[RX_BUFF_SIZE];
 
 };
 
