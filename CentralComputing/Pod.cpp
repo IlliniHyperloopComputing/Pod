@@ -24,7 +24,7 @@ void read_loop(){
 }
 void network_loop(){
   while(running){ 
-    int clientfd = network->accept(); 
+    int clientfd = network->accept_client(); 
     if(clientfd > 0){
       thread read_thread(read_loop);
       thread write_thread(write_loop);

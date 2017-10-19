@@ -1,12 +1,18 @@
-#ifndef SIM
 #include "Network.h"
+#include "Utils.h"
+#include <sys/socket.h>
+#include <sys/types.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <netdb.h>
+#include <poll.h>
 
 Network::Network(Sensor * sen) : sensor(sen) {
 
 }
 
 uint8_t Network::start_server(const char * hostname, const char * port){
-  int socketfd = socket(AF_INET, SOCK_STREAM, 0);
+  socketfd = socket(AF_INET, SOCK_STREAM, 0);
   int enable = 1;
   if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
     perror("setsockopt(SO_REUSEADDR) failed");
@@ -32,14 +38,27 @@ uint8_t Network::start_server(const char * hostname, const char * port){
     exit(1);
   }
   free(result);
+  return socketfd;
 }
 
 uint8_t Network::start_udp(const char * hostname, const char * port){
   return 0;
 }
 
-int Network::accept(){
-  return 0;
+int Network::accept_client(){
+  struct pollfd p;
+  p.fd = socketfd;
+  p.events = POLLIN;
+  int ret = 0;
+  while(1) {
+    ret = poll(&p, 1, 1000);
+    if(ret == 1) {//there's something trying to connect
+      clientfd = accept(socketfd, NULL, NULL);
+      print_debug("Connected!"); 
+      return clientfd;
+    }
+  }
+  return -1;
 }
 
 
@@ -59,4 +78,3 @@ void Network::close_server() {
 void Network::send_packet() {
 
 }
-#endif

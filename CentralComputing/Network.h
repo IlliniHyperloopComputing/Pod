@@ -67,7 +67,7 @@ class Network {
       * Exits if socket is closed`
       * @return the clientfd or -1
       */
-      int accept();
+      int accept_client();
  
       /**
       * Reads from socketfd, parses read bytes into a Network_Command struct
@@ -96,18 +96,12 @@ class Network {
       void send_packet();
 
     private:
-      #ifdef SIM
-          //private simulation implementation variables and functions
-      #else 
           
-          Sensor * sensor;
-          int socketfd;
-          int clientfd;
-          int udp_socket;
-          sockaddr_storage addr_dest = {};
-
-
-      #endif
+  Sensor * sensor;
+      int socketfd;
+      int clientfd;
+      int udp_socket;
+      sockaddr_storage addr_dest = {};
  
 };
 
