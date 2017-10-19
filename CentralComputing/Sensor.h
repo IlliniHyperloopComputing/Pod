@@ -24,6 +24,7 @@ enum Data_ID {
   TEMPERATURE,
   RIDE_HEIGHT,
   //etc etc
+  NULL_ID
 };
 
 //You can think of Arbitrary Data as a uint8_t * in most circumstances, it just also gives a size
@@ -61,7 +62,7 @@ class Sensor {
     * @param id the id of the sensor to be queried
     * @return data the data associated with the sensor
     */
-    Data * get_data(Data_ID id);
+    Data get_data(Data_ID id);
 
   private: 
     #ifdef SIM

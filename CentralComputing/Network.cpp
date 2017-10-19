@@ -68,9 +68,19 @@ int Network::read_command(Network_Command *){
 }
 
 int Network::write_data() {
-  return 0;
+  Arbitrary_Data buffer = null_data;
+  size_t used = 0;
+  for(size_t i = 0; i < Data_ID::NULL_ID; i++){
+    Data_ID id = (Data_ID) i;
+    Data d = sensor->get_data(id);  
+    used += append(buffer, used, d.calculated);
+    used += append(buffer, used, d.raw);
+    cleanup(d);
+  }
+  int bytes = write_all_to_socket(socketfd, buffer.data, used);   
+  cleanup(buffer);
+  return bytes;
 }
-
 void Network::close_server() {
 
 }

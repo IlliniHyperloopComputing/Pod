@@ -23,4 +23,5 @@ void print_debug(const char * format, ...);
 **/
 void print_test(const char * format, ...);
 
+ssize_t write_all_to_socket(int socket, uint8_t * buffer, size_t count);
 #endif // UTILS_H
