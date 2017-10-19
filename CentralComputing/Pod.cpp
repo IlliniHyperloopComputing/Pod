@@ -53,12 +53,11 @@ int main(){
   sensor = new Sensor(xmega);
   network = new Network(sensor);
   const char* host = "127.0.0.1";
-  const char* port = "8080";
+  const char* port = "8800";
   network->start_server(host, port);
 
   thread network_thread(network_loop);
   thread xmega_thread(xmega_loop);
   network_thread.join(); 
-  return 0;
-  
+  return 0; 
 }

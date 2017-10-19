@@ -24,7 +24,7 @@ uint8_t Network::start_server(const char * hostname, const char * port){
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = AI_PASSIVE;
 
-  int s = getaddrinfo(NULL, "8800", &hints, &result);
+  int s = getaddrinfo(NULL, port, &hints, &result);
   if(s != 0){
     fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
     exit(1);
@@ -37,6 +37,7 @@ uint8_t Network::start_server(const char * hostname, const char * port){
     perror("listen");
     exit(1);
   }
+  print_debug("Server setup successfully\n");
   free(result);
   return socketfd;
 }
@@ -50,11 +51,12 @@ int Network::accept_client(){
   p.fd = socketfd;
   p.events = POLLIN;
   int ret = 0;
+  print_debug("Awaiting connection\n");
   while(1) {
     ret = poll(&p, 1, 1000);
     if(ret == 1) {//there's something trying to connect
       clientfd = accept(socketfd, NULL, NULL);
-      print_debug("Connected!"); 
+      print_debug("Connected!\n"); 
       return clientfd;
     }
   }
