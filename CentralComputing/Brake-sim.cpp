@@ -1,4 +1,4 @@
-#if SIM
+#ifdef SIM
 #include "Brake.h"
 
 Brake::Brake(Xmega * xmega) {

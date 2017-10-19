@@ -32,7 +32,7 @@ class Brake {
     void set_brake_value(double value);
 
   private:
-    #if SIM
+    #ifdef SIM
 
     #else
 
