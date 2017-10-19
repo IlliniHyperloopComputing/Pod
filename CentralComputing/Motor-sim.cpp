@@ -1,4 +1,4 @@
-#if SIM
+#ifdef SIM
 #include "Motor.h"
 
 Motor::Motor(Xmega * xmega) {

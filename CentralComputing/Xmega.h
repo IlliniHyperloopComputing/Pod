@@ -31,7 +31,7 @@ class Xmega {
 
 
   private:
-    #if SIM
+    #ifdef SIM
 
     #else
 

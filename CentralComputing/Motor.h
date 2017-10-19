@@ -31,7 +31,7 @@ class Motor {
     void set_throttle(double value);
 
   private:
-    #if SIM
+    #ifdef SIM
 
     #else
 
