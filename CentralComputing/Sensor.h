@@ -20,13 +20,13 @@
 enum Data_ID {
   DISTANCE,
   VELOCITY,
-  ACCELERATIONX,
-  ACCELERATIONY,
-  ACCELERATIONZ,
+  ACCELERATION,
   TEMPERATURE,
   RIDE_HEIGHT,
   //etc etc
 };
+
+//You can think of Arbitrary Data as a uint8_t * in most circumstances, it just also gives a size
 
 // A calculation function takes in a pointer to raw data and converts it to real units
 typedef Arbitrary_Data (*calculation_func_t)(Arbitrary_Data);
@@ -65,16 +65,6 @@ class Sensor {
 
   private: 
     #ifdef SIM
-      Xmega * xmega;
-      calculation_map_t calculation_map;
-      raw_data_map_t raw_data_map;
-      parse_map_t parse_map;
-
-
-      Arbitrary_Data get_raw_data(Data_ID id);
-      std::vector<Data_ID> ids;
-      uint8_t * data_buffer;
-
 
     #else 
       Xmega * xmega;
