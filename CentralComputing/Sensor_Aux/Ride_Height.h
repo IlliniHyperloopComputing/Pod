@@ -1,5 +1,5 @@
-#ifndef RIDE_HEIGHT
-#define RIDE_HEIGHT
+#ifndef RIDE_HEIGHT_H
+#define RIDE_HEIGHT_H
 #include "../Data.h"
 
 struct Ride_Height_Raw {
