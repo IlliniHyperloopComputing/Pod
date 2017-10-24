@@ -1,7 +1,20 @@
 #ifndef SIM
 #include "Sensor.h"
+#include "Sensor_Aux/Distance.h"
 
 Sensor::Sensor(Xmega * xm) : xmega(xm){
+  //setup maps
+  raw_data_map = raw_data_map_t();
+  calculation_map = calculation_map_t();
+  parse_map = parse_map_t();
+  
+  // Distance
+  raw_data_map[Data_ID::DISTANCE] = *(Arbitrary_Data * ) malloc(sizeof(Distance_Raw));
+  calculation_map[Data_ID::DISTANCE] = distance_calculation;
+  parse_map[Data_ID::DISTANCE] = distance_parse;
+
+
+
 
 }
 

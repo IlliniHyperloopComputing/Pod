@@ -1,7 +1,7 @@
 #ifdef SIM
 
 #include "Sensor.h"
-Sensor::Sensor(Xmega * xm) : xmega(xm){
+Sensor::Sensor(Xmega * xmega) {
 
 }
 

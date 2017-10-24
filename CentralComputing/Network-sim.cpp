@@ -1,7 +1,7 @@
 #ifdef SIM
 #include "Network.h"
 
-Network::Network(Sensor * sen) : sensor(sen) {
+Network::Network(Sensor * sen) {
 
 }
 
