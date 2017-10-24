@@ -16,15 +16,15 @@ Sensor::Sensor(Xmega * xm) : xmega(xm){
   calculation_map[Data_ID::DISTANCE] = distance_calculation;
   parse_map[Data_ID::DISTANCE] = distance_parse;
 
-	//Temperature
-	raw_data_map[Data_ID::TEMPERATURE] = *(Arbitrary_Data * ) malloc(sizeof(Temperature_Raw));
-	calculation_map[Data_ID::TEMPERATURE] = no_calculation;
-	parse_map[Data_ID::TEMPERATURE] = temperature_parse;
-	
-	//Ride Height
-	raw_data_map[Data_ID::RIDE_HEIGHT] = *(Arbitrary_Data * ) malloc(sizeof(Ride_Height_Raw));
-	calculation_map[Data_ID::RIDE_HEIGHT] = no_calculation;
-	parse_map[Data_ID::RIDE_HEIGHT] = ride_height_parse;
+    //Temperature
+  raw_data_map[Data_ID::TEMPERATURE] = *(Arbitrary_Data * ) malloc(sizeof(Temperature_Raw));
+  calculation_map[Data_ID::TEMPERATURE] = no_calculation;
+  parse_map[Data_ID::TEMPERATURE] = temperature_parse;
+
+    //Ride Height
+  raw_data_map[Data_ID::RIDE_HEIGHT] = *(Arbitrary_Data * ) malloc(sizeof(Ride_Height_Raw));
+  calculation_map[Data_ID::RIDE_HEIGHT] = no_calculation;
+  parse_map[Data_ID::RIDE_HEIGHT] = ride_height_parse;
 }
 
 Data * Sensor::get_data(Data_ID id){
