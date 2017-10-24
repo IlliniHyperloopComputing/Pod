@@ -1,6 +1,8 @@
 #ifndef SIM
 #include "Sensor.h"
 #include "Sensor_Aux/Distance.h"
+#include "Sensor_Aux/Temperature.h"
+#include "Sensor_Aux/Null.h"
 
 Sensor::Sensor(Xmega * xm) : xmega(xm){
   //setup maps
@@ -12,10 +14,10 @@ Sensor::Sensor(Xmega * xm) : xmega(xm){
   raw_data_map[Data_ID::DISTANCE] = *(Arbitrary_Data * ) malloc(sizeof(Distance_Raw));
   calculation_map[Data_ID::DISTANCE] = distance_calculation;
   parse_map[Data_ID::DISTANCE] = distance_parse;
-
-
-
-
+	
+	raw_data_map{Data_ID::TEMPERATURE] = *(Arbitrary_Data * ) malloc(sizeof(Temperature_Raw));
+	calculation_map[Data_ID::TEMPERATURE] = null_calculation;
+	parse_map[Data_ID::TEMPERATURE] = temperature_parse;
 }
 
 Data * Sensor::get_data(Data_ID id){
