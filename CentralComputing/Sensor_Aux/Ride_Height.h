@@ -3,14 +3,10 @@
 #include "../Data.h"
 
 struct Ride_Height_Raw {
-	double height;
+	uint16_t left;
+	uint16_t middle;
+	uint16_t right; 
 };
-
-struct Ride_Height_Calc {
-	double height;
-};
-
-Arbitrary_Data ride_height_calculation(Arbitrary_Data raw);
 
 void ride_height_parse(uint8_t * buffer, Arbitrary_Data raw);
 #endif
