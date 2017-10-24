@@ -8,7 +8,7 @@ struct Temperature_Raw {
 	uint8_t cpu_temp;
 	uint8_t motor_temp;
 	uint8_t wheel_temp;
-}
+};
 
 void temperature_parse(uint8_t * buffer, Arbitrary_Data raw);
 
