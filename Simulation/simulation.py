@@ -13,7 +13,7 @@ print("Simulation")
 conditionals = [{"term":"t","val":"10", "thing":"a = -1"}];
 def update():#(dist, vel, accel):
 	global dist, vel, accel, deltaT
-	dist = dist + vel*deltaT + .5 * accel * deltaT**2
+	dist = dist + vel*deltaT + ((.5 * accel) * deltaT**2)
 	vel = vel + accel*deltaT
 	if(dist > track_len):
 		dist = track_len
@@ -47,7 +47,7 @@ def brake():
 
 printStatus()
 oldTime = time.time()
-while epoch < 500:
+while epoch < 5:
 	newTime = time.time()
 	deltaT = newTime-oldTime
 	oldTime = time.time();
