@@ -4,7 +4,7 @@
 #include "Sensor_Aux/Temperature.h"
 #include "Sensor_Aux/Ride_Height.h"
 #include "Sensor_Aux/Null.h"
-
+#include "Sensor_Aux/Acceleration_X.h"
 Sensor::Sensor(Xmega * xm) : xmega(xm){
   //setup maps
   raw_data_map = raw_data_map_t();
@@ -25,6 +25,10 @@ Sensor::Sensor(Xmega * xm) : xmega(xm){
   raw_data_map[Data_ID::RIDE_HEIGHT] = *(Arbitrary_Data * ) malloc(sizeof(Ride_Height_Raw));
   calculation_map[Data_ID::RIDE_HEIGHT] = no_calculation;
   parse_map[Data_ID::RIDE_HEIGHT] = ride_height_parse;
+
+	raw_data_map[Data_ID::ACCELERATION_X] = *(Arbitrary_Data *) malloc(sizeof(Acceleration_X_Raw));
+	calculation_map[Data_ID::ACCELERATION_X] = acceleration_x_calculation;
+	parse_map[Data_ID::ACCELERATION_X] = acceleration_x_parse;
 }
 
 Data * Sensor::get_data(Data_ID id){
