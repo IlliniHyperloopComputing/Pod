@@ -1,8 +1,9 @@
 #include "Acceleration_X.h"
 
-#define ACCELERATION_X_OFFSET 0
-
+#define ACCELERATION_X_OFFSET 0 
 using namespace std;
+
+const double VOLTS_PER_G = 0.330;
 
 Arbitrary_Data acceleration_x_calculation(Arbitrary_Data raw) {
 	Acceleration_X_Raw ax_raw = *(Acceleration_X_Raw *)raw.data;
@@ -39,7 +40,7 @@ Arbitrary_Data acceleration_x_calculation(Arbitrary_Data raw) {
 	}
 
 	if(ax_raw.calibrated){
-		//function	
+		accel = ((ax_raw.calibrated_baseline-accel)/32768.0 * 4.096)/VOLTS_PER_G;
 	}
 	else {
 		accel = 0;
