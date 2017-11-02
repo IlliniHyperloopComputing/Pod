@@ -47,7 +47,7 @@ def brake():
 
 printStatus()
 oldTime = time.time()
-while epoch < 5:
+while epoch < 20:
 	newTime = time.time()
 	deltaT = newTime-oldTime
 	oldTime = time.time();
