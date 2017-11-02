@@ -8,8 +8,8 @@ bool running = true;
 
 
 void write_loop(){
-  int written = 0;
-  while(running && written >= 0){
+  int written = -1;
+  while(running && written != 0){
     written = network->write_data();
   }
 }
@@ -25,14 +25,17 @@ void read_loop(){
 void network_loop(){
   while(running){ 
     int clientfd = network->accept_client(); 
+    print_info("Client fd is: %d\n", clientfd);
     if(clientfd > 0){
-      thread read_thread(read_loop);
+      print_info("Starting network threads\n");
+      //thread read_thread(read_loop);
       thread write_thread(write_loop);
 
-      read_thread.join();
+      //read_thread.join();
       write_thread.join();
+      print_info("Client exited, looking for next client\n");
     } else {
-      cout << "Accept failed, aborting" << endl; 
+      print_info("Accept failed, abort\n");
       break;
     }
 
@@ -46,9 +49,19 @@ void xmega_loop(){
   }
 }
 
+void int_handler(int signo){
+  network->close_server();
+  running = false;
+}
+
+void pipe_handler(int signo){
+
+}
 int main(){
 
   // parsing, setup, etc
+  signal(SIGINT, int_handler);
+  signal(SIGPIPE, pipe_handler);
   xmega = new Xmega(); 
   sensor = new Sensor(xmega);
   network = new Network(sensor);

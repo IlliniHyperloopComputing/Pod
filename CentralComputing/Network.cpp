@@ -26,7 +26,7 @@ uint8_t Network::start_server(const char * hostname, const char * port){
 
   int s = getaddrinfo(NULL, port, &hints, &result);
   if(s != 0){
-    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
+    print_info("getaddrinfo: %s\n", gai_strerror(s));
     exit(1);
   }
   if(bind(socketfd, result->ai_addr, result->ai_addrlen) != 0){
@@ -37,7 +37,7 @@ uint8_t Network::start_server(const char * hostname, const char * port){
     perror("listen");
     exit(1);
   }
-  print_debug("Server setup successfully\n");
+  print_info("Server setup successfully\n");
   free(result);
   return socketfd;
 }
@@ -51,12 +51,12 @@ int Network::accept_client(){
   p.fd = socketfd;
   p.events = POLLIN;
   int ret = 0;
-  print_debug("Awaiting connection\n");
+  print_info("Awaiting connection\n");
   while(1) {
     ret = poll(&p, 1, 1000);
     if(ret == 1) {//there's something trying to connect
       clientfd = accept(socketfd, NULL, NULL);
-      print_debug("Connected!\n"); 
+      print_info("Connected!\n"); 
       return clientfd;
     }
   }
@@ -65,26 +65,40 @@ int Network::accept_client(){
 
 
 
-int Network::read_command(Network_Command *){
-  return 0;
+int Network::read_command(Network_Command * buffer){
+  return read(clientfd, buffer, sizeof(Network_Command));
 }
 
 int Network::write_data() {
-  Arbitrary_Data buffer = null_data;
-  size_t used = 0;
+
+  size_t capacity = 500;
+  size_t size = 0; 
+  uint8_t * buffer = (uint8_t *) malloc(capacity);
+
   for(size_t i = 0; i < Data_ID::NULL_ID; i++){
     Data_ID id = (Data_ID) i;
     Data d = sensor->get_data(id);  
-    used += append(buffer, used, d.calculated);
-    used += append(buffer, used, d.raw);
+    size_t delta = 1 + d.raw.size + d.calculated.size; //1 byte for the data_id
+    if(size + delta > capacity) {
+      buffer = (uint8_t *) realloc(buffer, 2 * (size + delta));
+      capacity = 2 * (size + delta);
+    }
+    uint8_t byte = id;
+    memcpy(buffer + size, &byte, 1);
+    memcpy(buffer + size + 1, d.calculated.data, d.calculated.size);
+    memcpy(buffer + size + 1 + d.calculated.size, d.raw.data, d.raw.size);
+    size += delta;
     cleanup(d);
   }
-  int bytes = write_all_to_socket(socketfd, buffer.data, used);   
-  cleanup(buffer);
+  print_info("About to write\n");
+  int bytes = write(socketfd, buffer, size);   
+  print_info("Wrote %d bytes, size is : %zu\n", bytes, size);
+  free(buffer);
   return bytes;
 }
 void Network::close_server() {
-
+  close(clientfd);
+  close(socketfd);
 }
 
 void Network::send_packet() {
