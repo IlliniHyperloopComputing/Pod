@@ -8,10 +8,13 @@ bool running = true;
 
 
 void write_loop(){
-  int written = -1;
-  while(running && written != 0){
-    written = network->write_data();
+  bool active_connection = true;
+  while(running && active_connection){
+    usleep(100000);
+    int written = network->write_data();
+    active_connection = written != 1;
   }
+  print_info("Writing failed, exiting write thread\n");
 }
 
 void read_loop(){
@@ -28,17 +31,16 @@ void network_loop(){
     print_info("Client fd is: %d\n", clientfd);
     if(clientfd > 0){
       print_info("Starting network threads\n");
-      //thread read_thread(read_loop);
+      thread read_thread(read_loop);
       thread write_thread(write_loop);
 
-      //read_thread.join();
+      read_thread.join();
       write_thread.join();
       print_info("Client exited, looking for next client\n");
     } else {
       print_info("Accept failed, abort\n");
       break;
     }
-
   }
 }
 

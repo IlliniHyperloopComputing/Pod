@@ -90,9 +90,7 @@ int Network::write_data() {
     size += delta;
     cleanup(d);
   }
-  print_info("About to write\n");
-  int bytes = write(socketfd, buffer, size);   
-  print_info("Wrote %d bytes, size is : %zu\n", bytes, size);
+  int bytes = write(clientfd, buffer, size);   
   free(buffer);
   return bytes;
 }
