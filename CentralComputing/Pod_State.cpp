@@ -14,7 +14,7 @@ void Pod_State::move_safety_setup() {
 	BEGIN_TRANSITION_MAP							/* Current state */
 		TRANSITION_MAP_ENTRY(ST_SAFETY_SETUP)		/* Pod_Startup */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safety Setup */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Safe Mode */
+		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Safe Mode */ 
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Functional test */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Launch ready */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight accel */
@@ -112,7 +112,7 @@ void Pod_State::brake() {
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Safe Mode */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Functional test */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Launch ready */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight accel */
+		TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)			/* Flight accel */ //CHANGED
 		TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)		/* Flight coast */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight brake */
 	END_TRANSITION_MAP(NULL)
