@@ -55,7 +55,7 @@ Arbitrary_Data acceleration_x_calculation(Arbitrary_Data raw) {
 
 void acceleration_x_parse(uint8_t * buffer, Arbitrary_Data raw) {
 	Acceleration_X_Raw * ax_raw = (Acceleration_X_Raw *)raw.data;
-	ax_raw->one = * (((uint16_t *)buffer) + ACCELERATION_X_OFFSET);
-	ax_raw->two =  * (((uint16_t *)buffer) + ACCELERATION_X_OFFSET+1);
-	ax_raw->three = * (((uint16_t *)buffer) + ACCELERATION_X_OFFSET+2);	
+	ax_raw->one = *(((uint16_t *)buffer) + ACCELERATION_X_OFFSET);
+	ax_raw->two =  *(((uint16_t *)buffer) + ACCELERATION_X_OFFSET+1);
+	ax_raw->three = *(((uint16_t *)buffer) + ACCELERATION_X_OFFSET+2);	
 }
