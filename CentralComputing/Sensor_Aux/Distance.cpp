@@ -8,7 +8,7 @@
 #define TAPE_OFFSET 0
 #define ENCODER_COUNT_OFFSET 0 //TODO get actual values for buffer reading, keep within another file
 
-using namespace std;
+using namespace std; 
 
 Arbitrary_Data distance_calculation(Arbitrary_Data raw) {
   Distance_Raw d_raw = *(Distance_Raw *)raw.data;                           // Convert the raw data into a useable struct
