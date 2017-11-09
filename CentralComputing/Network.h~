@@ -16,20 +16,24 @@
 
 
 enum Network_Command_ID {
-  //state transitions
-  TRANS_SAFETY_SETUP = 0,
-  TRANS_SAFE_MODE = 1,
-  TRANS_FUNCTIONAL_TEST = 2,
-  TRANS_LAUNCH_READY = 3,
-  LAUNCH = 4,
-  EMERGENCY_BRAKE = 5,
+  //state transitions 
+  NONE,
+	SAFETY_SETUP,
+	SAFE_MODE,
+	FUNCTIONAL_TEST,
+	LAUNCH_READY,
+	BRAKE,
+	EMERGENCY_BRAKE,
+  //propulsion 
+  LAUNCH 
+  //xmega handling
 };
 /*
   A network command is returned by read and parsed within Pod.cpp
  */
 struct Network_Command {
   //state transtitions
-  uint8_t id; //id is just a network command
+  Network_Command_ID id;
   uint8_t value;
 };
 

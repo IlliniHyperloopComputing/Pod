@@ -12,17 +12,18 @@ void write_loop(){
   while(running && active_connection){
     usleep(100000);
     int written = network->write_data();
-    active_connection = written != 1;
+    print_info("Written is %d\n", written);
+    active_connection = written != -1;
   }
   print_info("Writing failed, exiting write thread\n");
 }
 
 void read_loop(){
-  int read = 0; 
+  bool active_connection = true;
   Network_Command buffer;
-  while (running && read >= 0){
-    read = network->read_command(&buffer);
-    //Parse buffer and perform actions
+  while (running && active_connection){
+    int bytes_read = network->read_command(&buffer);
+    active_connection = bytes_read != -1;
   }
 }
 void network_loop(){
