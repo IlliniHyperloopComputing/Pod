@@ -5,6 +5,11 @@
 #include "Sensor_Aux/Ride_Height.h"
 #include "Sensor_Aux/Null.h"
 #include "Sensor_Aux/Acceleration_X.h"
+#include "Sensor_Aux/Acceleration_Y.h"
+#include "Sensor_Aux/Acceleration_Z.h"
+#include "Sensor_Aux/Current.h"
+#include "Sensor_Aux/Brake_Pressure.h"
+
 Sensor::Sensor(Xmega * xm) : xmega(xm){
   //setup maps
   raw_data_map = raw_data_map_t();
@@ -29,6 +34,26 @@ Sensor::Sensor(Xmega * xm) : xmega(xm){
 	raw_data_map[Data_ID::ACCELERATION_X] = *(Arbitrary_Data *) malloc(sizeof(Acceleration_X_Raw));
 	calculation_map[Data_ID::ACCELERATION_X] = acceleration_x_calculation;
 	parse_map[Data_ID::ACCELERATION_X] = acceleration_x_parse;
+
+	raw_data_map[Data_ID::ACCELERATION_Y] = *(Arbitrary_Data *) malloc(sizeof(Acceleration_Y_Raw));
+	calculation_map[Data_ID::ACCELERATION_Y] = no_calculation;
+	parse_map[Data_ID::ACCELERATION_Y] = acceleration_y_parse;
+
+	raw_data_map[Data_ID::ACCELERATION_Z] = *(Arbitrary_Data *) malloc(sizeof(Acceleration_Z_Raw));
+	calculation_map[Data_ID::ACCELERATION_Z] = no_calculation;
+	parse_map[Data_ID::ACCELERATION_Z] = acceleration_z_parse;
+
+	raw_data_map[Data_ID::CURRENT] = *(Arbitrary_Data *) malloc(sizeof(Current_Raw));
+	calculation_map[Data_ID::CURRENT] = no_calculation;
+	parse_map[Data_ID::CURRENT] = current_parse;
+
+	raw_data_map[Data_ID::BRAKE_PRESSURE] = *(Arbitrary_Data *) malloc(sizeof(Brake_Pressure_Raw));
+	calculation_map[Data_ID::BRAKE_PRESSURE] = no_calculation;
+	parse_map[Data_ID::BRAKE_PRESSURE] = brake_pressure_parse;
+
+
+
+
 }
 
 Data * Sensor::get_data(Data_ID id){
