@@ -10,9 +10,9 @@ volatile bool running = true;
 void write_loop(){
   bool active_connection = true;
   while(running && active_connection){
-    usleep(100000);
+    usleep(100000); //TODO: Change to actual value at some point
     int written = network->write_data();
-    print_info("Written is %d\n", written);
+    print_debug("Written is %d\n", written);
     active_connection = written != -1;
   }
 
