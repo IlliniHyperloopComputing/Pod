@@ -80,5 +80,6 @@ int main(){
   thread network_thread(network_loop);
   thread xmega_thread(xmega_loop);
   network_thread.join(); 
+  xmega_thread.join(); 
   return 0; 
 }
