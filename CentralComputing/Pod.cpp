@@ -15,7 +15,8 @@ void write_loop(){
     print_info("Written is %d\n", written);
     active_connection = written != -1;
   }
-  print_info("Writing failed, exiting write thread\n");
+
+  PRINT_ERRNO("Write Loop exiting.")
 }
 
 void read_loop(){
@@ -25,6 +26,8 @@ void read_loop(){
     int bytes_read = network->read_command(&buffer);
     active_connection = bytes_read != -1;
   }
+
+  PRINT_ERRNO("Read Loop exiting.")
 }
 void network_loop(){
   while(running){ 
@@ -38,8 +41,9 @@ void network_loop(){
       read_thread.join();
       write_thread.join();
       print_info("Client exited, looking for next client\n");
+
     } else {
-      print_info("Accept failed, abort\n");
+      PRINT_ERRNO("Accept failed, abort.")
       break;
     }
   }
