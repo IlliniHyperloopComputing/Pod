@@ -4,7 +4,7 @@ using namespace std;
 Sensor * sensor;
 Network * network;
 Xmega * xmega;
-bool running = true;
+volatile bool running = true;
 
 
 void write_loop(){
@@ -64,6 +64,7 @@ void int_handler(int signo){
 void pipe_handler(int signo){
 
 }
+
 int main(){
 
   // parsing, setup, etc
