@@ -6,13 +6,18 @@ import datetime
 
 # you might need to: pip install PySerial
 
-serial_port = '/dev/ttyACM0' # you will probably need to change this
-baud_rate = 9600
+# Arduino settings
+serial_port_arduino = '/dev/ttyACM0' # you will probably need to change this
+baud_rate_arduino = 9600
+
+# Omega settings
+serial_port_omega = '/dev/'
+
 output_txt_prefix = "rpm_test_"
 power = "899"
 
 try:
-    ser = serial.Serial(serial_port, baud_rate)
+    ser = serial.Serial(serial_port_arduino, baud_rate_arduino)
 except:
     print("Opening serial port failed, exiting")
     exit()
