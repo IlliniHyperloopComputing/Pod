@@ -8,7 +8,9 @@ import sys
 
 ctrl_c = 0
 def signal_handler(signal, frame):
-   ctrl_c = 1 
+   global ctrl_c
+   ctrl_c = 1
+   print("GET SIGNALED BOI\n")
 signal.signal(signal.SIGINT, signal_handler)
 
 # Arduino settings
@@ -38,6 +40,7 @@ output_file_name = output_txt_prefix + datetime.datetime.now().isoformat('T')
 output_file = open(output_file_name, "w+")
 print("Writing to file: %s" % output_file_name)
 print("Begin reading")
+print("time, power, RPM, Voltage, amps, force")
 
 power = "899"
 a_line = ""
@@ -54,18 +57,21 @@ while (ctrl_c == 0):
 
     #read from arduino
     if (ser_arduino in sl): 
-        a_line = ser_arduino.readline().replace('\n',' ').replace('\r','')
-        a_line = line.decode("utf-8")
+        a_line = ser_arduino.readline()
+        a_line = a_line.decode("utf-8",errors="replace").replace('\n',' ').replace('\r','')
 
     #read from omega
     if (ser_omega in sl): 
-        o_line = ser_omega.readline().replace('\n',' ').replace('\r','')
-        o_line = line.decode("utf-8")
+        o_line = ser_omega.readline()
+        o_line = o_line.decode("utf-8").replace('\n',' ').replace('\r','')
 
 
     stamp = time.time() - start
-    output_string = ("%.4f %d  %s  %s \n" % stamp, power, a_line, o_line) 
+    output_string = ("%.4f      %s      %s      %s \n" % (stamp, power, a_line, o_line))
     output_file.write(output_string)
+    print("                                                                  ", end='\r')
     print(output_string.replace('\n',''), end='\r')
-    
+ser_arduino.close()
+ser_omega.close()
+
 
