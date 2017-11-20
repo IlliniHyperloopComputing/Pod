@@ -5,7 +5,7 @@ Sensor * sensor;
 Network * network;
 Xmega * xmega;
 bool running = true;
-
+int accumulated_error = 0;
 
 void write_loop(){
   int written = 0;
@@ -44,6 +44,17 @@ void xmega_loop(){
     xmega->read();
     sensor->update_buffers();
   }
+}
+
+float pid_controller(int expected_rpm, int actual_rpm) {
+	int error = expected_rpm - actual_rpm;
+	float kp = 1;
+	float ki = 1;
+	
+	accumulated_error += error;
+
+	float delta = kp * error + ki * accumulated_error;
+	return delta;
 }
 
 int main(){
