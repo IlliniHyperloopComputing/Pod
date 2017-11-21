@@ -9,6 +9,7 @@ def is_number(s):
 
 '''
 Checks if a line is a valid statement
+Contains a lot of prints inorder to insure that users understand why parsing is failing
 '''
 def validateStatement(line, line_no):
 	# blank space is valid
