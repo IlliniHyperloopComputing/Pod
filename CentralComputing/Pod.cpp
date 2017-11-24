@@ -45,7 +45,7 @@ void network_loop(){
   }
 }
 
-void xmega_loop(){
+void logic_loop(){
   while(running){
     xmega->read();
     sensor->update_buffers();
@@ -73,7 +73,8 @@ int main(){
   network->start_server(host, port);
 
   thread network_thread(network_loop);
-  thread xmega_thread(xmega_loop);
+  thread logic_thread(logic_loop);
   network_thread.join(); 
+  logic_thread.join();
   return 0; 
 }
