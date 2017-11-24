@@ -12,15 +12,20 @@
   1. A Raw_Data_Struct that holds all the relevant raw data for that query
   2. A Calculated_Data_Struct that holds all the calculated data
   3. A Calculation Function to convert the relevant raw data to a "true" or "actual" value
-  4. A Parsing Function to pull the important data out of the data buffers and update the raw_data 
+  4. A Parsing Function to pull the important data out of the data buffers and update the raw_data
 
   Some Data_ID require:
-  A function to convert calculated data 
+  A function to convert calculated data
 **/
 enum Data_ID {
   DISTANCE,
   VELOCITY,
-  ACCELERATION,
+  ACCELERATION_X,
+	ACCELERATION_Y,
+	ACCELERATION_Z,
+	VOLTAGE,
+	CURRENT,
+	BRAKE_PRESSURE,
   TEMPERATURE,
   RIDE_HEIGHT,
   //etc etc
@@ -41,9 +46,9 @@ typedef std::map<Data_ID, Arbitrary_Data > raw_data_map_t;
 typedef std::map<Data_ID, parse_func_t> parse_map_t;
 
 
-class Sensor { 
+class Sensor {
   public:
-     
+
     /**
     * Default constructor
     **/
@@ -64,10 +69,10 @@ class Sensor {
     */
     Data get_data(Data_ID id);
 
-  private: 
+  private:
     #ifdef SIM
 
-    #else 
+    #else
       Xmega * xmega;
       calculation_map_t calculation_map;
       raw_data_map_t raw_data_map;
