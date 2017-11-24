@@ -5,12 +5,15 @@
 #include "Sensor.h"
 #include "Utils.h"
 #include <thread>
+#include <signal.h>
 #include <iostream>
 
 void write_loop();
 void read_loop();
 void network_loop();
-void xmega_loop();
+void logic_loop();
+void int_handler(int signo);
+void pipe_handler(int signo);
 
 
 #endif

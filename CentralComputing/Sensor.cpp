@@ -18,13 +18,13 @@ Sensor::Sensor(Xmega * xm) : xmega(xm){
 
 }
 
-Data * Sensor::get_data(Data_ID id){
+Data Sensor::get_data(Data_ID id){
   Arbitrary_Data raw_data = get_raw_data(id);
   calculation_func_t f = calculation_map[id];
   Arbitrary_Data calculated = f(raw_data);
-  Data * d = (Data *) malloc(sizeof(Data));
-  d->calculated = calculated;
-  d->raw = raw_data;
+  Data d;
+  d.calculated = calculated;
+  d.raw = raw_data;
   return d;
 
 }

@@ -1,7 +1,7 @@
 #ifndef MOTOR_H
 #define MOTOR_H
 #include "Xmega.h"
-
+#define IDEAL_RPM 5000 // Placeholder
 /**
 * The motor class controls the motors
 * Its public interface abstracts sending commands to the Xmega
@@ -11,7 +11,7 @@ class Motor {
     /**
     * Default constructor
     **/
-    Motor(Xmega * xmega);
+    Motor();
 
 
     /**
@@ -25,16 +25,26 @@ class Motor {
     void disable_motors();
 
     /**
-    * Sets the motor throttle to a value
-    * @param value a value from 0-1, 0 for no throttle, 1 for maximum
+    * Sets the target rpm
+    * @param rpm target
+    **/
+    void set_target_rpm(double rpm);
+
+    /**
+    * Sets throttle value
+    * 0 is minimum throttle, 100 is maximum
     **/
     void set_throttle(double value);
 
+
+
+
   private:
     #ifdef SIM
-
+      
     #else
-
+      //target rpm is the 
+      double target_rpm;  
     #endif
 };
 
