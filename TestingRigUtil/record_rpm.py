@@ -14,14 +14,14 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 # Arduino settings
-serial_port_arduino = '/dev/ttyACM0' # you will probably need to change this
+serial_port_arduino = '/dev/ttyACM3' # you will probably need to change this
 baud_rate_arduino = 9600
 
 # Omega settings
 serial_port_omega = '/dev/ttyUSB0'
 baud_rate_omega = 9600
 
-output_txt_prefix = "rpm_test_"
+output_txt_prefix = "raw_data/rpm_test_"
 
 try:
     ser_arduino = serial.Serial(serial_port_arduino, baud_rate_arduino)

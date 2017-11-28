@@ -7,18 +7,20 @@ import matplotlib.pyplot as plt
 
 #all input files must have a consistent number of columns in them
 
-distance = "0.5_inch"
-test_names = np.array(["test2", "test3", "test4"])
-file_names = np.array(["test2_raw.txt", "test3_raw.txt", "test4_raw.txt"])
-data_start = np.array([51.550 , 41.3751, 105.9])
-data_end   = np.array([103.0, 105.0, 195.0 ])
-volt_real  = np.array([50.1, 49.9, 49.7   ])
-volt_base  = np.array([900, 897, 895    ])
+input_directory = "raw_data/"
+output_directory = "output_data/"
+distance = "0.125_inch"
+test_names = np.array(["test18_0.125_steel", "test19_0.375", "test20_0.625", "test21_0.75", "test22_0.875","test23_1","test24_0.25_temp"])
+file_names = np.array(["test18_raw.txt", "test19_raw.txt", "test20_raw.txt", "test21_raw.txt", "test22_raw.txt", "test23_raw.txt", "test24_raw.txt"])
+data_start = np.array([44.7268, 110.0639, 95.9393, 49.4186, 24.1299, 32.8899, 57.3061])
+data_end   = np.array([90, 215, 215, 155, 170, 221, 204 ])
+volt_real  = np.array([49, 49, 49, 49, 49, 49, 49   ])
+volt_base  = np.array([885,885,885,885,885,885,885  ])
 amp_base = 30
 turns = 6
-rpm_cutoff = 1450.0
-force_lower_bandwidth = 5
-force_upper_bandwidth = 20
+rpm_cutoff = 3000.0
+force_lower_bandwidth = 0
+force_upper_bandwidth = 50
 
 all_times = []
 all_rpm   = []
@@ -41,7 +43,7 @@ wind_force = [list() for i in range(0, len(file_names))]
 
 #this loop will input all of the data
 for i in range(0, len(file_names)):
-    obj_in = pd.read_csv(file_names[i], header=None, delim_whitespace=True)
+    obj_in = pd.read_csv(input_directory + file_names[i], header=None, delim_whitespace=True)
     dd = obj_in.values
     start_idx = -1
     end_idx = -1
@@ -83,19 +85,25 @@ for i in range(0, len(file_names)):
 # I think this will be a good way of filterning down the values that matter, and from 
 # that we can create some trend lines
 
+def smlbkt(val):
+    tmp = int(val)
+    tmp = int(tmp / 20)
+    tmp = int(tmp * 20)
+    return (tmp + (20/2))
+
 #Force Buckets for "all" data
 bucket = {}
 #count, sum_rpm, sum_volts, sum_amps
 bucket[0.0] = (0, 0.0, 0.0, 0.0)
 for i in range(0, len(all_times)):
     if(all_rpm[i] < rpm_cutoff and all_force[i]>force_lower_bandwidth and all_force[i]<force_upper_bandwidth):
-        if(all_rpm[i] in bucket and all_rpm[i] != 0.0):
-            (a,b,c,d) = bucket[all_rpm[i]]
+        if(smlbkt(all_rpm[i]) in bucket and all_rpm[i] != 0.0):
+            (a,b,c,d) = bucket[smlbkt(all_rpm[i])]
 
             #bullshit to average things on the go
-            bucket[all_rpm[i]] = (a+1, (b+a*all_force[i])/(a+1), (c+a*all_volts[i])/(a+1), (d+a*all_amps[i])/(a+1))
+            bucket[smlbkt(all_rpm[i])] = (a+1, (b+a*all_force[i])/(a+1), (c+a*all_volts[i])/(a+1), (d+a*all_amps[i])/(a+1))
         else:
-            bucket[all_rpm[i]] = (1, all_force[i], all_volts[i], all_amps[i])
+            bucket[smlbkt(all_rpm[i])] = (1, all_force[i], all_volts[i], all_amps[i])
 
 #Force Buckets for each specific data set
 s_bucket = [dict() for i in range(0, len(file_names))]
@@ -103,22 +111,23 @@ for i in range(0, len(file_names)):
     for j in range(0, len(spec_times[i])):
         if(spec_rpm[i][j] < rpm_cutoff and spec_force[i][j]>force_lower_bandwidth and spec_force[i][j]<force_upper_bandwidth):
             #use the also as an opportunity to create a data set that is just windowed
+            wind_times[i].append(spec_times[i][j])
             wind_rpm[i].append(spec_rpm[i][j])
             wind_force[i].append(spec_force[i][j])
             wind_volts[i].append(spec_volts[i][j])
-            wind_amps[i].append(spec_volts[i][j])
+            wind_amps[i].append(spec_amps[i][j])
 
-            if(spec_rpm[i][j] in s_bucket[i] ):
-                (a,b,c,d) = s_bucket[i][spec_rpm[i][j]]
+            if(smlbkt(spec_rpm[i][j]) in s_bucket[i] ):
+                (a,b,c,d) = s_bucket[i][smlbkt(spec_rpm[i][j])]
 
-                s_bucket[i][spec_rpm[i][j]] = (a+1, (b+a*spec_force[i][j])/(a+1), (c+a*spec_volts[i][j])/(a+1), (d+a*spec_amps[i][j])/(a+1))
+                s_bucket[i][smlbkt(spec_rpm[i][j])] = (a+1, (b+a*spec_force[i][j])/(a+1), (c+a*spec_volts[i][j])/(a+1), (d+a*spec_amps[i][j])/(a+1))
             else:
-                s_bucket[i][spec_rpm[i][j]] = (1, spec_force[i][j], spec_volts[i][j], spec_amps[i][j])
+                s_bucket[i][smlbkt(spec_rpm[i][j])] = (1, spec_force[i][j], spec_volts[i][j], spec_amps[i][j])
 
     wind_rpm[i] = np.array(wind_rpm[i])
     wind_force[i] = np.array(wind_force[i])
     wind_volts[i] = np.array(wind_volts[i])
-    wind_amps[i] = np.array(wind_volts[i])
+    wind_amps[i] = np.array(wind_amps[i])
     
 
 #create lists of "all" data after it has been bucketed
@@ -158,77 +167,110 @@ for i in range(0, len(file_names)):
 ###
 
 # All avg data
-cols = ['Force (N)', 'RPM', 'Volts', 'Amps']
-combined_data = np.vstack((all_force_o, all_rpm_o,all_volts_o, all_amps_o)).T
-df_all = pd.DataFrame(combined_data, columns=cols) 
-df_all.to_csv(distance+"_all_avg.csv")
+cols = ['Force(N)', 'RPM', 'Volts', 'Amps']
+#combined_data = np.vstack((all_force_o, all_rpm_o,all_volts_o, all_amps_o)).T
+#df_all = pd.DataFrame(combined_data, columns=cols) 
+#df_all.to_csv(distance+"_all_avg.csv")
 
 # specific data avgs
 # and specific data windowed
 for i in range(0, len(file_names)):
     df_data = np.vstack((spec_force_o[i], spec_rpm_o[i], spec_volts_o[i], spec_amps_o[i])).T
     df_spec = pd.DataFrame(df_data, columns=cols)
-    df_spec.to_csv(distance+"_"+test_names[i]+"_avg.csv")
+    df_spec.to_csv(output_directory+test_names[i]+"_avg.csv")
 
-    df_data = np.vstack((wind_force[i], wind_rpm[i], wind_volts[i], wind_amps[i])).T
-    df_spec = pd.DataFrame(df_data, columns=cols)
-    df_spec.to_csv(distance+"_"+test_names[i]+"_wind.csv")
+    cols_wind = ['TimeStamp', 'Force(N)', 'RPM', 'Volts', 'Amps']
+    df_data = np.vstack((wind_times[i], wind_force[i], wind_rpm[i], wind_volts[i], wind_amps[i])).T
+    df_spec = pd.DataFrame(df_data, columns=cols_wind)
+    df_spec.to_csv(output_directory+test_names[i]+"_wind.csv")
 
 ###
 # Plotting 
 ###
-#plot general rpm vs force straight just windowed
+
 clr = ['b','g','r','c','m','y','k','w']
+#plot specific data sets vs time
+for i in range(0, len(file_names)):
+    f, (ax1, ax2, ax3) = plt.subplots(3,1, sharex=True)
+
+    ax1.plot(wind_times[i], wind_force[i], marker='o', color=clr[i], 
+                    linestyle="None", label=(test_names[i]))
+    ax1.set_title(test_names[i]+" Windowed Time vs Force(N)")
+    #ax1.xlabel("Time Stamp")
+    #ax1.ylabel("Force(N)")
+    ax1.legend()
+
+    ax2.plot(wind_times[i], wind_rpm[i], marker='o', color=clr[i], 
+                    linestyle="None", label=(test_names[i]))
+    ax2.set_title(test_names[i]+" Windowed Time vs RPM")
+    #ax2.xlabel("Time Stamp")
+    #ax2.ylabel("RPM")
+    ax2.legend()
+
+    ax3.plot(wind_times[i], wind_amps[i], marker='o', color=clr[i], 
+                    linestyle="None", label=(test_names[i]))
+    ax3.set_title(test_names[i]+" Windowed Time vs Amps")
+    #ax3.xlabel("Time Stamp")
+    #ax3.ylabel("Amps")
+    ax3.legend()
+    plt.show()
+    plt.figure()
+
+
+#plot general rpm vs force straight just windowed
 for i in range(0, len(file_names)):
     plt.plot(wind_rpm[i], wind_force[i], marker='o', color=clr[i], 
                     linestyle="None", label=(test_names[i]))
-    plt.title(distance+" "+test_names[i]+" Windowed RPM vs Force (N)")
+    plt.title(test_names[i]+" Windowed RPM vs Force (N)")
     plt.xlabel("RPM")
     plt.ylabel("Force (N)")
     plt.legend()
+    plt.show()
     plt.figure()
 
 #plot rpm vs force
 for i in range(0, len(file_names)):
     plt.plot(spec_rpm_o[i], spec_force_o[i], marker='o', color=clr[i], 
                     linestyle="None", label=(test_names[i]))
-    plt.title(distance+" "+test_names[i]+" Avg RPM vs Force (N)")
+    plt.title(test_names[i]+" Avg RPM vs Force (N)")
     plt.xlabel("RPM")
     plt.ylabel("Force")
     plt.legend()
+    plt.show()
     plt.figure()
 
 #plot rpm vs force specific and all on the same graph
-for i in range(0, len(file_names)):
-    plt.plot(spec_rpm_o[i], spec_force_o[i], marker='o', color=clr[i], 
-                    linestyle="None", label=(test_names[i]))
-plt.plot(all_rpm_o, all_force_o, marker='o', color="black", linestyle="None", label=("Avg Data"))
-plt.title(distance+" Avg RPM vs Force (N)")
-plt.xlabel("RPM")
-plt.ylabel("Force")
-plt.legend()
+#for i in range(0, len(file_names)):
+#    plt.plot(spec_rpm_o[i], spec_force_o[i], marker='o', color=clr[i], 
+#                    linestyle="None", label=(test_names[i]))
+#plt.plot(all_rpm_o, all_force_o, marker='o', color="black", linestyle="None", label=("Avg Data"))
+#plt.title(distance+" Avg RPM vs Force (N)")
+#plt.xlabel("RPM")
+#plt.ylabel("Force")
+#plt.legend()
+#plt.show()
 
-#plot rpm vs amps
-plt.figure()
-for i in range(0, len(file_names)):
-    plt.plot(spec_rpm_o[i], spec_amps_o[i], marker='o', color=clr[i], 
-                    linestyle="None", label=(test_names[i]))
-plt.plot(all_rpm_o, all_amps_o, marker='o', color="black", linestyle="None", label="Avg Data" )
-plt.title(distance+" Avg RPM vs Amps (A)")
-plt.xlabel("RPM")
-plt.ylabel("Amps (A)")
-plt.legend()
-
-#plot rpm vs power
-plt.figure()
-for i in range(0, len(file_names)):
-    plt.plot(spec_rpm_o[i], spec_amps_o[i] * spec_volts_o[i], marker='o', color=clr[i], 
-                    linestyle="None", label=(test_names[i]))
-plt.plot(all_rpm_o, all_amps_o * all_volts_o, marker='o', color="black", linestyle="None", label="Avg Data" )
-plt.title(distance+" Avg RPM vs Power (W)")
-plt.xlabel("RPM")
-plt.ylabel("Power (W)")
-plt.legend()
-plt.show()
+##plot rpm vs amps
+#plt.figure()
+#for i in range(0, len(file_names)):
+#    plt.plot(spec_rpm_o[i], spec_amps_o[i], marker='o', color=clr[i], 
+#                    linestyle="None", label=(test_names[i]))
+#plt.plot(all_rpm_o, all_amps_o, marker='o', color="black", linestyle="None", label="Avg Data" )
+#plt.title(distance+" Avg RPM vs Amps (A)")
+#plt.xlabel("RPM")
+#plt.ylabel("Amps (A)")
+#plt.legend()
+#
+##plot rpm vs power
+#plt.figure()
+#for i in range(0, len(file_names)):
+#    plt.plot(spec_rpm_o[i], spec_amps_o[i] * spec_volts_o[i], marker='o', color=clr[i], 
+#                    linestyle="None", label=(test_names[i]))
+#plt.plot(all_rpm_o, all_amps_o * all_volts_o, marker='o', color="black", linestyle="None", label="Avg Data" )
+#plt.title(distance+" Avg RPM vs Power (W)")
+#plt.xlabel("RPM")
+#plt.ylabel("Power (W)")
+#plt.legend()
+#plt.show()
 
 

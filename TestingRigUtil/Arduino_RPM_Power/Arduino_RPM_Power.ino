@@ -1,14 +1,20 @@
+#include <Wire.h>
+#include <Adafruit_ADS1015.h>
+#include <SPI.h>
+
+
 int current = LOW;
 unsigned long last;
 unsigned long rpm;
-uint16_t analog_voltage;
-uint16_t analog_amps;
+uint16_t analog_voltage = 8;
+uint16_t analog_amps = 8;
 int rpm_pin = 12;
 int voltage_pin = 0;
 int amps_pin = 1;
 int i = 0;
 int loops = 500;
 int debounce = 0;
+int pls = 8;
 void setup() {
   // put your setup code here, to run once:
   Serial.begin(9600);
@@ -27,24 +33,29 @@ void loop() {
     unsigned long delta = now - last;
     last = now;
     rpm = 60000000 / delta;
-    debounce = 0;
   } else if(val == LOW && current == HIGH){
     //falling edge
     current = LOW;
   }
-  debounce++;
 
   //Sample power at same rate that data is sent
   //Just sample at a different time
-  if(i == loops/2){
+  if(i == loops/4){
     analog_voltage = analogRead(voltage_pin);
+    
+  }
+  if(i == loops/2){
     analog_amps = analogRead(amps_pin);
   }
 
   i++;
   if(i == loops){
+    pls++;
     Serial.print(rpm);
-    Serial.println("  ");
+    Serial.print(" ");
+    Serial.print(analog_voltage);
+    Serial.print(" ");
+    Serial.println(analog_amps);
     i = 0;
   }
 }
