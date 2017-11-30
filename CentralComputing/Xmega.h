@@ -2,25 +2,20 @@
 #define XMEGA_h
 
 #include "Spi.h"
+#include <queue>
 
 enum Xmega_Command {
   // TODO list all possible commands
-  X_PLACEHOLDER
+  X_NONE,
+  X_PLACEHOLDER,
 };
 
 class Xmega {
   public:
     /**
     * Sets up connection to XMEGA
-    * Creates internal data buffers
     **/
-    Xmega();
-
-    /**
-    * Reads data from Spi
-    * @return a buffer representing all the most recent sensor data
-    **/
-    uint8_t * read();
+    Xmega(Spi * s);
 
     /**
     * Writes a command to the Xmegas
@@ -30,17 +25,21 @@ class Xmega {
     void write(Xmega_Command command);
 
 
+    /**
+    * Updates SPI and sends a command from the command queue
+    * @return the command to be run
+    **/ 
+    Xmega_Command transfer();
+
+
   private:
     #ifdef SIM
 
     #else
 
       Spi * spi;
-      /**
-      * updates the internal buffers and sends the most recent command
-      */
-      void update();
-      uint8_t * buffer;
+      std::queue<Xmega_Command> q;
+
     #endif
     
 };

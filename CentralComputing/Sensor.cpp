@@ -10,7 +10,7 @@
 #include "Sensor_Aux/Current.h"
 #include "Sensor_Aux/Brake_Pressure.h"
 
-Sensor::Sensor(Xmega * xm) : xmega(xm){
+Sensor::Sensor(Spi * s) : spi(s){
   //setup maps
   raw_data_map = raw_data_map_t();
   calculation_map = calculation_map_t();

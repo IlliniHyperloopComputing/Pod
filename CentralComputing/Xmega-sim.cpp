@@ -1,12 +1,8 @@
 #ifdef SIM
 #include "Xmega.h"
 
-Xmega::Xmega() {
+Xmega::Xmega(Spi * s) {
 
-}
-
-uint8_t * Xmega::read() {
-  return 0;
 }
 
 void Xmega::write(Xmega_Command command) {
