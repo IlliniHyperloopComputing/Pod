@@ -20,5 +20,7 @@ Xmega_Command Xmega::transfer() {
   }
   //TODO construct transfer object, call spi->transfer(transfer)
 
+  return command;
+
 }
 #endif

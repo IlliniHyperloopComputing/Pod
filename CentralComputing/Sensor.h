@@ -8,6 +8,36 @@
 #include <mutex>
 #include <vector>
 
+#define XMEGA1 0
+#define XMEGA2 1
+
+enum Xmega_1_Indices {
+  X_ACCELERATION_INDEX_1 = 0,
+  X_ACCELERATION_INDEX_2 = 1,
+  X_ACCELERATION_INDEX_3 = 2,
+  BRAKE_PRESSURE_INDEX = 3,
+  ENCODER_RPM_INDEX = 4,
+  ENCODER_COUNT_INDEX = 5,
+};
+
+enum Xmega_2_Indices {
+  Y_ACCELERATION_INDEX = 0,
+  Z_ACCELERATION_INDEX = 1,
+  RIDE_HEIGHT_INDEX_1 = 2,
+  RIDE_HEIGHT_INDEX_2 = 3,
+  RIDE_HEIGHT_INDEX_3 = 4,
+  BATTERY_CELL_INDEX_1 = 5,
+  BATTERY_CELL_INDEX_2 = 6,
+  THERMOCOUPLE_INDEX_1 = 7,
+  THERMOCOUPLE_INDEX_2 = 8,
+  THERMOCOUPLE_INDEX_3 = 9,
+  THERMOCOUPLE_INDEX_4 = 10,
+  THERMOCOUPLE_INDEX_5 = 11,
+  CURRENT_INDEX_1 = 12,
+  CURRENT_INDEX_2 = 13,
+  TAPE_COUNT_INDEX = 14
+};
+
 /**Every Data_ID needs:
   1. A Raw_Data_Struct that holds all the relevant raw data for that query
   2. A Calculated_Data_Struct that holds all the calculated data
@@ -36,8 +66,8 @@ enum Data_ID {
 
 // A calculation function takes in a pointer to raw data and converts it to real units
 typedef Arbitrary_Data (*calculation_func_t)(Arbitrary_Data);
-// A parse function takes in a pointer to a buffer, and memcpys the relevant data onto an existing arbitrary data
-typedef void (*parse_func_t)(uint8_t * buffer, Arbitrary_Data data);
+// A parse function takes in a spi reference, and stores necessary data within a Raw_Data_Struct 
+typedef void (*parse_func_t)(Spi * spi, Arbitrary_Data data);
 // Calculation  map takes in a Data_ID and gives a calculation function
 typedef std::map<Data_ID, calculation_func_t> calculation_map_t;
 // Raw data map maps a data_id to some raw_data *
@@ -81,7 +111,6 @@ class Sensor {
 
       Arbitrary_Data get_raw_data(Data_ID id);
       std::vector<Data_ID> ids;
-      uint8_t * data_buffer;
 
     #endif
 

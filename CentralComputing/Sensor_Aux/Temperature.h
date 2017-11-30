@@ -1,6 +1,7 @@
 #ifndef TEMPERATURE_H
 #define TEMPERATURE_H
 #include "../Data.h"
+#include "../Sensor.h"
 
 struct Temperature_Raw {
   uint8_t brake_temp;
@@ -10,6 +11,6 @@ struct Temperature_Raw {
   uint8_t wheel_temp;
 };
 
-void temperature_parse(uint8_t * buffer, Arbitrary_Data raw);
+void temperature_parse(Spi * spi , Arbitrary_Data raw);
 
 #endif
