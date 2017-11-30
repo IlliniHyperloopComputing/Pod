@@ -20,6 +20,9 @@ enum Network_Command_ID {
   TRANS_LAUNCH_READY = 3,
   LAUNCH = 4,
   EMERGENCY_BRAKE = 5,
+  ENABLE_MOTOR = 6,
+  DISABLE_MOTOR = 7,
+  SET_MOTOR_SPEED = 8
 };
 
 /**
