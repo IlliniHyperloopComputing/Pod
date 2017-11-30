@@ -2,7 +2,7 @@
 #include <Adafruit_ADS1015.h>
 #include <SPI.h>
 
-
+#define loops 500
 int current = LOW;
 unsigned long last;
 unsigned long rpm;
@@ -12,14 +12,12 @@ int rpm_pin = 12;
 int voltage_pin = 0;
 int amps_pin = 1;
 int i = 0;
-int loops = 500;
 int debounce = 0;
-int pls = 8;
+
 void setup() {
-  // put your setup code here, to run once:
-  Serial.begin(9600);
   last = micros();
   pinMode(rpm_pin, INPUT);
+  Serial.begin(115200);  
 }
 
 
@@ -50,7 +48,6 @@ void loop() {
 
   i++;
   if(i == loops){
-    pls++;
     Serial.print(rpm);
     Serial.print(" ");
     Serial.print(analog_voltage);

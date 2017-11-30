@@ -14,8 +14,8 @@ def signal_handler(signal, frame):
 signal.signal(signal.SIGINT, signal_handler)
 
 # Arduino settings
-serial_port_arduino = '/dev/ttyACM3' # you will probably need to change this
-baud_rate_arduino = 9600
+serial_port_arduino = '/dev/ttyACM0' # you will probably need to change this
+baud_rate_arduino = 115200
 
 # Omega settings
 serial_port_omega = '/dev/ttyUSB0'
@@ -46,6 +46,7 @@ power = "899"
 a_line = ""
 o_line = ""
 
+new_data = False
 start = time.time()
 while (ctrl_c == 0):
     sl = select.select([sys.stdin, ser_arduino, ser_omega,], [], [], 0.0)[0]
@@ -54,23 +55,28 @@ while (ctrl_c == 0):
     if (sys.stdin in sl):
         power = sys.stdin.readline().rstrip()
         print("Setting power to " + power)
+        new_data = True
 
     #read from arduino
     if (ser_arduino in sl): 
         a_line = ser_arduino.readline()
         a_line = a_line.decode("utf-8",errors="replace").replace('\n',' ').replace('\r','')
+        new_data = True
 
     #read from omega
     if (ser_omega in sl): 
         o_line = ser_omega.readline()
         o_line = o_line.decode("utf-8").replace('\n',' ').replace('\r','')
+        new_data = True
 
 
-    stamp = time.time() - start
-    output_string = ("%.4f      %s      %s      %s \n" % (stamp, power, a_line, o_line))
-    output_file.write(output_string)
-    print("                                                                  ", end='\r')
-    print(output_string.replace('\n',''), end='\r')
+    if (new_data):
+        stamp = time.time() - start
+        output_string = ("%.4f      %s      %s      %s \n" % (stamp, power, a_line, o_line))
+        output_file.write(output_string)
+        print("                                                                  ", end='\r')
+        print(output_string.replace('\n',''), end='\r')
+    new_data = False
 ser_arduino.close()
 ser_omega.close()
 

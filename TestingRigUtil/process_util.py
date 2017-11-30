@@ -10,12 +10,14 @@ import matplotlib.pyplot as plt
 input_directory = "raw_data/"
 output_directory = "output_data/"
 distance = "0.125_inch"
-test_names = np.array(["test18_0.125_steel", "test19_0.375", "test20_0.625", "test21_0.75", "test22_0.875","test23_1","test24_0.25_temp"])
-file_names = np.array(["test18_raw.txt", "test19_raw.txt", "test20_raw.txt", "test21_raw.txt", "test22_raw.txt", "test23_raw.txt", "test24_raw.txt"])
-data_start = np.array([44.7268, 110.0639, 95.9393, 49.4186, 24.1299, 32.8899, 57.3061])
-data_end   = np.array([90, 215, 215, 155, 170, 221, 204 ])
-volt_real  = np.array([49, 49, 49, 49, 49, 49, 49   ])
-volt_base  = np.array([885,885,885,885,885,885,885  ])
+test_names = np.array(["test25_0.25", "test26_0.375"])
+                        #"test18_0.125_steel", "test19_0.375", "test20_0.625", "test21_0.75", "test22_0.875","test23_1","test24_0.25_temp"])
+file_names = np.array(["test25_raw.txt", "test26_raw.txt"])
+                        #"test18_raw.txt", "test19_raw.txt", "test20_raw.txt", "test21_raw.txt", "test22_raw.txt", "test23_raw.txt", "test24_raw.txt"])
+data_start = np.array([57.9013, 38.0699])#44.7268, 110.0639, 95.9393, 49.4186, 24.1299, 32.8899, 57.3061])
+data_end   = np.array([140    , 92 ])#90     , 190     , 215    , 155    , 170    , 221    , 204    ])
+volt_real  = np.array([49     , 49 ])#49     , 49      ,  49    ,  49    ,  49    ,  49    , 49     ])
+volt_base  = np.array([885    , 855])#885    , 885     , 885    , 885    , 885    , 885    , 885    ])
 amp_base = 30
 turns = 6
 rpm_cutoff = 3000.0
@@ -198,21 +200,21 @@ for i in range(0, len(file_names)):
     ax1.set_title(test_names[i]+" Windowed Time vs Force(N)")
     #ax1.xlabel("Time Stamp")
     #ax1.ylabel("Force(N)")
-    ax1.legend()
+    ax1.legend(loc='best')
 
     ax2.plot(wind_times[i], wind_rpm[i], marker='o', color=clr[i], 
                     linestyle="None", label=(test_names[i]))
     ax2.set_title(test_names[i]+" Windowed Time vs RPM")
     #ax2.xlabel("Time Stamp")
     #ax2.ylabel("RPM")
-    ax2.legend()
+    ax2.legend(loc='best')
 
     ax3.plot(wind_times[i], wind_amps[i], marker='o', color=clr[i], 
                     linestyle="None", label=(test_names[i]))
     ax3.set_title(test_names[i]+" Windowed Time vs Amps")
     #ax3.xlabel("Time Stamp")
     #ax3.ylabel("Amps")
-    ax3.legend()
+    ax3.legend(loc='best')
     plt.show()
     plt.figure()
 
@@ -224,7 +226,7 @@ for i in range(0, len(file_names)):
     plt.title(test_names[i]+" Windowed RPM vs Force (N)")
     plt.xlabel("RPM")
     plt.ylabel("Force (N)")
-    plt.legend()
+    plt.legend(loc='best')
     plt.show()
     plt.figure()
 
@@ -235,7 +237,7 @@ for i in range(0, len(file_names)):
     plt.title(test_names[i]+" Avg RPM vs Force (N)")
     plt.xlabel("RPM")
     plt.ylabel("Force")
-    plt.legend()
+    plt.legend(loc='best')
     plt.show()
     plt.figure()
 
@@ -247,7 +249,7 @@ for i in range(0, len(file_names)):
 #plt.title(distance+" Avg RPM vs Force (N)")
 #plt.xlabel("RPM")
 #plt.ylabel("Force")
-#plt.legend()
+#plt.legend(loc='best')
 #plt.show()
 
 ##plot rpm vs amps
@@ -259,7 +261,7 @@ for i in range(0, len(file_names)):
 #plt.title(distance+" Avg RPM vs Amps (A)")
 #plt.xlabel("RPM")
 #plt.ylabel("Amps (A)")
-#plt.legend()
+#plt.legend(loc='best')
 #
 ##plot rpm vs power
 #plt.figure()
