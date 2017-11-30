@@ -18,18 +18,18 @@
   A function to convert calculated data
 **/
 enum Data_ID {
-  DISTANCE,
-  VELOCITY,
-  ACCELERATION_X,
-	ACCELERATION_Y,
-	ACCELERATION_Z,
-	VOLTAGE,
-	CURRENT,
-	BRAKE_PRESSURE,
-  TEMPERATURE,
-  RIDE_HEIGHT,
+  DISTANCE = 0,
+  VELOCITY = 1,
+  ACCELERATION_X = 2,
+	ACCELERATION_Y = 3,
+	ACCELERATION_Z = 4,
+	VOLTAGE = 5,
+	CURRENT = 6,
+	BRAKE_PRESSURE = 7,
+  TEMPERATURE = 8,
+  RIDE_HEIGHT = 9,
   //etc etc
-  NULL_ID
+  STATE_ID = 10 // State ID is an invalid ID to request, query the state machine instead
 };
 
 //You can think of Arbitrary Data as a uint8_t * in most circumstances, it just also gives a size
