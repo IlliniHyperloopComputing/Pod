@@ -1,6 +1,8 @@
 #include "Pod.h"
+#include "Spi.h"
 
 using namespace std;
+Spi * spi;
 Sensor * sensor;
 Network * network;
 Xmega * xmega;
@@ -51,7 +53,6 @@ void network_loop(){
 
 void logic_loop(){
   while(running){
-    xmega->read();
     sensor->update_buffers();
   }
 }
@@ -70,8 +71,14 @@ int main(){
   // parsing, setup, etc
   signal(SIGINT, int_handler);
   signal(SIGPIPE, pipe_handler);
-  xmega = new Xmega(); 
-  sensor = new Sensor(xmega);
+  spi = NULL;
+  #ifndef SIM
+  // setup SPI 
+  #endif
+ 
+
+  xmega = new Xmega(spi); 
+  sensor = new Sensor(spi);
   network = new Network(sensor);
   const char* host = "127.0.0.1";
   const char* port = "8800";

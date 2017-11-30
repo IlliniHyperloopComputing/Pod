@@ -52,7 +52,7 @@ class Sensor {
     /**
     * Default constructor
     **/
-    Sensor(Xmega * xmega);
+    Sensor(Spi * s);
 
     /**
     * Updates the buffers with the most recent data
@@ -73,7 +73,7 @@ class Sensor {
     #ifdef SIM
 
     #else
-      Xmega * xmega;
+      Spi * spi;
       calculation_map_t calculation_map;
       raw_data_map_t raw_data_map;
       parse_map_t parse_map;
