@@ -1,6 +1,7 @@
 @ t==0
-	drag = .4
-	%drag = 0.001
+	drag=.4
+	%drag=0.001
 @ t==4
-	drag = 0
-	%drag = 0
+	drag=0
+	%drag=0
+	a=0

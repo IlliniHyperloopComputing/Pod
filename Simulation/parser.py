@@ -93,6 +93,7 @@ def parseFromFile(fileName):
 		
 		# check if start of conditional
 		if (line[0] == '@'):
+			
 			structure.append(
 				{
 					"cond" : line[1:],
