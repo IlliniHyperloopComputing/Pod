@@ -83,7 +83,7 @@ void Sensor::update_buffers() {
   for(Data_ID id : ids){
     parse_func_t fun = parse_map[id];
     Arbitrary_Data raw = raw_data_map[id];
-    fun(data_buffer, raw);
+    fun(spi, raw);
   }
 }
 

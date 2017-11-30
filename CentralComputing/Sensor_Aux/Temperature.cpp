@@ -4,11 +4,12 @@
 
 using namespace std;
 
-void temperature_parse(uint8_t * buffer, Arbitrary_Data raw) {
+void temperature_parse(Spi * spi, Arbitrary_Data raw) {
   Temperature_Raw * t_raw = (Temperature_Raw *)raw.data;
-  t_raw->brake_temp = *(buffer + TEMPERATURE_OFFSET);
-  t_raw->battery_temp = *(buffer + TEMPERATURE_OFFSET + 1);
-  t_raw->cpu_temp = *(buffer + TEMPERATURE_OFFSET + 2);
-  t_raw->motor_temp = *(buffer + TEMPERATURE_OFFSET + 3);
-  t_raw->wheel_temp = *(buffer + TEMPERATURE_OFFSET + 4);
+  t_raw->brake_temp = spi->get_data(XMEGA2, THERMOCOUPLE_INDEX_1);
+  t_raw->battery_temp = spi->get_data(XMEGA2, THERMOCOUPLE_INDEX_2);
+  t_raw->cpu_temp = spi->get_data(XMEGA2, THERMOCOUPLE_INDEX_3);
+  t_raw->motor_temp = spi->get_data(XMEGA2, THERMOCOUPLE_INDEX_4);
+  t_raw->wheel_temp = spi->get_data(XMEGA2, THERMOCOUPLE_INDEX_5);
+
 }
