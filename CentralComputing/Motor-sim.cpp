@@ -1,7 +1,7 @@
 #ifdef SIM
 #include "Motor.h"
 
-Motor::Motor(Xmega * xmega) {
+Motor::Motor() {
 
 }
 

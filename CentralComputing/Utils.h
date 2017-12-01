@@ -23,4 +23,20 @@ void print_debug(const char * format, ...);
 **/
 void print_test(const char * format, ...);
 
+/**
+* Wrapper for printf, always prints
+**/
+void print_info(const char * format, ...);
+
+/**
+* Prints errno, with user defined message prepended
+**/
+#define PRINT_ERRNO(S) \
+  {\
+    char err_buf[500];\
+    char* err_str = strerror_r(errno, err_buf, (size_t)500);\
+    print_info("%s errno: %s\n",S, err_str);\
+  }
+
+ssize_t write_all_to_socket(int socket, uint8_t * buffer, size_t count);
 #endif // UTILS_H

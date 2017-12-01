@@ -4,72 +4,111 @@ using namespace std;
 Sensor * sensor;
 Network * network;
 Xmega * xmega;
+
 bool running = true;
 int accumulated_error = 0;
+volatile bool running = true;
+long long last_poll = -1;
+
 
 void write_loop(){
-  int written = 0;
-  while(running && written >= 0){
-    written = network->write_data();
+  bool active_connection = true;
+  while(running && active_connection){
+    usleep(100000); //TODO: Change to actual value at some point
+    int written = network->write_data();
+    print_debug("Written is %d\n", written);
+    active_connection = written != -1;
   }
+
+  PRINT_ERRNO("Write Loop exiting.")
 }
 
 void read_loop(){
-  int read = 0; 
+  bool active_connection = true;
   Network_Command buffer;
-  while (running && read >= 0){
-    read = network->read_command(&buffer);
-    //Parse buffer and perform actions
+  while (running && active_connection){
+    int bytes_read = network->read_command(&buffer);
+    active_connection = bytes_read != -1;
   }
+
+  PRINT_ERRNO("Read Loop exiting.")
 }
 void network_loop(){
-  while(running){ 
-    int clientfd = network->accept(); 
+  while(running){
+    int clientfd = network->accept_client();
+    print_info("Client fd is: %d\n", clientfd);
     if(clientfd > 0){
+      print_info("Starting network threads\n");
       thread read_thread(read_loop);
       thread write_thread(write_loop);
 
       read_thread.join();
       write_thread.join();
+      print_info("Client exited, looking for next client\n");
+
     } else {
-      cout << "Accept failed, aborting" << endl; 
+      PRINT_ERRNO("Accept failed, abort.")
       break;
     }
-
   }
 }
 
-void xmega_loop(){
+void logic_loop(){
   while(running){
     xmega->read();
     sensor->update_buffers();
   }
 }
 
-float pid_controller(int expected_rpm, int actual_rpm) {
-	int error = expected_rpm - actual_rpm;
+float pid_controller(int actual_rpm, float linear_velocity) {
+	long long now = get_elapsed_time();
+	long long delta = 0;
+	
+	if (last_poll > 0) {
+		delta = now - last_poll;
+	}
+
+	//rpm_a * circumference / 60
+	float tangential_vel = actual_rpm * 1.256637061 / 60;
+	float rel_tangential_vel = tangential_vel - linear_velocity;
+	float rel_rpm = rel_tangential_vel * 60 / 1.256637061;
+	//1000 because thats the point of diminishing returns
+	float error = rel_rpm - 1000;
 	float kp = 1;
 	float ki = 1;
+
+	accumulated_error += error * delta;
+	float new_rpm = kp * error + ki * accumulated_error;
 	
-	accumulated_error += error * ;
-	//TODO account for time in accumulated error
-	float delta = kp * error + ki * accumulated_error;
-	return delta;
+	//clamp between 0 and 1 for motor
+	last_poll = now;
+	return clamp(new_rpm,0.0,1.0);
+}
+
+void int_handler(int signo){
+  network->close_server();
+  running = false;
+}
+
+void pipe_handler(int signo){
+
 }
 
 int main(){
 
   // parsing, setup, etc
-  xmega = new Xmega(); 
+  signal(SIGINT, int_handler);
+  signal(SIGPIPE, pipe_handler);
+  xmega = new Xmega();
   sensor = new Sensor(xmega);
   network = new Network(sensor);
   const char* host = "127.0.0.1";
-  const char* port = "8080";
+  const char* port = "8800";
   network->start_server(host, port);
 
   thread network_thread(network_loop);
-  thread xmega_thread(xmega_loop);
-  network_thread.join(); 
+  thread logic_thread(logic_loop);
+  network_thread.join();
+  logic_thread.join();
   return 0;
-  
 }
