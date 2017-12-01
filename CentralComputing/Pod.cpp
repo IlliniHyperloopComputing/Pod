@@ -51,8 +51,8 @@ float pid_controller(int expected_rpm, int actual_rpm) {
 	float kp = 1;
 	float ki = 1;
 	
-	accumulated_error += error;
-
+	accumulated_error += error * ;
+	//TODO account for time in accumulated error
 	float delta = kp * error + ki * accumulated_error;
 	return delta;
 }
