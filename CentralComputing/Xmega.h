@@ -1,5 +1,5 @@
 #ifndef XMEGA_H
-#define XMEGA_h
+#define XMEGA_H
 
 #include "Spi.h"
 #include <queue>
@@ -9,6 +9,7 @@ enum Xmega_Command {
   X_NONE,
   X_PLACEHOLDER,
 };
+
 
 class Xmega {
   public:
@@ -31,6 +32,10 @@ class Xmega {
     **/ 
     Xmega_Command transfer();
 
+    std::string x_command_to_string(Xmega_Command c) {
+       std::string x_strings[] = {"None", "Placeholder"};
+       return x_strings[c];
+    };
 
   private:
     #ifdef SIM

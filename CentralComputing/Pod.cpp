@@ -1,12 +1,15 @@
 #include "Pod.h"
 #include "Spi.h"
 
+#define timestep 10000
+
 using namespace std;
 Spi * spi;
 Sensor * sensor;
 Network * network;
 Xmega * xmega;
 volatile bool running = true;
+long long last_poll; //last time beaglebone polled XMEGA
 
 
 void write_loop(){
@@ -53,7 +56,17 @@ void network_loop(){
 
 void logic_loop(){
   while(running){
-    sensor->update_buffers();
+    long long now = get_elapsed_time(); 
+    long long delta = now - last_poll;
+    if(delta > timestep){
+      Xmega_Command command = xmega->transfer();
+      if(command != X_NONE){
+        print_info("Command %s sent at time %d\n", xmega->x_command_to_string(command), now);
+      }
+      sensor->update_buffers();
+      // TODO PID loop
+
+    }
   }
 }
 
@@ -90,3 +103,4 @@ int main(){
   logic_thread.join();
   return 0; 
 }
+
