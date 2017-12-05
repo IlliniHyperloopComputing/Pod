@@ -21,32 +21,37 @@ Sensor::Sensor(Spi * s) : spi(s){
   calculation_map[Data_ID::DISTANCE] = distance_calculation;
   parse_map[Data_ID::DISTANCE] = distance_parse;
 
-    //Temperature
+  //Temperature
   raw_data_map[Data_ID::TEMPERATURE] = *(Arbitrary_Data * ) malloc(sizeof(Temperature_Raw));
   calculation_map[Data_ID::TEMPERATURE] = no_calculation;
   parse_map[Data_ID::TEMPERATURE] = temperature_parse;
 
-    //Ride Height
+  //Ride Height
   raw_data_map[Data_ID::RIDE_HEIGHT] = *(Arbitrary_Data * ) malloc(sizeof(Ride_Height_Raw));
   calculation_map[Data_ID::RIDE_HEIGHT] = no_calculation;
   parse_map[Data_ID::RIDE_HEIGHT] = ride_height_parse;
 
+  //AccelerationX
 	raw_data_map[Data_ID::ACCELERATION_X] = *(Arbitrary_Data *) malloc(sizeof(Acceleration_X_Raw));
 	calculation_map[Data_ID::ACCELERATION_X] = acceleration_x_calculation;
 	parse_map[Data_ID::ACCELERATION_X] = acceleration_x_parse;
 
+  //AccelerationY
 	raw_data_map[Data_ID::ACCELERATION_Y] = *(Arbitrary_Data *) malloc(sizeof(Acceleration_Y_Raw));
 	calculation_map[Data_ID::ACCELERATION_Y] = no_calculation;
 	parse_map[Data_ID::ACCELERATION_Y] = acceleration_y_parse;
 
+  //AccelerationZ
 	raw_data_map[Data_ID::ACCELERATION_Z] = *(Arbitrary_Data *) malloc(sizeof(Acceleration_Z_Raw));
 	calculation_map[Data_ID::ACCELERATION_Z] = no_calculation;
 	parse_map[Data_ID::ACCELERATION_Z] = acceleration_z_parse;
 
+  //Current 
 	raw_data_map[Data_ID::CURRENT] = *(Arbitrary_Data *) malloc(sizeof(Current_Raw));
 	calculation_map[Data_ID::CURRENT] = no_calculation;
 	parse_map[Data_ID::CURRENT] = current_parse;
 
+  //Brake Pressure
 	raw_data_map[Data_ID::BRAKE_PRESSURE] = *(Arbitrary_Data *) malloc(sizeof(Brake_Pressure_Raw));
 	calculation_map[Data_ID::BRAKE_PRESSURE] = no_calculation;
 	parse_map[Data_ID::BRAKE_PRESSURE] = brake_pressure_parse;

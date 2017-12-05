@@ -67,6 +67,9 @@ void logic_loop(){
       // TODO PID loop
 
     }
+    //TODO: Change to actual value at some point
+    
+    usleep(100);//Need to yield, otherwise this will block other threads
   }
 }
 
