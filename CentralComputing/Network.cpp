@@ -75,7 +75,7 @@ int Network::write_data() {
   size_t size = 0; 
   uint8_t * buffer = (uint8_t *) malloc(capacity);
 
-  for(size_t i = 0; i < Data_ID::NULL_ID; i++){
+  for(size_t i = 0; i < Data_ID::STATE_ID; i++){
     Data_ID id = (Data_ID) i;
     Data d = sensor->get_data(id);  
     size_t delta = 1 + d.raw.size + d.calculated.size; //1 byte for the data_id
