@@ -1,10 +1,10 @@
 #ifndef VELOCITY_h
 #define VELOCITY_h
 #include "../Data.h"
+#include "../Sensor.h"
 
-struct Velocity_Raw{
-	
-	int rpm;
+struct Velocity_Raw{	
+	uint32_t rpm;
 };
 
 struct Velocity_Calc{
@@ -12,7 +12,7 @@ struct Velocity_Calc{
 };
 
 Arbitrary_Data velocity_calculation(Arbitrary_Data raw);
-void velocity_parse(uint8_t * buffer, Arbitrary_Data raw);
+void velocity_parse(Spi * spi, Arbitrary_Data raw);
 
 #endif // VELOCITY_H
 
