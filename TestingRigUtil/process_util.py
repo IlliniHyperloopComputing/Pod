@@ -9,32 +9,39 @@ import matplotlib.pyplot as plt
 
 input_directory = "raw_data/"
 output_directory = "output_data/"
-distance = "0.125_inch"
-test_names = np.array(["test25_0.25", "test26_0.375"])
-                        #"test18_0.125_steel", "test19_0.375", "test20_0.625", "test21_0.75", "test22_0.875","test23_1","test24_0.25_temp"])
-file_names = np.array(["test25_raw.txt", "test26_raw.txt"])
-                        #"test18_raw.txt", "test19_raw.txt", "test20_raw.txt", "test21_raw.txt", "test22_raw.txt", "test23_raw.txt", "test24_raw.txt"])
-data_start = np.array([57.9013, 38.0699])#44.7268, 110.0639, 95.9393, 49.4186, 24.1299, 32.8899, 57.3061])
-data_end   = np.array([140    , 92 ])#90     , 190     , 215    , 155    , 170    , 221    , 204    ])
-volt_real  = np.array([49     , 49 ])#49     , 49      ,  49    ,  49    ,  49    ,  49    , 49     ])
-volt_base  = np.array([885    , 855])#885    , 885     , 885    , 885    , 885    , 885    , 885    ])
-amp_base = 30
+distance = ""
+test_names = np.array(["test29_1", "test30_0.75", "test31_0.75", "test32_0.25", "test33_0.125"])
+#"test25_0.25", "test26_0.375", "test18_0.125_steel", "test19_0.375", "test20_0.625", "test21_0.75", "test22_0.875","test23_1","test24_0.25_temp"])
+file_names = np.array(["test29_raw.txt", "test30_raw.txt", "test31_raw.txt", "test32_raw.txt", "test33_raw.txt"])
+#"test25_raw.txt", "test26_raw.txt", "test18_raw.txt", "test19_raw.txt", "test20_raw.txt", "test21_raw.txt", "test22_raw.txt", "test23_raw.txt", "test24_raw.txt"])
+data_start = np.array([32.1625, 35.8220, 59.0746, 44.0817, 68.4849])
+#57.9013, 38.0699, 44.7268, 110.0639, 95.9393, 49.4186, 24.1299, 32.8899, 57.3061])
+data_end   = np.array([129, 166, 184, 159, 134])
+#140    , 92 ,90     , 190     , 215    , 155    , 170    , 221    , 204    ])
+volt_real  = np.array([50.046, 49.901, 49.64, 49.39, 50.298])
+#49     , 49, 49     , 49      ,  49    ,  49    ,  49    ,  49    , 49     ])
+volt_base  = np.array([23389, 23324, 23202, 23086, 23521])
+#885    , 855, 885    , 885     , 885    , 885    , 885    , 885    , 885    ])
+
+amp_base = 877
 turns = 6
-rpm_cutoff = 3000.0
+rpm_cutoff = 3400.0
 force_lower_bandwidth = 0
-force_upper_bandwidth = 50
+force_upper_bandwidth = 60
 
 all_times = []
 all_rpm   = []
 all_volts = []
 all_amps  = []
 all_force = []
+all_temp  = []
 
 spec_times = [0]*len(file_names)
 spec_rpm   = [0]*len(file_names)
 spec_volts = [0]*len(file_names)
 spec_amps  = [0]*len(file_names)
 spec_force = [0]*len(file_names)
+spec_temp = [0]*len(file_names)
 
 # used to store same data as above, but windowed
 wind_times = [list() for i in range(0, len(file_names))]
@@ -42,6 +49,7 @@ wind_rpm   = [list() for i in range(0, len(file_names))]
 wind_volts = [list() for i in range(0, len(file_names))]
 wind_amps  = [list() for i in range(0, len(file_names))]
 wind_force = [list() for i in range(0, len(file_names))]
+wind_temp  = [list() for i in range(0, len(file_names))]
 
 #this loop will input all of the data
 for i in range(0, len(file_names)):
@@ -57,13 +65,14 @@ for i in range(0, len(file_names)):
             end_idx = j
 
     volt_slope = float(volt_real[i])/volt_base[i]
-    amp_slope  = 300.0 / 0.625 / 1024.0 * 5.0 / turns
+    amp_slope  = 300.0 / 0.625 / 32768.0 * 5.0 / turns
 
     spec_times[i] = dd[start_idx:end_idx,0]
     spec_rpm[i]   = dd[start_idx:end_idx,2]
     spec_volts[i] = (dd[start_idx:end_idx,3] * volt_slope )
     spec_amps[i]  = (((dd[start_idx:end_idx,4]) - amp_base) * amp_slope)
     spec_force[i] = dd[start_idx:end_idx,5]
+    spec_temp[i]  = dd[start_idx:end_idx,7]
 
     all_times = np.concatenate((all_times, dd[start_idx:end_idx,0]))
     all_rpm   = np.concatenate((all_rpm,   dd[start_idx:end_idx,2]))
@@ -72,6 +81,7 @@ for i in range(0, len(file_names)):
     all_amps  = np.concatenate((all_amps,  
                 ((dd[start_idx:end_idx,4]) - amp_base) * amp_slope))
     all_force = np.concatenate((all_force, dd[start_idx:end_idx,5]))
+    all_temp  = np.concatenate((all_temp,  dd[start_idx:end_idx,7]))
 
 #print(all_times)
 #print(all_rpm)
@@ -118,6 +128,7 @@ for i in range(0, len(file_names)):
             wind_force[i].append(spec_force[i][j])
             wind_volts[i].append(spec_volts[i][j])
             wind_amps[i].append(spec_amps[i][j])
+            wind_temp[i].append(spec_temp[i][j])
 
             if(smlbkt(spec_rpm[i][j]) in s_bucket[i] ):
                 (a,b,c,d) = s_bucket[i][smlbkt(spec_rpm[i][j])]
@@ -130,6 +141,8 @@ for i in range(0, len(file_names)):
     wind_force[i] = np.array(wind_force[i])
     wind_volts[i] = np.array(wind_volts[i])
     wind_amps[i] = np.array(wind_amps[i])
+    wind_temp[i] = np.array(wind_temp[i])
+
     
 
 #create lists of "all" data after it has been bucketed
@@ -193,7 +206,7 @@ for i in range(0, len(file_names)):
 clr = ['b','g','r','c','m','y','k','w']
 #plot specific data sets vs time
 for i in range(0, len(file_names)):
-    f, (ax1, ax2, ax3) = plt.subplots(3,1, sharex=True)
+    f, (ax1, ax2, ax3, ax4) = plt.subplots(4,1, sharex=True)
 
     ax1.plot(wind_times[i], wind_force[i], marker='o', color=clr[i], 
                     linestyle="None", label=(test_names[i]))
@@ -215,6 +228,12 @@ for i in range(0, len(file_names)):
     #ax3.xlabel("Time Stamp")
     #ax3.ylabel("Amps")
     ax3.legend(loc='best')
+
+    ax4.plot(wind_times[i], wind_temp[i], marker='o', color=clr[i], 
+                    linestyle="None", label=(test_names[i]))
+    ax4.set_title(test_names[i]+" Windowed Time vs Temp of Tube")
+    ax4.legend(loc='best')
+
     plt.show()
     plt.figure()
 
