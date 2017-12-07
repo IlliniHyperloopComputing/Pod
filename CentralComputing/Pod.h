@@ -14,6 +14,7 @@ void network_loop();
 void logic_loop();
 void int_handler(int signo);
 void pipe_handler(int signo);
+void device_tree_setup();
 
 
 #endif

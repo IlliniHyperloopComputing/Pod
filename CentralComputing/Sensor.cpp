@@ -10,17 +10,14 @@
 #include "Sensor_Aux/Current.h"
 #include "Sensor_Aux/Brake_Pressure.h"
 
-long long Sensor::start_time = 1;  
 
-static uint8_t bpi1_s[] = {2,2,2,2,4,4,4};
-static uint8_t bpi2_s[] = {2,2,2,2,2,2,2,2,2,2,2,2,2,2,1};
-uint8_t * Sensor::bpi1 = bpi1_s;
-uint8_t * Sensor::bpi2 = bpi2_s;
-
-Xmega_Setup Sensor::x1 = {"/dev/spidev1.0", 7, bpi1, 500000, 8};
-Xmega_Setup Sensor::x2 = {"/dev/spidev1.1", 15, bpi2, 500000, 8};
 
 Sensor::Sensor(Spi * s) : spi(s){
+  static uint8_t bpi1[] = {2,2,2,2,4,4,4};
+  static uint8_t bpi2[] = {2,2,2,2,2,2,2,2,2,2,2,2,2,2,1};
+
+  Xmega_Setup x1 = {"/dev/spidev1.0", 7, bpi1, 500000, 8};
+  Xmega_Setup x2 = {"/dev/spidev1.1", 15, bpi2, 500000, 8};
   spi = new Spi(&x1, &x2);
   //setup maps
   raw_data_map = raw_data_map_t();

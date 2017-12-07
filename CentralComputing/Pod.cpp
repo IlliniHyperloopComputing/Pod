@@ -90,9 +90,10 @@ int main(){
   spi = NULL;
   #ifndef SIM
   // setup SPI 
+    device_tree_setup();
   #endif
  
-
+  
   xmega = new Xmega(spi); 
   sensor = new Sensor(spi);
   network = new Network(sensor);
@@ -106,7 +107,7 @@ int main(){
   logic_thread.join();
   return 0; 
 }
-int pod(int argc, char** argv) {
+void device_tree_setup() {
 
   //Setup GPIO input/output pins 
   print_debug("Checking Device tree for GPIO initialization\n");
@@ -126,4 +127,4 @@ int pod(int argc, char** argv) {
     print_debug("Sleeping for 1 second to make sure kernel has time complete setup\n");
     usleep(1000000);
   }
-
+}
