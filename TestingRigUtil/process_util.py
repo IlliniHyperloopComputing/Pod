@@ -65,7 +65,7 @@ for i in range(0, len(file_names)):
             end_idx = j
 
     volt_slope = float(volt_real[i])/volt_base[i]
-    amp_slope  = 300.0 / 0.625 / 32768.0 * 5.0 / turns
+    amp_slope  = 300.0 / 0.625 / 32768.0 * 6.144 / turns
 
     spec_times[i] = dd[start_idx:end_idx,0]
     spec_rpm[i]   = dd[start_idx:end_idx,2]
