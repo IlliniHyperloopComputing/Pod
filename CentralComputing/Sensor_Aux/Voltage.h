@@ -4,14 +4,12 @@
 #include "../Sensor.h"
 
 struct Voltage_Raw{	
-	uint16_t voltage
+	uint16_t voltage;
 };
 
 struct Voltage_Calc{
-	double voltage;
 };
 
-Arbitrary_Data voltage_calculation(Arbitrary_Data raw);
 void voltage_parse(Spi * spi, Arbitrary_Data raw);
 
 #endif // VELOCITY_H
