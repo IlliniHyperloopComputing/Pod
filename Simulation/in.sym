@@ -1,7 +1,10 @@
 @ t==0
-	drag=.4
-	%drag=0.001
+	a=10
+	? Starting simulation
 @ t==4
-	drag=0
-	%drag=0
+	drag=1
 	a=0
+@ t==10
+	?Stuff here is good
+@ t==60
+	%v=-1

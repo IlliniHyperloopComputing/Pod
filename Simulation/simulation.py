@@ -17,54 +17,68 @@ print("Simulation")
 
 conditionals = [{"term":"t","val":"10", "thing":"a = -1"}];
 
+def sign(a):
+	if (a>0): return 1
+	if (a==0): return 0
+	return -1
+
 def update():#(dist, vel, accel):
 	global dist, vel, accel, deltaT, drag, delta_drag
 	# handle drag
 	# accel due to drag
-	'''
-	draga = drag * vel**2
-	if (abs(accel) - draga > 0):
-		if (
-	else:
-		accel = 0
-	'''
 	
 	# handle kinematics
 	dist = dist + vel*deltaT + ((.5 * accel) * deltaT**2)
 	vel = vel + accel*deltaT
-	if(dist > track_len):
+	
+	# handle drag/fric forces
+	# follows this equation
+	# Fdrag = ((1/2)*C*p*A) * Velocity**2
+	# drag referes to the constant in this equation divided by weight of the pod
+	accel_drag = drag * vel**2
+	if (abs(vel - sign(vel)*accel_drag*deltaT) > 0):
+		vel = vel - sign(vel)*accel_drag*deltaT
+		pass
+	else:
+		# drag will slow down pod to stop
+		vel = 0
+	drag += delta_drag
+	
+	if (dist > track_len):
 		dist = track_len
 		vel = 0
 		accel = 0
-	'''
-	# check conditionals from parser.py
-	for cond in conditionals:
-		if cond["term"] == "t":
-			if epoch == float(cond["val"]):
-				pass
-				# do thing
-	'''
+
 	return (dist, vel)
+
+def executeStatement(statement):
+	global dist, vel, accel, deltaT, drag, delta_drag
+	varname = statement[0]
+	value = float(statement[1])
+	
+	if (varname == "a" or varname == "%v"):
+		accel = value
+	elif (varname == "v" or varname == "%x"):
+		vel = value
+	elif (varname == "x"):
+		dist = value
+	elif (varname == "drag"):
+		drag = value
+	elif (varname == "%drag"):
+		delta_drag = value
+	
 
 def executeBlock(block):
 	global dist, vel, accel, deltaT, drag, delta_drag
 	stat = block['stat']
 	for s in stat:
 		s = s.split('=')
-		varname = s[0]	
-		value = float(s[1])
 		
-		if (varname == "a" or varname == "%v"):
-			print("TEST STUFF\n")
-			accel = value
-		elif (varname == "v" or varname == "%x"):
-			vel = value
-		elif (varname == "x"):
-			dist = value
-		elif (varname == "drag"):
-			drag = value
-		elif (varname == "%drag"):
-			drag = value
+		if len(s) == 2:
+			executeStatement(s)
+		elif (s[0][0] == '?'):
+			# print everything after flag
+			print(s[0][1:])
 '''
 Handles the struct of instructions
 Should a block be executed
@@ -85,8 +99,8 @@ def handleStruct(struct, newTime):
 	# must have variable be time
 	if (condl[0].strip() == "t"):
 		# check if time has crossed over
-		#print(newTime - float(condl[1]) - startTime)
-		if ( startTime + float(condl[1]) - newTime < 0):
+		#print(newTime - float(condl[1]))
+		if ( float(condl[1]) - epoch < 0):
 			executeBlock(block)
 			nextBlock += 1
 
@@ -118,9 +132,9 @@ if __name__ == "__main__":
 	startTime = time.time()
 	printStatus()
 	oldTime = time.time()
-	while epoch < 20:
+	while epoch < 200:
 		newTime = time.time()
-		handleStruct(struct, newTime)
+		handleStruct(struct, epoch)
 		deltaT = newTime-oldTime
 		oldTime = time.time()
 		if(dist > 487):

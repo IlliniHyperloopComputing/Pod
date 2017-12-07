@@ -15,8 +15,12 @@ def validateStatement(line, line_no):
 	# blank space is valid
 	if (len(line) == 0):
 		return True
-	
+
 	fL = line[0]
+	# check first if it is a flag
+	if (fL in ['?']):
+		return True
+
 	if (fL not in ['%', '$'] and not fL.isalpha()):
 		print("Error on line number", line_no)
 		print("\t" + line)
