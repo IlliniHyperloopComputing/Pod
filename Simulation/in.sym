@@ -1,10 +1,14 @@
 @ t==0
 	a=10
-	? Starting simulation
+	fric=.1
+	?Starting simulation
 @ t==4
 	drag=1
 	a=0
 @ t==10
 	?Stuff here is good
-@ t==60
-	%v=-1
+	fric=0.01
+	drag=0
+	a=2
+@ t==20
+	a=0

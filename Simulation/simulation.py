@@ -13,6 +13,8 @@ deltaT = 0.1
 epoch = 0.0
 drag = 0.0
 delta_drag = 0.0
+fric = 0.0
+delta_fric = 0.0
 print("Simulation")
 
 conditionals = [{"term":"t","val":"10", "thing":"a = -1"}];
@@ -23,7 +25,7 @@ def sign(a):
 	return -1
 
 def update():#(dist, vel, accel):
-	global dist, vel, accel, deltaT, drag, delta_drag
+	global dist, vel, accel, deltaT, drag, delta_drag, fric, delta_fric
 	# handle drag
 	# accel due to drag
 	
@@ -36,13 +38,22 @@ def update():#(dist, vel, accel):
 	# Fdrag = ((1/2)*C*p*A) * Velocity**2
 	# drag referes to the constant in this equation divided by weight of the pod
 	accel_drag = drag * vel**2
-	if (abs(vel - sign(vel)*accel_drag*deltaT) > 0):
+	if (vel != 0 and abs(vel - sign(vel)*accel_drag*deltaT) > 0):
 		vel = vel - sign(vel)*accel_drag*deltaT
+		drag += delta_drag
 		pass
 	else:
 		# drag will slow down pod to stop
 		vel = 0
-	drag += delta_drag
+	# friction force
+	# has equation Ffric = mu * Normal = fric*massOfPod
+	if ( vel != 0 and abs(vel - sign(vel)*fric*deltaT) > 0):
+		vel = vel - sign(vel)*fric*deltaT
+		fric += delta_fric
+		pass
+	else:
+		# fric will slow down pod to stop
+		vel = 0
 	
 	if (dist > track_len):
 		dist = track_len
@@ -52,7 +63,7 @@ def update():#(dist, vel, accel):
 	return (dist, vel)
 
 def executeStatement(statement):
-	global dist, vel, accel, deltaT, drag, delta_drag
+	global dist, vel, accel, deltaT, drag, delta_drag, fric, delta_fric
 	varname = statement[0]
 	value = float(statement[1])
 	
@@ -66,6 +77,10 @@ def executeStatement(statement):
 		drag = value
 	elif (varname == "%drag"):
 		delta_drag = value
+	elif (varname == "fric"):
+		fric = value
+	elif (varname == "%fric"):
+		delta_fric = value
 	
 
 def executeBlock(block):
@@ -110,16 +125,13 @@ def printStatus():
 	spaces = ""
 	if numbars - drawBars > 0:
 		spaces = "_"*(numbars-drawBars)
-	sys.stdout.write('%s|%s> <d:%.2f v:%.2f a:%.2f t:%d>\r' % (bar, spaces, dist, vel, accel, epoch))
+	
+	accel_drag = sign(vel) * drag * vel**2 if abs(vel) >= .001 else 0
+	accel_fric = sign(vel) * fric if abs(vel) >= .001 else 0
+	#sys.stdout.write('%s|%s> <d:%.2f v:%.2f a:%.2f t:%d>\r' % (bar, spaces, dist, vel if abs(vel) >= 0.001 else 0, accel - accel_fric - accel_drag, epoch))
+	sys.stdout.write('%s|%s> <d:%.2f v:%.2f a:%.2f t:%d>\r' % (bar, spaces, dist, vel if abs(vel) >= 0.001 else 0, accel - accel_fric - accel_drag, epoch))
 	sys.stdout.flush()
 	#print(epoch, dist, vel, accel, "\r")
-
-def brake():
-	global accel
-	if (vel > 0):
-		accel = -.1;
-	else:
-		accel = 0;
 
 struct = None
 if __name__ == "__main__":
@@ -137,8 +149,6 @@ if __name__ == "__main__":
 		handleStruct(struct, epoch)
 		deltaT = newTime-oldTime
 		oldTime = time.time()
-		if(dist > 487):
-			brake()
 		update()#dist, vel, accel)
 		epoch = epoch + deltaT
 		printStatus()

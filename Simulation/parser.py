@@ -73,8 +73,6 @@ def validateStatement(line, line_no):
 		print("\t" + line)
 		print("\tThe value", splited[1], "is not a valid number")
 		return False	
-	
-	print(splited)
 
 	return True
 '''
@@ -83,7 +81,7 @@ return None with invalid input
 '''
 def parseFromFile(fileName):
 	fo = open(fileName, 'r')
-	print("Opened file", fo.name)
+	print("Opened file", fo.name, "for instruction parsing")
 	data = fo.read().splitlines()
 	
 	structure = []
