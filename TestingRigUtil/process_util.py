@@ -1,10 +1,11 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+print("=========================")
+print(" Testing Data Rig Parser")
+print("=========================")
 
 #This tool is designed to parse the data output from propulsion disk testing
-#It can take in multiple files to work on, assuming the tests are from the same distance
-
 #all input files must have a consistent number of columns in them
 
 input_directory = "raw_data/"
@@ -22,17 +23,14 @@ metadata_p = pd.read_csv(input_directory+"meta.txt",
                     header=None, delim_whitespace=True, comment='#' )
 metadata = metadata_p.values
 for i in range(0,len(metadata[:,0])):
-    print(int(metadata[i,0]))
     if(int(metadata[i,0]) in use):
         test_names.append((metadata[i,1]))
         file_names.append(("test"+ ("%d"%metadata[i,0]) + "_raw.txt") )
         data_start.append(metadata[i,3])
         data_end.append(metadata[i,4])
 
+print("\tParsing these tests: ", end=' ')
 print(test_names)
-print(file_names)
-print(data_start)
-print(data_end)
 
 turns = 6
 amp_base = 877
@@ -77,6 +75,8 @@ for i in range(0, len(use)):
     spec_amps[i]  = (((dd[start_idx:end_idx,4]) - amp_base) * amp_slope)
     spec_force[i] = dd[start_idx:end_idx,5]
     spec_temp[i]  = dd[start_idx:end_idx,7]
+    
+print("\tAll data loaded")
 
 def smlbkt(val):
     tmp = int(val)
@@ -85,6 +85,7 @@ def smlbkt(val):
     return (tmp + (20/2))
 
 #Force Buckets for each specific data set
+print("\tCreating Buckets")
 s_bucket = [dict() for i in range(0, len(use))]
 for i in range(0, len(use)):
     for j in range(0, len(spec_times[i])):
@@ -117,6 +118,7 @@ spec_force_avg  = [list() for i in range(0, len(use))]
 spec_amps_avg   = [list() for i in range(0, len(use))]
 spec_volts_avg  = [list() for i in range(0, len(use))]
 
+print("\tUnpacking averages from buckets")
 for i in range(0, len(use)):
     #get keys (which are rpm values)
     spec_rpm_avg[i] = np.array(list(s_bucket[i].keys()))
@@ -137,6 +139,7 @@ for i in range(0, len(use)):
 
 cols = ['Force(N)', 'RPM', 'Volts', 'Amps']
 
+print("\tExporting data to CSV")
 # specific data avgs
 # and specific data windowed
 for i in range(0, len(use)):
@@ -152,6 +155,7 @@ for i in range(0, len(use)):
 ###
 # Plotting 
 ###
+print("\tBegin Plotting")
 
 clr = ['b','g','r','c','m','y','k','w',   'b','g','r','c','m','y','k','w']
 #plot specific data sets vs time
@@ -185,7 +189,6 @@ for i in range(0, len(use)):
     ax4.legend(loc='best')
 
     plt.show()
-    plt.figure()
 
 
 #plot general rpm vs force straight just windowed

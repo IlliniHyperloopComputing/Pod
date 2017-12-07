@@ -47,10 +47,12 @@ except:
 output_file_name = output_txt_prefix + datetime.datetime.now().isoformat('T')
 output_file = open(output_file_name, "w+")
 print("Writing to file: %s" % output_file_name)
-print("Begin reading")
-print("time, power, RPM, Voltage, amps, force")
+print("Begin reading ")
+print("time, special, [RPM], [Thermo],  [Voltage, amps], force")
 
-power = "899"
+writing_delay = 8.0 #when initially reading serial ports in, there are transient errors
+
+power = 8888
 a_line = ""
 o_line = ""
 t_line = ""
@@ -59,12 +61,12 @@ p_line = ""
 new_data = False
 start = time.time()
 while (ctrl_c == 0):
-    sl = select.select([sys.stdin, ser_arduino, ser_arduino1, ser_arduino2, ser_omega,], [], [], 0.0)[0]
+    sl = select.select([sys.stdin, ser_arduino, ser_arduino1, ser_arduino2, ser_omega,], [], [], 1.0)[0]
 
     #read from stdin
     if (sys.stdin in sl):
-        power = sys.stdin.readline().rstrip()
-        print("Setting power to " + power)
+        power = power+1 #sys.stdin.readline().rstrip()
+        #print("Setting power to " + power)
         new_data = True
 
     #read from arduino RPM
@@ -94,13 +96,13 @@ while (ctrl_c == 0):
 
     if (new_data):
         stamp = time.time() - start
-        output_string = ("%.4f %s %s %s %s %s \n" % (stamp, power, a_line, p_line, o_line, t_line))
-        output_file.write(output_string)
+        output_string = ("%.4f | %d | %s | %s | %s | %s \n" % (stamp, power, a_line, p_line, o_line, t_line))
+        if(stamp > writing_delay):
+            output_file.write(output_string)
         print("                                                                     ", end='\r')
         print(output_string.replace('\n',''), end='\r')
     new_data = False
 ser_arduino.close()
 ser_arduino1.close()
 ser_omega.close()
-
 
