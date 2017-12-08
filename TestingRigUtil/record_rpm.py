@@ -12,7 +12,7 @@ ddata = False   # "Double data". A special case where everything recieved from
                 # The plan is to split the data into two files, so the same processing
                 # code can be used
 
-if(sys.argv[1] == "2"):
+if(len(sys.argv)>1 and sys.argv[1] == "2"):
     ddata = True
 
 ctrl_c = 0
@@ -76,7 +76,7 @@ power_line  = ""
 new_data = False
 start = time.time()
 while (ctrl_c == 0):
-    sl = select.select([sys.stdin, ser_arduino, ser_arduino1, ser_arduino2, ser_omega,], [], [], 1.0)[0]
+    sl = select.select([sys.stdin, ser_arduino, ser_arduino1, ser_arduino2, ser_omega,], [], [], 0.0)[0]
 
     #read from stdin
     if (sys.stdin in sl):
@@ -116,7 +116,7 @@ while (ctrl_c == 0):
         print(output_string.replace('\n',''), end='\r')
 
         if(stamp > writing_delay):
-            if(!ddata): #Normal case
+            if(not ddata): #Normal case
                 output_file.write(output_string)
             else: #Case with duplicate data
                 rpm_a   = rpm_line.split(' ')

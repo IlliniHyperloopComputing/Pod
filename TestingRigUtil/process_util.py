@@ -1,6 +1,8 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+
 print("=========================")
 print(" Testing Data Rig Parser")
 print("=========================")
@@ -11,7 +13,7 @@ print("=========================")
 input_directory = "raw_data/"
 output_directory = "output_data/"
 
-use = [29,30,31,32,33]
+use = [29,30,32, 33, 34,35,36]
 
 test_names = list()
 file_names = list()
@@ -37,7 +39,7 @@ amp_base = 877
 amp_slope  = 300.0 / 0.625 / 32768.0 * 6.144 / turns
 volt_slope = 0.0021394 #multiply recorded 16bit ADC values by this 
 
-rpm_cutoff = 3400.0
+rpm_cutoff = 2000.0
 force_lower_bandwidth = 0
 force_upper_bandwidth = 60
 
@@ -159,61 +161,65 @@ print("\tBegin Plotting")
 
 clr = ['b','g','r','c','m','y','k','w',   'b','g','r','c','m','y','k','w']
 #plot specific data sets vs time
-for i in range(0, len(use)):
-    f, (ax1, ax2, ax3, ax4) = plt.subplots(4,1, sharex=True)
-
-    ax1.plot(wind_times[i], wind_force[i], marker='o', color=clr[i], 
-                    linestyle="None", label=(test_names[i]))
-    ax1.set_title(test_names[i]+" Windowed Time vs Force(N)")
-    #ax1.xlabel("Time Stamp")
-    #ax1.ylabel("Force(N)")
-    ax1.legend(loc='best')
-
-    ax2.plot(wind_times[i], wind_rpm[i], marker='o', color=clr[i], 
-                    linestyle="None", label=(test_names[i]))
-    ax2.set_title(test_names[i]+" Windowed Time vs RPM")
-    #ax2.xlabel("Time Stamp")
-    #ax2.ylabel("RPM")
-    ax2.legend(loc='best')
-
-    ax3.plot(wind_times[i], wind_amps[i], marker='o', color=clr[i], 
-                    linestyle="None", label=(test_names[i]))
-    ax3.set_title(test_names[i]+" Windowed Time vs Amps")
-    #ax3.xlabel("Time Stamp")
-    #ax3.ylabel("Amps")
-    ax3.legend(loc='best')
-
-    ax4.plot(wind_times[i], wind_temp[i], marker='o', color=clr[i], 
-                    linestyle="None", label=(test_names[i]))
-    ax4.set_title(test_names[i]+" Windowed Time vs Temp of Tube")
-    ax4.legend(loc='best')
-
-    plt.show()
-
-
-#plot general rpm vs force straight just windowed
-for i in range(0, len(use)):
-    plt.plot(wind_rpm[i], wind_force[i], marker='o', color=clr[i], 
-                    linestyle="None", label=(test_names[i]))
-    plt.title(test_names[i]+" Windowed RPM vs Force (N)")
-    plt.xlabel("RPM")
-    plt.ylabel("Force (N)")
-    plt.legend(loc='best')
-    plt.show()
-    plt.figure()
-
-#plot rpm vs force
-for i in range(0, len(use)):
-    plt.plot(spec_rpm_avg[i], spec_force_avg[i], marker='o', color=clr[i], 
-                    linestyle="None", label=(test_names[i]))
-    plt.title(test_names[i]+" Avg RPM vs Force (N)")
-    plt.xlabel("RPM")
-    plt.ylabel("Force")
-    plt.legend(loc='best')
-    plt.show()
-    plt.figure()
+#for i in range(0, len(use)):
+#    f, (ax1, ax2, ax3, ax4) = plt.subplots(4,1, sharex=True)
+#
+#    ax1.plot(wind_times[i], wind_force[i], marker='o', color=clr[i], 
+#                    linestyle="None", label=(test_names[i]))
+#    ax1.set_title(test_names[i]+" Windowed Time vs Force(N)")
+#    #ax1.xlabel("Time Stamp")
+#    #ax1.ylabel("Force(N)")
+#    ax1.legend(loc='best')
+#
+#    ax2.plot(wind_times[i], wind_rpm[i], marker='o', color=clr[i], 
+#                    linestyle="None", label=(test_names[i]))
+#    ax2.set_title(test_names[i]+" Windowed Time vs RPM")
+#    #ax2.xlabel("Time Stamp")
+#    #ax2.ylabel("RPM")
+#    ax2.legend(loc='best')
+#
+#    ax3.plot(wind_times[i], wind_amps[i], marker='o', color=clr[i], 
+#                    linestyle="None", label=(test_names[i]))
+#    ax3.set_title(test_names[i]+" Windowed Time vs Amps")
+#    #ax3.xlabel("Time Stamp")
+#    #ax3.ylabel("Amps")
+#    ax3.legend(loc='best')
+#
+#    ax4.plot(wind_times[i], wind_temp[i], marker='o', color=clr[i], 
+#                    linestyle="None", label=(test_names[i]))
+#    ax4.set_title(test_names[i]+" Windowed Time vs Temp of Tube")
+#    ax4.legend(loc='best')
+#
+#
+#
+#plt.show()
+#
+##plot general rpm vs force straight just windowed
+#for i in range(0, len(use)):
+#    plt.plot(wind_rpm[i], wind_force[i], marker='o', color=clr[i], 
+#                    linestyle="None", label=(test_names[i]))
+#    plt.title(test_names[i]+" Windowed RPM vs Force (N)")
+#    plt.xlabel("RPM")
+#    plt.ylabel("Force (N)")
+#    plt.legend(loc='best')
+#    plt.figure()
+#
+#plt.show()
+#
+##plot rpm vs force
+#for i in range(0, len(use)):
+#    plt.plot(spec_rpm_avg[i], spec_force_avg[i], marker='o', color=clr[i], 
+#                    linestyle="None", label=(test_names[i]))
+#    plt.title(test_names[i]+" Avg RPM vs Force (N)")
+#    plt.xlabel("RPM")
+#    plt.ylabel("Force")
+#    plt.legend(loc='best')
+#    plt.figure()
+#
+#plt.show()
 
 #plot rpm vs force specific and all on the same graph
+fig, ax = plt.subplots()
 for i in range(0, len(use)):
     plt.plot(spec_rpm_avg[i], spec_force_avg[i], marker='o', color=clr[i], 
                     linestyle="None", label=(test_names[i]))
@@ -221,6 +227,11 @@ plt.title("Avg RPM vs Force (N)")
 plt.xlabel("RPM")
 plt.ylabel("Force")
 plt.legend(loc='best')
+plt.grid(b=True, which='major', color='1',linestyle='-')
+plt.grid(b=True, which='minor', color='0.10',linestyle='-')
+ax.xaxis.set_major_locator(ticker.MultipleLocator(100))
+ax.xaxis.set_minor_locator(ticker.MultipleLocator(50))
+ax.yaxis.set_minor_locator(ticker.MultipleLocator(2))
 plt.show()
 plt.figure()
 
