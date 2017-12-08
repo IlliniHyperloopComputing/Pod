@@ -1,9 +1,12 @@
 import sys
 import time
 from parser import parseFromFile 
+import os
 
 delay = .05
-numbars = 70
+ts = os.get_terminal_size()
+
+numbars = ts.columns - 40
 
 dist = 0.0
 track_len = 1400.0
@@ -149,7 +152,7 @@ if __name__ == "__main__":
 		handleStruct(struct, epoch)
 		deltaT = newTime-oldTime
 		oldTime = time.time()
-		update()#dist, vel, accel)
+		update()
 		epoch = epoch + deltaT
 		printStatus()
 	print()
