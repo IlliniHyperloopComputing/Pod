@@ -20,8 +20,6 @@ fric = 0.0
 delta_fric = 0.0
 print("Simulation")
 
-conditionals = [{"term":"t","val":"10", "thing":"a = -1"}];
-
 def sign(a):
 	if (a>0): return 1
 	if (a==0): return 0
@@ -83,8 +81,7 @@ def executeStatement(statement):
 	elif (varname == "fric"):
 		fric = value
 	elif (varname == "%fric"):
-		delta_fric = value
-	
+		delta_fric = value	
 
 def executeBlock(block):
 	global dist, vel, accel, deltaT, drag, delta_drag
