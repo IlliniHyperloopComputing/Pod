@@ -2,7 +2,7 @@
 #include <Wire.h>
 #include <SPI.h>
 
-#define loops 500
+#define loops 100
 int current = LOW;
 unsigned long last;
 unsigned long rpm;
@@ -26,23 +26,27 @@ void setup() {
 
 
 void loop() {
-  // put your main code here, to run repeatedly:
-  int val = digitalRead(rpm_pin);
-  if(val == HIGH && current == LOW) {
-    //rising edge
-    current = HIGH;
-    unsigned long now = micros();
-    unsigned long delta = now - last;
-    last = now;
-    rpm = 60000000 / delta;
-  } else if(val == LOW && current == HIGH){
-    //falling edge
-    current = LOW;     
+
+
+  //Sample power at same rate that data is sent  
+  //Just sample at a different time
+  if(i == loops/4){
+    //analog_voltage = analogRead(voltage_pin);
+    analog_voltage = ads.readADC_SingleEnded(0);
+ 
+    
+  }
+  
+  if(i == loops/2){
+    //analog_amps = analogRead(amps_pin);
+    analog_amps = ads.readADC_SingleEnded(1);
   }
 
   i++;
   if(i == loops){
-    Serial.println(rpm);
+    Serial.print(analog_voltage);
+    Serial.print(" ");
+    Serial.println(analog_amps);
     i = 0;
   }
 }
