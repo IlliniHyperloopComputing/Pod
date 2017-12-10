@@ -2,6 +2,7 @@ import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
+import sys
 
 print("=========================")
 print(" Testing Data Rig Parser")
@@ -13,8 +14,25 @@ print("=========================")
 input_directory = "raw_data/"
 output_directory = "output_data/"
 
-use = [50,51]
-dual = True
+use = []
+dual = False
+for i in range(1,len(sys.argv)):
+    if(sys.argv[i] == "dual"):
+        dual = True
+    else:
+        try:
+            tmp = int(sys.argv[i])
+            use.append(tmp)
+        except: 
+            print("Unrecognized input: %s"%sys.argv[i])
+            exit()
+
+if(len(use) == 0):
+    print("No arguments! Exiting")
+    exit()
+
+print("\tParsing these tests %s"%str(use))
+print("\tDual? = %s"%str(dual))
 
 test_names = list()
 file_names = list()
@@ -32,8 +50,7 @@ for i in range(0,len(metadata[:,0])):
         data_start.append(metadata[i,3])
         data_end.append(metadata[i,4])
 
-print("\tParsing these tests: ", end=' ')
-print(test_names)
+print("\tParsing these tests: %s", str(test_names))
 
 turns = 6
 amp_base_1 = 867
