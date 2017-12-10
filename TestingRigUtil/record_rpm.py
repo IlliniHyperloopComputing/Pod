@@ -59,7 +59,7 @@ output_file_name = output_txt_prefix + datetime.datetime.now().isoformat('T')[:-
 output_file = open(output_file_name, "w+")
 output_file2 = ""
 if(ddata):
-    output_file2 = open(output_file_name+")2", "w+")
+    output_file2 = open(output_file_name+"_2", "w+")
 
 print("Writing to file: %s" % output_file_name)
 print("Begin reading ")
@@ -121,7 +121,7 @@ while (ctrl_c == 0):
             else: #Case with duplicate data
                 rpm_a   = rpm_line.split(' ')
                 power_a = power_line.split(' ')
-                thermo_a= force_line.split(' ')
+                thermo_a= thermo_line.split(' ')
                 
                 output_string_1 = ("%.4f %d %s %s %s %s\n" % (stamp, special, rpm_a[0], (power_a[0]+" "+power_a[1]), force_line, thermo_a[0]))
                 output_string_2 = ("%.4f %d %s %s %s %s\n" % (stamp, special, rpm_a[1], (power_a[2]+" "+power_a[3]), force_line, thermo_a[1]))

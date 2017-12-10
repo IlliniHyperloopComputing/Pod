@@ -13,7 +13,8 @@ print("=========================")
 input_directory = "raw_data/"
 output_directory = "output_data/"
 
-use = [29,30,32, 33, 34,35,36]
+use = [50,51]
+dual = True
 
 test_names = list()
 file_names = list()
@@ -35,11 +36,12 @@ print("\tParsing these tests: ", end=' ')
 print(test_names)
 
 turns = 6
-amp_base = 877
+amp_base_1 = 867
+amp_base_2 = 889
 amp_slope  = 300.0 / 0.625 / 32768.0 * 6.144 / turns
 volt_slope = 0.0021394 #multiply recorded 16bit ADC values by this 
 
-rpm_cutoff = 2000.0
+rpm_cutoff = 6000.0
 force_lower_bandwidth = 0
 force_upper_bandwidth = 60
 
@@ -60,6 +62,7 @@ wind_temp  = [list() for i in range(0, len(use))]
 
 #this loop will input all of the data
 for i in range(0, len(use)):
+    print("\tLoading: %s" % test_names[i])
     obj_in = pd.read_csv(input_directory + file_names[i], header=None, delim_whitespace=True)
     dd = obj_in.values
     start_idx = -1
@@ -71,12 +74,22 @@ for i in range(0, len(use)):
         if(end_idx == -1 and times_array[j] >= data_end[i]):
             end_idx = j
 
+    amp_base_t = amp_base_1
+    if(not dual):
+        amp_base_t = amp_base_1
+    elif(dual and i >= 1):
+        amp_base_t = amp_base_2
+
+
     spec_times[i] = dd[start_idx:end_idx,0]
     spec_rpm[i]   = dd[start_idx:end_idx,2]
     spec_volts[i] = (dd[start_idx:end_idx,3] * volt_slope )
-    spec_amps[i]  = (((dd[start_idx:end_idx,4]) - amp_base) * amp_slope)
+    spec_amps[i]  = (((dd[start_idx:end_idx,4]) - amp_base_t) * amp_slope)
     spec_force[i] = dd[start_idx:end_idx,5]
     spec_temp[i]  = dd[start_idx:end_idx,7]
+
+    print("\t\tStart idx: %d"% start_idx)
+    print("\t\tEnd   idx: %d"% end_idx)
     
 print("\tAll data loaded")
 
@@ -91,7 +104,7 @@ print("\tCreating Buckets")
 s_bucket = [dict() for i in range(0, len(use))]
 for i in range(0, len(use)):
     for j in range(0, len(spec_times[i])):
-        if(spec_rpm[i][j] < rpm_cutoff and spec_force[i][j]>force_lower_bandwidth and spec_force[i][j]<force_upper_bandwidth):
+        if(spec_rpm[i][j] < rpm_cutoff and spec_force[i][j]>=force_lower_bandwidth and spec_force[i][j]<force_upper_bandwidth):
             #use the also as an opportunity to create a data set that is just windowed
             wind_times[i].append(spec_times[i][j])
             wind_rpm[i].append(spec_rpm[i][j])
@@ -161,42 +174,56 @@ print("\tBegin Plotting")
 
 clr = ['b','g','r','c','m','y','k','w',   'b','g','r','c','m','y','k','w']
 #plot specific data sets vs time
-#for i in range(0, len(use)):
-#    f, (ax1, ax2, ax3, ax4) = plt.subplots(4,1, sharex=True)
-#
-#    ax1.plot(wind_times[i], wind_force[i], marker='o', color=clr[i], 
-#                    linestyle="None", label=(test_names[i]))
-#    ax1.set_title(test_names[i]+" Windowed Time vs Force(N)")
-#    #ax1.xlabel("Time Stamp")
-#    #ax1.ylabel("Force(N)")
-#    ax1.legend(loc='best')
-#
-#    ax2.plot(wind_times[i], wind_rpm[i], marker='o', color=clr[i], 
-#                    linestyle="None", label=(test_names[i]))
-#    ax2.set_title(test_names[i]+" Windowed Time vs RPM")
-#    #ax2.xlabel("Time Stamp")
-#    #ax2.ylabel("RPM")
-#    ax2.legend(loc='best')
-#
-#    ax3.plot(wind_times[i], wind_amps[i], marker='o', color=clr[i], 
-#                    linestyle="None", label=(test_names[i]))
-#    ax3.set_title(test_names[i]+" Windowed Time vs Amps")
-#    #ax3.xlabel("Time Stamp")
-#    #ax3.ylabel("Amps")
-#    ax3.legend(loc='best')
-#
-#    ax4.plot(wind_times[i], wind_temp[i], marker='o', color=clr[i], 
-#                    linestyle="None", label=(test_names[i]))
-#    ax4.set_title(test_names[i]+" Windowed Time vs Temp of Tube")
-#    ax4.legend(loc='best')
-#
-#
+
+if(dual):
+    f, (ax1, ax2, ax3, ax4) = plt.subplots(4,1, sharex=True)
+    
+for i in range(0, len(use)):
+    if(not dual):
+        f, (ax1, ax2, ax3, ax4) = plt.subplots(4,1, sharex=True)
+
+    ax1.plot(wind_times[i], wind_force[i], marker='.', color=clr[i], 
+                    linestyle="None", label=(test_names[i]))
+    ax1.set_title(test_names[i]+" Windowed Time vs Force(N)")
+    #ax1.xlabel("Time Stamp")
+    #ax1.ylabel("Force(N)")
+    ax1.legend(loc='best')
+    ax1.grid(b=True, which='major', color='0.65',linestyle='-')
+    ax1.grid(b=True, which='minor', color='0.65',linestyle='-')
+
+    ax2.plot(wind_times[i], wind_rpm[i], marker='.', color=clr[i], 
+                    linestyle="None", label=(test_names[i]))
+    ax2.set_title(test_names[i]+" Windowed Time vs RPM")
+    #ax2.xlabel("Time Stamp")
+    #ax2.ylabel("RPM")
+    ax2.legend(loc='best')
+    ax2.grid(b=True, which='major', color='0.65',linestyle='-')
+    ax2.grid(b=True, which='minor', color='0.65',linestyle='-')
+
+    ax3.plot(wind_times[i], wind_amps[i], marker='.', color=clr[i], 
+                    linestyle="None", label=(test_names[i]))
+    ax3.set_title(test_names[i]+" Windowed Time vs Amps")
+    #ax3.xlabel("Time Stamp")
+    #ax3.ylabel("Amps")
+    ax3.legend(loc='best')
+    ax3.grid(b=True, which='major', color='0.65',linestyle='-')
+    ax3.grid(b=True, which='minor', color='0.65',linestyle='-')
+
+    ax4.plot(wind_times[i], wind_temp[i], marker='.', color=clr[i], 
+                    linestyle="None", label=(test_names[i]))
+    ax4.set_title(test_names[i]+" Windowed Time vs Temp of Tube")
+    ax4.legend(loc='best')
+    ax4.grid(b=True, which='major', color='0.65',linestyle='-')
+    ax4.grid(b=True, which='minor', color='0.65',linestyle='-')
+
+
+
 #
 #plt.show()
 #
 ##plot general rpm vs force straight just windowed
 #for i in range(0, len(use)):
-#    plt.plot(wind_rpm[i], wind_force[i], marker='o', color=clr[i], 
+#    plt.plot(wind_rpm[i], wind_force[i], marker='.', color=clr[i], 
 #                    linestyle="None", label=(test_names[i]))
 #    plt.title(test_names[i]+" Windowed RPM vs Force (N)")
 #    plt.xlabel("RPM")
@@ -208,7 +235,7 @@ clr = ['b','g','r','c','m','y','k','w',   'b','g','r','c','m','y','k','w']
 #
 ##plot rpm vs force
 #for i in range(0, len(use)):
-#    plt.plot(spec_rpm_avg[i], spec_force_avg[i], marker='o', color=clr[i], 
+#    plt.plot(spec_rpm_avg[i], spec_force_avg[i], marker='.', color=clr[i], 
 #                    linestyle="None", label=(test_names[i]))
 #    plt.title(test_names[i]+" Avg RPM vs Force (N)")
 #    plt.xlabel("RPM")
@@ -221,7 +248,7 @@ clr = ['b','g','r','c','m','y','k','w',   'b','g','r','c','m','y','k','w']
 #plot rpm vs force specific and all on the same graph
 fig, ax = plt.subplots()
 for i in range(0, len(use)):
-    plt.plot(spec_rpm_avg[i], spec_force_avg[i], marker='o', color=clr[i], 
+    plt.plot(spec_rpm_avg[i], spec_force_avg[i], marker='.', color=clr[i], 
                     linestyle="None", label=(test_names[i]))
 plt.title("Avg RPM vs Force (N)")
 plt.xlabel("RPM")
@@ -238,7 +265,7 @@ plt.figure()
 ##plot rpm vs amps
 #plt.figure()
 #for i in range(0, len(use)):
-#    plt.plot(spec_rpm_avg[i], spec_amps_avg[i], marker='o', color=clr[i], 
+#    plt.plot(spec_rpm_avg[i], spec_amps_avg[i], marker='.', color=clr[i], 
 #                    linestyle="None", label=(test_names[i]))
 #plt.title("Avg RPM vs Amps (A)")
 #plt.xlabel("RPM")
@@ -248,7 +275,7 @@ plt.figure()
 ##plot rpm vs power
 #plt.figure()
 #for i in range(0, len(use)):
-#    plt.plot(spec_rpm_avg[i], spec_amps_avg[i] * spec_volts_avg[i], marker='o', color=clr[i], 
+#    plt.plot(spec_rpm_avg[i], spec_amps_avg[i] * spec_volts_avg[i], marker='.', color=clr[i], 
 #                    linestyle="None", label=(test_names[i]))
 #plt.title("Avg RPM vs Power (W)")
 #plt.xlabel("RPM")

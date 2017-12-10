@@ -9,7 +9,7 @@ int rpm_pin1 = 12;
 int current2 = LOW;
 unsigned long last2;
 unsigned long rpm2;
-int rpm_pin2 = 11;
+int rpm_pin2 = 8;
 
 int i = 0;
 
@@ -40,7 +40,7 @@ void loop() {
     current1 = LOW;     
   }
   
-  val = digitalRead(rpm_pin1);
+  val = digitalRead(rpm_pin2);
   if(val == HIGH && current2 == LOW) {
     //rising edge
     current2 = HIGH;
@@ -56,11 +56,12 @@ void loop() {
 
   i++;
   if(i == loops){
-    Serial.print(rpm1);
+    /*Serial.print(rpm1);
     Serial.print(" ");
     Serial.println(rpm2);
+    */
     
-    //Serial.println(rpm1);
+    Serial.println(rpm1);
     i = 0;
   }
 }

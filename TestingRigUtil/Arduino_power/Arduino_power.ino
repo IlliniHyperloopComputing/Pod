@@ -6,20 +6,19 @@
 int current = LOW;
 unsigned long last;
 unsigned long rpm;
-uint16_t analog_voltage = 8;
-uint16_t analog_amps = 8;
-int rpm_pin = 12;
-int voltage_pin = 0;
-int amps_pin = 1;
+
+uint16_t analog_voltage1 = 8;
+uint16_t analog_amps1 = 8;
+
+uint16_t analog_voltage2 = 8;
+uint16_t analog_amps2 = 8;
+
 int i = 0;
-int debounce = 0;
-int one_in_10 = 0;
 
 Adafruit_ADS1115 ads;
 
 void setup() {
   last = micros();
-  pinMode(rpm_pin, INPUT);
   Serial.begin(115200);  
   ads.begin();
 }
@@ -32,21 +31,43 @@ void loop() {
   //Just sample at a different time
   if(i == loops/4){
     //analog_voltage = analogRead(voltage_pin);
-    analog_voltage = ads.readADC_SingleEnded(0);
+    //analog_voltage1 = ads.readADC_SingleEnded(0);
  
     
   }
   
   if(i == loops/2){
     //analog_amps = analogRead(amps_pin);
-    analog_amps = ads.readADC_SingleEnded(1);
+    analog_amps1 = ads.readADC_SingleEnded(1);
+  }
+  
+  
+  if(i == loops/4 + 4){
+    //analog_voltage = analogRead(voltage_pin);
+    //analog_voltage2 = ads.readADC_SingleEnded(0);
+ 
+    
+  }
+  
+  if(i == loops/2 + 4){
+    //analog_amps = analogRead(amps_pin);
+    analog_amps2 = ads.readADC_SingleEnded(3);
   }
 
   i++;
   if(i == loops){
-    Serial.print(analog_voltage);
+    Serial.print(analog_voltage1);
+    Serial.print(" ");    
+    Serial.println(analog_amps1);
+    
+    /*Serial.print(analog_voltage1);
     Serial.print(" ");
-    Serial.println(analog_amps);
+    Serial.print(analog_amps1);
+    Serial.print(" ");
+    Serial.print(analog_voltage2);
+    Serial.print(" ");
+    Serial.println(analog_amps2);
+    */
     i = 0;
   }
 }
