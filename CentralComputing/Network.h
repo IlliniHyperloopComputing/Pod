@@ -6,9 +6,6 @@
 #include <sys/socket.h>
 #include <sys/types.h>
 
-
-
-
 #define SETUP_FAILURE -1
 #define SETUP_SUCCESS 0
 
@@ -16,35 +13,34 @@
 
 
 enum Network_Command_ID {
-  //state transitions 
-  NONE,
-	SAFETY_SETUP,
-	SAFE_MODE,
-	FUNCTIONAL_TEST,
-	LAUNCH_READY,
-	BRAKE,
-	EMERGENCY_BRAKE,
-  //propulsion 
-  LAUNCH 
-  //xmega handling
-};
-/*
-  A network command is returned by read and parsed within Pod.cpp
- */
-struct Network_Command {
-  //state transtitions
-  Network_Command_ID id;
-  uint8_t value;
+  //state transitions
+  TRANS_SAFETY_SETUP = 0,
+  TRANS_SAFE_MODE = 1,
+  TRANS_FUNCTIONAL_TEST = 2,
+  TRANS_LAUNCH_READY = 3,
+  LAUNCH = 4,
+  EMERGENCY_BRAKE = 5,
+  ENABLE_MOTOR = 6,
+  DISABLE_MOTOR = 7,
+  SET_MOTOR_SPEED = 8
 };
 
+/**
+* A network command is returned by read and parsed within Pod.cpp
+**/
+struct Network_Command {
+  //state transtitions
+  uint8_t id; //id is just a network command
+  uint8_t value;
+};
 
 class Network {
    public:
       /**
-      Constructor that sets up a network object
+      * Constructor that sets up a network object
+      * @param sensor object
       **/
       Network(Sensor * sen);
-
 
       /**
       * Starts the TCP server
@@ -66,8 +62,8 @@ class Network {
       * Blocking call--waits for client to connect
       * Exits if socket is closed`
       * @return the clientfd or -1
-      */
-      int accept();
+      **/
+      int accept_client();
  
       /**
       * Reads from socketfd, parses read bytes into a Network_Command struct
@@ -83,7 +79,6 @@ class Network {
       **/
       int write_data();
 
-
       /**
       * Closes the socket, ending all transmission with the LabView
       * Should be called from a signal handler
@@ -92,24 +87,17 @@ class Network {
 
       /**
       * Sends a UDP Datagram with sensor data
-      */
+      **/
       void send_packet();
 
     private:
-      #ifdef SIM
-          //private simulation implementation variables and functions
-      #else 
           
-          Sensor * sensor;
-          int socketfd;
-          int clientfd;
-          int udp_socket;
-          sockaddr_storage addr_dest = {};
-
-
-      #endif
+      Sensor * sensor;
+      int socketfd;
+      int clientfd;
+      int udp_socket;
+      sockaddr_storage addr_dest = {};
  
 };
-
 
 #endif
