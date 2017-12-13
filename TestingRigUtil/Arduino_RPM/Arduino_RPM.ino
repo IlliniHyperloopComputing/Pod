@@ -56,12 +56,12 @@ void loop() {
 
   i++;
   if(i == loops){
-    /*Serial.print(rpm1);
+    Serial.print(rpm1);
     Serial.print(" ");
     Serial.println(rpm2);
-    */
     
-    Serial.println(rpm1);
+    
+    //Serial.println(rpm1);
     i = 0;
   }
 }

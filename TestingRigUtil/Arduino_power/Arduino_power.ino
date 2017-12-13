@@ -56,18 +56,19 @@ void loop() {
 
   i++;
   if(i == loops){
-    Serial.print(analog_voltage1);
+    /*Serial.print(analog_voltage1);
     Serial.print(" ");    
     Serial.println(analog_amps1);
+    */
     
-    /*Serial.print(analog_voltage1);
+    Serial.print(analog_voltage1);
     Serial.print(" ");
     Serial.print(analog_amps1);
     Serial.print(" ");
     Serial.print(analog_voltage2);
     Serial.print(" ");
     Serial.println(analog_amps2);
-    */
+    
     i = 0;
   }
 }

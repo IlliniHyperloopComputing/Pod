@@ -31,7 +31,7 @@ if(len(use) == 0):
     print("No arguments! Exiting")
     exit()
 
-print("\tParsing these tests %s"%str(use))
+print("\tParsing these tests %s "% str(use))
 print("\tDual? = %s"%str(dual))
 
 test_names = list()
@@ -50,7 +50,7 @@ for i in range(0,len(metadata[:,0])):
         data_start.append(metadata[i,3])
         data_end.append(metadata[i,4])
 
-print("\tParsing these tests: %s", str(test_names))
+print("\tParsing these tests: %s" % str(test_names))
 
 turns = 6
 amp_base_1 = 867
@@ -193,7 +193,7 @@ clr = ['b','g','r','c','m','y','k','w',   'b','g','r','c','m','y','k','w']
 #plot specific data sets vs time
 
 if(dual):
-    f, (ax1, ax2, ax3, ax4) = plt.subplots(4,1, sharex=True)
+    f, (ax1, ax2, ax3, ax4) = plt.subplots(4,1, sharex=True, figsize = (20,10))
     
 for i in range(0, len(use)):
     if(not dual):
@@ -233,10 +233,16 @@ for i in range(0, len(use)):
     ax4.grid(b=True, which='major', color='0.65',linestyle='-')
     ax4.grid(b=True, which='minor', color='0.65',linestyle='-')
 
+    if(not dual):
+        f.savefig(output_directory+test_names[i]+"_all.png",bbox_inches='tight' )
+
+
+if(dual):
+    f.savefig(output_directory+test_names[i]+"_both_all.png",bbox_inches='tight' )
+
 
 
 #
-#plt.show()
 #
 ##plot general rpm vs force straight just windowed
 #for i in range(0, len(use)):
@@ -249,21 +255,27 @@ for i in range(0, len(use)):
 #    plt.figure()
 #
 #plt.show()
-#
-##plot rpm vs force
-#for i in range(0, len(use)):
-#    plt.plot(spec_rpm_avg[i], spec_force_avg[i], marker='.', color=clr[i], 
-#                    linestyle="None", label=(test_names[i]))
-#    plt.title(test_names[i]+" Avg RPM vs Force (N)")
-#    plt.xlabel("RPM")
-#    plt.ylabel("Force")
-#    plt.legend(loc='best')
-#    plt.figure()
-#
-#plt.show()
+
+#plot rpm vs force
+for i in range(0, len(use)):
+    fig, ax = plt.subplots(figsize = (20,10))
+    plt.plot(spec_rpm_avg[i], spec_force_avg[i], marker='.', color=clr[i], 
+                    linestyle="None", label=(test_names[i]))
+    plt.title(test_names[i]+" Avg RPM vs Force (N)")
+    plt.xlabel("RPM")
+    plt.ylabel("Force")
+    plt.legend(loc='best')
+    plt.grid(b=True, which='major', color='1',linestyle='-')
+    plt.grid(b=True, which='minor', color='0.10',linestyle='-')
+    ax.xaxis.set_major_locator(ticker.MultipleLocator(100))
+    ax.xaxis.set_minor_locator(ticker.MultipleLocator(50))
+    ax.yaxis.set_minor_locator(ticker.MultipleLocator(2))
+    fig.savefig(output_directory + test_names[i]+"_rpm_vs_force.png", bbox_inches='tight' )
+    plt.figure()
+
 
 #plot rpm vs force specific and all on the same graph
-fig, ax = plt.subplots()
+fig, ax = plt.subplots(figsize = (20,10))
 for i in range(0, len(use)):
     plt.plot(spec_rpm_avg[i], spec_force_avg[i], marker='.', color=clr[i], 
                     linestyle="None", label=(test_names[i]))
@@ -276,7 +288,9 @@ plt.grid(b=True, which='minor', color='0.10',linestyle='-')
 ax.xaxis.set_major_locator(ticker.MultipleLocator(100))
 ax.xaxis.set_minor_locator(ticker.MultipleLocator(50))
 ax.yaxis.set_minor_locator(ticker.MultipleLocator(2))
-plt.show()
+if(dual):
+    fig.savefig(output_directory + test_names[0].replace("right",'').replace("left", '')+"dual_rpm_vs_force.png", bbox_inches='tight' )
+    
 plt.figure()
 
 ##plot rpm vs amps
