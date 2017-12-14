@@ -1,6 +1,10 @@
 #include "Pod.h"
+#include "Spi.h"
+
+#define timestep 10000
 
 using namespace std;
+Spi * spi;
 Sensor * sensor;
 Network * network;
 Xmega * xmega;
@@ -8,7 +12,7 @@ Xmega * xmega;
 bool running = true;
 int accumulated_error = 0;
 volatile bool running = true;
-long long last_poll = -1;
+long long last_poll = -1; //last time beaglebone polled XMEGA
 
 
 void write_loop(){
@@ -55,12 +59,24 @@ void network_loop(){
 
 void logic_loop(){
   while(running){
-    xmega->read();
-    sensor->update_buffers();
+    long long now = get_elapsed_time(); 
+    long long delta = now - last_poll;
+    if(delta > timestep){
+      Xmega_Command command = xmega->transfer();
+      if(command != X_NONE){
+        print_info("Command %s sent at time %d\n", xmega->x_command_to_string(command), now);
+      }
+      sensor->update_buffers();
+      // TODO PID loop
+
+    }
+    //TODO: Change to actual value at some point
+    
+    usleep(100);//Need to yield, otherwise this will block other threads
   }
 }
 
-float pid_controller(int actual_rpm, float linear_velocity) {
+float pid_controller(int actual_rpm, int set_rpm) {
 	long long now = get_elapsed_time();
 	long long delta = 0;
 	
@@ -68,21 +84,16 @@ float pid_controller(int actual_rpm, float linear_velocity) {
 		delta = now - last_poll;
 	}
 
-	//rpm_a * circumference / 60
-	float tangential_vel = actual_rpm * 1.256637061 / 60;
-	float rel_tangential_vel = tangential_vel - linear_velocity;
-	float rel_rpm = rel_tangential_vel * 60 / 1.256637061;
-	//1000 because thats the point of diminishing returns
-	float error = rel_rpm - 1000;
+	float error = actual_rpm - set_rpm;
 	float kp = 1;
 	float ki = 1;
 
 	accumulated_error += error * delta;
-	float new_rpm = kp * error + ki * accumulated_error;
+	float new_rpm_delta = kp * error + ki * accumulated_error;
 	
 	//clamp between 0 and 1 for motor
 	last_poll = now;
-	return clamp(new_rpm,0.0,1.0);
+	return clamp(new_rpm_delta,-0.1,0.1);
 }
 
 void int_handler(int signo){
@@ -99,8 +110,14 @@ int main(){
   // parsing, setup, etc
   signal(SIGINT, int_handler);
   signal(SIGPIPE, pipe_handler);
-  xmega = new Xmega();
-  sensor = new Sensor(xmega);
+  spi = NULL;
+  #ifndef SIM
+  // setup SPI 
+  #endif
+ 
+
+  xmega = new Xmega(spi); 
+  sensor = new Sensor(spi);
   network = new Network(sensor);
   const char* host = "127.0.0.1";
   const char* port = "8800";
@@ -112,3 +129,4 @@ int main(){
   logic_thread.join();
   return 0;
 }
+
