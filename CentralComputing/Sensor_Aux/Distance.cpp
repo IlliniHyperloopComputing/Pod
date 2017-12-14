@@ -23,11 +23,10 @@ Arbitrary_Data distance_calculation(Arbitrary_Data raw) {
   return calculated;                                                        //Copy out calculated to the calling function
 }
 
-void distance_parse(uint8_t * buffer, Arbitrary_Data raw) {
+void distance_parse(Spi * spi, Arbitrary_Data raw) {
   Distance_Raw * d_raw = (Distance_Raw *)raw.data;                           // Convert the raw data into a useable struct
-  // These are placeholders for now. They need to be updated with real values
-  d_raw->tape_count = (int) *(buffer + TAPE_OFFSET);                         // Fetch the tape count from the buffer and store
-  d_raw->encoder_count = (int) *(buffer  + ENCODER_COUNT_OFFSET);            // Fetch the encoder count from the buffer and store 
+  d_raw->tape_count = spi->get_data(XMEGA2, TAPE_COUNT_INDEX);
+  d_raw->encoder_count = spi->get_data(XMEGA1, ENCODER_COUNT_INDEX);
 }
 
 
