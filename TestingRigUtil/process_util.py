@@ -116,7 +116,6 @@ for i in range(0, len(use)):
     elif(dual and i >= 1):
         amp_base_t = amp_base_2
 
-    # This exists to divide RPM data in half if necessary
     rpm_slope = 1.0
     if(rpm_double): 
         rpm_slope = 0.5
@@ -380,7 +379,6 @@ if(combo):
         fig.savefig(output_directory + test_names[0].replace("right",'').replace("left", '')+"dual_rpm_vs_amp.png", bbox_inches='tight' )
     else:
         fig.savefig(output_directory + "compare_"+ str(use).replace("[",'').replace("]", '').replace(",","-").replace(" ","")+"_avg_rpm_vs_amp.png", bbox_inches='tight' )
-
     
 plt.close(fig)
 plt.figure()
