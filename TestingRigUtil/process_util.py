@@ -17,7 +17,7 @@ output_directory = "output_data/"
 use = []
 dual = False
 do_show = False
-combo = False
+do_compare = False
 remove = False
 rpm_double = False
 
@@ -27,8 +27,8 @@ for i in range(1,len(sys.argv)):
         dual = True
     elif(sys.argv[i] == "show"):
         do_show = True
-    elif(sys.argv[i] == "combo"):
-        combo = True
+    elif(sys.argv[i] == "compare"):
+        do_compare = True
     elif(sys.argv[i] == "remove"):
         remove = True
     elif(sys.argv[i] == "rpm_double"):
@@ -49,6 +49,7 @@ use = sorted(use)
 
 print("\tParsing these tests %s "% str(use))
 print("\tDual? = %s"%str(dual))
+print("\tCompare? = %s"%str(do_compare))
 print("\tRemove? = %s"%str(remove))
 print("\tRPM Double? = %s"%str(remove))
 
@@ -243,7 +244,7 @@ print("\tBegin Plotting")
 clr = ['b','g','r','c','m','y','k',  'b','g','r','c','m','y','k',
        'b','g','r','c','m','y','k',  'b','g','r','c','m','y','k']
 mkr = ['.','1','2','3','4','8','s',  'p','+','o','v','^','<','>',
-       '*','h','H','x','X','D','d',  '|','_','.','1','2','3','4']
+       '*','h','H','x','x','D','d',  '|','_','.','1','2','3','4']
 #plot specific data sets vs time
 
 if(dual):
@@ -334,7 +335,7 @@ for i in range(0, len(use)):
     plt.figure()
 
 
-if(combo):
+if(do_compare):
     #plot rpm vs force specific and all on the same graph
     fig, ax = plt.subplots(figsize = (20,10))
     for i in range(0, len(use)):
