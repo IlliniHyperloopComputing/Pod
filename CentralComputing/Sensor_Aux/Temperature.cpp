@@ -13,3 +13,4 @@ void temperature_parse(Spi * spi, Arbitrary_Data raw) {
   t_raw->wheel_temp = spi->get_data(XMEGA2, THERMOCOUPLE_INDEX_5);
 
 }
+
