@@ -16,9 +16,23 @@ output_directory = "output_data/"
 
 use = []
 dual = False
+do_show = False
+combo = False
+remove = False
+rpm_double = False
+
+print(sys.argv)
 for i in range(1,len(sys.argv)):
     if(sys.argv[i] == "dual"):
         dual = True
+    elif(sys.argv[i] == "show"):
+        do_show = True
+    elif(sys.argv[i] == "combo"):
+        combo = True
+    elif(sys.argv[i] == "remove"):
+        remove = True
+    elif(sys.argv[i] == "rpm_double"):
+        rpm_double = True
     else:
         try:
             tmp = int(sys.argv[i])
@@ -35,6 +49,8 @@ use = sorted(use)
 
 print("\tParsing these tests %s "% str(use))
 print("\tDual? = %s"%str(dual))
+print("\tRemove? = %s"%str(remove))
+print("\tRPM Double? = %s"%str(remove))
 
 test_names = list()
 file_names = list()
@@ -64,12 +80,12 @@ rpm_cutoff = 6000.0
 force_lower_bandwidth = 0
 force_upper_bandwidth = 60
 
-spec_times = [0]*len(use)
-spec_rpm   = [0]*len(use)
-spec_volts = [0]*len(use)
-spec_amps  = [0]*len(use)
-spec_force = [0]*len(use)
-spec_temp  = [0]*len(use)
+spec_times = ([0]*len(use))
+spec_rpm   = ([0]*len(use))
+spec_volts = ([0]*len(use))
+spec_amps  = ([0]*len(use))
+spec_force = ([0]*len(use))
+spec_temp  = ([0]*len(use))
 
 # used to store same data as above, but windowed
 wind_times = [list() for i in range(0, len(use))]
@@ -93,22 +109,56 @@ for i in range(0, len(use)):
         if(end_idx == -1 and times_array[j] >= data_end[i]):
             end_idx = j
 
+    # Set the amp base. slightly different between two tests, so it is reflected here 
     amp_base_t = amp_base_1
     if(not dual):
         amp_base_t = amp_base_1
     elif(dual and i >= 1):
         amp_base_t = amp_base_2
 
+    # This exists to divide RPM data in half if necessary
+    rpm_slope = 1.0
+    if(rpm_double): 
+        rpm_slope = 0.5
+    
+    # used if we are trying to remove duplicates
+    last_vector = dd[0, 2:8]
+    
+    if( not remove):
+        spec_times[i] = dd[start_idx:end_idx,0]
+        spec_rpm[i]   = dd[start_idx:end_idx,2]
+        spec_volts[i] = (dd[start_idx:end_idx,3] * volt_slope )
+        spec_amps[i]  = (((dd[start_idx:end_idx,4]) - amp_base_t) * amp_slope)
+        spec_force[i] = dd[start_idx:end_idx,5]
+        spec_temp[i]  = dd[start_idx:end_idx,7]
+    else:
+        print("\tRemoving extra data for test: %s" % str(test_names[i]))
+        spec_times[i] = list()
+        spec_rpm[i] = list()
+        spec_volts[i] = list()
+        spec_amps[i] = list()
+        spec_force[i] = list()
+        spec_temp[i] = list()
 
-    spec_times[i] = dd[start_idx:end_idx,0]
-    spec_rpm[i]   = dd[start_idx:end_idx,2]
-    spec_volts[i] = (dd[start_idx:end_idx,3] * volt_slope )
-    spec_amps[i]  = (((dd[start_idx:end_idx,4]) - amp_base_t) * amp_slope)
-    spec_force[i] = dd[start_idx:end_idx,5]
-    spec_temp[i]  = dd[start_idx:end_idx,7]
+        num_removed = 0
+        num_entries = len(dd[start_idx:end_idx,0])
+        print("\t\tChecking %d entries for duplicates" % num_entries)
+        for j in range(start_idx, start_idx + num_entries):
+            if(not np.array_equal( (dd[j, 2:8]) , last_vector)):
+                last_vector = dd[j, 2:8]
 
-    print("\t\tStart idx: %d"% start_idx)
-    print("\t\tEnd   idx: %d"% end_idx)
+                spec_times[i].append(dd[j,0])
+                spec_rpm[i].append(dd[j,2] * rpm_slope)
+                spec_volts[i].append(dd[j,3]*volt_slope)
+                spec_amps[i].append((dd[j,4] - amp_base_t) * amp_slope)
+                spec_force[i].append(dd[j,5])
+                spec_temp[i].append(dd[j,7])
+            else:
+                num_removed = num_removed+1
+
+        print("\t\tRemoved %d entries" %num_removed)
+    print("\t\tStart idx: %d, Start time: %.4f"% (start_idx, spec_times[i][0]))
+    print("\t\tEnd   idx: %d, End time %.4f"% (end_idx, spec_times[i][-1]))
     
 print("\tAll data loaded")
 
@@ -285,50 +335,51 @@ for i in range(0, len(use)):
     plt.figure()
 
 
-#plot rpm vs force specific and all on the same graph
-fig, ax = plt.subplots(figsize = (20,10))
-for i in range(0, len(use)):
-    plt.plot(spec_rpm_avg[i], spec_force_avg[i], marker=mkr[i], color=clr[i], 
-                    linestyle="None", label=(test_names[i]))
-plt.title("Avg RPM vs Force (N)")
-plt.xlabel("RPM")
-plt.ylabel("Force")
-plt.legend(loc='best')
-plt.grid(b=True, which='major', color='1',linestyle='-')
-plt.grid(b=True, which='minor', color='0.10',linestyle='-')
-ax.xaxis.set_major_locator(ticker.MultipleLocator(100))
-ax.xaxis.set_minor_locator(ticker.MultipleLocator(50))
-ax.yaxis.set_minor_locator(ticker.MultipleLocator(2))
-print("\tSaving avg RPM vs Force plot for all tests")
-if(dual):
-    fig.savefig(output_directory + test_names[0].replace("right",'').replace("left", '')+"dual_rpm_vs_force.png", bbox_inches='tight' )
-else:
-    fig.savefig(output_directory + "compare_"+ str(use).replace("[",'').replace("]", '').replace(",","-").replace(" ","")+"_avg_rpm_vs_force.png", bbox_inches='tight' )
+if(combo):
+    #plot rpm vs force specific and all on the same graph
+    fig, ax = plt.subplots(figsize = (20,10))
+    for i in range(0, len(use)):
+        plt.plot(spec_rpm_avg[i], spec_force_avg[i], marker=mkr[i], color=clr[i], 
+                        linestyle="None", label=(test_names[i]))
+    plt.title("Avg RPM vs Force (N)")
+    plt.xlabel("RPM")
+    plt.ylabel("Force")
+    plt.legend(loc='best')
+    plt.grid(b=True, which='major', color='1',linestyle='-')
+    plt.grid(b=True, which='minor', color='0.10',linestyle='-')
+    ax.xaxis.set_major_locator(ticker.MultipleLocator(100))
+    ax.xaxis.set_minor_locator(ticker.MultipleLocator(50))
+    ax.yaxis.set_minor_locator(ticker.MultipleLocator(2))
+    print("\tSaving avg RPM vs Force plot for all tests")
+    if(dual):
+        fig.savefig(output_directory + test_names[0].replace("right",'').replace("left", '')+"dual_rpm_vs_force.png", bbox_inches='tight' )
+    else:
+        fig.savefig(output_directory + "compare_"+ str(use).replace("[",'').replace("]", '').replace(",","-").replace(" ","")+"_avg_rpm_vs_force.png", bbox_inches='tight' )
 
-    
-plt.close(fig)
-plt.figure()
+        
+    plt.close(fig)
+    plt.figure()
 
-#plot rpm vs amps for every test on the same graph
-fig, ax = plt.subplots(figsize = (20,10))
-for i in range(0, len(use)):
-    plt.plot(spec_rpm_avg[i], spec_amps_avg[i], marker=mkr[i], color=clr[i], 
-                    linestyle="None", label=(test_names[i]))
-plt.title("Avg RPM vs Amps (A) ")
-plt.xlabel("RPM")
-plt.ylabel("Amps")
-plt.legend(loc='best')
-plt.grid(b=True, which='major', color='1',linestyle='-')
-plt.grid(b=True, which='minor', color='0.10',linestyle='-')
-ax.xaxis.set_major_locator(ticker.MultipleLocator(100))
-ax.xaxis.set_minor_locator(ticker.MultipleLocator(50))
-ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
-ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.5))
-print("\tSaving avg RPM vs AMP plot for all tests")
-if(dual):
-    fig.savefig(output_directory + test_names[0].replace("right",'').replace("left", '')+"dual_rpm_vs_amp.png", bbox_inches='tight' )
-else:
-    fig.savefig(output_directory + "compare_"+ str(use).replace("[",'').replace("]", '').replace(",","-").replace(" ","")+"_avg_rpm_vs_amp.png", bbox_inches='tight' )
+    #plot rpm vs amps for every test on the same graph
+    fig, ax = plt.subplots(figsize = (20,10))
+    for i in range(0, len(use)):
+        plt.plot(spec_rpm_avg[i], spec_amps_avg[i], marker=mkr[i], color=clr[i], 
+                        linestyle="None", label=(test_names[i]))
+    plt.title("Avg RPM vs Amps (A) ")
+    plt.xlabel("RPM")
+    plt.ylabel("Amps")
+    plt.legend(loc='best')
+    plt.grid(b=True, which='major', color='1',linestyle='-')
+    plt.grid(b=True, which='minor', color='0.10',linestyle='-')
+    ax.xaxis.set_major_locator(ticker.MultipleLocator(100))
+    ax.xaxis.set_minor_locator(ticker.MultipleLocator(50))
+    ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
+    ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.5))
+    print("\tSaving avg RPM vs AMP plot for all tests")
+    if(dual):
+        fig.savefig(output_directory + test_names[0].replace("right",'').replace("left", '')+"dual_rpm_vs_amp.png", bbox_inches='tight' )
+    else:
+        fig.savefig(output_directory + "compare_"+ str(use).replace("[",'').replace("]", '').replace(",","-").replace(" ","")+"_avg_rpm_vs_amp.png", bbox_inches='tight' )
 
     
 plt.close(fig)

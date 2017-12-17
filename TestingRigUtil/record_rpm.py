@@ -5,6 +5,7 @@ import time
 import datetime
 import signal
 import sys
+import math
 
 ddata = False   # "Double data". A special case where everything recieved from
                 # the arduinos (except force) is duplicated. 
@@ -29,7 +30,7 @@ baud_rate_arduino = 115200
 serial_port_arduino1 = '/dev/ttyACM1' 
 baud_rate_arduino1 = 115200
 
-serial_port_arduino2 = '/dev/ttyUSB1' 
+serial_port_arduino2 = '/dev/ttyUSB0'
 baud_rate_arduino2 = 115200
 
 # Omega settings
@@ -47,12 +48,12 @@ except:
     print("\tTry 'sudo'?")
     exit()
 
-try:
-    ser_omega = serial.Serial(serial_port_omega, baud_rate_omega)
-except:
-    print("Failed to open omega serial port, exiting")
-    print("\tTry 'sudo'?")
-    exit()
+#try:
+#    #ser_omega = serial.Serial(serial_port_omega, baud_rate_omega)
+#except:
+#    print("Failed to open omega serial port, exiting")
+#    print("\tTry 'sudo'?")
+#    exit()
 
 
 output_file_name = output_txt_prefix + datetime.datetime.now().isoformat('T')[:-7] #remove the last 7 characters, which are the fractions of a second
@@ -73,10 +74,13 @@ force_line  = ""
 thermo_line = ""
 power_line  = ""
 
+last_rpm = -1
+this_rpm = 0
+
 new_data = False
 start = time.time()
 while (ctrl_c == 0):
-    sl = select.select([sys.stdin, ser_arduino, ser_arduino1, ser_arduino2, ser_omega,], [], [], 0.0)[0]
+    sl = select.select([sys.stdin, ser_arduino, ser_arduino1, ser_arduino2, ], [], [], 0.0)[0]
 
     #read from stdin
     if (sys.stdin in sl):
@@ -89,6 +93,16 @@ while (ctrl_c == 0):
         rpm_line = ser_arduino.readline()
         rpm_line = rpm_line.decode("utf-8",errors="replace").replace('\n',' ').replace('\r','')
         new_data = True
+        try:
+            now = int(rpm_line)
+            if(last_rpm == -1):
+                last_rpm = now
+            if(last_rpm != now):
+                this_rpm = (last_rpm + now)/2
+            rpm_line = str(int(this_rpm))
+        except:
+            print("bad rpm data")
+
 
     #read from arduino Thermo1
     if (ser_arduino1 in sl): 
@@ -103,17 +117,33 @@ while (ctrl_c == 0):
         new_data = True
 
     #read from omega
-    if (ser_omega in sl): 
-        force_line = ser_omega.readline()
-        force_line = force_line.decode("utf-8").replace('\n',' ').replace('\r','')
-        new_data = True
+    #if (ser_omega in sl): 
+    #    force_line = ser_omega.readline()
+    #    force_line = force_line.decode("utf-8").replace('\n',' ').replace('\r','')
+    #    new_data = True
 
 
     if (new_data):
         stamp = time.time() - start
         output_string = ("%.4f %d %s %s %s %s\n" % (stamp, special, rpm_line, power_line, force_line, thermo_line))
+
+        power_p = power_line.split(' ')
+        amp_normal = 906
+        amp_slope = 300.0/ 0.625 / 32768 * 6.144 / 6
+        
+
         print("                                                                     ", end='\r')
-        print(output_string.replace('\n',''), end='\r')
+        #print(output_string.replace('\n',''), end='\r')
+
+        if(len(power_p) > 1 and stamp > writing_delay/4):
+            output_string_2 = ("%.4f RPM: %s Vel: %.3f   Amp: %.2f  Temp: %s C" % 
+                (stamp, 
+                str(int(rpm_line)/2),
+                (int(rpm_line)/2 * math.pi * 13.5 / 528), 
+                (amp_slope * (int(power_p[1])-amp_normal)), 
+                thermo_line))
+
+            print(output_string_2.replace('\n',''), end='\r')
 
         if(stamp > writing_delay):
             if(not ddata): #Normal case
@@ -131,5 +161,5 @@ while (ctrl_c == 0):
     new_data = False
 ser_arduino.close()
 ser_arduino1.close()
-ser_omega.close()
+#ser_omega.close()
 

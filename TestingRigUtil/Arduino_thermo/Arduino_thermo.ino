@@ -45,14 +45,14 @@ void setup() {
 
 void loop() {
     
-   /*double c1 = thermo1.readCelsius();
-   Serial.println(c1);*/
-   
    double c1 = thermo1.readCelsius();
+   Serial.println(c1);
+   
+   /*double c1 = thermo1.readCelsius();
    double c2 = thermo2.readCelsius();
    Serial.print(c1);
    Serial.print(" ");
-   Serial.println(c2);
+   Serial.println(c2);*/
    
    
    

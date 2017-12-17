@@ -40,7 +40,7 @@ void loop() {
     current1 = LOW;     
   }
   
-  val = digitalRead(rpm_pin2);
+  /*val = digitalRead(rpm_pin2);
   if(val == HIGH && current2 == LOW) {
     //rising edge
     current2 = HIGH;
@@ -51,17 +51,18 @@ void loop() {
   } else if(val == LOW && current2 == HIGH){
     //falling edge
     current2 = LOW;     
-  }
+  }*/
   
 
   i++;
   if(i == loops){
-    Serial.print(rpm1);
+    /*Serial.print(rpm1);
     Serial.print(" ");
     Serial.println(rpm2);
+    */
     
     
-    //Serial.println(rpm1);
+    Serial.println(rpm1);
     i = 0;
   }
 }

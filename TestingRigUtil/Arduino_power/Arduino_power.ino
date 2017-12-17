@@ -51,23 +51,23 @@ void loop() {
   
   if(i == loops/2 + 4){
     //analog_amps = analogRead(amps_pin);
-    analog_amps2 = ads.readADC_SingleEnded(3);
+    //analog_amps2 = ads.readADC_SingleEnded(3);
   }
 
   i++;
   if(i == loops){
-    /*Serial.print(analog_voltage1);
+    Serial.print(analog_voltage1);
     Serial.print(" ");    
     Serial.println(analog_amps1);
-    */
     
-    Serial.print(analog_voltage1);
+    
+    /*Serial.print(analog_voltage1);
     Serial.print(" ");
     Serial.print(analog_amps1);
     Serial.print(" ");
     Serial.print(analog_voltage2);
     Serial.print(" ");
-    Serial.println(analog_amps2);
+    Serial.println(analog_amps2);*/
     
     i = 0;
   }
