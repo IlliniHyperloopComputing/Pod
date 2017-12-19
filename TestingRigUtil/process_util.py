@@ -51,7 +51,7 @@ print("\tParsing these tests %s "% str(use))
 print("\tDual? = %s"%str(dual))
 print("\tCompare? = %s"%str(do_compare))
 print("\tRemove? = %s"%str(remove))
-print("\tRPM Double? = %s"%str(remove))
+print("\tRPM Double? = %s"%str(rpm_double))
 
 test_names = list()
 file_names = list()
@@ -126,7 +126,7 @@ for i in range(0, len(use)):
     
     if( not remove):
         spec_times[i] = dd[start_idx:end_idx,0]
-        spec_rpm[i]   = dd[start_idx:end_idx,2]
+        spec_rpm[i]   = dd[start_idx:end_idx,2] * rpm_slope
         spec_volts[i] = (dd[start_idx:end_idx,3] * volt_slope )
         spec_amps[i]  = (((dd[start_idx:end_idx,4]) - amp_base_t) * amp_slope)
         spec_force[i] = dd[start_idx:end_idx,5]

@@ -70,7 +70,7 @@ writing_delay = 8.0 #when initially reading serial ports in, there are transient
 
 special = 8888
 rpm_line    = ""
-force_line  = ""
+force_line  = "0.0 N"
 thermo_line = ""
 power_line  = ""
 
@@ -93,15 +93,15 @@ while (ctrl_c == 0):
         rpm_line = ser_arduino.readline()
         rpm_line = rpm_line.decode("utf-8",errors="replace").replace('\n',' ').replace('\r','')
         new_data = True
-        try:
-            now = int(rpm_line)
-            if(last_rpm == -1):
-                last_rpm = now
-            if(last_rpm != now):
-                this_rpm = (last_rpm + now)/2
-            rpm_line = str(int(this_rpm))
-        except:
-            print("bad rpm data")
+        #try:
+        #    now = int(rpm_line)
+        #    if(last_rpm == -1):
+        #        last_rpm = now
+        #    if(last_rpm != now):
+        #        this_rpm = (last_rpm + now)/2
+        #    rpm_line = str(int(this_rpm))
+        #except:
+        #    print("bad rpm data")
 
 
     #read from arduino Thermo1
