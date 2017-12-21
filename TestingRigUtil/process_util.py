@@ -375,8 +375,8 @@ if(do_compare):
     plt.grid(b=True, which='minor', color='0.10',linestyle='-')
     ax.xaxis.set_major_locator(ticker.MultipleLocator(100))
     ax.xaxis.set_minor_locator(ticker.MultipleLocator(50))
-    ax.yaxis.set_major_locator(ticker.MultipleLocator(1))
-    ax.yaxis.set_minor_locator(ticker.MultipleLocator(0.5))
+    ax.yaxis.set_major_locator(ticker.MultipleLocator(5))
+    ax.yaxis.set_minor_locator(ticker.MultipleLocator(1))
     print("\tSaving avg RPM vs AMP plot for all tests")
     if(dual):
         fig.savefig(output_directory + test_names[0].replace("right",'').replace("left", '')+"dual_rpm_vs_amp.png", bbox_inches='tight' )
