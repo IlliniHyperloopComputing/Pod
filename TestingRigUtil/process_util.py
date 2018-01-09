@@ -316,6 +316,26 @@ if(not do_compare):
     #
     #plt.show()
 
+    #plot RPM vs time
+    #for i in range(0, len(use)):
+    #    fig, ax = plt.subplots(figsize = (20,10))
+
+    #    plt.plot(wind_times[i], wind_rpm[i], marker='.', color=clr[i], 
+    #                    linestyle="None", label=(test_names[i]))
+    #    plt.title(test_names[i]+" Avg RPM vs Force (N)")
+    #    plt.xlabel("RPM")
+    #    plt.ylabel("Time")
+    #    plt.legend(loc='best')
+    #    plt.grid(b=True, which='major', color='0',linestyle='-')
+    #    plt.grid(b=True, which='minor', color='.5',linestyle='-')
+    #    ax.xaxis.set_major_locator(ticker.MultipleLocator(50))
+    #    ax.xaxis.set_minor_locator(ticker.MultipleLocator(10))
+    #    ax.yaxis.set_minor_locator(ticker.MultipleLocator(200))
+    #    print("\tDisplaying RPM vs time plot for test %d"% use[i])
+    #    plt.show()
+    #    plt.close(fig)
+    #    plt.figure()
+
     #plot rpm vs force
     for i in range(0, len(use)):
         fig, ax = plt.subplots(figsize = (20,10))
