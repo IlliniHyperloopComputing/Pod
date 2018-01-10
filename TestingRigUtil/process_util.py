@@ -362,7 +362,7 @@ if(do_compare):
     for i in range(0, len(use)):
         plt.plot(spec_rpm_avg[i], spec_force_avg[i], marker=mkr[i], color=clr[i], 
                         linestyle="None", label=(test_names[i]))
-    plt.title("Avg RPM vs Force (N)")
+    plt.title("RPM vs Force (N)")
     plt.xlabel("RPM")
     plt.ylabel("Force (N)")
     plt.legend(loc='best')
@@ -387,7 +387,7 @@ if(do_compare):
     for i in range(0, len(use)):
         plt.plot(spec_rpm_avg[i], spec_amps_avg[i], marker=mkr[i], color=clr[i], 
                         linestyle="None", label=(test_names[i]))
-    plt.title("Avg RPM vs Amps (A) ")
+    plt.title("RPM vs Amps (A) ")
     plt.xlabel("RPM")
     plt.ylabel("Amps")
     plt.legend(loc='best')
