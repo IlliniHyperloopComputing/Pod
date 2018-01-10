@@ -1,12 +1,9 @@
 @t==0
-	a=10
+	a=2
 	fric=.1
-	?Starting simulation
-@ t==4
-	?
-	a=0
+@t==2.1
+	?test
 @ t==10
-	?Stuff here is good
 	fric=0.01
 	drag=0
 	a=2
