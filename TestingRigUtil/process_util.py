@@ -364,7 +364,7 @@ if(do_compare):
                         linestyle="None", label=(test_names[i]))
     plt.title("Avg RPM vs Force (N)")
     plt.xlabel("RPM")
-    plt.ylabel("Force")
+    plt.ylabel("Force (N)")
     plt.legend(loc='best')
     plt.grid(b=True, which='major', color='1',linestyle='-')
     plt.grid(b=True, which='minor', color='0.10',linestyle='-')
