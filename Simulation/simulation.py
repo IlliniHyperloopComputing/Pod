@@ -3,44 +3,17 @@ import time
 from parser import parseFromFile 
 import os
 
-delay = .05
-ts = os.get_terminal_size()
+#delay = .05
+#ts = os.get_terminal_size()
 
-numbars = ts.columns - 40
-
-data = {
-"dist":0.0,
-"track_len":1400.0,
-"vel":0.0,
-"accel":1,
-"deltaT":0.1,
-"epoch": 0.0,
-"drag":0.0,
-"delta_drag":0.0,
-"fric": 0.0,
-"delta_fric":0.0
-}
-'''
-dist = 0.0
-track_len = 1400.0
-vel = 0.0
-accel = 1
-deltaT = 0.1
-epoch = 0.0
-drag = 0.0
-delta_drag = 0.0
-fric = 0.0
-delta_fric = 0.0
-'''
-print("Simulation")
+#numbars = ts.columns - 40
 
 def sign(a):
 	if (a>0): return 1
 	if (a==0): return 0
 	return -1
 
-def update():#(dist, vel, accel):
-	global data
+def update(data):#(dist, vel, accel):
 	# handle drag
 	# accel due to drag
 	
@@ -77,9 +50,7 @@ def update():#(dist, vel, accel):
 
 	return (data["dist"], data["vel"])
 
-def executeStatement(statement):
-	#global dist, vel, accel, deltaT, drag, delta_drag, fric, delta_fric
-	global data
+def executeStatement(statement, data):
 	varname = statement[0]
 	value = float(statement[1])
 	
@@ -98,14 +69,13 @@ def executeStatement(statement):
 	elif (varname == "%fric"):
 		data["delta_fric"] = value	
 
-def executeBlock(block):
-	global data
+def executeBlock(block, data):
 	stat = block['stat']
 	for s in stat:
 		s = s.split('=')
 		
 		if len(s) == 2:
-			executeStatement(s)
+			executeStatement(s, data)
 		elif (s[0][0] == '?'):
 			# print everything after flag
 			print(s[0][1:])
@@ -115,9 +85,8 @@ Should a block be executed
 '''
 startTime = 0.0
 nextBlock = 0
-def handleStruct(struct, newTime):
+def handleStruct(struct, data):
 	global nextBlock
-	global data
 	if (struct is None):
 		return
 	
@@ -132,12 +101,10 @@ def handleStruct(struct, newTime):
 		# check if time has crossed over
 		#print(newTime - float(condl[1]))
 		if ( float(condl[1]) - data["epoch"] < 0):
-			executeBlock(block)
+			executeBlock(block, data)
 			nextBlock += 1
 
-def printStatus():
-	global data
-		
+def printStatus(data, numbars):
 	vel = data["vel"]
 	accel = data["accel"]
 	dist = data["dist"]
@@ -157,26 +124,3 @@ def printStatus():
 	sys.stdout.write('%s|%s> <d:%.2f v:%.2f a:%.2f t:%d>\r' % (bar, spaces, dist, vel if abs(vel) >= 0.001 else 0, accel - accel_fric - accel_drag, epoch))
 	sys.stdout.flush()
 	#print(epoch, dist, vel, accel, "\r")
-
-struct = None
-if __name__ == "__main__":
-	if (len(sys.argv) > 2):
-		print("Include a single argument pointing to a .sym file")
-	elif len(sys.argv) == 2:
-		struct = parseFromFile(sys.argv[1])
-		#print(json.dumps(struct, indent=4))
-	#epoch = data["epoch"]
-
-	startTime = time.time()
-	printStatus()
-	oldTime = time.time()
-	while data["epoch"] < 200:
-		newTime = time.time()
-		handleStruct(struct, data["epoch"])
-		deltaT = newTime-oldTime
-		data["deltaT"] = deltaT
-		oldTime = time.time()
-		update()
-		data["epoch"] = data["epoch"] + deltaT
-		printStatus()
-	print()
