@@ -1,6 +1,7 @@
 import sys
 import time
 from parser import parseFromFile 
+from parser import is_number
 import os
 
 #delay = .05
@@ -50,9 +51,12 @@ def update(data):#(dist, vel, accel):
 
 	return (data["dist"], data["vel"])
 
-def executeStatement(statement, data):
+def executeStatement(statement, data, variables):
 	varname = statement[0]
-	value = float(statement[1])
+	if is_number(statement[1]):
+		value = float(statement[1])
+	else:
+		value = nameToValue(variables, statement[1])
 	
 	if (varname == "a" or varname == "%v"):
 		data["accel"] = value
@@ -67,25 +71,72 @@ def executeStatement(statement, data):
 	elif (varname == "fric"):
 		data["fric"] = value
 	elif (varname == "%fric"):
-		data["delta_fric"] = value	
+		data["delta_fric"] = value
+	else:
+		print("Unknown variable", varname)
 
-def executeBlock(block, data):
+def removeReplacer(varname, replace):
+	if (varname == "a" or varname == "%v"):
+		del replace["accel"]
+	elif (varname == "v" or varname == "%x"):
+		del replace["vel"]
+	elif (varname == "x"):
+		del replace["dist"]
+	elif (varname == "drag"):
+		del replace["drag"]
+	elif (varname == "%drag"):
+		del replace["delta_drag"]
+	elif (varname == "fric"):
+		del replace["fric"]
+	elif (varname == "%fric"):
+		del replace["delta_fric"]
+
+def nameToValue(data, varname):
+	if (varname == "a" or varname == "%v"):
+		return data["accel"]
+	elif (varname == "v" or varname == "%x"):
+		return data["vel"]
+	elif (varname == "x"):
+		return data["dist"]
+	elif (varname == "drag"):
+		return data["drag"]
+	elif (varname == "%drag"):
+		return data["delta_drag"]
+	elif (varname == "fric"):
+		return data["fric"]
+	elif (varname == "%fric"):
+		return data["delta_fric"]
+	else:
+		return 0
+
+def executeBlock(block, data, replace):
 	stat = block['stat']
 	for s in stat:
 		s = s.split('=')
-		
 		if len(s) == 2:
-			executeStatement(s, data)
+			temp = data
+			if s[0][0] is '$':
+				temp = replace
+				s[0] = s[0][1:]
+			executeStatement(s, temp, data)
 		elif (s[0][0] == '?'):
-			# print everything after flag
-			print(s[0][1:])
+			if s[0][1:] is "*":
+				print(data)
+				print("----")
+				print(replace)
+			else:
+				# print everything after flag
+				print(s[0][1:])
+		elif s[0][0] is '$':
+			#removes the replace field for this variable
+			removeReplacer(s[0][1:], replace)
 '''
 Handles the struct of instructions
 Should a block be executed
 '''
 startTime = 0.0
 nextBlock = 0
-def handleStruct(struct, data):
+def handleStruct(struct, data, replace):
 	global nextBlock
 	if (struct is None):
 		return
@@ -101,7 +152,7 @@ def handleStruct(struct, data):
 		# check if time has crossed over
 		#print(newTime - float(condl[1]))
 		if ( float(condl[1]) - data["epoch"] < 0):
-			executeBlock(block, data)
+			executeBlock(block, data, replace)
 			nextBlock += 1
 
 def printStatus(data, numbars):

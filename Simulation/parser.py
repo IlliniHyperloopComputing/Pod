@@ -1,5 +1,6 @@
 import json
 import sys
+
 def is_number(s):
 	try:
 		complex(s)
@@ -27,7 +28,7 @@ def validateStatement(line, line_no):
 		print("\tUnknown operator", fL)
 		return False
 	
-	if ('=' not in line):
+	if (fL not in ['$'] and '=' not in line):
 		print("Error on line number", line_no)
 		print("\t" + line)
 		print("\tStatement does not contain an assignment")
@@ -35,7 +36,7 @@ def validateStatement(line, line_no):
 	
 	splited = line.split("=")
 	
-	if (len(splited) > 2 or splited[1] == ''):
+	if (len(splited) > 2 or (len(splited) is 2 and splited[1] == '')):
 		print("Error on line number", line_no)
 		print("\t" + line)
 		print("\tStatement does not follow format <var> = <val>")
@@ -66,14 +67,15 @@ def validateStatement(line, line_no):
 			print("\t" + line)
 			print("\tThe variable name", splited[1:], "must start with a letter")
 			return False
-	
-	# check second element
-	if (not is_number(splited[1])):
-		print("Error on line number", line_no)
-		print("\t" + line)
-		print("\tThe value", splited[1], "is not a valid number")
-		return False	
-
+	'''
+	if (len(splited) == 2):
+		# check second element
+		if (not is_number(splited[1])):
+			print("Error on line number", line_no)
+			print("\t" + line)
+			print("\tThe value", splited[1], "is not a valid number")
+			return False	
+	'''
 	return True
 '''
 Method used to parse from a textFile into a usable data structure

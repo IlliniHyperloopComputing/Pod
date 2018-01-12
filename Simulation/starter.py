@@ -14,7 +14,7 @@ data = {
 "dist":0.0,
 "track_len":1400.0,
 "vel":0.0,
-"accel":1,
+"accel":0,
 "deltaT":0.1,
 "epoch": 0.0,
 "drag":0.0,
@@ -61,6 +61,8 @@ def main():
 	datin = cproc.stdin
 	datout = cproc.stdout
 	
+	time.sleep(1)
+	
 	if fname is None:
 		struct = None
 	else:
@@ -69,14 +71,17 @@ def main():
 	startTime = time.time()
 	printStatus(data, numbars)
 	oldTime = time.time()
+	counter = 0
 	while data["epoch"] < 200:
 		newTime = time.time()
-		handleStruct(struct, data)
+		handleStruct(struct, data, replace)
 		deltaT = newTime-oldTime
 		data["deltaT"] = deltaT
 		oldTime = time.time()
 		update(data)
-		#push(datin, data, replace)
+		if counter is 0:
+			push(datin, data, replace)
+		counter = (counter + 1)%200
 		data["epoch"] = data["epoch"] + deltaT
 		printStatus(data, numbars)
 	print()
