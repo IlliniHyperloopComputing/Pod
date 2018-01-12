@@ -106,6 +106,10 @@ def nameToValue(data, varname):
 		return data["fric"]
 	elif (varname == "%fric"):
 		return data["delta_fric"]
+	elif (varname in ["t"]):
+		return data["epoch"]
+	elif (varname in ["dt"]):
+		return data["deltaT"]
 	else:
 		return 0
 
@@ -130,11 +134,13 @@ def executeBlock(block, data, replace):
 		elif s[0][0] is '$':
 			#removes the replace field for this variable
 			removeReplacer(s[0][1:], replace)
+
+
+
 '''
 Handles the struct of instructions
 Should a block be executed
 '''
-startTime = 0.0
 nextBlock = 0
 def handleStruct(struct, data, replace):
 	global nextBlock

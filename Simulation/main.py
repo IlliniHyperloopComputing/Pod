@@ -2,7 +2,7 @@ from subprocess import Popen, PIPE
 from parser import parseFromFile 
 from simulation import printStatus
 from simulation import handleStruct, update
-from datapusher import push, pull
+from communication import push, pull
 from fcntl import fcntl, F_GETFL, F_SETFL
 import time
 import sys

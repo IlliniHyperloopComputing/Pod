@@ -1,5 +1,6 @@
 @t==0
-	a=2
+	# Comment
+	a=2 # Another comment
 	fric=.1
 @t==2.1
 	?*

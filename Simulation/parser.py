@@ -94,7 +94,12 @@ def parseFromFile(fileName):
 		line_no += 1 # increment line number
 		# strip away blank space from the start
 		line = line.strip()
+		# remove comments from line
+		line = line.split("#")[0]
 		
+		if len(line) is 0:
+			continue
+
 		# check if start of conditional
 		if (line[0] == '@'):
 			
