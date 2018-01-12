@@ -1,13 +1,15 @@
-@t==0
+@t==0 # conditional statement, the operator must be glued to the value and varname :(
 	# Comment
-	a=2 # Another comment
+	a=2 # Setting acceleration to 2
 	fric=.1
 @t==2.1
-	?*
-	?test
-@ t==10
+	?* # Printing debug data of the simulator's state
+	?test # Printing "test"
+@ t==10 
 	fric=0.01
 	drag=0
 	a=2
+	$a=3 # prefacing a varname with $ means to update sensor data with this value
 @ t==20
 	a=0
+	%x=1 # % symbol means delta, thus this is can be read as delta x
