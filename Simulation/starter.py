@@ -2,15 +2,23 @@ from subprocess import Popen, PIPE
 from parser import parseFromFile 
 from simulation import printStatus
 from simulation import handleStruct, update
-from datapusher import push
+from datapusher import push, pull
+from fcntl import fcntl, F_GETFL, F_SETFL
 import time
 import sys
 import getopt
 import os
+from os import O_NONBLOCK
 
 ts = os.get_terminal_size()
 numbars = ts.columns - 40
 data = {
+"pstate":0,
+"motor_enable":0,
+"motor_throttle":0,
+"brake_enable":0,
+"brake_value":0,
+
 "dist":0.0,
 "track_len":1400.0,
 "vel":0.0,
@@ -58,7 +66,11 @@ def main():
 		sys.exit()
 	
 	cproc = Popen((execpath,), stdout=PIPE, stdin=PIPE)
+	flags = fcntl(cproc.stdin, F_GETFL)
+	fcntl(cproc.stdin, F_SETFL, flags|O_NONBLOCK)
 	datin = cproc.stdin
+	flags = fcntl(cproc.stdout, F_GETFL)
+	fcntl(cproc.stdout, F_SETFL, flags|O_NONBLOCK)
 	datout = cproc.stdout
 	
 	time.sleep(1)
@@ -82,6 +94,7 @@ def main():
 		if counter is 0:
 			push(datin, data, replace)
 		counter = (counter + 1)%200
+		pull(datout, data)
 		data["epoch"] = data["epoch"] + deltaT
 		printStatus(data, numbars)
 	print()
