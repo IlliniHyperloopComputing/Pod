@@ -248,30 +248,19 @@ def handleStruct(struct, data, replace):
 	#global nextBlock
 	if (struct is None):
 		return
-	
+	# store the blocks that need to be deleted
+	deletes = []
 	for i, block in enumerate(struct):
 		ret, usesT = checkCond(block, data)
 		if ret is True:
 			deleteB = executeBlock(block, data, replace)
 			if usesT is True or deleteB is True:
-				#print("REMOVING", i, "FROM", type(struct))
-				del struct[i]
-			
-	'''
-	if (nextBlock >= len(struct)):
-		#print("TEST2 STUFF\n", nextBlock)
-		return
+				deleteB = True
+				deletes.append(i)
 	
-	block = struct[nextBlock]
-	condl = block['cond'].split('==')
-	# must have variable be time
-	if (condl[0].strip() == "t"):
-		# check if time has crossed over
-		#print(newTime - float(condl[1]))
-		if ( float(condl[1]) - data["epoch"] < 0):
-			executeBlock(block, data, replace)
-			nextBlock += 1
-	'''
+	for i in deletes[::-1]:
+		#print("DELETING i =", i)
+		del struct[i]	
 
 def printStatus(data, numbars):
 	vel = data["vel"]

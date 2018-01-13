@@ -11,6 +11,9 @@
 	^ # used to delete this block so it isn't printed out more than once
 @ x==400
 	?REACHED 400 Meters!
+	^
+@ x==100 | t==10
+	?OR statement executed
 @ t==10 
 	?10 Seconds
 	fric=0.01 # Friction is a coeff that is not dependent on speed, it is a constant factor
@@ -20,9 +23,6 @@
 # No paranthesis are currently in this syntax
 @t==3 & x>0
 	?AND statement executed
-@ x==100 | t==10
-	# GLITCH, this should work but it doesn't since an overlapping conditional t==10 messes with this blocks execution, changing either x or t will make this execute
-	?OR statement executed
 @ t==20
 	?*TESTING # Still prints out text
 	a=0
