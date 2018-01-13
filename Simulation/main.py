@@ -101,7 +101,7 @@ def main():
 
 def usage():
 	print("SIMULATOR HYPERLOOP 2018™")
-	print("-p <location>: path to the pod executable")
+	print("-e <location>: path to the pod executable")
 	print("-s <name>: file name for script file")
 	print("-h: display usage (this)")
 
