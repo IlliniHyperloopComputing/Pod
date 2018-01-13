@@ -2,6 +2,7 @@ import sys
 import time
 from parser import parseFromFile 
 from parser import is_number
+from failureExcept import FailureException
 import os
 
 #delay = .05
@@ -43,11 +44,6 @@ def update(data):#(dist, vel, accel):
 	else:
 		# fric will slow down pod to stop
 		data["vel"] = 0
-	
-	if (data["dist"] > data["track_len"]):
-		data["dist"] = data["track_len"]
-		data["vel"] = 0
-		data["accel"] = 0
 
 	return (data["dist"], data["vel"])
 
@@ -72,6 +68,14 @@ def executeStatement(statement, data, variables):
 		data["fric"] = value
 	elif (varname == "%fric"):
 		data["delta_fric"] = value
+	elif (varname in ["motor_en"]):
+		data["motor_enable"] = value
+	elif (varname in ["motor_thr"]):
+		data["motor_throttle"] = value
+	elif (varname in ["brake_en"]):
+		data["brake_enable"] = value
+	elif (varname in ["brake_val"]):
+		data["brake_value"] = value
 	else:
 		print("Unknown variable", varname)
 
@@ -110,6 +114,16 @@ def nameToValue(data, varname):
 		return data["epoch"]
 	elif (varname in ["dt"]):
 		return data["deltaT"]
+	elif (varname in ["track_len"]):
+		return data["track_len"]
+	elif (varname in ["motor_en"]):
+		return data["motor_enable"]
+	elif (varname in ["motor_thr"]):
+		return data["motor_throttle"]
+	elif (varname in ["brake_en"]):
+		return data["brake_enable"]
+	elif (varname in ["brake_val"]):
+		return data["brake_value"]
 	else:
 		return 0
 
@@ -139,6 +153,9 @@ def executeBlock(block, data, replace):
 		elif s[0][0] is '$':
 			#removes the replace field for this variable
 			removeReplacer(s[0][1:], replace)
+		elif s[0][0] is '!':
+			# Failure condition
+			raise FailureException(s[0][1:])
 	return deleteB
 
 '''
@@ -162,7 +179,10 @@ def checkCondSingle(condstate, data):
 			if condl[0].strip() is "t":
 				usesTime = True
 			varval = nameToValue(data, condl[0].strip())
-			checkval = float(condl[1])
+			if is_number(condl[1]):
+				checkval = float(condl[1])
+			else:
+				checkval = nameToValue(data, condl[1].strip())
 			#print(varval, checkval)
 			break
 	if varval is None:

@@ -25,5 +25,7 @@
 	?AND statement executed
 @ t==20
 	?*TESTING # Still prints out text
-	a=0
+	#a=0 # You can comment out a line
 	%x=1 # % symbol means delta, thus this is can be read as delta x
+@x>track_len
+	!Pod crashed into end of tube # Failure condition check
