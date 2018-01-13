@@ -18,8 +18,8 @@ def validateStatement(line, line_no):
 		return True
 
 	fL = line[0]
-	# check first if it is a flag
-	if (fL in ['?']):
+	# check first if it is a flag, Error, or deleteBlock respectively
+	if (fL in ['?','!', '^']):
 		return True
 
 	if (fL not in ['%', '$'] and not fL.isalpha()):

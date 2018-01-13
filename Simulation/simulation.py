@@ -114,6 +114,7 @@ def nameToValue(data, varname):
 		return 0
 
 def executeBlock(block, data, replace):
+	deleteB = False
 	stat = block['stat']
 	for s in stat:
 		s = s.split('=')
@@ -124,18 +125,119 @@ def executeBlock(block, data, replace):
 				s[0] = s[0][1:]
 			executeStatement(s, temp, data)
 		elif (s[0][0] == '?'):
-			if s[0][1:] is "*":
+			if s[0][1:].startswith('*'):
+				print(s[0][2:])
 				print(data)
 				print("----")
 				print(replace)
 			else:
 				# print everything after flag
 				print(s[0][1:])
+		elif s[0][0] is '^':
+			# ^ represents delete block, used to prevent a block returning true infinetly
+			deleteB = True
 		elif s[0][0] is '$':
 			#removes the replace field for this variable
 			removeReplacer(s[0][1:], replace)
+	return deleteB
 
-
+'''
+Checks a signle cond
+e.g. x==1
+returns (bool, usesTime=False)
+usesTime is useful inorder to make sure that the struct is removed
+'''
+def checkCondSingle(condstate, data):
+	operator = None
+	condl = None
+	usesTime = False
+	varval = None
+	checkval = None
+	for op in ['==', '>=', '<=', '<', '>', '!=']:
+		condl = condstate.split(op)
+		if (len(condl) > 2):
+			assert False # Should never be true
+		elif (len(condl) == 2):
+			operator = op
+			if condl[0].strip() is "t":
+				usesTime = True
+			varval = nameToValue(data, condl[0].strip())
+			checkval = float(condl[1])
+			#print(varval, checkval)
+			break
+	if varval is None:
+		return (False, False)
+	res = False
+	neg = False
+	# check negs first
+	if operator is "!=":
+		operator = "=="
+		neg = True
+	elif operator is ">=":
+		operator = "<"
+		neg = True
+	elif operator is "<=":
+		operator = ">"
+		neg = True
+	if usesTime is True:
+		# check regular operators
+		if operator is "==":
+			# check if this exec passed the checktime
+			if checkval == 0.0:
+				# time == 0 should always be true
+				# since when we start executing this should return true
+				res = True
+			elif varval > checkval and varval - data["deltaT"] < checkval:
+				res = True
+		elif operator is ">":
+			res = varval > checkval
+		elif operator is "<":
+			res = varval < checkval
+	else:
+		if operator is "==":
+			# round values so they are more comparable
+			varval = round(varval, 3)
+			checkval = round(checkval, 3)
+			res = varval == checkval
+		elif operator is ">":
+			res = varval > checkval
+		elif operator is "<":
+			res = varval < checkval
+	# res != neg allows neg to invert value of res
+	return (res != neg, usesTime)
+'''
+Check conditional statement for this struct object
+returns (isTrue, shouldDelete)
+'''
+def checkCond(block, data):
+	condl = block['cond'].strip(' \t\n\r').split(" ")
+	if len(condl) > 1 and len(condl)%2 == 0:
+		print(block)
+		print(condl)
+		assert False # error improperly formatted condition
+	i = 0
+	ret = False
+	op = None
+	usesT = False
+	for con in condl:
+		if i%2 == 0:
+			tempRet, hasT = checkCondSingle(con, data)
+			usesT = usesT or hasT
+			if op is None:
+				ret = tempRet
+			elif op is "&":
+				if ret is False:
+					break
+			elif op is "|":
+				if ret is True:
+					break
+			else:
+				assert False # Bad logic operator
+			ret = tempRet
+		else:
+			op = con
+		i+=1
+	return (ret, usesT)
 
 '''
 Handles the struct of instructions
@@ -143,10 +245,19 @@ Should a block be executed
 '''
 nextBlock = 0
 def handleStruct(struct, data, replace):
-	global nextBlock
+	#global nextBlock
 	if (struct is None):
 		return
 	
+	for i, block in enumerate(struct):
+		ret, usesT = checkCond(block, data)
+		if ret is True:
+			deleteB = executeBlock(block, data, replace)
+			if usesT is True or deleteB is True:
+				#print("REMOVING", i, "FROM", type(struct))
+				del struct[i]
+			
+	'''
 	if (nextBlock >= len(struct)):
 		#print("TEST2 STUFF\n", nextBlock)
 		return
@@ -160,6 +271,7 @@ def handleStruct(struct, data, replace):
 		if ( float(condl[1]) - data["epoch"] < 0):
 			executeBlock(block, data, replace)
 			nextBlock += 1
+	'''
 
 def printStatus(data, numbars):
 	vel = data["vel"]
