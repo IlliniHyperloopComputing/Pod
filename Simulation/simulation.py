@@ -37,7 +37,7 @@ def update(data):#(dist, vel, accel):
 		data["vel"] = 0
 	# friction force
 	# has equation Ffric = mu * Normal = fric*massOfPod
-	if ( data["vel"] != 0 and abs(data["vel"] - sign(data["vel"])*data["fric"]*data["deltaT"]) > 0):
+	if (data["vel"] != 0 and abs(data["vel"] - sign(data["vel"])*data["fric"]*data["deltaT"]) > 0):
 		data["vel"] = data["vel"] - sign(data["vel"])*data["fric"]*data["deltaT"]
 		data["fric"] += data["delta_fric"]
 		pass
@@ -47,7 +47,104 @@ def update(data):#(dist, vel, accel):
 
 	return (data["dist"], data["vel"])
 
-def executeStatement(statement, data, variables):
+
+def executeStatementSub(statement, data, variables):
+	varname = statement[0]
+	if is_number(statement[1]):
+		value = float(statement[1])
+	else:
+		value = nameToValue(variables, statement[1])
+	
+	if (varname == "a" or varname == "%v"):
+		data["accel"] -= value
+	elif (varname == "v" or varname == "%x"):
+		data["vel"] -= value
+	elif (varname == "x"):
+		data["dist"] -= value
+	elif (varname == "drag"):
+		data["drag"] -= value
+	elif (varname == "%drag"):
+		data["delta_drag"] -= value
+	elif (varname == "fric"):
+		data["fric"] -= value
+	elif (varname == "%fric"):
+		data["delta_fric"] -= value
+	elif (varname in ["motor_en"]):
+		data["motor_enable"] -= value
+	elif (varname in ["motor_thr"]):
+		data["motor_throttle"] -= value
+	elif (varname in ["brake_en"]):
+		data["brake_enable"] -= value
+	elif (varname in ["brake_val"]):
+		data["brake_value"] -= value
+	else:
+		print("Unknown variable", varname)
+
+def executeStatementAdd(statement, data, variables):
+	varname = statement[0]
+	if is_number(statement[1]):
+		value = float(statement[1])
+	else:
+		value = nameToValue(variables, statement[1])
+	
+	if (varname == "a" or varname == "%v"):
+		data["accel"] += value
+	elif (varname == "v" or varname == "%x"):
+		data["vel"] += value
+	elif (varname == "x"):
+		data["dist"] += value
+	elif (varname == "drag"):
+		data["drag"] += value
+	elif (varname == "%drag"):
+		data["delta_drag"] += value
+	elif (varname == "fric"):
+		data["fric"] += value
+	elif (varname == "%fric"):
+		data["delta_fric"] += value
+	elif (varname in ["motor_en"]):
+		data["motor_enable"] += value
+	elif (varname in ["motor_thr"]):
+		data["motor_throttle"] += value
+	elif (varname in ["brake_en"]):
+		data["brake_enable"] += value
+	elif (varname in ["brake_val"]):
+		data["brake_value"] += value
+	else:
+		print("Unknown variable", varname)
+
+def executeStatementMult(statement, data, variables):
+	varname = statement[0]
+	if is_number(statement[1]):
+		value = float(statement[1])
+	else:
+		value = nameToValue(variables, statement[1])
+	
+	if (varname == "a" or varname == "%v"):
+		data["accel"] *= value
+	elif (varname == "v" or varname == "%x"):
+		data["vel"] *= value
+	elif (varname == "x"):
+		data["dist"] *= value
+	elif (varname == "drag"):
+		data["drag"] *= value
+	elif (varname == "%drag"):
+		data["delta_drag"] *= value
+	elif (varname == "fric"):
+		data["fric"] *= value
+	elif (varname == "%fric"):
+		data["delta_fric"] *= value
+	elif (varname in ["motor_en"]):
+		data["motor_enable"] *= value
+	elif (varname in ["motor_thr"]):
+		data["motor_throttle"] *= value
+	elif (varname in ["brake_en"]):
+		data["brake_enable"] *= value
+	elif (varname in ["brake_val"]):
+		data["brake_value"] *= value
+	else:
+		print("Unknown variable", varname)
+
+def executeStatementSet(statement, data, variables):
 	varname = statement[0]
 	if is_number(statement[1]):
 		value = float(statement[1])
@@ -131,13 +228,33 @@ def executeBlock(block, data, replace):
 	deleteB = False
 	stat = block['stat']
 	for s in stat:
-		s = s.split('=')
+		typeop = '='
+		if '*=' in s:
+			s = s.split('*=')
+			typeop = '*='
+		elif '-=' in s:
+			s = s.split('-=')
+			typeop = '-='
+		elif '+=' in s:
+			s = split('+=')
+			typeop = '+='
+		else:
+			s = s.split('=')
+		
 		if len(s) == 2:
 			temp = data
 			if s[0][0] is '$':
 				temp = replace
 				s[0] = s[0][1:]
-			executeStatement(s, temp, data)
+			if typeop is '=':
+				executeStatementSet(s, temp, data)
+			elif typeop is '*=':
+				print(s)
+				executeStatementMult(s, temp, data)
+			elif typeop is '+=':
+				executeStatementAdd(s, temp, data)
+			elif typeop is '-=':
+				executeStatementSub(s, temp, data)
 		elif (s[0][0] == '?'):
 			if s[0][1:].startswith('*'):
 				print(s[0][2:])

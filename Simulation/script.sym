@@ -24,8 +24,9 @@
 @t==3 & x>0
 	?AND statement executed
 @ t==20
-	?*TESTING # Still prints out text
 	#a=0 # You can comment out a line
 	%x=1 # % symbol means delta, thus this is can be read as delta x
+	fric*=2 # You can use *=, +=, and -=
+	?*TESTING # Still prints out text
 @x>track_len
 	!Pod crashed into end of tube # Failure condition check
