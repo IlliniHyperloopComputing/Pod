@@ -1,0 +1,29 @@
+@t==0 # conditional statement, the operator must be glued to the value and varname :(
+	# Comment
+	a=2 # Setting acceleration to 2
+	fric=.1
+	?STARTING
+@t==2
+	?* # Printing debug data of the simulator's state
+	?2 Seconds # Printing "test"
+@a<=0
+	?COASTING
+	^ # used to delete this block so it isn't printed out more than once
+@ x==400
+	?REACHED 400 Meters!
+@ t==10 
+	?10 Seconds
+	fric=0.01 # Friction is a coeff that is not dependent on speed, it is a constant factor
+	drag=0 # Drag is a coeffecient, the accel due to drag depends on the square of speed
+	$a=3 # prefacing a varname with $ means to update sensor data with this value
+# These are conditional statements which contain ands and ors, they are executed left to right
+# No paranthesis are currently in this syntax
+@t==3 & x>0
+	?AND statement executed
+@ x==100 | t==10
+	# GLITCH, this should work but it doesn't since an overlapping conditional t==10 messes with this blocks execution, changing either x or t will make this execute
+	?OR statement executed
+@ t==20
+	?*TESTING # Still prints out text
+	a=0
+	%x=1 # % symbol means delta, thus this is can be read as delta x
