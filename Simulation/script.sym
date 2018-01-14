@@ -8,7 +8,7 @@
 	brake_en=0 # enable brake, 1 is enabled
 	brake_val=0 # brake val 0-255 (Not typically a good reason to set this either, perhaps test if brake mechanism overextends?)
 @a<=0
-	?COASTING
+	?:a # can print out the val of the accel
 	^ # used to delete this block so it isn't printed out more than once
 @na>1 # na stands for net acceleration, it can only be used in conditionals, and can not be set
 	# It is important to explain what the a variable represents, it is a single part of the

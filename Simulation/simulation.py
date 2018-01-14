@@ -290,6 +290,9 @@ def executeBlock(block, data, replace):
 				print(data)
 				print("----")
 				print(replace)
+			if s[0][1:].startswith(':'):
+				# Print out value of a var
+				print(s[0][2:], "is", nameToValue(data, s[0][2:]))
 			else:
 				# print everything after flag
 				print(s[0][1:])
