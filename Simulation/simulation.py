@@ -15,36 +15,60 @@ def sign(a):
 	if (a==0): return 0
 	return -1
 
+'''
+"motor_enable":0, # 0 is disabled, 1 is enabled
+"motor_throttle":0,
+"brake_enable":0,
+"brake_value":0,
+
+"max_motor":1, # WHEN MAX THROTTLE, this is the accel the pod will feel
+"max_brake":-1, # WHEN MAX BRAKE, this is the applied accel the pod will feel
+'''
+
 def update(data):#(dist, vel, accel):
-	# handle drag
-	# accel due to drag
+	net_accel = data["accel"]
 	
-	# handle kinematics
-	data["dist"] = data["dist"] + data["vel"]*data["deltaT"] + ((.5 * data["accel"]) * data["deltaT"]**2)
-	data["vel"] = data["vel"] + data["accel"]*data["deltaT"]
-	
+	# Handle pod controlls
+	if data["motor_enable"] != 0:
+		net_accel = net_accel + data["motor_throttle"]*data["max_motor"]
+
+	if data["brake_enable"] != 0:
+		accel_brake = data["brake_value"]*data["max_brake"] # MAX BRAKE SHOULD BE NEG
+		if (data["vel"] != 0 and abs(data["vel"] - sign(data["vel"])*accel_brake*data["deltaT"])>0):
+			net_accel = net_accel + sign(data["vel"])*accel_brake
+			pass
+		else:
+			# brake will slow down pod to stop
+			data["vel"] = 0
 	# handle drag/fric forces
 	# follows this equation
 	# Fdrag = ((1/2)*C*p*A) * Velocity**2
 	# drag referes to the constant in this equation divided by weight of the pod
-	data["accel_drag"] = data["drag"] * data["vel"]**2
-	if (data["vel"] != 0 and abs(data["vel"] - sign(data["vel"])*data["accel_drag"]*data["deltaT"]) > 0):
-		data["vel"] = data["vel"] - sign(data["vel"])*data["accel_drag"]*data["deltaT"]
-		data["drag"] += data["delta_drag"]
+	accel_drag = data["drag"] * data["vel"]**2
+	if (data["vel"] != 0 and abs(data["vel"] - sign(data["vel"])*accel_drag*data["deltaT"]) > 0):
+		# Apply accel in opposite direction
+		net_accel = net_accel - sign(data["vel"])*accel_drag
 		pass
 	else:
 		# drag will slow down pod to stop
 		data["vel"] = 0
+	data["drag"] += data["delta_drag"]*data["deltaT"]
+	
 	# friction force
 	# has equation Ffric = mu * Normal = fric*massOfPod
 	if (data["vel"] != 0 and abs(data["vel"] - sign(data["vel"])*data["fric"]*data["deltaT"]) > 0):
-		data["vel"] = data["vel"] - sign(data["vel"])*data["fric"]*data["deltaT"]
-		data["fric"] += data["delta_fric"]
+		net_accel = net_accel - sign(data["vel"])*data["fric"]
 		pass
 	else:
 		# fric will slow down pod to stop
 		data["vel"] = 0
-
+	data["fric"] += data["delta_fric"]*data["deltaT"] # mult by deltaTime to preserve rate
+	
+	# handle kinematics
+	data["dist"] = data["dist"] + data["vel"]*data["deltaT"] + ((.5*net_accel) * data["deltaT"]**2)
+	data["vel"] = data["vel"] + net_accel*data["deltaT"]
+	
+	data["net_accel"] = net_accel
 	return (data["dist"], data["vel"])
 
 
@@ -221,7 +245,12 @@ def nameToValue(data, varname):
 		return data["brake_enable"]
 	elif (varname in ["brake_val"]):
 		return data["brake_value"]
+	elif (varname in ["net_a", "na", "neta"]):
+		return data["net_accel"]
+	elif (varname in ["pstate"]):
+		return data["pstate"]
 	else:
+		print("Unkown Variable", varname)
 		return 0
 
 def executeBlock(block, data, replace):
@@ -303,6 +332,7 @@ def checkCondSingle(condstate, data):
 			#print(varval, checkval)
 			break
 	if varval is None:
+		print("malformed operator")
 		return (False, False)
 	res = False
 	neg = False
@@ -413,9 +443,7 @@ def printStatus(data, numbars):
 	spaces = ""
 	if numbars - drawBars > 0:
 		spaces = "_"*(numbars-drawBars)
-	accel_drag = sign(vel) * drag * vel**2 if abs(vel) >= .001 else 0
-	accel_fric = sign(vel) * fric if abs(vel) >= .001 else 0
 	#sys.stdout.write('%s|%s> <d:%.2f v:%.2f a:%.2f t:%d>\r' % (bar, spaces, dist, vel if abs(vel) >= 0.001 else 0, accel - accel_fric - accel_drag, epoch))
-	sys.stdout.write('%s|%s> <d:%.2f v:%.2f a:%.2f t:%d>\r' % (bar, spaces, dist, vel if abs(vel) >= 0.001 else 0, accel - accel_fric - accel_drag, epoch))
+	sys.stdout.write('%s|%s> <d:%.2f v:%.2f a:%.2f t:%d>\r' % (bar, spaces, dist, vel if abs(vel) >= 0.001 else 0, data["net_accel"], epoch))
 	sys.stdout.flush()
 	#print(epoch, dist, vel, accel, "\r")
