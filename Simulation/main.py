@@ -14,11 +14,15 @@ ts = os.get_terminal_size()
 numbars = ts.columns - 40
 data = {
 "pstate":0,
-"motor_enable":0,
+"motor_enable":0, # 0 is disabled, 1 is enabled
 "motor_throttle":0,
 "brake_enable":0,
 "brake_value":0,
 
+"max_motor":1, # WHEN MAX THROTTLE, this is the accel the pod will feel
+"max_brake":-1, # WHEN MAX BRAKE, this is the applied accel the pod will feel
+
+"net_accel":0,
 "dist":0.0,
 "track_len":1400.0,
 "vel":0.0,

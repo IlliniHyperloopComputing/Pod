@@ -3,12 +3,21 @@
 	a=2 # Setting acceleration to 2
 	fric=.1
 	?STARTING
-@t==2
-	?* # Printing debug data of the simulator's state
-	?2 Seconds # Printing "test"
+	motor_en=1 # enable motor, 0 is disabled
+	motor_thr=0 # motor throttle 0-255 (Not really a good reason to set this)
+	brake_en=0 # enable brake, 1 is enabled
+	brake_val=0 # brake val 0-255 (Not typically a good reason to set this either, perhaps test if brake mechanism overextends?)
 @a<=0
 	?COASTING
 	^ # used to delete this block so it isn't printed out more than once
+@na>1 # na stands for net acceleration, it can only be used in conditionals, and can not be set
+	# It is important to explain what the a variable represents, it is a single part of the
+	# net accel. The other parts are the pod's motors, accel due to friction, and accel due to drag
+	?Starting to accel
+	^
+@t==2
+	?* # Printing debug data of the simulator's state
+	?2 Seconds # Printing "test"
 @ x==400
 	?REACHED 400 Meters!
 	^
