@@ -363,8 +363,11 @@ def checkCondSingle(condstate, data):
 	else:
 		if operator is "==":
 			# round values so they are more comparable
-			varval = round(varval, 3)
-			checkval = round(checkval, 3)
+			digits = 3
+			if "." in condl[1]:
+				digits = len(condl[1].split(".")[1])
+			varval = round(varval, digits)
+			checkval = round(checkval, digits)
 			res = varval == checkval
 		elif operator is ">":
 			res = varval > checkval
