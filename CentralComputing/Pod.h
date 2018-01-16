@@ -4,6 +4,9 @@
 #include "Network.h"
 #include "Sensor.h"
 #include "Utils.h"
+#include "Spi.h"
+#include "Motor.h"
+#include "Brake.h"
 #include <thread>
 #include <signal.h>
 #include <iostream>
