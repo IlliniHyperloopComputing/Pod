@@ -1,5 +1,4 @@
 #include "Pod.h"
-#include "Spi.h"
 
 #define timestep 10000
 
@@ -8,6 +7,8 @@ Spi * spi;
 Sensor * sensor;
 Network * network;
 Xmega * xmega;
+Brake * brake;
+Motor * motor;
 volatile bool running = true;
 long long last_poll; //last time beaglebone polled XMEGA
 
@@ -92,13 +93,16 @@ int main(){
   // setup SPI 
   #endif
  
-
+  
   xmega = new Xmega(spi); 
   sensor = new Sensor(spi);
   network = new Network(sensor);
+  brake = new Brake(xmega);
+  motor = new Motor();
   const char* host = "127.0.0.1";
   const char* port = "8800";
   network->start_server(host, port);
+
 
   thread network_thread(network_loop);
   thread logic_thread(logic_loop);
