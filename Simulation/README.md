@@ -82,7 +82,7 @@ For example, %x is equivalent to v. Please note:
 ##### Print operator
 The ? symbol is used to denote print something. There are a few cases to consider:
 * ? alone denotes print nothing. This can be useful in saving a snapshot of the simulation
-* ?<TEXT> will print the TEXT message to command line.
+* ?\<MSG\> will print the MSG string to command line.
 * ?:<Varname> will print out the value of the readable variable defined after the colon
 * ?\* will print out a debug status of all the internal states used by the simulation
 
