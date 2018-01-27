@@ -86,6 +86,12 @@ The ? symbol is used to denote print something. There are a few cases to conside
 * ?:<Varname> will print out the value of the readable variable defined after the colon
 * ?\* will print out a debug status of all the internal states used by the simulation
 
+##### Fake operator
+Sometimes you want to fake send a value to the pod, this can be done by setting the value of a variable as normal, but prefacing it with the $ symbol.  
+> $v=4  
+
+This will tell the pod that the current velocity is 4m/s. The 3 terms this can be done with are x,v, and a. If you wish to stop lying, you can reset it by just using the Fake operator and the varname:
+> $x #This stops faking the value of distance
 ##### Delete Block operator
 Sometimes, you only want a block to execute once. Often the same == condition will return true within the space of a few milliseconds. Which could result in the block executing over a hundred times. To reduce this risk, placing a ^ symbol inside a block will mark it for deletion, resulting in that block __never__ executing again.
 ##### Failure operator
@@ -93,6 +99,5 @@ When a failure should occur, for example hitting the end of the track, the ! sym
 Example:
 > @ x>track_len  
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!Pod hit the end of the track</br>
-
 ##### Success operator
 The successful completion of a simulation can be denoted using __(:__ This allows for success checks. Without a block containing this, a simulation may never end
