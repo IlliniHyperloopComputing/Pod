@@ -71,7 +71,8 @@ The only variables that can be changed in value are ones that are writable. Ther
 * =
 * -=
 * +=
-* \*=
+* \*=  
+  
 These operators should be self explanatory. Please note, just as with conditions, do not places spaces between each left/right term(s) and the symbol. The left term should always be a writable variable, the right term can be either a value, or a readable variable.
 ##### Delta operator
 the % symbol is used to denote a constant change/second. Anything that can delta, can be changed by some value over time.
@@ -94,4 +95,4 @@ Example:
 &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;!Pod hit the end of the track</br>
 
 ##### Success operator
-Conversly, the successful completion of a simulation can be denoted using __(:__ This allows for success checks.
+The successful completion of a simulation can be denoted using __(:__ This allows for success checks. Without a block containing this, a simulation may never end
