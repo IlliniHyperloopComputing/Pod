@@ -67,7 +67,16 @@ void logic_loop(){
       sensor->update_buffers();
       // TODO PID loop
 
-    }
+      if (sensor->get_data(sensor->Data_ID::DISTANCE) < 100) {
+        brakes->disable_brakes();
+        motor->enable_motors();
+        motor->set_throttle(1.0);
+      } else if (sensor->get_data(sensor->Data_ID::DISTANCE) < 1000)
+        motor->disable_motors()
+      } else {
+        brake->enable_brakes();
+      }
+
     //TODO: Change to actual value at some point
     
     usleep(100);//Need to yield, otherwise this will block other threads
