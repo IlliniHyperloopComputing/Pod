@@ -88,7 +88,8 @@ def main():
 	printStatus(data, numbars)
 	oldTime = time.time()
 	counter = 0
-	while data["epoch"] < 200:
+	# currently we are only gonna run the simulation for 300 seconds, just cause
+	while data["epoch"] < 300:
 		newTime = time.time()
 		handleStruct(struct, data, replace)
 		deltaT = newTime-oldTime
