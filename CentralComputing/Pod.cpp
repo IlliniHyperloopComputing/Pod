@@ -66,13 +66,13 @@ void logic_loop(){
       }
       sensor->update_buffers();
       // TODO PID loop
-
-      if (sensor->get_data(sensor->Data_ID::DISTANCE).calculated < 100) {
-        brakes->disable_brakes();
+			double distance = ((Distance_Calc*)(((Arbitrary_Data)sensor->get_data(Data_ID::DISTANCE).calculated).data))->distance;
+      if (distance < 100) {
+        brake->disable_brakes();
         motor->enable_motors();
         motor->set_throttle(1.0);
-      } else if (sensor->get_data(sensor->Data_ID::DISTANCE).calculated < 1000)
-        motor->disable_motors()
+      } else if (distance < 1000)
+        motor->disable_motors();
       } else {
         brake->enable_brakes();
       }
