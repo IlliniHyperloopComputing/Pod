@@ -164,9 +164,9 @@ print("\tAll data loaded")
 
 def smlbkt(val):
     tmp = int(val)
-    tmp = int(tmp / 20)
-    tmp = int(tmp * 20)
-    return (tmp + (20/2))
+    tmp = int(tmp / 10)
+    tmp = int(tmp * 10)
+    return (tmp + (10/2))
 
 #Force Buckets for each specific data set
 print("\tCreating Buckets")
@@ -241,8 +241,16 @@ for i in range(0, len(use)):
 ###
 print("\tBegin Plotting")
 
+font = {'family' : 'normal',
+        'weight' : 'bold',
+        'size'   : 18}
+
+plt.rc('font', **font)
+
+#'b','g','r'
 clr = ['b','g','r','c','m','y','k',  'b','g','r','c','m','y','k',
        'b','g','r','c','m','y','k',  'b','g','r','c','m','y','k']
+#'.','1','2'
 mkr = ['.','1','2','3','4','8','s',  'p','+','o','v','^','<','>',
        '*','h','H','x','x','D','d',  '|','_','.','1','2','3','4']
 #plot specific data sets vs time
@@ -253,43 +261,54 @@ if(not do_compare):
         
     for i in range(0, len(use)):
         if(not dual):
-            f, (ax1, ax2, ax3, ax4) = plt.subplots(4,1, sharex=True, figsize = (20,10))
+            f, (ax2, ax3, ax4) = plt.subplots(3,1, sharex=True, figsize = (20,10))
 
-        ax1.plot(wind_times[i], wind_force[i], marker='.', color=clr[i], 
-                        linestyle="None", label=(test_names[i]))
-        ax1.set_title(test_names[i]+" Windowed Time vs Force(N)")
-        #ax1.xlabel("Time Stamp")
-        #ax1.ylabel("Force(N)")
-        ax1.legend(loc='best')
-        ax1.grid(b=True, which='major', color='0.65',linestyle='-')
-        ax1.grid(b=True, which='minor', color='0.65',linestyle='-')
+        #ax1.plot(wind_times[i], wind_force[i], marker='.', color=clr[i], 
+        #                linestyle="None", label=(test_names[i]))
+        #ax1.set_title(test_names[i]+" Windowed Time vs Force(N)")
+        ##ax1.xlabel("Time Stamp")
+        ##ax1.ylabel("Force(N)")
+        #ax1.legend(loc='best')
+        #ax1.grid(b=True, which='major', color='0.65',linestyle='-')
+        #ax1.grid(b=True, which='minor', color='0.65',linestyle='-')
 
         ax2.plot(wind_times[i], wind_rpm[i], marker='.', color=clr[i], 
                         linestyle="None", label=(test_names[i]))
-        ax2.set_title(test_names[i]+" Windowed Time vs RPM")
+        ax2.set_title("Time vs RPM")
         #ax2.xlabel("Time Stamp")
         #ax2.ylabel("RPM")
-        ax2.legend(loc='best')
-        ax2.grid(b=True, which='major', color='0.65',linestyle='-')
-        ax2.grid(b=True, which='minor', color='0.65',linestyle='-')
+        #ax2.legend(loc='best')
+        ax2.grid(b=True, which='major', color='0',linestyle='-')
+        ax2.grid(b=True, which='minor', color='0',linestyle='-')
+        ax2.yaxis.set_major_locator(ticker.MultipleLocator(2000))
+        ax2.set_ylabel("RPM")
 
         ax3.plot(wind_times[i], wind_amps[i], marker='.', color=clr[i], 
                         linestyle="None", label=(test_names[i]))
-        ax3.set_title(test_names[i]+" Windowed Time vs Amps")
+        ax3.set_title("Time vs Amps")
         #ax3.xlabel("Time Stamp")
         #ax3.ylabel("Amps")
-        ax3.legend(loc='best')
-        ax3.grid(b=True, which='major', color='0.65',linestyle='-')
-        ax3.grid(b=True, which='minor', color='0.65',linestyle='-')
+        #ax3.legend(loc='best')
+        ax3.grid(b=True, which='major', color='0',linestyle='-')
+        ax3.grid(b=True, which='minor', color='0',linestyle='-')
+        ax3.yaxis.set_major_locator(ticker.MultipleLocator(10))
+        ax3.set_ylabel("Amps")
 
         ax4.plot(wind_times[i], wind_temp[i], marker='.', color=clr[i], 
                         linestyle="None", label=(test_names[i]))
-        ax4.set_title(test_names[i]+" Windowed Time vs Temp of Tube")
-        ax4.legend(loc='best')
-        ax4.grid(b=True, which='major', color='0.65',linestyle='-')
-        ax4.grid(b=True, which='minor', color='0.65',linestyle='-')
+        ax4.set_title("Time vs Temp of ESC")
+        #ax4.legend(loc='best')
+        ax4.grid(b=True, which='major', color='0',linestyle='-')
+        ax4.grid(b=True, which='minor', color='0',linestyle='-')
+        ax4.yaxis.set_major_locator(ticker.MultipleLocator(4))
+        ax4.set_ylabel("Degrees C")
+
+
+        plt.xlabel("Time (s)")
 
         if(not dual):
+            if(do_show):
+                plt.show()
             print("\tSaving \"All\" plot for test %d"% use[i])
             f.savefig(output_directory+test_names[i]+"_all.png",bbox_inches='tight' )
             plt.close(f)
@@ -366,7 +385,7 @@ if(do_compare):
     plt.xlabel("RPM")
     plt.ylabel("Force (N)")
     plt.legend(loc='best')
-    plt.grid(b=True, which='major', color='1',linestyle='-')
+    plt.grid(b=True, which='major', color='0',linestyle='-')
     plt.grid(b=True, which='minor', color='0.10',linestyle='-')
     ax.xaxis.set_major_locator(ticker.MultipleLocator(100))
     ax.xaxis.set_minor_locator(ticker.MultipleLocator(50))
@@ -391,13 +410,14 @@ if(do_compare):
     plt.xlabel("RPM")
     plt.ylabel("Amps")
     plt.legend(loc='best')
-    plt.grid(b=True, which='major', color='1',linestyle='-')
-    plt.grid(b=True, which='minor', color='0.10',linestyle='-')
+    plt.grid(b=True, which='major', color='0',linestyle='-')
+    plt.grid(b=True, which='minor', color='0.50',linestyle='-')
     ax.xaxis.set_major_locator(ticker.MultipleLocator(100))
-    ax.xaxis.set_minor_locator(ticker.MultipleLocator(50))
+    #ax.xaxis.set_minor_locator(ticker.MultipleLocator(50))
     ax.yaxis.set_major_locator(ticker.MultipleLocator(5))
     ax.yaxis.set_minor_locator(ticker.MultipleLocator(2.5))
-    plt.ylim(0,35)
+    plt.ylim(0,15)
+    plt.xlim(200,1000)
     print("\tSaving avg RPM vs AMP plot for all tests")
     if(dual):
         fig.savefig(output_directory + test_names[0].replace("right",'').replace("left", '')+"dual_rpm_vs_amp.png", bbox_inches='tight' )
