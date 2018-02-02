@@ -2,9 +2,9 @@
 #define _POD_STATE
 
 #include "StateMachine.h"
+#include "Network.h"
 #include <iostream>
 #include <string>
-#include <SafeQueue.hpp>
 #include "Sensor.h"
 
 class Pod_State : public StateMachine {
@@ -84,5 +84,7 @@ class Pod_State : public StateMachine {
 		END_STATE_MAP
 
 };
+
+typedef void (Pod_State::*steady_state_function) (Network_Command * command);
 
 #endif

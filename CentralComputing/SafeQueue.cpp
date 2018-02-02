@@ -1,12 +1,12 @@
 #include "SafeQueue.h"
 
 template <class T>
-SPSCQueue<T>::SPSCQueue() {
-  //nothing to do here
+SafeQueue<T>::SafeQueue() {
+  m_queue = std::queue<T>();
 }
 
 template <class T>
-T SPSCQueue<T>::dequeue() {
+T SafeQueue<T>::dequeue() {
   std::lock_guard<std::mutex> guard(m_mutex);
   if(m_queue.empty()){
     return nullptr;
@@ -18,7 +18,7 @@ T SPSCQueue<T>::dequeue() {
 }
 
 template <class T>
-void SPSCQueue<T>::enqueue(T object) {
+void SafeQueue<T>::enqueue(T object) {
   std::lock_guard<std::mutex> guard(m_mutex);
   m_queue.push(object);
 }
