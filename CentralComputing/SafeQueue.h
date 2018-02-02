@@ -7,13 +7,12 @@
 #include <mutex>
 
 template <class T>
-class SPSCQueue {
-  
+class SafeQueue {  
   public:
     /*
-    * Constructs an SPSCQueue object
+    * Constructs an SafeQueue object
     */
-    SPSCQueue();
+    SafeQueue();
 
     /*
     * Dequeues the object
@@ -32,4 +31,4 @@ class SPSCQueue {
     std::mutex m_mutex;
 };
 
-#endif //SPSCQUEUE_H
+#endif //SAFEQUEUE_H
