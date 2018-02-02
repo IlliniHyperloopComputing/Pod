@@ -8,6 +8,16 @@
 #include <mutex>
 #include <vector>
 
+#include "Sensor_Aux/Distance.h"
+#include "Sensor_Aux/Temperature.h"
+#include "Sensor_Aux/Ride_Height.h"
+#include "Sensor_Aux/Null.h"
+#include "Sensor_Aux/Acceleration_X.h"
+#include "Sensor_Aux/Acceleration_Y.h"
+#include "Sensor_Aux/Acceleration_Z.h"
+#include "Sensor_Aux/Current.h"
+#include "Sensor_Aux/Brake_Pressure.h"
+
 #define XMEGA1 0
 #define XMEGA2 1
 
