@@ -21,7 +21,9 @@ def validateStatement(line, line_no):
 	# check first if it is a flag, Error, or deleteBlock respectively
 	if (fL in ['?','!', '^']):
 		return True
-
+	if (line[0] == '('):
+		return True
+	
 	if (fL not in ['%', '$'] and not fL.isalpha()):
 		print("Error on line number", line_no)
 		print("\t" + line)

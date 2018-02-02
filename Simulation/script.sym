@@ -38,4 +38,4 @@
 	fric*=2 # You can use *=, +=, and -=
 	?*TESTING # Still prints out text
 @x>track_len
-	!Pod crashed into end of tube # Failure condition check
+	!pod crashed into end of tube # Failure condition check

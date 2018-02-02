@@ -30,10 +30,12 @@ def update(data):#(dist, vel, accel):
 	
 	# Handle pod controlls
 	if data["motor_enable"] != 0:
-		net_accel = net_accel + data["motor_throttle"]*data["max_motor"]
+		net_accel = net_accel + float(data["motor_throttle"])*data["max_motor"]/255.0
 
 	if data["brake_enable"] != 0:
-		accel_brake = data["brake_value"]*data["max_brake"] # MAX BRAKE SHOULD BE NEG
+		# removed brake value
+		accel_brake = data["max_brake"] # MAX BRAKE SHOULD BE NEG
+		#accel_brake = data["brake_value"]*data["max_brake"] # MAX BRAKE SHOULD BE NEG
 		if (data["vel"] != 0 and abs(data["vel"] - sign(data["vel"])*accel_brake*data["deltaT"])>0):
 			net_accel = net_accel + sign(data["vel"])*accel_brake
 			pass
@@ -284,6 +286,10 @@ def executeBlock(block, data, replace):
 				executeStatementAdd(s, temp, data)
 			elif typeop is '-=':
 				executeStatementSub(s, temp, data)
+		elif (s[0][0] == '('):
+			if s[0][1] == ':':
+				print(s[0])
+				sys.exit(0)
 		elif (s[0][0] == '?'):
 			if s[0][1:].startswith('*'):
 				print(s[0][2:])
