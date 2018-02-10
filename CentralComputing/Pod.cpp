@@ -70,7 +70,6 @@ void logic_loop(){
       }
       sensor->update_buffers(); 
     }
-    usleep(delta);//Need to yield, otherwise this will block other threads
     // Start processing/pod logic
     Network_Command * command = network_queue->dequeue();
     if(command != nullptr){
