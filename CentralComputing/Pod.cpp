@@ -1,5 +1,4 @@
 #include "Pod.h"
-#include "SafeQueue.h"
 
 #define timestep 10000
 
@@ -15,7 +14,6 @@ SafeQueue<Network_Command *> * network_queue;
 volatile bool running = true;
 long long last_poll; //last time beaglebone polled XMEGA
 
-std::map<Pod_State::E_States, steady_state_function> function_map;
 
 void write_loop(){
   bool active_connection = true;
@@ -65,20 +63,25 @@ void logic_loop(){
   while(running){
     long long now = get_elapsed_time(); 
     long long delta = now - last_poll;
-    if(delta > timestep){// TODO Possibly change delta based off state, but at 
+    if(delta > timestep){// TODO Possibly change delta based off state, but at least pick a real timestep
       Xmega_Command command = xmega->transfer();
       if(command != X_NONE){
         print_info("Command %s sent at time %d\n", xmega->x_command_to_string(command), now);
       }
       sensor->update_buffers(); 
     }
-    
     usleep(delta);//Need to yield, otherwise this will block other threads
+    // Start processing/pod logic
     Network_Command * command = network_queue->dequeue();
-    //Network_Command command = { Network_Command_ID::TRANS_SAFE_MODE, 0xAB };
-    auto state = state_machine->get_current_state();
-    auto func = function_map[state];
-    (state_machine->*(func))(command);
+    if(command != nullptr){
+      print_info("Processing command %d\n", command->id);
+      auto transition = state_machine->get_transition_function(command->id);
+      (state_machine->*(transition))(); //transitions to requested state
+    }
+
+    auto func = state_machine->get_steady_function();
+    //This is how you call a member function pointer in c++
+    (state_machine->*(func))(command); //G E N I U S
   }
 }
 
@@ -107,12 +110,13 @@ int main(){
   network = new Network(sensor);
   brake = new Brake();
   motor = new Motor();
-  state_machine = new Pod_State();
+  state_machine = new Pod_State(brake, motor, sensor);
   network_queue = new SafeQueue<Network_Command *>();
   const char* host = "127.0.0.1";
   const char* port = "8800";
   network->start_server(host, port);
-
+  Network_Command command = {Network_Command_ID::TRANS_FUNCTIONAL_TEST, 0};
+  network_queue->enqueue(&command);
 
   thread network_thread(network_loop);
   thread logic_thread(logic_loop);

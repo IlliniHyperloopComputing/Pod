@@ -12,19 +12,33 @@ class SafeQueue {
     /*
     * Constructs an SafeQueue object
     */
-    SafeQueue();
+    SafeQueue() {
+      m_queue = std::queue<T>();
+    }
 
     /*
     * Dequeues the object
     * @return the oldest object on the queue or nullptr if the queue is empty
     */
-    T dequeue();
+    T dequeue() {
+      std::lock_guard<std::mutex> guard(m_mutex);
+      if(m_queue.empty()){
+        return nullptr;
+      } else {
+        T ret = m_queue.front();
+        m_queue.pop();
+        return ret;
+      }
+    }
 
     /*
     * Enqueues an object
     * @param the object to enqueue
     */
-    void enqueue(T object);
+    void enqueue(T object) {
+      std::lock_guard<std::mutex> guard(m_mutex);
+      m_queue.push(object);
+    }
 
   private:
     std::queue<T> m_queue;
