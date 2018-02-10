@@ -7,7 +7,7 @@
 #include "Spi.h"
 #include "Motor.h"
 #include "Brake.h"
-#include "SafeQueue.h"
+#include "SafeQueue.hpp"
 #include "Pod_State.h"
 #include <thread>
 #include <signal.h>
