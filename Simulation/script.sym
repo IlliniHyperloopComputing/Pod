@@ -1,0 +1,41 @@
+@t==0 # conditional statement, the operator must be glued to the value and varname :(
+	# Comment
+	a=2 # Setting acceleration to 2
+	fric=.1
+	?STARTING
+	motor_en=1 # enable motor, 0 is disabled
+	motor_thr=0 # motor throttle 0-255 (Not really a good reason to set this)
+	brake_en=0 # enable brake, 1 is enabled
+	brake_val=0 # brake val 0-255 (Not typically a good reason to set this either, perhaps test if brake mechanism overextends?)
+@a<=0
+	?:a # can print out the val of the accel
+	^ # used to delete this block so it isn't printed out more than once
+@na>1 # na stands for net acceleration, it can only be used in conditionals, and can not be set
+	# It is important to explain what the a variable represents, it is a single part of the
+	# net accel. The other parts are the pod's motors, accel due to friction, and accel due to drag
+	?Starting to accel
+	^
+@t==2
+	?* # Printing debug data of the simulator's state
+	?2 Seconds # Printing "test"
+@ x==400
+	?REACHED 400 Meters!
+	^
+@ x==100 | t==10
+	?OR statement executed
+@ t==10 
+	?10 Seconds
+	fric=0.01 # Friction is a coeff that is not dependent on speed, it is a constant factor
+	drag=0 # Drag is a coeffecient, the accel due to drag depends on the square of speed
+	$a=3 # prefacing a varname with $ means to update sensor data with this value
+# These are conditional statements which contain ands and ors, they are executed left to right
+# No paranthesis are currently in this syntax
+@t==3 & x>0
+	?AND statement executed
+@ t==20
+	#a=0 # You can comment out a line
+	%x=1 # % symbol means delta, thus this is can be read as delta x
+	fric*=2 # You can use *=, +=, and -=
+	?*TESTING # Still prints out text
+@x>track_len
+	!pod crashed into end of tube # Failure condition check
