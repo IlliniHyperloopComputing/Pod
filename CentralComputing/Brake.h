@@ -11,7 +11,7 @@ class Brake {
     /**
     * Default constructor
     **/
-    Brake(Xmega * xmega);
+    Brake();
 
 
     /**
