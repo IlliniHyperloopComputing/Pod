@@ -9,6 +9,8 @@ Network * network;
 Xmega * xmega;
 Brake * brake;
 Motor * motor;
+Pod_State * state_machine;
+SafeQueue<Network_Command *> * network_queue;
 volatile bool running = true;
 long long last_poll; //last time beaglebone polled XMEGA
 
@@ -31,6 +33,8 @@ void read_loop(){
   while (running && active_connection){
     int bytes_read = network->read_command(&buffer);
     active_connection = bytes_read != -1;
+    Network_Command * command = new Network_Command(buffer);
+    network_queue->enqueue(command);
   }
 
   PRINT_ERRNO("Read Loop exiting.")
@@ -59,18 +63,24 @@ void logic_loop(){
   while(running){
     long long now = get_elapsed_time(); 
     long long delta = now - last_poll;
-    if(delta > timestep){
+    if(delta > timestep){// TODO Possibly change delta based off state, but at least pick a real timestep
       Xmega_Command command = xmega->transfer();
       if(command != X_NONE){
         print_info("Command %s sent at time %d\n", xmega->x_command_to_string(command), now);
       }
-      sensor->update_buffers();
-      // TODO PID loop
-
+      sensor->update_buffers(); 
     }
-    //TODO: Change to actual value at some point
-    
-    usleep(100);//Need to yield, otherwise this will block other threads
+    // Start processing/pod logic
+    Network_Command * command = network_queue->dequeue();
+    if(command != nullptr){
+      print_info("Processing command %d\n", command->id);
+      auto transition = state_machine->get_transition_function(command->id);
+      (state_machine->*(transition))(); //transitions to requested state
+    }
+
+    auto func = state_machine->get_steady_function();
+    //This is how you call a member function pointer in c++
+    (state_machine->*(func))(command); //G E N I U S
   }
 }
 
@@ -88,7 +98,7 @@ int main(){
   // parsing, setup, etc
   signal(SIGINT, int_handler);
   signal(SIGPIPE, pipe_handler);
-  spi = NULL;
+  spi = nullptr;
   #ifndef SIM
   // setup SPI 
   #endif
@@ -97,17 +107,27 @@ int main(){
   xmega = new Xmega(spi); 
   sensor = new Sensor(spi);
   network = new Network(sensor);
-  brake = new Brake(xmega);
+  brake = new Brake();
   motor = new Motor();
+  state_machine = new Pod_State(brake, motor, sensor);
+  network_queue = new SafeQueue<Network_Command *>();
   const char* host = "127.0.0.1";
   const char* port = "8800";
   network->start_server(host, port);
-
+  Network_Command command = {Network_Command_ID::TRANS_FUNCTIONAL_TEST, 0};
+  network_queue->enqueue(&command);
 
   thread network_thread(network_loop);
   thread logic_thread(logic_loop);
   network_thread.join(); 
   logic_thread.join();
+  free(motor);
+  free(brake);
+  free(network);
+  free(sensor);
+  free(xmega);
+  free(spi);
+  free(state_machine);
   return 0; 
 }
 
