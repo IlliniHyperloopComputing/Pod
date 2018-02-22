@@ -20,27 +20,15 @@
 		<Property Name="server.vi.propertiesEnabled" Type="Bool">true</Property>
 		<Property Name="specify.custom.address" Type="Bool">false</Property>
 		<Item Name="ArxPaxGauge2.ctl" Type="VI" URL="../ArxPaxGauge2.ctl"/>
+		<Item Name="ArxPaxGauge5.ctl" Type="VI" URL="../ArxPaxGauge5.ctl"/>
 		<Item Name="Bitshifter.vi" Type="VI" URL="../Bitshifter.vi"/>
-		<Item Name="BlockDiagramControlEnum.ctl" Type="VI" URL="../BlockDiagramControlEnum.ctl"/>
-		<Item Name="CommunicationStatus.ctl" Type="VI" URL="../CommunicationStatus.ctl"/>
 		<Item Name="CreateDouble.vi" Type="VI" URL="../CreateDouble.vi"/>
 		<Item Name="CreateUint16.vi" Type="VI" URL="../CreateUint16.vi"/>
 		<Item Name="CreateUint32.vi" Type="VI" URL="../CreateUint32.vi"/>
 		<Item Name="Illini Hyperloop GUI v5.0.vi" Type="VI" URL="../Illini Hyperloop GUI v5.0.vi"/>
-		<Item Name="LevitationChart.ctl" Type="VI" URL="../LevitationChart.ctl"/>
-		<Item Name="StageEnum.ctl" Type="VI" URL="../StageEnum.ctl"/>
-		<Item Name="TCP_NoDelay_Windows.vi" Type="VI" URL="../TCP_NoDelay_Windows.vi"/>
-		<Item Name="TemperatureControl.ctl" Type="VI" URL="../TemperatureControl.ctl"/>
-		<Item Name="UpdateCommunicationStatus.vi" Type="VI" URL="../UpdateCommunicationStatus.vi"/>
-		<Item Name="readTCPDataIn v1.vi" Type="VI" URL="../readTCPDataIn v1.vi"/>
-		<Item Name="sendTCPRequest.vi" Type="VI" URL="../sendTCPRequest.vi"/>
 		<Item Name="Dependencies" Type="Dependencies">
 			<Item Name="vi.lib" Type="Folder">
 				<Item Name="Space Constant.vi" Type="VI" URL="/&lt;vilib&gt;/dlg_ctls.llb/Space Constant.vi"/>
-				<Item Name="TCP Get Raw Net Object.vi" Type="VI" URL="/&lt;vilib&gt;/Utility/tcp.llb/TCP Get Raw Net Object.vi"/>
-			</Item>
-			<Item Name="wsock32.dll" Type="Document" URL="wsock32.dll">
-				<Property Name="NI.PreserveRelativePath" Type="Bool">true</Property>
 			</Item>
 		</Item>
 		<Item Name="Build Specifications" Type="Build">
