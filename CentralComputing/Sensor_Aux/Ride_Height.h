@@ -9,5 +9,5 @@ struct Ride_Height_Raw {
   uint16_t right; 
 };
 
-void ride_height_parse(Spi * spi, Arbitrary_Data raw);
+void ride_height_parse(void * source, Arbitrary_Data raw);
 #endif
