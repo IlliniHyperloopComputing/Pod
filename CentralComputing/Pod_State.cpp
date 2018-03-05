@@ -189,13 +189,27 @@ void Pod_State::steady_launch_ready(Network_Command * command) {
 }
 
 void Pod_State::steady_flight_accelerate(Network_Command * command) {
-
+  double distance = ((Distance_Calc*)(((Arbitrary_Data)sensor->get_data(Data_ID::DISTANCE).calculated).data))->distance;
+  if (distance > 10) {
+    coast();
+  }
+  brake->disable_brakes();
+  motor->enable_motors();
+  motor->set_throttle(1.0);
 }
 
 void Pod_State::steady_flight_coast(Network_Command * command) {
-
+  double distance = ((Distance_Calc*)(((Arbitrary_Data)sensor->get_data(Data_ID::DISTANCE).calculated).data))->distance;
+  if (distance > 100) {
+    brake();
+  }
+  motor->disable_motors();
 }
 
 void Pod_State::steady_flight_brake(Network_Command * command) {
-
+  double velocity = ((Velocty_Calc*)(((Arbitrary_Data)sensor->get_data(Data_ID::VELOCITY).calculated).data))->velocity;
+  if (velocity < .01) {
+    move_safe_mode();
+  }
+  brake->disable_brakes();
 }
