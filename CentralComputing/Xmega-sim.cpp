@@ -1,7 +1,7 @@
 #ifdef SIM
 #include "Xmega.h"
 
-Xmega::Xmega(Spi * s) {
+Xmega::Xmega() {
 
 }
 

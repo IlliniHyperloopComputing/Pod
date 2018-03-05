@@ -1,8 +1,16 @@
 #ifndef SIM
 #include "Xmega.h"
 
-Xmega::Xmega(Spi * s) : spi(s){
+//Static data intialization must happen here. pretty lame if you ask me
 
+//I declare these arrays and then use their address below simply because I like 
+//the {} array syntax. 
+
+
+Xmega::Xmega() {
+}
+
+Xmega::~Xmega() {
 }
 
 
