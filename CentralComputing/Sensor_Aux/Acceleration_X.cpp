@@ -54,7 +54,8 @@ Arbitrary_Data acceleration_x_calculation(Arbitrary_Data raw) {
 	return calculated;
 }
 
-void acceleration_x_parse(Spi* spi, Arbitrary_Data raw) {
+void acceleration_x_parse(void * source, Arbitrary_Data raw) {
+  Spi * spi = (Spi *) source;
 	Acceleration_X_Raw * ax_raw = (Acceleration_X_Raw *)raw.data;
   ax_raw->one = spi->get_data(XMEGA1, X_ACCELERATION_INDEX_1);
   ax_raw->two = spi->get_data(XMEGA1, X_ACCELERATION_INDEX_2);
