@@ -1,8 +1,8 @@
 #ifndef SENSOR_H
 #define SENSOR_H
 
-#include "Xmega.h"
 #include <map>
+#include "Spi.h"
 #include <string.h>
 #include "Data.h"
 #include <mutex>

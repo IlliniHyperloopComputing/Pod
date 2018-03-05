@@ -116,6 +116,30 @@ Arbitrary_Data Sensor::get_raw_data(Data_ID id){
 
 void Sensor::update_buffers() {
   //update from Xmega
+  Xmega_Transfer transfer = {XMEGA1, X_C_NONE, X_R_ALL};
+  uint8_t status = spi->transfer(transfer);
+  if(status != X_TF_NONE){
+    //Do something if error
+  }
+  else{
+    //Do something if not error
+    //If sending command, don't need to resend
+  }
+
+  transfer.device = XMEGA2;
+  status = spi->transfer(transfer);
+  if(status != X_TF_NONE){
+    //Do something if error
+  }
+  else{
+    //Do something if not error
+    //If sending command, don't need to resend
+  }
+
+
+  //
+  // CAN BUS GOES HERE PROBABLY MAYBE
+  //
 
   for(Data_ID id : ids){
     parse_func_t fun = parse_map[id];

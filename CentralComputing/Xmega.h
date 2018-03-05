@@ -16,7 +16,12 @@ class Xmega {
     /**
     * Sets up connection to XMEGA
     **/
-    Xmega(Spi * s);
+    Xmega();
+
+    /**
+    * Cleans up connection to XMEGA
+    **/
+    ~Xmega();
 
     /**
     * Writes a command to the Xmegas
@@ -44,6 +49,7 @@ class Xmega {
 
       Spi * spi;
       std::queue<Xmega_Command> q;
+
 
     #endif
     

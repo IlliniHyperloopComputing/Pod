@@ -20,5 +20,4 @@ void logic_loop();
 void int_handler(int signo);
 void pipe_handler(int signo);
 
-
 #endif
