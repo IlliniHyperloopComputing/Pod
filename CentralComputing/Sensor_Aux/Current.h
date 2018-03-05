@@ -7,5 +7,5 @@ struct Current_Raw {
 	uint16_t current;
 };
 
-void current_parse(Spi * spi, Arbitrary_Data raw);
+void current_parse(void * source, Arbitrary_Data raw);
 #endif
