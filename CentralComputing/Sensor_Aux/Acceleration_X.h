@@ -18,5 +18,5 @@ struct Acceleration_X_Calc {
 };
 
 Arbitrary_Data acceleration_x_calculation(Arbitrary_Data raw);
-void acceleration_x_parse(Spi * spi, Arbitrary_Data raw); 
+void acceleration_x_parse(void * source, Arbitrary_Data raw); 
 #endif

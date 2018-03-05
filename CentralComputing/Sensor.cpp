@@ -119,7 +119,7 @@ void Sensor::update_buffers() {
   Xmega_Transfer transfer = {XMEGA1, X_C_NONE, X_R_ALL};
   uint8_t status = spi->transfer(transfer);
   if(status != X_TF_NONE){
-    //Do something if error
+    //Do something if error, like count how many misses
   }
   else{
     //Do something if not error
@@ -129,7 +129,7 @@ void Sensor::update_buffers() {
   transfer.device = XMEGA2;
   status = spi->transfer(transfer);
   if(status != X_TF_NONE){
-    //Do something if error
+    //Do something if error, like count how many misses
   }
   else{
     //Do something if not error
@@ -140,11 +140,21 @@ void Sensor::update_buffers() {
   //
   // CAN BUS GOES HERE PROBABLY MAYBE
   //
+  
+  //update from sources
+  //if I were cool, I would have made Spi and Data_ID be subclasses of some kind of Source class but 
+  //I'm far too lazy for that. Void Pointers to the rescue!
 
-  for(Data_ID id : ids){
+  for(int i = 0; i < Data_ID::MOTOR_INFO; i++){
+    Data_ID id = (Data_ID)i;
     parse_func_t fun = parse_map[id];
     Arbitrary_Data raw = raw_data_map[id];
     fun(spi, raw);
+  }
+  //gotta skip over motor info/state info ugh
+  for(int j = Data_ID::BATTERY_FLAGS; j <= Data_ID::BATTERY_INFO; j++){
+    //TODO refresh the battery data.  This is where a fork/exec/wait should happen
+    //Then, each parse function should just read from the file
   }
 }
 

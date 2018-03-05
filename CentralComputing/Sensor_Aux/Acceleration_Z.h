@@ -7,5 +7,5 @@ struct Acceleration_Z_Raw {
 	uint16_t one;
 };
 
-void acceleration_z_parse(Spi * spi, Arbitrary_Data raw);
+void acceleration_z_parse(void * source, Arbitrary_Data raw);
 #endif

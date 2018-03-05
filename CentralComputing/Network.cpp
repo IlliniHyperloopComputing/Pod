@@ -75,7 +75,8 @@ int Network::write_data() {
   size_t size = 0; 
   uint8_t * buffer = (uint8_t *) malloc(capacity);
 
-  for(size_t i = 0; i < Data_ID::STATE_ID; i++){
+  //for loop handles writing data for all sensors
+  for(size_t i = 0; i < Data_ID::MOTOR_INFO; i++){
     Data_ID id = (Data_ID) i;
     Data d = sensor->get_data(id);  
     size_t delta = 1 + d.raw.size + d.calculated.size; //1 byte for the data_id
@@ -90,6 +91,8 @@ int Network::write_data() {
     size += delta;
     cleanup(d);
   }
+  //TODO: write State/Motor info
+  //TODO: read from candump, process data
   int bytes = write(clientfd, buffer, size);   
   free(buffer);
   return bytes;
