@@ -97,7 +97,39 @@ void pipe_handler(int signo){
 }
 
 int main(){
+  print_info("==================\n");
+  print_info("ILLINI  HYPERLOOP \n");
+  print_info("==================\n\n");
+  print_info("Runing setup...\n");
 
+  //Set maximum CPU frequency because GOTTA GO F A S T  
+  system("cpufreq-set -f 1000MHz");
+  print_info("CPU freq set to 1GHz\n");
+
+  //Check if CAN module has been loaded
+  //grep returns 0 if a match was found
+  int can_device_tree = system("grep CAN < /sys/devices/platform/bone_capemgr/slots");
+  if(can_device_tree != 0){
+    print_info("Setting up everything for CAN\n");
+    int ret = system("echo BB-DCAN1 > /sys/devices/platform/bone_capemgr/slots");
+    if(ret != 0){
+      print_info("Error writing to device tree for CAN\n");
+      exit(1);
+    }
+    usleep(500000);
+    system("modprobe can");
+    system("modprobe can-dev");
+    system("modprobe can-raw");
+    usleep(1000000);
+    ret = system("ip link set can0 up type can bitrate 500000");
+    if(ret != 0){
+      print_info("error setting up can0 ip link\n");
+      exit(1);
+    }
+    usleep(500000);
+  }
+  print_info("CAN setup complete\n");
+  
   // parsing, setup, etc
   signal(SIGINT, int_handler);
   signal(SIGPIPE, pipe_handler);
@@ -106,6 +138,7 @@ int main(){
     spi = new Spi(&x1, &x2);
   #endif
 
+  print_info("Setup Completed\n");
 
   sensor = new Sensor(spi);
   network = new Network(sensor);
