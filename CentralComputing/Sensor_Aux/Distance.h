@@ -3,8 +3,7 @@
 #include "../Data.h"
 #include "../Sensor.h"
 struct Distance_Raw {
-  uint32_t tape_count;
-  uint32_t encoder_count;
+  uint16_t encoder_count;
 };
 
 struct Distance_Calc {

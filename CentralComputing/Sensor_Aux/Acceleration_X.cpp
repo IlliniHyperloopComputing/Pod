@@ -1,7 +1,5 @@
 #include "Acceleration_X.h"
 
-
-
 using namespace std;
 
 const double VOLTS_PER_G = 0.330;

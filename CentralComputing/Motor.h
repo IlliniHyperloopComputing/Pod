@@ -1,6 +1,5 @@
 #ifndef MOTOR_H
 #define MOTOR_H
-#include "Xmega.h"
 #define IDEAL_RPM 5000 // Placeholder
 /**
 * The motor class controls the motors

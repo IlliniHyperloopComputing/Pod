@@ -1,14 +1,10 @@
 #ifndef SIM
 #include "Sensor.h"
 #include "Sensor_Aux/Distance.h"
-#include "Sensor_Aux/Temperature.h"
-#include "Sensor_Aux/Ride_Height.h"
 #include "Sensor_Aux/Null.h"
 #include "Sensor_Aux/Acceleration_X.h"
 #include "Sensor_Aux/Acceleration_Y.h"
 #include "Sensor_Aux/Acceleration_Z.h"
-#include "Sensor_Aux/Current.h"
-#include "Sensor_Aux/Brake_Pressure.h"
 
 Sensor::Sensor(Spi * s) : spi(s){
   //setup maps
@@ -24,24 +20,6 @@ Sensor::Sensor(Spi * s) : spi(s){
   raw_data_map[Data_ID::DISTANCE] = distance;
   calculation_map[Data_ID::DISTANCE] = distance_calculation;
   parse_map[Data_ID::DISTANCE] = distance_parse;
-
-  //Temperature
-  Arbitrary_Data temperature = {
-    sizeof(Temperature_Raw),
-    (uint8_t *) malloc(sizeof(Temperature_Raw))
-  };
-  raw_data_map[Data_ID::TEMPERATURE] = temperature;
-  calculation_map[Data_ID::TEMPERATURE] = no_calculation;
-  parse_map[Data_ID::TEMPERATURE] = temperature_parse;
-
-  //Ride Height
-  Arbitrary_Data ride_height= {
-    sizeof(Ride_Height_Raw),
-    (uint8_t *) malloc(sizeof(Ride_Height_Raw))
-  };
-  raw_data_map[Data_ID::RIDE_HEIGHT] = ride_height; 
-  calculation_map[Data_ID::RIDE_HEIGHT] = no_calculation;
-  parse_map[Data_ID::RIDE_HEIGHT] = ride_height_parse;
 
   //AccelerationX
   Arbitrary_Data acceleration_x= {
@@ -69,27 +47,6 @@ Sensor::Sensor(Spi * s) : spi(s){
 	raw_data_map[Data_ID::ACCELERATION_Z] = acceleration_z; 
 	calculation_map[Data_ID::ACCELERATION_Z] = no_calculation;
 	parse_map[Data_ID::ACCELERATION_Z] = acceleration_z_parse;
-
-  //Current 
-  Arbitrary_Data current= {
-    sizeof(Current_Raw),
-    (uint8_t *) malloc(sizeof(Current_Raw))
-  };
-	raw_data_map[Data_ID::CURRENT] = current; 
-	calculation_map[Data_ID::CURRENT] = no_calculation;
-	parse_map[Data_ID::CURRENT] = current_parse;
-
-  //Brake Pressure
-  Arbitrary_Data brake_pressure = {
-    sizeof(Brake_Pressure_Raw),
-    (uint8_t *) malloc(sizeof(Brake_Pressure_Raw))
-  };
-	raw_data_map[Data_ID::BRAKE_PRESSURE] = brake_pressure;
-	calculation_map[Data_ID::BRAKE_PRESSURE] = no_calculation;
-	parse_map[Data_ID::BRAKE_PRESSURE] = brake_pressure_parse;
-
-
-
 
 }
 

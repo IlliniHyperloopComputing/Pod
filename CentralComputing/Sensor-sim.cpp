@@ -4,13 +4,10 @@
 #include "Sensor_Aux/Distance.h"
 #include "Sensor_Aux/Velocity.h"
 #include "Sensor_Aux/Temperature.h"
-#include "Sensor_Aux/Ride_Height.h"
 #include "Sensor_Aux/Null.h"
 #include "Sensor_Aux/Acceleration_X.h"
 #include "Sensor_Aux/Acceleration_Y.h"
 #include "Sensor_Aux/Acceleration_Z.h"
-#include "Sensor_Aux/Current.h"
-#include "Sensor_Aux/Brake_Pressure.h"
 
 #define MAX_LINES 10
 
@@ -84,22 +81,6 @@ Sensor::Sensor(Spi * s) {
     }
   };
   data_map[Data_ID::VOLTAGE] = voltage;*/
-  Data current = {
-    null_data,
-    {
-      sizeof(Current_Raw),
-      (uint8_t *) malloc(sizeof(Current_Raw))
-    }
-  };
-  data_map[Data_ID::CURRENT] = current;
-  Data brake_pressure = {
-    null_data,
-    {
-      sizeof(Brake_Pressure_Raw),
-      (uint8_t *) malloc(sizeof(Brake_Pressure_Raw))
-    }
-  };
-  data_map[Data_ID::BRAKE_PRESSURE] = brake_pressure;
   Data temperature = {
     null_data,
     {
@@ -108,15 +89,6 @@ Sensor::Sensor(Spi * s) {
     }
   };
   data_map[Data_ID::TEMPERATURE] = temperature;
-  Data ride_height = {
-    null_data,
-    {
-      sizeof(Ride_Height_Raw),
-      (uint8_t *) malloc(sizeof(Ride_Height_Raw))
-    }
-  };
-  data_map[Data_ID::RIDE_HEIGHT] = ride_height;
-
 
 }
 
