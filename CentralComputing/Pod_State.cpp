@@ -3,7 +3,7 @@
 
 Pod_State::Pod_State(Brake * brake, Motor * motor, Sensor * sensor)
 //Pod_State::Pod_State()
-  : StateMachine(ST_MAX_STATES) 
+  : StateMachine(ST_MAX_STATES), brake_(brake), motor_(motor), sensor_(sensor)
 {
   transition_map[TRANS_SAFE_MODE] = &Pod_State::move_safe_mode;  
   transition_map[TRANS_FUNCTIONAL_TEST] = &Pod_State::move_functional_tests;
@@ -177,7 +177,23 @@ void Pod_State::steady_safe_mode(Network_Command * command) {
 void Pod_State::steady_functional(Network_Command * command) {
   //process command, let manual commands go through
   print_info("In functional test\n");
-
+	switch (command->id) {
+		case ENABLE_MOTOR: 
+			motor_->enable_motors();
+			break;
+		case DISABLE_MOTOR:
+			motor_->disable_motors();
+			break;
+		case SET_MOTOR_SPEED:
+			motor_->set_throttle(command->value);
+			break;
+  	case ACTIVATE_BRAKE_MAGNET:
+			brake_->enable_brakes();
+			break;
+		case DEACTIVATE_BRAKE_MAGNET:
+			brake_->disable_brakes();
+			break;
+	}
 }
 
 void Pod_State::steady_loading(Network_Command * command) {
