@@ -111,6 +111,10 @@ class Pod_State : public StateMachine {
 		void ST_Flight_Coast();
 		void ST_Flight_Brake();
 
+		Motor* motor_;
+		Brake* brake_;
+		Sensor* sensor_;
+
 		BEGIN_STATE_MAP
 			STATE_MAP_ENTRY(&Pod_State::ST_Safe_Mode)
 			STATE_MAP_ENTRY(&Pod_State::ST_Functional_Test)
