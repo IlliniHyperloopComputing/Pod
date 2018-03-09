@@ -4,11 +4,11 @@
 #include "../Sensor.h"
 
 struct Battery_Volt_Raw {
-  uint16_t pack_voltage;
+  uint8_t cell[8];
 };
 
 struct Battery_Volt_Calc {
-  uint8_t cell[8];
+  uint16_t pack_voltage;
 };
 
 Arbitrary_Data battery_volt_calculation(Arbitrary_Data raw);

@@ -6,7 +6,7 @@
 #include "Sensor_Aux/Acceleration_Y.h"
 #include "Sensor_Aux/Acceleration_Z.h"
 
-Sensor::Sensor(Spi * s) : spi(s){
+Sensor::Sensor(Spi * s, Battery * b) : spi(s), battery(b) {
   //setup maps
   raw_data_map = raw_data_map_t();
   calculation_map = calculation_map_t();
@@ -110,8 +110,11 @@ void Sensor::update_buffers() {
   }
   //gotta skip over motor info/state info ugh
   for(int j = Data_ID::BATTERY_FLAGS; j <= Data_ID::BATTERY_INFO; j++){
-    //TODO refresh the battery data.  This is where a fork/exec/wait should happen
     //Then, each parse function should just read from the file
+    Data_ID id = (Data_ID)j;
+    parse_func_t fun = parse_map[id];
+    Arbitrary_Data raw = raw_data_map[id];
+    fun(battery, raw);
   }
 }
 

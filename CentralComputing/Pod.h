@@ -2,6 +2,7 @@
 #define POD_H
 
 #include "Network.h"
+#include "Battery.h"
 #include "Sensor.h"
 #include "Utils.h"
 #include "Spi.h"

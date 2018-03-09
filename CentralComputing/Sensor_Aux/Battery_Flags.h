@@ -3,8 +3,6 @@
 #include "../Data.h"
 #include "../Sensor.h"
 
-struct Battery_Flags_Raw {
-};
 
 struct Battery_Flags_Calc {
 	uint8_t state_of_system;
