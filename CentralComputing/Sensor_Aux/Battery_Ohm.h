@@ -3,9 +3,6 @@
 #include "../Data.h"
 #include "../Sensor.h"
 
-struct Battery_Ohm_Raw {
-  uint8_t cell[8];
-};
 
 struct Battery_Ohm_Calc {
   uint16_t pack_resistance;

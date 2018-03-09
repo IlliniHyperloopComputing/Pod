@@ -3,8 +3,6 @@
 #include "../Data.h"
 #include "../Sensor.h"
 
-struct Battery_Amp_Raw {
-};
 
 struct Battery_Amp_Calc {
   uint16_t pack_current;

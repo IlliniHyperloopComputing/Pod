@@ -8,6 +8,7 @@ Spi * spi;
 Network * network;
 Brake * brake;
 Motor * motor;
+Battery * battery;
 Pod_State * state_machine;
 SafeQueue<Network_Command *> * network_queue;
 volatile bool running = true;
@@ -140,7 +141,8 @@ int main(){
 
   print_info("Setup Completed\n");
 
-  sensor = new Sensor(spi);
+  battery = new Battery("candump.txt"); //TODO make this the path to the actual file
+  sensor = new Sensor(spi, battery);
   network = new Network(sensor);
   brake = new Brake();
   motor = new Motor();

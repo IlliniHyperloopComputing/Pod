@@ -3,11 +3,6 @@
 #include "../Data.h"
 #include "../Sensor.h"
 
-struct Battery_Info_Raw {
-  uint32_t energy_in;
-  uint32_t energy_out;
-};
-
 struct Battery_Info_Calc {
   uint16_t dod;
   uint16_t capacity;

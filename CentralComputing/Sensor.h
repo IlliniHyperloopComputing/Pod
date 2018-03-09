@@ -7,6 +7,7 @@
 #include "Data.h"
 #include <mutex>
 #include <vector>
+#include "Battery.h"
 
 #define XMEGA1 0
 #define XMEGA2 1
@@ -71,7 +72,7 @@ enum Data_ID {
   BATTERY_FLAGS = 7,
   BATTERY_VOLT = 8,
   BATTERY_AMP = 9,
-  BATTER_TEMP = 10,
+  BATTERY_TEMP = 10,
   BATTERY_OHM = 11,
   BATTERY_INFO  = 12,
 //leftover states
@@ -98,13 +99,14 @@ typedef std::map<Data_ID, parse_func_t> parse_map_t;
 typedef std::map<Data_ID, Data > data_map_t; 
 
 
+class Battery;
 class Sensor {
   public:
 
     /**
     * Default constructor
     **/
-    Sensor(Spi * s);
+    Sensor(Spi * s, Battery * b);
 
     /**
     * Updates the buffers with the most recent data
@@ -133,6 +135,7 @@ class Sensor {
       struct timeval timeout;
     #else
       Spi * spi;
+      Battery * battery;
       calculation_map_t calculation_map;
       raw_data_map_t raw_data_map;
       parse_map_t parse_map;

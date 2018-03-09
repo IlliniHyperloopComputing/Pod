@@ -11,7 +11,7 @@
 
 #define MAX_LINES 10
 
-Sensor::Sensor(Spi * s) {
+Sensor::Sensor(Spi * s, Battery * b) {
 
   FD_ZERO(&readfds);
   timeout.tv_sec = 0;
