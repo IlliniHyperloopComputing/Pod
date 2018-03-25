@@ -3,16 +3,23 @@
 #define timestep 10000
 
 using namespace std;
-Spi * spi;
 Sensor * sensor;
+Spi * spi;
 Network * network;
-Xmega * xmega;
 Brake * brake;
 Motor * motor;
 Pod_State * state_machine;
 SafeQueue<Network_Command *> * network_queue;
 volatile bool running = true;
 long long last_poll; //last time beaglebone polled XMEGA
+
+//Necessary setup for Spi
+static uint8_t bpi1_s[] = {2,2,2,2,2};
+static uint8_t bpi2_s[] = {4,4,4,4,4,2,2,2,2,2,2};
+static uint8_t * bpi1 = bpi1_s;
+static uint8_t * bpi2 = bpi2_s;
+static Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
+static Xmega_Setup x2 = {"/dev/spidev1.1", 11, bpi2, 500000, 8};
 
 
 void write_loop(){
@@ -64,10 +71,6 @@ void logic_loop(){
     long long now = get_elapsed_time(); 
     long long delta = now - last_poll;
     if(delta > timestep){// TODO Possibly change delta based off state, but at least pick a real timestep
-      Xmega_Command command = xmega->transfer();
-      if(command != X_NONE){
-        print_info("Command %s sent at time %d\n", xmega->x_command_to_string(command), now);
-      }
       sensor->update_buffers(); 
     }
     // Start processing/pod logic
@@ -100,11 +103,10 @@ int main(){
   signal(SIGPIPE, pipe_handler);
   spi = nullptr;
   #ifndef SIM
-  // setup SPI 
+    spi = new Spi(&x1, &x2);
   #endif
- 
-  
-  xmega = new Xmega(spi); 
+
+
   sensor = new Sensor(spi);
   network = new Network(sensor);
   brake = new Brake();
@@ -125,7 +127,6 @@ int main(){
   free(brake);
   free(network);
   free(sensor);
-  free(xmega);
   free(spi);
   free(state_machine);
   return 0; 

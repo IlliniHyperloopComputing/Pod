@@ -7,5 +7,5 @@ struct Brake_Pressure_Raw {
 	uint16_t brake_pressure;
 };
 
-void brake_pressure_parse(Spi * spi, Arbitrary_Data raw);
+void brake_pressure_parse(void * source, Arbitrary_Data raw);
 #endif
