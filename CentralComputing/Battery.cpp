@@ -1,7 +1,7 @@
 #include "Battery.h"
 
 
-Battery::Battery(std::string filename) : filename(filename){
+Battery::Battery(std::string _filename) : filename(_filename){
   // TODO open the file
 }
 

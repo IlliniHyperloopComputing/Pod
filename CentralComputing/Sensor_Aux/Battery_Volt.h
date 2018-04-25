@@ -3,9 +3,9 @@
 #include "../Data.h"
 #include "../Sensor.h"
 
-struct Battery_Volt_Raw {
-  uint8_t cell[8];
-};
+//struct Battery_Volt_Raw {
+//  uint8_t cell[8];
+//};
 
 struct Battery_Volt_Calc {
   uint16_t pack_voltage;
