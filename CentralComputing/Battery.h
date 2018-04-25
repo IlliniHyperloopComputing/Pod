@@ -30,7 +30,7 @@ class Battery {
   /**
   * Constructs a battery object, opens the file
   **/
-  Battery(std::string filename);
+  Battery(std::string _filename);
  
   /**
   * Reads from the file to get the raw data associated with the data id

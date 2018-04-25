@@ -111,8 +111,8 @@ class Pod_State : public StateMachine {
 		void ST_Flight_Coast();
 		void ST_Flight_Brake();
 
-		Motor* motor_;
 		Brake* brake_;
+		Motor* motor_;
 		Sensor* sensor_;
 
 		BEGIN_STATE_MAP
