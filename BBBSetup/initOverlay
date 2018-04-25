@@ -26,6 +26,15 @@ cat /sys/devices/platform/bone_capemgr/slots
 modprobe can
 modprobe can-dev
 modprobe can-raw
-sleep 1 
-ip link set can0 up type can bitrate 500000
 
+ifconfig | grep can0 > /dev/null
+while [ $? -ne 0 ] ; do
+  echo "Sleeping one, can0 not present"
+  sleep 1
+  ifconfig | grep can0 > /dev/null
+done
+
+ip link set can0 up type can bitrate 500000
+ifconfig can0 up
+
+exit 0
