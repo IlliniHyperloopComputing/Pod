@@ -11,8 +11,11 @@ Motor * motor;
 Battery * battery;
 Pod_State * state_machine;
 SafeQueue<Network_Command *> * network_queue;
+
+int accumulated_error = 0;
+
 volatile bool running = true;
-long long last_poll; //last time beaglebone polled XMEGA
+long long last_poll = -1; //last time beaglebone polled XMEGA
 
 //Necessary setup for Spi
 static uint8_t bpi1_s[] = {2,2,2,2,2};
@@ -48,8 +51,8 @@ void read_loop(){
   PRINT_ERRNO("Read Loop exiting.")
 }
 void network_loop(){
-  while(running){ 
-    int clientfd = network->accept_client(); 
+  while(running){
+    int clientfd = network->accept_client();
     print_info("Client fd is: %d\n", clientfd);
     if(clientfd > 0){
       print_info("Starting network threads\n");
@@ -86,6 +89,26 @@ void logic_loop(){
     //This is how you call a member function pointer in c++
     (state_machine->*(func))(command); //G E N I U S
   }
+}
+
+float pid_controller(int actual_rpm, int set_rpm) {
+	long long now = get_elapsed_time();
+	long long delta = 0;
+	
+	if (last_poll > 0) {
+		delta = now - last_poll;
+	}
+
+	float error = actual_rpm - set_rpm;
+	float kp = 1;
+	float ki = 1;
+
+	accumulated_error += error * delta;
+	float new_rpm_delta = kp * error + ki * accumulated_error;
+	
+	//clamp between 0 and 1 for motor
+	last_poll = now;
+	return clamp(new_rpm_delta,-0.1,0.1);
 }
 
 void int_handler(int signo){
@@ -156,7 +179,7 @@ int main(){
 
   thread network_thread(network_loop);
   thread logic_thread(logic_loop);
-  network_thread.join(); 
+  network_thread.join();
   logic_thread.join();
   free(motor);
   free(brake);
