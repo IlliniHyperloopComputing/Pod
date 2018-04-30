@@ -74,6 +74,8 @@ typedef std::map<Data_ID, calculation_func_t> calculation_map_t;
 typedef std::map<Data_ID, Arbitrary_Data > raw_data_map_t;
 // Parse function map maps a Data_ID to a parsing function
 typedef std::map<Data_ID, parse_func_t> parse_map_t;
+// Data map, only used in Simulation
+typedef std::map<Data_ID, Data > data_map_t; 
 
 
 class Sensor {
@@ -99,9 +101,16 @@ class Sensor {
     */
     Data get_data(Data_ID id);
 
+
+    #ifdef SIM
+      void parse_sim(Data_ID id, char * data);
+    #endif
+
   private:
     #ifdef SIM
-
+      data_map_t data_map; 
+      fd_set readfds;
+      struct timeval timeout;
     #else
       Spi * spi;
       calculation_map_t calculation_map;
