@@ -27,6 +27,13 @@ void print_test(const char * format, ...){
       #endif
 }
 
+float clamp(float v, float l, float h) 
+  {
+    if(v < l) return l;
+    else if(v > h) return h; 
+    else return v; 
+  }
+
 long long get_elapsed_time() {
   static long long start_time = -1;
   auto now = std::chrono::system_clock::now();
