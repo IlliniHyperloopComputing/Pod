@@ -32,10 +32,10 @@ long long get_elapsed_time() {
   auto now = std::chrono::system_clock::now();
   auto duration = now.time_since_epoch();
   if(start_time == -1){
-    start_time = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+    start_time = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
     return 0;
   } else {
-    return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() - start_time;
+    return std::chrono::duration_cast<std::chrono::microseconds>(duration).count() - start_time;
   }
 }
 
