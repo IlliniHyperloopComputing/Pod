@@ -4,7 +4,8 @@
 
 using namespace std;
 
-void temperature_parse(Spi * spi, Arbitrary_Data raw) {
+void temperature_parse(void * source, Arbitrary_Data raw) {
+  Spi * spi = (Spi *) source;
   Temperature_Raw * t_raw = (Temperature_Raw *)raw.data;
   t_raw->brake_temp = spi->get_data(XMEGA2, THERMOCOUPLE_INDEX_1);
   t_raw->battery_temp = spi->get_data(XMEGA2, THERMOCOUPLE_INDEX_2);
@@ -13,3 +14,4 @@ void temperature_parse(Spi * spi, Arbitrary_Data raw) {
   t_raw->wheel_temp = spi->get_data(XMEGA2, THERMOCOUPLE_INDEX_5);
 
 }
+

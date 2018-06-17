@@ -11,6 +11,6 @@ struct Temperature_Raw {
   uint8_t wheel_temp;
 };
 
-void temperature_parse(Spi * spi , Arbitrary_Data raw);
+void temperature_parse(void * source , Arbitrary_Data raw);
 
 #endif

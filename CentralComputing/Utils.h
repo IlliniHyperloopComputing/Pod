@@ -38,5 +38,10 @@ void print_info(const char * format, ...);
     print_info("%s errno: %s\n",S, err_str);\
   }
 
+/**
+* Define utility clamp function
+**/ 
+float clamp(float v, float l, float h) ;
+
 ssize_t write_all_to_socket(int socket, uint8_t * buffer, size_t count);
 #endif // UTILS_H

@@ -25,7 +25,8 @@ Arbitrary_Data velocity_calculation(Arbitrary_Data raw) {
   return calculated;                                                        //Copy out calculated to the calling function
 }
 
-void velocity_parse(Spi * spi, Arbitrary_Data raw) {
+void velocity_parse(void * source, Arbitrary_Data raw) {
+  Spi * spi = (Spi *) source;
   Velocity_Raw * v_raw = (Velocity_Raw *)raw.data;                           // Convert the raw data into a useable struct
   v_raw->rpm = spi->get_data(XMEGA1, ENCODER_RPM_INDEX);
   
