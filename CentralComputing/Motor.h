@@ -1,7 +1,11 @@
 #ifndef MOTOR_H
 #define MOTOR_H
-#include "Xmega.h"
 #define IDEAL_RPM 5000 // Placeholder
+
+#include "Utils.h"
+#include <iostream>
+#include <fstream>
+
 /**
 * The motor class controls the motors
 * Its public interface abstracts sending commands to the Xmega
@@ -34,12 +38,18 @@ class Motor {
     * Sets throttle value
     * 0 is minimum throttle, 100 is maximum
     **/
-    void set_throttle(double value);
+    bool set_throttle(double value);
 
+    bool set_duty(uint64_t period);
 
-
+    bool set_period(uint64_t period);
 
   private:
+
+    static const std::string runPath;
+    static const std::string dutyPath;
+    static const std::string periodPath;
+
     #ifdef SIM
       
     #else
