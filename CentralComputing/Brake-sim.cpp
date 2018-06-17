@@ -1,19 +1,17 @@
 #ifdef SIM
 #include "Brake.h"
+#include "Simulation.h"
 
-Brake::Brake(Xmega * xmega) {
+Brake::Brake() {
 
 }
 
 void Brake::enable_brakes() {
-
+  write_sim_command(BRAKE_ENABLE, 1);
 }
 
 void Brake::disable_brakes() {
-
+  write_sim_command(BRAKE_ENABLE, 0);
 }
 
-void Brake::set_brake_value(double value) {
-  //override point, sends desired braking force to Simulator
-}
 #endif

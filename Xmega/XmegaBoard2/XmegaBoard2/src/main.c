@@ -1,6 +1,5 @@
 
 #include <asf.h>
-#include <avr/io.h>
 
 //for _delay_ms
 #define F_CPU 32000000
@@ -8,11 +7,8 @@
 const uint32_t APROX_HALF_SECOND = 16328;
 const uint32_t APROX_50_MILLI = 1639;
 
-#define COOLDOWN 2
-
 #include "spi_to_bbb.h"
-#include "i2c_sensors.h"
-#include "spi_sensors.h"
+#include "optical.h"
 
 //Using crc-ccitt
 #include <stdbool.h>
@@ -23,23 +19,20 @@ const uint32_t APROX_50_MILLI = 1639;
 uint8_t state = 0;
 uint8_t sensor_status = 0;
 uint8_t sensor_data[SENSOR_DATA_SIZE] = {0};
+uint8_t recv_cmd = 0;
 /*
 index to value
-0,1 == y  i2c 
-2,3 == z  i2c 
-4,5 == RH0 i2c
-6,7 == RH1 i2c 
-8,9 == RH2 i2c
-10,11 == Battery i2c
-12,13 == Battery i2c
-14,15 == Thermo0 Spi
-16,17 == Thermo1
-18,19 == Thermo2
-20,21 == Thermo3 external
-22,23 == Thermo3 internal
-24,25 == Current to PCB
-26,27 == Current to brakes
-28    == RetroReflective  Interrupt
+0,1,2,3 = Tach1. time since last
+4,5,6,7 = Tach2. time since last
+8,9,10,11 = Tach3. time since last
+12,13,14,15 = Tach4. time since last
+16,17,18,19 = Optical encoder. time since last
+17,18   = Tach1. delta
+19,20   = Tach2. delta
+21,22   = Tach3. delta
+23,24   = Tach4. delta
+25,26   = Optical encoder, delta
+27,28   = Optical encoder, strip counts 
 
 */
 
@@ -52,123 +45,18 @@ index to value
 #define CMD_INIT_DEADMAN 6
 #define STATE_MANUAL_REVERSE_BRAKE 7
 
-uint8_t recv_cmd;
-
 //lock
 volatile uint8_t spi_isr = 0;
 uint8_t spi_transfer = 0;
 
-//RTC
-uint32_t time1 = 0;
-uint32_t time2 = 1;
-uint32_t time3 = 2;
-uint32_t time4 = 1000;//offset to time 5
-uint32_t time5 = 0;
+uint32_t time_since[5] = {0};
+uint32_t times[5] = {0};
+uint32_t old_times[5] = {0};
+uint16_t deltas[5] = {0};
+uint8_t high[5] = {0};
+uint8_t cooldown[5] = {0};
 
-uint8_t retro_1_flag = 0;
-uint8_t retro_2_flag = 0;
-uint8_t retro_3_flag = 0;
-uint32_t retro_1_time = 0;
-uint32_t retro_2_time = 0;
-uint32_t retro_3_time = 0;
-
-
-uint8_t high_1 = 1;
-uint8_t high_2 = 1;
-uint8_t high_3 = 1;
-uint8_t cooldown_1 = 0;
-uint8_t cooldown_2 = 0;
-uint8_t cooldown_3 = 0;
-
-void handle_optical(){
-	uint8_t val_1 = (PORTE.IN & PIN6_bm) >> PIN6_bp;
-
-	if(!high_1){
-		if(val_1){
-			cooldown_1++;
-			if(cooldown_1 > COOLDOWN){
-				retro_1_time = rtc_get_time();
-				retro_1_flag = 1;
-				retro_1_time = rtc_get_time();
-				high_1 = 1;
-				cooldown_1 =0;
-			}
-		}
-		else{
-			cooldown_1 =0;
-		}
-	}
-	else{
-		if(!val_1){
-			cooldown_1++;
-			if(cooldown_1 > COOLDOWN){
-				high_1 = 0;
-				cooldown_1 = 0;
-			}
-		}
-		else{
-			cooldown_1 =0;
-		}
-	}
-
-	uint8_t val_2 = (PORTE.IN & PIN7_bm) >> PIN7_bp;
-	
-	if(!high_2){
-		if(val_2){
-			cooldown_2++;
-			if(cooldown_2 > COOLDOWN){
-				retro_2_flag = 1;
-				retro_2_time = rtc_get_time();
-				high_2 = 1;
-				cooldown_2 =0;
-			}
-		}
-		else{
-			cooldown_2 =0;
-		}
-	}
-	else{
-		if(!val_2){
-			cooldown_2++;
-			if(cooldown_2 > COOLDOWN){
-				high_2 = 0;
-				cooldown_2 = 0;
-			}
-		}
-		else{
-			cooldown_2 =0;
-		}
-	}
-	
-	uint8_t val_3 = (PORTF.IN & PIN2_bm) >> PIN2_bp;
-	if(!high_3){
-		if(val_3){
-			cooldown_3++;
-			if(cooldown_3 > COOLDOWN){
-				retro_3_flag = 1;
-				retro_3_time = rtc_get_time();
-				high_3 = 1;
-				cooldown_3 =0;
-			}
-		}
-		else{
-			cooldown_3 =0;
-		}
-	}
-	else{
-		if(!val_3){
-			cooldown_3++;
-			if(cooldown_3 > COOLDOWN){
-				high_3 = 0;
-				cooldown_3 = 0;
-			}
-		}
-		else{
-			cooldown_3 =0;
-		}
-	}
-		
-}
+uint16_t optical_strip_count = 0;
 
 int main (void)
 {
@@ -179,48 +67,17 @@ int main (void)
 	
 	ioport_configure_port_pin(&PORTE, PIN6_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);//EXT1-5
 	ioport_configure_port_pin(&PORTE, PIN7_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);//EXT1-6
-	ioport_configure_port_pin(&PORTF, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);//EXT2-13
+	ioport_configure_port_pin(&PORTE, PIN1_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);//EXT1-7
+	ioport_configure_port_pin(&PORTE, PIN2_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);//EXT1-8
+	ioport_configure_port_pin(&PORTR, PIN0_bm, IOPORT_DIR_INPUT | IOPORT_PULL_DOWN);//EXT1-9
 	
 	PMIC.CTRL |= PMIC_MEDLVLEN_bm;
-	PMIC.CTRL |= PMIC_LOLVLEN_bm;
-	
-	
-	
-	init_adc(&TWIF, 0x49, ADC_SINGLE);//Read Battery Voltages
-	set_adc_mux(&TWIF, 0x49, AIN0);
-	
-	//init_adc(&TWIE, 0x49, ADC_COMPARE_0_1);//Read Currents
-	init_adc(&TWIC, 0x48, ADC_SINGLE);//Read Y, Z accel
-	init_adc(&TWIC, 0x49, ADC_STREAMING);//Read RHS
-	init_adc(&TWIC, 0x4a, ADC_STREAMING);//Read RHS
-	init_adc(&TWIC, 0x4b, ADC_STREAMING);//Read RHS
-	
-
-		
-	tc_enable(&TCC0);
-	tc_set_overflow_interrupt_callback(&TCC0, handle_optical);
-	tc_set_wgm(&TCC0, TC_WG_NORMAL);
-	tc_write_period(&TCC0, 300);
-	tc_set_overflow_interrupt_level(&TCC0, TC_INT_LVL_LO);
-	tc_write_clock_source(&TCC0, TC_CLKSEL_DIV1_gc);
-	
-	
-	
-	uint16_t got_val = init_current(&TWIF, 0x41);
-	
-	
-
-	init_thermo_sensors();
-	
+	PMIC.CTRL |= PMIC_LOLVLEN_bm;	
 	sei();            // enable global interrupts
-	
-	state = 1;
 	
 	ioport_set_pin_level(LED_0_PIN,LED_0_ACTIVE);
 	
 	while (1) {
-		
-		time1= rtc_get_time();
 		//SPIC handler
 		//When this is true, it means we have just received a byte
 		//So, we need to pipeline the next byte to be sent out.
@@ -232,144 +89,32 @@ int main (void)
 			if(recv_cmd == CMD_RESET){
 				//Need to reset any of the sensors that accumulate data / have history
 				//Specifically this is just the optical tape count
-				sensor_data[28] = 0;
+				optical_strip_count = 0;
 			}
 			recv_cmd = 0;
 			
-			//Checks if any 2 flags are true
-			uint8_t retro_flag = (retro_1_flag && (retro_2_flag || retro_3_flag)) || (retro_2_flag && retro_3_flag);
-			if(retro_flag){
-				//idea is to see if any two of the times are within 50 mill of eachother.
-				//this math will calculate if the numbers subtracted (which could overflow since uints), plus 50 milliseconds is less than 100 milliseconds. 
-				//the values, if initially overflowed, should wrap back with the addition of 50 milliseconds if a valid time
-				//the maximum value is less than 100 milliseconds. So just check if under 100 milliseconds.
-				uint8_t f1 = (retro_1_time - retro_2_time + APROX_50_MILLI) < (2 * APROX_50_MILLI);
-				uint8_t f2 = (retro_1_time - retro_3_time + APROX_50_MILLI) < (2 * APROX_50_MILLI);
-				uint8_t f3 = (retro_2_time - retro_3_time + APROX_50_MILLI) < (2 * APROX_50_MILLI);
-				
-				//if any of the flags are true, proceed
-				retro_flag = f1 || f2 || f3;
-				if(retro_flag){
-					sensor_data[28] ++;
-				}
-				
-				retro_1_flag = 0;
-				retro_2_flag = 0;
-				retro_3_flag = 0;
-				retro_1_time = 0;
-				retro_2_time = 0;
-				retro_3_time = 0;
-			}
+			//Read in all of the tach sensors
+			uint8_t val = read_val(PORTE.IN, PIN6_bm, PIN6_bp);
+			debounce(val,high[0], cooldown[0], times[0], old_times[0], *(uint16_t*)(sensor_data+17) )
+			val = read_val(PORTE.IN, PIN7_bm, PIN7_bp);
+			debounce(val,high[1], cooldown[1], times[1], old_times[1], *(uint16_t*)(sensor_data+19) );
+			val = read_val(PORTE.IN, PIN1_bm, PIN1_bp);
+			debounce(val,high[2], cooldown[2], times[2], old_times[2], *(uint16_t*)(sensor_data+21) );
+			val = read_val(PORTE.IN, PIN2_bm, PIN2_bp);
+			debounce(val,high[3], cooldown[3], times[3], old_times[3], *(uint16_t*)(sensor_data+23) );
 			
+			//read in the optical encoder
+			val = read_val(PORTR.IN, PIN0_bm, PIN0_bp);
+			debounce_count(val,  (*(uint16_t*)(sensor_data+27)) , high[4], cooldown[4], times[4], old_times[4], *(uint16_t*)(sensor_data+25) )
 			
-			//Read from RHS
-			uint16_t recieved_data = 0;
-			
-			set_adc_mux(&TWIC, 0x48, AIN0);//Set to read from Y value. Offset for timing
-			_delay_ms(0.5);
-			if(read_adc(&TWIC, 0x49, &recieved_data) == TWI_SUCCESS){
-				sensor_data[4] = recieved_data >> 8;
-				sensor_data[5] = recieved_data;
-			}
-			
-			//Read the Y value
-			if(read_adc(&TWIC, 0x48, &recieved_data) == TWI_SUCCESS){
-				sensor_data[0] = recieved_data >> 8;
-				sensor_data[1] = recieved_data;
-			}
-			
-			if(spi_isr) continue;	
-			
-			
-			//Set to read Z value
-			set_adc_mux(&TWIC, 0x48, AIN1);
-			
-			if(read_adc(&TWIC, 0x4a, &recieved_data) == TWI_SUCCESS){
-				sensor_data[6] = recieved_data >> 8;
-				sensor_data[7] = recieved_data;
-			}
-			
-			if(read_adc(&TWIC, 0x4b, &recieved_data) == TWI_SUCCESS){
-				sensor_data[8] = recieved_data >> 8;
-				sensor_data[9] = recieved_data;
-			}
-			
-			//Read Z value
-			if(read_adc(&TWIC, 0x48, &recieved_data) == TWI_SUCCESS){
-				sensor_data[2] = recieved_data >> 8;
-				sensor_data[3] = recieved_data;
-			}
-
-			if(spi_isr) continue;			
-			
-			//Read from SPI to get the Temperatures
-			//Don't need to do this very Frequently. Temperatures don't change that fast
-			//We should make it a second eventually. Simply don't need lots of temperature data
-			if(time4 > APROX_HALF_SECOND*4 ){
-				
-				time4 = 0;
-				uint16_t value;
-
-				uint32_t rt = read_thermo(0);
-				value = thermo_external_temp(rt);
-				sensor_data[14] = value >> 0;
-				sensor_data[15] = value >> 8;
-				
-				value = thermo_external_temp(read_thermo(1));
-				sensor_data[16] = value >> 0;
-				sensor_data[17] = value >> 8;
-				
-				value = thermo_external_temp(read_thermo(2));
-				sensor_data[18] = value >> 0;
-				sensor_data[19] = value >> 8;
-				
-				rt= read_thermo(3);
-				value = thermo_external_temp(rt);
-				sensor_data[20] = value >> 0;
-				sensor_data[21] = value >> 8;	
-				value = thermo_internal_temp(rt);
-				sensor_data[22] = value >> 0;
-				sensor_data[23] = value >> 8;			
-			}
-			
-			if(spi_isr) continue;	
-			
-			
-			
-			//Get Batteries and Current!
-			if(time5 > APROX_HALF_SECOND/2){
-				time5 = 0;
-				
-				//Read Voltage
-				if(read_adc(&TWIF, 0x49, &recieved_data) == TWI_SUCCESS){
-					sensor_data[10] = recieved_data >> 8;
-					sensor_data[11] = recieved_data;
-				}
-				set_adc_mux(&TWIF, 0x49, AIN2);
-				
-				
-				//Read Current
-				if(read_current(&TWIF, 0x41, &recieved_data) == TWI_SUCCESS){
-					sensor_data[24] = recieved_data >> 8;
-					sensor_data[25] = recieved_data;
-				}		
-				
-				//Read other battery voltage
-				if(read_adc(&TWIF, 0x49, &recieved_data) == TWI_SUCCESS){
-					sensor_data[12] = recieved_data >> 8;
-					sensor_data[13] = recieved_data;
-				}
-				//Set mux to read voltage
-				set_adc_mux(&TWIF, 0x49, AIN0);
-						
-			}
-			
-			
+			uint32_t now = rtc_get_time();
+			*(uint32_t*)(sensor_data + 0) = now - times[0];
+			*(uint32_t*)(sensor_data + 4) = now - times[1];
+			*(uint32_t*)(sensor_data + 8) = now - times[2];
+			*(uint32_t*)(sensor_data + 12) = now - times[3];
+			*(uint32_t*)(sensor_data + 16) = now - times[4];
 			
 		}
-		time3 = rtc_get_time() - time1;
-		time4 += time3;
-		time5 += time3;
 	}
 	
 }

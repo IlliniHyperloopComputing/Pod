@@ -4,7 +4,8 @@
 
 using namespace std;
 
-void acceleration_y_parse(Spi * spi, Arbitrary_Data raw) {
+void acceleration_y_parse(void * source, Arbitrary_Data raw) {
+  Spi * spi = (Spi *) source;
 	Acceleration_Y_Raw *ay_raw = (Acceleration_Y_Raw *)raw.data;
-	ay_raw->one = spi->get_data(XMEGA2, Y_ACCELERATION_INDEX);
+	ay_raw->one = spi->get_data(XMEGA1, Y_ACCELERATION_INDEX);
 }

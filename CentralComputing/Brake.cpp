@@ -1,7 +1,7 @@
 #ifndef SIM
 #include "Brake.h"
 
-Brake::Brake(Xmega * xmega) {
+Brake::Brake() {
 
 }
 
@@ -13,7 +13,4 @@ void Brake::disable_brakes() {
 
 }
 
-void Brake::set_brake_value(double value) {
-
-}
 #endif
