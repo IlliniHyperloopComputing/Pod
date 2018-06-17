@@ -1,10 +1,11 @@
 #include "Pod_State.h"
 #include "Simulation.h"
 
-Pod_State::Pod_State(Brake * brake, Motor * motor, Sensor * sensor)
-//Pod_State::Pod_State()
-  : StateMachine(ST_MAX_STATES), brake_(brake), motor_(motor), sensor_(sensor)
+//Pod_State::Pod_State(Brake * brake, Motor * motor, Sensor * sensor)
+Pod_State::Pod_State()
+  : StateMachine(ST_MAX_STATES)
 {
+/*
   transition_map[TRANS_SAFE_MODE] = &Pod_State::move_safe_mode;  
   transition_map[TRANS_FUNCTIONAL_TEST] = &Pod_State::move_functional_tests;
   transition_map[TRANS_LOADING] = &Pod_State::move_loading;
@@ -17,7 +18,8 @@ Pod_State::Pod_State(Brake * brake, Motor * motor, Sensor * sensor)
   transition_map[SET_MOTOR_SPEED] = &Pod_State::no_transition;
   transition_map[ACTIVATE_BRAKE_MAGNET] = &Pod_State::no_transition;
   transition_map[DEACTIVATE_BRAKE_MAGNET] = &Pod_State::no_transition;
-
+*/
+/*
   steady_state_map[ST_SAFE_MODE] = &Pod_State::steady_safe_mode;
   steady_state_map[ST_FUNCTIONAL_TEST] = &Pod_State::steady_functional;
   steady_state_map[ST_LOADING] = &Pod_State::steady_loading;
@@ -25,6 +27,7 @@ Pod_State::Pod_State(Brake * brake, Motor * motor, Sensor * sensor)
   steady_state_map[ST_FLIGHT_ACCEL] = &Pod_State::steady_flight_accelerate;
   steady_state_map[ST_FLIGHT_COAST] = &Pod_State::steady_flight_coast;
   steady_state_map[ST_FLIGHT_BRAKE] = &Pod_State::steady_flight_brake;
+  */
 }
 // returns the current state as a E_States enum
 Pod_State::E_States Pod_State::get_current_state() {
@@ -169,6 +172,7 @@ void Pod_State::ST_Flight_Brake() {
 /////////////////////////////
 // STEADY STATE FUNCTIONS //
 ///////////////////////////
+/*
 void Pod_State::steady_safe_mode(Network_Command * command) {
   //not much special stuff to do here  
   print_info("In safe mode\n");
@@ -214,4 +218,4 @@ void Pod_State::steady_flight_coast(Network_Command * command) {
 
 void Pod_State::steady_flight_brake(Network_Command * command) {
 
-}
+}*/
