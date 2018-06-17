@@ -1,4 +1,7 @@
 #include "Pod.h"
+#include "Spi.h"
+
+#define timestep 10000
 
 #define timestep 10000
 
