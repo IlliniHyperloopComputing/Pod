@@ -2,7 +2,7 @@
 #include "Brake.h"
 #include "Simulation.h"
 
-Brake::Brake(Xmega * xmega) {
+Brake::Brake() {
 
 }
 

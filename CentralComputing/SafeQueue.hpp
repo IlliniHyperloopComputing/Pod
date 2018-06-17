@@ -1,48 +1,48 @@
-#ifndef SAFE_QUEUE
-#define SAFE_QUEUE
+#ifndef SAFEQUEUE_H
+#define SAFEQUEUE_H
 
+#include "Utils.h"
 #include <queue>
+#include <thread>
 #include <mutex>
-#include <condition_variable>
-#include "Spi.h"
 
-// A threadsafe-queue.
 template <class T>
-class SafeQueue
-{
-public:
-  SafeQueue(void)
-    : q()
-    , m()
-  {}
+class SafeQueue {  
+  public:
+    /*
+    * Constructs an SafeQueue object
+    */
+    SafeQueue() {
+      m_queue = std::queue<T>();
+    }
 
-  ~SafeQueue(void)
-  {}
+    /*
+    * Dequeues the object
+    * @return the oldest object on the queue or nullptr if the queue is empty
+    */
+    T dequeue() {
+      std::lock_guard<std::mutex> guard(m_mutex);
+      if(m_queue.empty()){
+        return nullptr;
+      } else {
+        T ret = m_queue.front();
+        m_queue.pop();
+        return ret;
+      }
+    }
 
-  // Add an element to the queue.
-  void enqueue(T t)
-  {
-    std::lock_guard<std::mutex> lock(m);
-    q.push(t);
-  }
+    /*
+    * Enqueues an object
+    * @param the object to enqueue
+    */
+    void enqueue(T object) {
+      std::lock_guard<std::mutex> guard(m_mutex);
+      m_queue.push(object);
+    }
 
-  // Get the "front"-element.
-  // If the queue is empty, wait till a element is avaiable.
-  T dequeue(void)
-  {
-    std::unique_lock<std::mutex> lock(m);
-	if(q.empty()){
-		// I'm sorry for this but I'm lazy
-		return X_C_NONE;
-
-	}
-    T val = q.front();
-    q.pop();
-    return val;
-  }
-
-private:
-  std::queue<T> q;
-  mutable std::mutex m;
+  private:
+    std::queue<T> m_queue;
+    std::mutex m_mutex;
 };
-#endif
+
+#endif //SAFEQUEUE_H

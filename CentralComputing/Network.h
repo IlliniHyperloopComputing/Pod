@@ -14,15 +14,17 @@
 
 enum Network_Command_ID {
   //state transitions
-  TRANS_SAFETY_SETUP = 0,
-  TRANS_SAFE_MODE = 1,
-  TRANS_FUNCTIONAL_TEST = 2,
+  TRANS_SAFE_MODE = 0,
+  TRANS_FUNCTIONAL_TEST = 1,
+  TRANS_LOADING = 2,
   TRANS_LAUNCH_READY = 3,
   LAUNCH = 4,
   EMERGENCY_BRAKE = 5,
   ENABLE_MOTOR = 6,
   DISABLE_MOTOR = 7,
-  SET_MOTOR_SPEED = 8
+  SET_MOTOR_SPEED = 8,
+  ACTIVATE_BRAKE_MAGNET = 9,
+  DEACTIVATE_BRAKE_MAGNET = 10 
 };
 
 /**
@@ -30,7 +32,7 @@ enum Network_Command_ID {
 **/
 struct Network_Command {
   //state transtitions
-  uint8_t id; //id is just a network command
+  Network_Command_ID id; //id is just a network command
   uint8_t value;
 };
 
