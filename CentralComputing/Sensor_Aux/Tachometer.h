@@ -1,23 +1,16 @@
-#ifndef TACHOMETER_h
-#define TACHOMETER_h
+#ifndef TACHOMETER_H
+#define TACHOMETER_H
 #include "../Data.h"
-#include "../Sensor.h"
 
-//holds raw rpms as measured
 struct Tachometer_Raw{
-	
-	uint32_t left;
-  uint32_t middle;
-  uint32_t right; 
-  uint32_t lfront; 
-  uint32_t rfront; 
-  uint32_t back; 
+	int rpm;
 };
 
 struct Tachometer_Calc{
+	double rpm;
 };
 
 Arbitrary_Data tachometer_calculation(Arbitrary_Data raw);
-void tachometer_parse(Spi * spi, Arbitrary_Data raw);
+void tachometer_parse(uint8_t * buffer, Arbitrary_Data raw);
 
 #endif // TACHOMETER_H

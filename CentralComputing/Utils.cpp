@@ -27,15 +27,22 @@ void print_test(const char * format, ...){
       #endif
 }
 
+float clamp(float v, float l, float h) 
+  {
+    if(v < l) return l;
+    else if(v > h) return h; 
+    else return v; 
+  }
+
 long long get_elapsed_time() {
   static long long start_time = -1;
   auto now = std::chrono::system_clock::now();
   auto duration = now.time_since_epoch();
   if(start_time == -1){
-    start_time = std::chrono::duration_cast<std::chrono::milliseconds>(duration).count();
+    start_time = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
     return 0;
   } else {
-    return std::chrono::duration_cast<std::chrono::milliseconds>(duration).count() - start_time;
+    return std::chrono::duration_cast<std::chrono::microseconds>(duration).count() - start_time;
   }
 }
 

@@ -1,7 +1,5 @@
 #ifndef BRAKE_H
 #define BRAKE_H
-#include "Xmega.h"
-
 
 /**
 * Controllor class for brakes
@@ -12,7 +10,7 @@ class Brake {
     /**
     * Default constructor
     **/
-    Brake(Xmega * xmega);
+    Brake();
 
 
     /**
@@ -25,11 +23,6 @@ class Brake {
     **/
     void disable_brakes();
 
-    /**
-    * Sets brake percentage to a value
-    * @param value a value from 0-1, 0 for no brakes 1 for maximum brakes
-    **/
-    void set_brake_value(double value);
 
   private:
     #ifdef SIM
