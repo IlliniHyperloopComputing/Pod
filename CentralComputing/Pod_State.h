@@ -2,21 +2,25 @@
 #define _POD_STATE
 
 #include "StateMachine.h"
+#include "Network.h"
 #include <iostream>
 #include <string>
-#include <SafeQueue.hpp>
 #include "Sensor.h"
-#include "Sensor_Package.h"
+#include "Brake.h"
+#include "Motor.h"
+
+class Pod_State;
+typedef void (Pod_State::*steady_state_function) (Network_Command * command);
+typedef void (Pod_State::*transition_function) ();
 
 class Pod_State : public StateMachine {
 	public:
 
 		enum E_States
 		{
-			ST_POD_STARTUP,
-			ST_SAFETY_SETUP,
 			ST_SAFE_MODE,
 			ST_FUNCTIONAL_TEST,
+      ST_LOADING,
 			ST_LAUNCH_READY,
 			ST_FLIGHT_ACCEL,
 			ST_FLIGHT_COAST,
@@ -27,12 +31,9 @@ class Pod_State : public StateMachine {
 		/** 
 		* Constructs a pod state machine
 		**/
-		Pod_State(SafeQueue<Xmega_Command_t> * cmd_queue, Sensor_Package * sen) 
-      : StateMachine(ST_MAX_STATES), 
-        command_queue(cmd_queue),
-        sensors(sen)
-    {}
-
+		Pod_State(Brake * brake, Motor * motor, Sensor * sensor);
+    //Pod_State();
+   
 		// returns the current state as an enum
 		E_States get_current_state();
 		
@@ -40,15 +41,14 @@ class Pod_State : public StateMachine {
 		std::string get_current_state_string() {
 			std::string states[] =
 			{
-				"POD_STARTUP",
-				"SAFETY_SETUP",
 				"SAFE_MODE",
 				"FUNCTIONAL_TESTS",
+        "LOADING",
 				"LAUNCH_READY",
 				"FLIGHT_ACCEL",
 				"FLIGHT_COAST",
 				"FLIGHT_BRAKE",
-				"NULL"
+				"NOT A STATE"
 			};
 			return states[(int)getCurrentState()];
 		}
@@ -56,43 +56,76 @@ class Pod_State : public StateMachine {
 		/**
 		* User controlled movement events
 		**/
-		void move_safety_setup();
-		void move_functional_tests();
 		void move_safe_mode();
+		void move_functional_tests();
+    void move_loading();
 		void move_launch_ready();
+		void accelerate();
 		void emergency_brake();
+    void no_transition(); //used in map to make things nice
 
 		/**
 		* Software controlled events
 		**/
-		void accelerate();
 		void coast();
 		void brake();
+
+    /**
+    * Steady state functions
+    * Each function call acts as a "frame"
+    * Each frame, the function will proces the command, 
+    **/
+    void steady_safe_mode(Network_Command * command);
+    void steady_functional(Network_Command * command);
+    void steady_loading(Network_Command * command);
+    void steady_launch_ready(Network_Command * command);
+    void steady_flight_accelerate(Network_Command * command);
+    void steady_flight_coast(Network_Command * command);
+    void steady_flight_brake(Network_Command * command);
+
+    /*
+    * Gets the steady state function for the current state
+    * @return a member function pointer
+    */
+    steady_state_function get_steady_function() {
+      return steady_state_map[get_current_state()];
+    }
+
+    /*
+    * Gets the transition function for the given network command
+    * @return a member function pointer
+    */
+    transition_function get_transition_function(Network_Command_ID id) {
+      return transition_map[id];
+    }
 		
 	private:
-		void ST_Pod_Startup();
-		void ST_Safety_Setup();
+    map<Network_Command_ID, transition_function> transition_map; 
+    
+    map<E_States, steady_state_function> steady_state_map;
 		void ST_Safe_Mode();
 		void ST_Functional_Test();
+    void ST_Loading();
 		void ST_Launch_Ready();
 		void ST_Flight_Accel();
 		void ST_Flight_Coast();
 		void ST_Flight_Brake();
 
+		Brake* brake_;
+		Motor* motor_;
+		Sensor* sensor_;
+
 		BEGIN_STATE_MAP
-			STATE_MAP_ENTRY(&Pod_State::ST_Pod_Startup)
-			STATE_MAP_ENTRY(&Pod_State::ST_Safety_Setup)
 			STATE_MAP_ENTRY(&Pod_State::ST_Safe_Mode)
 			STATE_MAP_ENTRY(&Pod_State::ST_Functional_Test)
+			STATE_MAP_ENTRY(&Pod_State::ST_Loading)
 			STATE_MAP_ENTRY(&Pod_State::ST_Launch_Ready)
 			STATE_MAP_ENTRY(&Pod_State::ST_Flight_Accel)
 			STATE_MAP_ENTRY(&Pod_State::ST_Flight_Coast)
 			STATE_MAP_ENTRY(&Pod_State::ST_Flight_Brake)
 		END_STATE_MAP
 
-    SafeQueue<Xmega_Command_t> * command_queue;
-    Sensor_Package * sensors;
-
 };
+
 
 #endif

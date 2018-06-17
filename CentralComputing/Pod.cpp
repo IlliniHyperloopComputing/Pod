@@ -1,402 +1,198 @@
-#include "Sensor_Package.h"
 #include "Pod.h"
-#include "Pod_State.h"
-#include "Utils.h"
-#include "Sensor.h"
-#include <thread>
-#include <csignal>
-#include <mutex>
-#include <ctype.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#include <sys/socket.h>
-#include <sys/types.h>
-#include <netdb.h>
-#include <unistd.h>
-#include <poll.h>
-#include <SafeQueue.hpp>
-#include <net/if.h>
-#include <ifaddrs.h>
-#include <arpa/inet.h>
+#include "Spi.h"
+
+#define timestep 10000
+
+#define timestep 10000
 
 using namespace std;
+Sensor * sensor;
+Spi * spi;
+Network * network;
+Brake * brake;
+Motor * motor;
+Battery * battery;
+Pod_State * state_machine;
+SafeQueue<Network_Command *> * network_queue;
 
-Sensor_Package * sensors;
-Pod_State * state;
-mutex state_mutex;
+int accumulated_error = 0;
 
 volatile bool running = true;
-volatile bool send_manual_brake = false;
-Xmega_Command_t cmd_to_send = X_C_NONE;
-Xmega_Command_t cmd_to_send_2 = X_C_NONE;
+long long last_poll = -1; //last time beaglebone polled XMEGA
 
-int consecutive_errors_1 = 0;
-int consecutive_errors_2 = 0;
-int socketfd;
-int clientFD;
-int udp_sock;
-sockaddr_storage addrDest = {};
-SafeQueue<Xmega_Command_t> * command_queue;
+//Necessary setup for Spi
+static uint8_t bpi1_s[] = {2,2,2,2,2};
+static uint8_t bpi2_s[] = {4,4,4,4,4,2,2,2,2,2,2};
+static uint8_t * bpi1 = bpi1_s;
+static uint8_t * bpi2 = bpi2_s;
+static Xmega_Setup x1 = {"/dev/spidev1.0", 5, bpi1, 500000, 8};
+static Xmega_Setup x2 = {"/dev/spidev1.1", 11, bpi2, 500000, 8};
 
 
-//Ready to Launch state variables
-#define MIN_ACCELERATION (0.2)
-#define DEBOUNCE_TIME  (300) //300 ms
-long long acc_start_time = 0;
-bool continuous = false;
-static uint16_t VALID_STATE = 8191;
-static double TUNNEL_LENGTH_M = 1219.2;
-
-//Accel state variables
-#define MINIMUM_ACCEL_TIME (5000) 
-long long accel_start_time = 0;
-
-//Coast state variables
-#define MAXIMUM_COAST_DISTANCE (812)  
-#define MAXIMUM_COAST_TIME     (15000) 
-#define MINIMUM_COAST_TIME     (5000) 
-long long coast_start_time = 0;
-
-/**
-* Gets new sensor values from the XMEGA
-*/
-void sensor_loop() {
-  int i = 0;
-  Xmega_Transfer transfer = {0,X_C_NONE, X_R_ALL};
-  long long time = sensors->get_current_time();
-  while(running){
-
-    Xmega_Command_t recv_cmd = command_queue->dequeue();    
-
-    //
-    //Xmega1
-    transfer.device = 0;
-
-    //Set cmd_to_send if we have a new command to send 
-    if(recv_cmd != X_C_NONE){
-      cmd_to_send = recv_cmd;
-    }
-
-    transfer.cmd = cmd_to_send;
-    uint8_t stat = sensors->update(transfer);
-    if(stat != X_TF_NONE){
-      consecutive_errors_1++;
-    }
-    else{
-      consecutive_errors_1 = 0;
-      cmd_to_send = X_C_NONE;//Don't need to resend the command
-    }
-
-    //Sleep for 15 milliseconds
-    usleep(15000);
-
-    //
-    //Xmega2
-    transfer.device = 1;
-
-    if(recv_cmd != X_C_NONE){
-      cmd_to_send_2 = recv_cmd;
-    }
-
-    transfer.cmd = cmd_to_send_2;
-
-    stat = sensors->update(transfer);
-    if(stat != X_TF_NONE){
-      consecutive_errors_2++;
-    }
-    else{
-      consecutive_errors_2 = 0;
-      cmd_to_send_2 = X_C_NONE;//Don't need to resend the command
-    }
-
-    if(i % 20 == 0){
-      cout << "=============================="<< endl;
-      state_mutex.lock();
-      cout << "State = " << state->get_current_state_string() << endl; 
-      state_mutex.unlock();
-      sensors->print_status();
-      printf("Xmega1 State: %d \t Xmega2 State: %d \n", sensors->get_state(0), sensors->get_state(1));
-      printf("Xmega1 Sensor_Status: %x Xmega2 Sensor_Status: %x\n", sensors->get_sensor_status(0), sensors->get_sensor_status(1));
-      printf("Consecutive1: %d \t Consecutive2: %d\n", consecutive_errors_1, consecutive_errors_2);
-    }
-    i++;
-
-
-    //////////////////////////
-    //////////////////////////
-    //Software Transitions
-    //This is where the magic happens
-    //////////////////////////
-    //Need to transition from the "Ready to Launch" state to the Acceleration state
-    //Need to transition from the Acceleration state to the Coast state 
-    //Need to transition from the Coast state to the Brake state (not emergency brake, just normal brake)
-
-    state_mutex.lock(); 
-    if(state->get_current_state() == Pod_State::ST_LAUNCH_READY){
-      //The stragety here is to detect a positive acceleration (debounced for half a second ish). Then switch over to the Acceleration state
-      //Need to add in error checking here too
-      //if we detect that the accelerometer is BAD, then we need to do something about it!
-
-      double accel = sensors->get_sensor_data(TRUE_ACCELERATION)[0];
-
-      if(accel > MIN_ACCELERATION){
-        //record starting time
-        if(continuous == false){
-          acc_start_time = sensors->get_current_time();
-          continuous = true;
-        }
-        //Check debounced time
-        if((sensors->get_current_time() - acc_start_time) > DEBOUNCE_TIME){
-          //Switch states!
-          state->accelerate();
-          accel_start_time = sensors->get_current_time();
-        }
-      }
-      else{
-        continuous = false;
-      }
-
-    }
-    else if(state->get_current_state() == Pod_State::ST_FLIGHT_ACCEL){
-      //Wait until the pull tab
-      double pull_tab = sensors->get_sensor_data(PULL_TAB)[0];
-      long long elapsed_time = sensors->get_current_time() - accel_start_time;
-
-      //Check if Pull tab is disconnected
-      if((pull_tab == 0) && (elapsed_time > MINIMUM_ACCEL_TIME )){
-        //Switch states! Pull tab is disconnected
-        state->coast();
-        coast_start_time = sensors->get_current_time();
-      }
-    }
-    else if(state->get_current_state() == Pod_State::ST_FLIGHT_COAST){
-      //Wait a specific amoutn of time or distance 
-      double distance = sensors->get_sensor_data(TRUE_POSITION)[0];
-      double velocity = sensors->get_sensor_data(TRUE_VELOCITY)[0];
-      long long elapsed_time = sensors->get_current_time() - coast_start_time;
-      bool emergency_condition = (distance > MAXIMUM_COAST_DISTANCE) || (elapsed_time > MAXIMUM_COAST_TIME);
-      double distance_remaining = TUNNEL_LENGTH_M - distance;
-
-      double v_2 = velocity * velocity;
-      bool ideal_condition = v_2 > 5 * distance_remaining;
-      
-      if((emergency_condition || ideal_condition) && (elapsed_time > MINIMUM_COAST_TIME) ){  
-        state->brake();
-      }
-    }
-
-    state_mutex.unlock(); 
-
-    long long elapsed = sensors->get_current_time() - time;
-    if(elapsed > 100) {
-      //write the object
-      time = sensors->get_current_time();
-
-      uint8_t spx_state;
-      state_mutex.lock();
-      if(sensors->greenlight() != VALID_STATE){
-        spx_state = 0;
-      } else if(state->get_current_state() == Pod_State::ST_LAUNCH_READY){
-        spx_state = 2;
-      } else if(state->get_current_state() == Pod_State::ST_FLIGHT_ACCEL){
-        spx_state = 3;
-      } else if(state->get_current_state() == Pod_State::ST_FLIGHT_COAST){
-        spx_state = 4;
-      } else if(state->get_current_state() == Pod_State::ST_FLIGHT_BRAKE){
-        spx_state = 5;
-      } else {
-        spx_state = 1;
-      }
-      state_mutex.unlock();
-      datagram dgram = {
-        0,
-        spx_state,
-        htonl((int)(sensors->get_sensor_data(TRUE_ACCELERATION)[0] * 980.665)),
-        htonl((int)(sensors->get_sensor_data(TRUE_POSITION)[0] * 100)),
-        htonl((int)(sensors->get_sensor_data(TRUE_VELOCITY)[0] * 100)),
-        0,
-        0,
-        0,
-        0,
-        0 
-      };
-      int bytes_sent = sendto(udp_sock, &dgram, sizeof(dgram), 0, (sockaddr*)&addrDest, sizeof(addrDest));
-      if(bytes_sent < sizeof(dgram)){
-        cout << "Full message not sent" << endl;
-      }
-    }
-  }
-}
-
-void network_loop() {
-
-  cout << "Server listening on socket " << socketfd << endl;
-  struct pollfd p;
-  p.fd = socketfd;
-  p.events = POLLIN;
-  int ret = 0;
-  while(running) {
-    ret = poll(&p, 1, 1000);
-    if(ret == 1) {
-      clientFD = accept(socketfd, NULL, NULL);
-      if(clientFD > 0){
-        cout << "Connected!" << endl;
-        thread read_thread(read_loop);
-        thread write_thread(write_loop);
-        
-
-        read_thread.join();
-        write_thread.join();
-
-        // Handle disconnects
-        state_mutex.lock();
-        state->move_safe_mode();
-        if(state->get_current_state() == Pod_State::ST_FLIGHT_COAST) { 
-          /*
-          while(sensors->get_current_time() - coast_start_time > 5000) {
-            usleep(1000);
-          }*/
-          state->brake();
-        }
-        state_mutex.unlock();
-
-        cout << "Waiting for another connection" << endl;
-      } else {
-        cout << "Accept failed, aborting" << endl;
-        break;
-      }
-    }
-  }
-  cout << "Network thread exiting!" << endl;
-}
-
-void read_loop() {
-  cout << "Read thread startup!" << endl;
-
-  char command_buffer = -1;
-  while(running && (read(clientFD, &command_buffer, 1) > 0)) {
-    cout << "Received: " << (int)command_buffer << endl;
-    parse_command(command_buffer);
-    command_buffer = -1;
-    usleep(10000);
-  }
-
-  cout << "Read thread exiting!" << endl;
-  
-}
-
-void parse_command(char command){
-  Command c = (Command)command;
-  state_mutex.lock();
-  switch(c) {
-    case SAFETY_SETUP:
-      state->move_safety_setup();
-      break;
-    case SAFE_MODE:
-      state->move_safe_mode();
-      coast_start_time = 0;
-      accel_start_time = 0;
-      break;
-    case FUNCTIONAL_TEST:
-      //TODO Check validity
-      state->move_functional_tests();
-      break;
-    case LAUNCH_READY:
-    {
-      
-      uint16_t greenlight = sensors->greenlight();
-      if(greenlight == VALID_STATE){
-        state->move_launch_ready();      
-      }
-    }
-      break;
-    case BRAKE:
-      state->brake();
-      break;
-    case EMERGENCY_BRAKE:
-      state->emergency_brake();
-      break;
-    case RESET_SENSORS:
-      command_queue->enqueue(X_C_RESET);
-      sensors->reset();
-      break;
-    case CALIBRATE_SENSORS:
-      cout << "This command does nothing and needs to be removed"<<endl;
-      break;  
-    case MANUAL_BRAKE:
-      if(state->get_current_state() == Pod_State::ST_FUNCTIONAL_TEST) {
-        cout << "Manual brake!" << endl;
-        command_queue->enqueue(X_C_MANUAL_BRAKE);
-      }
-      break;
-    case MANUAL_BRAKE_REVERSE:    
-      if(state->get_current_state() == Pod_State::ST_FUNCTIONAL_TEST) {
-        cout << "Manual brake reverse!" << endl;
-        command_queue->enqueue(X_C_MANUAL_BRAKE_REVERSE);
-      }
-      
-  }
-  state_mutex.unlock();
-  cout << "Current state is : " << state->get_current_state_string() << endl;
-}
-
-void write_loop() {
-
-  cout << "Write thread startup!" << endl;
+void write_loop(){
   bool active_connection = true;
-  while(active_connection && running) {
-    usleep(100000);
-    uint8_t * data = sensors->get_sensor_data_packet(); 
-    size_t size = sensors->get_sensor_data_packet_size();
-    //Add state information
-    state_mutex.lock();
-    data[size-1] = state->get_current_state();
-    state_mutex.unlock();
-
-    //Add timing information
-    data = (uint8_t *)realloc(data, sensors->get_sensor_data_packet_size() + 10);
-    data[size] = Sensor_Type::COAST_TIME;
-    long long now = sensors->get_current_time();
-    uint32_t coast_time, accel_time;
-    if(coast_start_time == 0){
-      coast_time = 0;
-    } else {
-      coast_time = now - coast_start_time;
-    }
-    memcpy(data+size + 1, &coast_time, sizeof(uint32_t));
-    data[size + 1 + sizeof(uint32_t)] = Sensor_Type::ACCELERATION_TIME;
-
-    if(accel_start_time == 0){
-      accel_time = 0;
-    } else {
-      accel_time = now - accel_start_time;
-    }
-    memcpy(data+size+2+sizeof(uint32_t), &accel_time, sizeof(uint32_t));
-
-
-    int result = write_all_to_socket(clientFD, data, size + 10); 
-    free(data);
-    active_connection = result != -1;
-
+  while(running && active_connection){
+    usleep(100000); //TODO: Change to actual value at some point
+    int written = network->write_data();
+    print_debug("Written is %d\n", written);
+    active_connection = written != -1;
   }
-  cout << "Write thread exiting!" << endl;
+
+  PRINT_ERRNO("Write Loop exiting.")
 }
 
-void int_handler(int signum) {
+void read_loop(){
+  bool active_connection = true;
+  Network_Command buffer;
+  while (running && active_connection){
+    int bytes_read = network->read_command(&buffer);
+    active_connection = bytes_read != -1;
+    Network_Command * command = new Network_Command(buffer);
+    network_queue->enqueue(command);
+  }
 
-  (void)signum;
+  PRINT_ERRNO("Read Loop exiting.")
+}
+void network_loop(){
+  while(running){
+    int clientfd = network->accept_client();
+    print_info("Client fd is: %d\n", clientfd);
+    if(clientfd > 0){
+      print_info("Starting network threads\n");
+      thread read_thread(read_loop);
+      thread write_thread(write_loop);
+
+      read_thread.join();
+      write_thread.join();
+      print_info("Client exited, looking for next client\n");
+
+    } else {
+      PRINT_ERRNO("Accept failed, abort.")
+      break;
+    }
+  }
+}
+
+void logic_loop(){
+  while(running){
+    long long now = get_elapsed_time(); 
+    long long delta = now - last_poll;
+    if(delta > timestep){// TODO Possibly change delta based off state, but at least pick a real timestep
+      sensor->update_buffers(); 
+    }
+    // Start processing/pod logic
+    Network_Command * command = network_queue->dequeue();
+    if(command != nullptr){
+      print_info("Processing command %d\n", command->id);
+      auto transition = state_machine->get_transition_function(command->id);
+      (state_machine->*(transition))(); //transitions to requested state
+    }
+
+    auto func = state_machine->get_steady_function();
+    //This is how you call a member function pointer in c++
+    (state_machine->*(func))(command); //G E N I U S
+  }
+}
+
+float pid_controller(int actual_rpm, int set_rpm) {
+	long long now = get_elapsed_time();
+	long long delta = 0;
+	
+	if (last_poll > 0) {
+		delta = now - last_poll;
+	}
+
+	float error = actual_rpm - set_rpm;
+	float kp = 1;
+	float ki = 1;
+
+	accumulated_error += error * delta;
+	float new_rpm_delta = kp * error + ki * accumulated_error;
+	
+	//clamp between 0 and 1 for motor
+	last_poll = now;
+	return clamp(new_rpm_delta,-0.1,0.1);
+}
+
+void int_handler(int signo){
+  network->close_server();
   running = false;
-  close(socketfd);
-  close(clientFD);
-  cout << "Closing!" << endl;
 }
 
-void pipe_handler(int signum) {
-  (void)signum;
+void pipe_handler(int signo){
+
 }
 
-int pod(int argc, char** argv) {
+int main(){
+  print_info("==================\n");
+  print_info("ILLINI  HYPERLOOP \n");
+  print_info("==================\n\n");
+  print_info("Runing setup...\n");
+
+  //Set maximum CPU frequency because GOTTA GO F A S T  
+  system("cpufreq-set -f 1000MHz");
+  print_info("CPU freq set to 1GHz\n");
+
+  //Check if CAN module has been loaded
+  //grep returns 0 if a match was found
+  int can_device_tree = system("grep CAN < /sys/devices/platform/bone_capemgr/slots");
+  if(can_device_tree != 0){
+    print_info("Setting up everything for CAN\n");
+    int ret = system("echo BB-DCAN1 > /sys/devices/platform/bone_capemgr/slots");
+    if(ret != 0){
+      print_info("Error writing to device tree for CAN\n");
+      exit(1);
+    }
+    usleep(500000);
+    system("modprobe can");
+    system("modprobe can-dev");
+    system("modprobe can-raw");
+    usleep(1000000);
+    ret = system("ip link set can0 up type can bitrate 500000");
+    if(ret != 0){
+      print_info("error setting up can0 ip link\n");
+      exit(1);
+    }
+    usleep(500000);
+  }
+  print_info("CAN setup complete\n");
+  
+  // parsing, setup, etc
+  signal(SIGINT, int_handler);
+  signal(SIGPIPE, pipe_handler);
+  spi = nullptr;
+  #ifndef SIM
+    spi = new Spi(&x1, &x2);
+  #endif
+
+  print_info("Setup Completed\n");
+
+  battery = new Battery("candump.txt"); //TODO make this the path to the actual file
+  sensor = new Sensor(spi, battery);
+  network = new Network(sensor);
+  brake = new Brake();
+  motor = new Motor();
+  state_machine = new Pod_State(brake, motor, sensor);
+  network_queue = new SafeQueue<Network_Command *>();
+  const char* host = "127.0.0.1";
+  const char* port = "8800";
+  network->start_server(host, port);
+  Network_Command command = {Network_Command_ID::TRANS_FUNCTIONAL_TEST, 0};
+  network_queue->enqueue(&command);
+
+  thread network_thread(network_loop);
+  thread logic_thread(logic_loop);
+  network_thread.join();
+  logic_thread.join();
+  free(motor);
+  free(brake);
+  free(network);
+  free(sensor);
+  free(spi);
+  free(state_machine);
+  return 0; 
+}
+void device_tree_setup() {
 
   //Setup GPIO input/output pins 
   print_debug("Checking Device tree for GPIO initialization\n");
@@ -416,238 +212,4 @@ int pod(int argc, char** argv) {
     print_debug("Sleeping for 1 second to make sure kernel has time complete setup\n");
     usleep(1000000);
   }
-    
-  struct sigaction act;
-  memset(&act, 0, sizeof(struct sigaction));
-
-  act.sa_handler = &int_handler;
-  sigaction(SIGINT, &act, NULL);
-
-  act.sa_handler = &pipe_handler;
-  sigaction(SIGPIPE, &act, NULL);
-
-  auto configs = parse_input(argc, argv);
-
-  sensors = new Sensor_Package(std::get<1>(configs), std::get<0>(configs));
-  command_queue = new SafeQueue<Xmega_Command_t>();
-
-  state = new Pod_State(command_queue, sensors);
-
-  printf("Created sensor package\n");
-  thread sensor_thread(sensor_loop);
-
-  socketfd = socket(AF_INET, SOCK_STREAM, 0);
-  int enable = 1;
-  if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
-    perror("setsockopt(SO_REUSEADDR) failed");
-  }
-
-  struct addrinfo hints, *result;
-  memset(&hints, 0, sizeof(hints));
-  hints.ai_family = AF_INET;
-  hints.ai_socktype = SOCK_STREAM;
-  hints.ai_flags = AI_PASSIVE;
-
-  int s = getaddrinfo(NULL, "8800", &hints, &result);
-  if(s != 0){
-    fprintf(stderr, "getaddrinfo: %s\n", gai_strerror(s));
-    exit(1);
-  }
-  if(bind(socketfd, result->ai_addr, result->ai_addrlen) != 0){
-    perror("bind");
-    exit(1);
-  }
-  if(listen(socketfd, 1) != 0){
-    perror("listen");
-    exit(1);
-  }
-  free(result);
-  if((udp_sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0) {
-    perror("Cannot create socket");
-    exit(1);
-  }
-  sockaddr_in myaddr = {};
-  myaddr.sin_family = AF_INET;
-  int res = bind(udp_sock, (sockaddr*)&myaddr, sizeof(myaddr));
-  if(res == -1) {
-    perror("Bind fails");
-    exit(1);
-  }
-  addrinfo* result_list = NULL;
-  addrinfo udp_hints = {};
-  udp_hints.ai_family = AF_INET;
-  udp_hints.ai_socktype = SOCK_DGRAM;
-  char * hostname = "localhost";
-  char * port = "8000";
-  res = getaddrinfo(hostname, port, &udp_hints, &result_list);
-  if(res != 0) {
-    perror("Could not getaddrinfo");
-    exit(1);
-  }
-  memcpy(&addrDest, result_list->ai_addr, result_list->ai_addrlen);
-  freeaddrinfo(result_list);
-
-  cout << "Starting network thread" << endl;
-  thread network_thread(network_loop);
-  
-
-  sensor_thread.join();
-  network_thread.join();
-  delete sensors; 
-  delete state;
-  delete command_queue;
-
-  return 0; 
-} 
-
-std::tuple<bool, vector<Sensor_Configuration>> parse_input(int argc, char** argv) {
-
-  vector<Sensor_Configuration> configs = vector<Sensor_Configuration>();
-  
-  Sensor_Configuration thermo;
-  thermo.type = THERMOCOUPLE;
-  thermo.simulation = 0;
-
-  Sensor_Configuration accelx;
-  accelx.type = ACCELEROMETERX;
-  accelx.simulation = 0;
-
-  Sensor_Configuration accelyz;
-  accelyz.type = ACCELEROMETERYZ;
-  accelyz.simulation = 0;
-
-  Sensor_Configuration brake;
-  brake.type = BRAKE_PRESSURE;
-  brake.simulation = 0;
-
-  Sensor_Configuration optical;
-  optical.type = OPTICAL;
-  optical.simulation = 0;
-
-  Sensor_Configuration height;
-  height.type = RIDE_HEIGHT;
-  height.simulation = 0;
-
-  Sensor_Configuration tape;
-  tape.type = TAPE_COUNT;
-  tape.simulation = 0;
-  
-  Sensor_Configuration battery;
-  battery.type = BATTERY;
-  battery.simulation = 0;
-
-  Sensor_Configuration current;
-  current.type = CURRENT;
-  current.simulation = 0;
-
-  Sensor_Configuration true_acceleration;
-  true_acceleration.type = TRUE_ACCELERATION;
-  true_acceleration.simulation = 0;
-
-  Sensor_Configuration true_velocity;
-  true_velocity.type = TRUE_VELOCITY;
-  true_velocity.simulation = 0;
-
-  Sensor_Configuration true_position;
-  true_position.type = TRUE_POSITION;
-  true_position.simulation = 0;
-
-  Sensor_Configuration pull_tab;
-  pull_tab.type = PULL_TAB;
-  pull_tab.simulation = 0;
-
-  size_t simulating_sensors = 0;
-  int c;
-
-  while((c = getopt(argc, argv, "a:b:c:h:i:o:t:v:y:p:"))!= -1){
-    switch(c) {
-      case 'a':
-        accelx.simulation = atoi(optarg);
-        break;
-      case 'b':
-        brake.simulation = atoi(optarg);
-        break;
-      case 'c':
-        tape.simulation = atoi(optarg);
-        cout << "tape sim with opt: " << tape.simulation << endl;
-        break;
-      case 'h':
-        height.simulation = atoi(optarg);
-        break;
-      case 'i':
-        current.simulation = atoi(optarg);
-        break;
-      case 'o':
-        optical.simulation = atoi(optarg);
-        break;
-      case 't':
-        thermo.simulation = atoi(optarg);
-        break;
-      case 'v':
-        battery.simulation = atoi(optarg);
-        break;
-      case 'y':
-        accelyz.simulation = atoi(optarg);
-        break;
-      case 'p':
-        pull_tab.simulation = atoi(optarg);
-        break;
-    }
-    simulating_sensors++;
-  }
-
-  configs.push_back(thermo);
-  configs.push_back(accelx);
-  configs.push_back(accelyz);
-  configs.push_back(brake);
-  configs.push_back(optical);
-  configs.push_back(height);
-  configs.push_back(tape);
-  configs.push_back(battery);
-  configs.push_back(current);
-  configs.push_back(true_position);
-  configs.push_back(true_velocity);
-  configs.push_back(true_acceleration);
-  configs.push_back(pull_tab);
-
-
-
-  return std::make_tuple(simulating_sensors != NUM_SENSORS, configs);
-
 }
-
-ssize_t read_all_from_socket(int socket, char *buffer, size_t count) {
-  size_t bytes_read = 0;
-  while(bytes_read != count){
-    int bytes = read(socket, buffer + bytes_read, count - bytes_read);
-    if(bytes > 0)
-      bytes_read += bytes;
-    else if(bytes == 0){
-      fprintf(stderr, "Disconnected\n");
-      return 0;
-    } else if(bytes == -1 && errno != EINTR){
-      fprintf(stderr, "Failure\n");
-      return -1;
-    }
-  }
-  return bytes_read;
-}
-
-ssize_t write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
-  size_t bytes_written = 0;
-  while(bytes_written != count){
-    //fprintf(stderr,"Writing to socket\n");
-    int bytes = write(socket, buffer + bytes_written, count - bytes_written);
-    if(bytes > 0)
-      bytes_written += bytes;
-    else if(bytes == 0){
-      fprintf(stderr, "Disconnected\n");
-      return 0;
-    } else if(bytes == -1 && errno != EINTR){
-      fprintf(stderr, "Write failure!\n");
-      return -1;
-    }
-  }
-  return bytes_written;
-}
-

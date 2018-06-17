@@ -3,6 +3,13 @@ build
 builds/
 Debug/
 Release/
+build
+dbuild
+sbuild
+cross
+dcross
+scross
+
 
 
 

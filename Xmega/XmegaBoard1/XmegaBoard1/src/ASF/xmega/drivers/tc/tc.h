@@ -78,20 +78,21 @@ extern "C" {
  */
 
 /* Timer prescalars from Table 14-3. Clock select options */
-typedef enum TC_CLKSEL_enum {
-	TC_CLKSEL_OFF_gc = (0b0000),      /* /< Timer Off */
-	TC_CLKSEL_DIV1_gc = (0b0001),     /* /< System Clock */
-	TC_CLKSEL_DIV2_gc = (0b0010),     /* /< System Clock / 2 */
-	TC_CLKSEL_DIV4_gc = (0b0011),     /* /< System Clock / 4 */
-	TC_CLKSEL_DIV8_gc = (0b0100),     /* /< System Clock / 8 */
-	TC_CLKSEL_DIV64_gc = (0b0101),    /* /< System Clock / 64 */
-	TC_CLKSEL_DIV256_gc = (0b0110),   /* /< System Clock / 256 */
-	TC_CLKSEL_DIV1024_gc = (0b0111)   /* /< System Clock / 1024 */
-} TC_CLKSEL_t;
+//typedef enum TC_CLKSEL_enum {
+//	TC_CLKSEL_OFF_gc = (0b0000),      /* /< Timer Off */
+//	TC_CLKSEL_DIV1_gc = (0b0001),     /* /< System Clock */
+//	TC_CLKSEL_DIV2_gc = (0b0010),     /* /< System Clock / 2 */
+//	TC_CLKSEL_DIV4_gc = (0b0011),     /* /< System Clock / 4 */
+//	TC_CLKSEL_DIV8_gc = (0b0100),     /* /< System Clock / 8 */
+//	TC_CLKSEL_DIV64_gc = (0b0101),    /* /< System Clock / 64 */
+//	TC_CLKSEL_DIV256_gc = (0b0110),   /* /< System Clock / 256 */
+//	TC_CLKSEL_DIV1024_gc = (0b0111)   /* /< System Clock / 1024 */
+//} TC_CLKSEL_t;
+
 
 /* Timer Counter Waveform Generator mode from Table 14-4. Timer waveform
 generation mode*/
-typedef enum TC_WG_MODE_enum {
+/*typedef enum TC_WG_MODE_enum {
 	TC_WGMODE_NORMAL_gc = (0b000),
 	TC_WGMODE_FRQ_gc = (0b001),
 	TC_WGMODE_SS_gc = (0b011),
@@ -99,9 +100,10 @@ typedef enum TC_WG_MODE_enum {
 	TC_WGMODE_DS_TB_gc = (0b110),
 	TC_WGMODE_DS_B_gc = (0b111)
 } TC_WG_MODE_t;
+*/
 
 /* Timer action from Table 14-5. Timer event action selection */
-typedef enum TC_EVACT_enum {
+/*typedef enum TC_EVACT_enum {
 	TC_EVACT_OFF_gc = (0b000),
 	TC_EVACT_CAPT_gc = (0b001),
 	TC_EVACT_UPDOWN_gc = (0b010),
@@ -110,19 +112,21 @@ typedef enum TC_EVACT_enum {
 	TC_EVACT_FRQ_gc = (0b101),
 	TC_EVACT_PW_gc = (0b110)
 } TC_EVACT_t;
+*/
 
 /* Timer source from Table 14-6. Timer event source selection */
-typedef enum TC_EVSEL_enum {
+/*typedef enum TC_EVSEL_enum {
 	TC_EVSEL_OFF_gc = (0b000)
 } TC_EVSEL_t;
+*/
 
 /* Timer command from Table 14-8. Command selections */
-typedef enum TC_CMD_enum {
+/*typedef enum TC_CMD_enum {
 	TC_CMD_NONE_gc = (0b00),
 	TC_CMD_UPDATE_gc = (0b01),
 	TC_CMD_RESTART_gc = (0b10),
 	TC_CMD_RESET_gc = (0b11)
-} TC_CMD_t;
+} TC_CMD_t;*/
 
 /**
  * \brief Interrupt event callback function type

@@ -2,631 +2,159 @@
 #define SENSOR_H
 
 #include <map>
-#include <vector>
-#include <thread>
-#include <mutex>
-
 #include "Spi.h"
+#include <string.h>
+#include "Data.h"
+#include <mutex>
+#include <vector>
+#include "Battery.h"
+
+#include "Sensor_Aux/Distance.h"
+#include "Sensor_Aux/Temperature.h"
+#include "Sensor_Aux/Null.h"
+#include "Sensor_Aux/Acceleration_X.h"
+#include "Sensor_Aux/Acceleration_Y.h"
+#include "Sensor_Aux/Acceleration_Z.h"
 
 #define XMEGA1 0
 #define XMEGA2 1
 
-#define MAX_SENSORS 30
-
-
-#define ADC_TRANS adc_trans
-#define NO_TRANS  no_trans
-#define CURRENT_TRANS current_trans 
-#define RPM_TRANS rpm_trans 
-#define THERMO_EXT_TRANS thermo_ext_trans
-#define THERMO_INT_TRANS thermo_int_trans
-
-
-using namespace std;
-
-enum Sensor_Type {
-	ACCELEROMETERX,
-	TAPE_COUNT,
-	OPTICAL,
-	BRAKE_PRESSURE,
-	THERMOCOUPLE,
-	ACCELEROMETERYZ,
-	RIDE_HEIGHT,
-	BATTERY,
-	CURRENT,
-	PULL_TAB,
-	TRUE_POSITION,
-	TRUE_VELOCITY,
-	TRUE_ACCELERATION,
-	XMEGA_STATE,
-	XMEGA_STATUS,
-	XMEGA_RESPONDING,
-	POD_STATE,
-  SENSOR_STATUS,
-  ACCELERATION_TIME, //uint32
-  COAST_TIME, //uint32
+enum Xmega_1_Indices {
+  X_ACCELERATION_INDEX_1 = 0,
+  X_ACCELERATION_INDEX_2 = 1,
+  X_ACCELERATION_INDEX_3 = 2,
+  Y_ACCELERATION_INDEX = 3,
+  Z_ACCELERATION_INDEX = 4,
+  //GARBAGE STUFF
+  BRAKE_PRESSURE_INDEX = 90,
+  ENCODER_RPM_INDEX = 91,
+  ENCODER_COUNT_INDEX = 92,
 };
 
-enum Sensor_Index_1 {
-	X_ACCELERATION_INDEX = 0,
-	BRAKE_PRESSURE_INDEX = 3,
-	OPTICAL_INDEX = 4 
+enum Xmega_2_Indices {
+  TACH1_LAST_TIME_INDEX = 0,
+  TACH2_LAST_TIME_INDEX = 1,
+  TACH3_LAST_TIME_INDEX = 2,
+  TACH4_LAST_TIME_INDEX = 3,
+  OPT_LAST_TIME_INDEX = 4,
+  TACH1_DELTA_INDEX = 5,
+  TACH2_DELTA_INDEX = 6,
+  TACH3_DELTA_INDEX = 7,
+  TACH4_DELTA_INDEX = 8,
+  OPT_ENCODER_DELTA = 9,
+  OPT_ENCODER_COUNT = 10,
+//GARBAGE STUFF
+  RIDE_HEIGHT_INDEX_1 = 92,
+  RIDE_HEIGHT_INDEX_2 = 93,
+  RIDE_HEIGHT_INDEX_3 = 94,
+  BATTERY_CELL_INDEX_1 = 95,
+  BATTERY_CELL_INDEX_2 = 96,
+  THERMOCOUPLE_INDEX_1 = 97,
+  THERMOCOUPLE_INDEX_2 = 98,
+  THERMOCOUPLE_INDEX_3 = 99,
+  THERMOCOUPLE_INDEX_4 = 910,
+  THERMOCOUPLE_INDEX_5 = 911,
+  CURRENT_INDEX_1 = 912,
+  CURRENT_INDEX_2 = 913,
+  TAPE_COUNT_INDEX = 914
 };
 
-enum Sensor_Index_2 {
-  YZ_ACCELERATION_INDEX = 0,
-	RIDE_HEIGHT_INDEX = 2,
-	BATTERY_CELL_INDEX = 5,
-	THERMOCOUPLE_INDEX = 7,
-  CURRENT_INDEX = 12,
-	TAPE_COUNT_INDEX = 14
+/**Every Data_ID needs:
+  1. A Raw_Data_Struct that holds all the relevant raw data for that query
+  2. A Calculated_Data_Struct that holds all the calculated data
+  3. A Calculation Function to convert the relevant raw data to a "true" or "actual" value
+  4. A Parsing Function to pull the important data out of the data buffers and update the raw_data
+
+  Some Data_ID require:
+  A function to convert calculated data
+**/
+enum Data_ID {
+  DISTANCE = 0,
+  VELOCITY = 1,
+  ACCELERATION_X = 2,
+	ACCELERATION_Y = 3,
+	ACCELERATION_Z = 4,
+  MOTOR_INFO = 5,
+  STATE_INFO = 6, // State ID is an invalid ID to request, query the state machine instead
+  BATTERY_FLAGS = 7,
+  BATTERY_VOLT = 8,
+  BATTERY_AMP = 9,
+  BATTERY_TEMP = 10,
+  BATTERY_OHM = 11,
+  BATTERY_INFO  = 12,
+//leftover states
+	VOLTAGE = 13,
+	CURRENT = 14,
+	BRAKE_PRESSURE = 15,
+  TEMPERATURE = 16,
+  RIDE_HEIGHT = 17,
 };
 
+//You can think of Arbitrary Data as a uint8_t * in most circumstances, it just also gives a size
+
+// A calculation function takes in a pointer to raw data and converts it to real units
+typedef Arbitrary_Data (*calculation_func_t)(Arbitrary_Data);
+// A parse function takes in a source reference, and stores necessary data within a Raw_Data_Struct 
+typedef void (*parse_func_t)(void * source, Arbitrary_Data data);
+// Calculation  map takes in a Data_ID and gives a calculation function
+typedef std::map<Data_ID, calculation_func_t> calculation_map_t;
+// Raw data map maps a data_id to some raw_data *
+typedef std::map<Data_ID, Arbitrary_Data > raw_data_map_t;
+// Parse function map maps a Data_ID to a parsing function
+typedef std::map<Data_ID, parse_func_t> parse_map_t;
+// Data map, only used in Simulation
+typedef std::map<Data_ID, Data > data_map_t; 
 
 
-static const int NUM_SENSORS = 10;
-
-struct Sensor_Configuration {
-	Sensor_Type type;
-	int simulation; //simulation is an int that specifies the number of the test to be run
-
-
-};
-
-class Sensor_Group {
-
-	public:
-		/**
-		* Constructs a sensor group
-		* @param configuration the configuration for sensors
-		**/
-		Sensor_Group(Sensor_Configuration configuration);
-
-
-		virtual ~Sensor_Group() = 0;
-		
-		/**
-		* Virtual function implemented by child classes 
-		* Updates the values from the SPI buffers 
-		* OR uses a time function to set simulated values
-		**/
-		virtual void update(Spi * spi) = 0;
-
-		/**
-		* Recalibrates and resets all sensors in the group.
-		* May not do anything for some sensors
-		**/
-		virtual void reset() = 0;
-
-		/**
-		* Gets all data and stores it into a buffer
-		**/
-		virtual uint8_t * get_data_buffer() = 0;
-
-		/**
-		* Calculates the size of the buffer for each sensor
-		**/
-		virtual size_t get_buffer_size() = 0;
-
-		/**
-		* Returns all available sensor data
-		**/
-		virtual vector<double> get_data();
-
-		/** 
-		* Helper function
-		* Refreshes the local data array from the spi buffers
-		**/
-		void refresh_data(Spi * spi);	
-
-		/**
-		* Prints data to standard out
-		* Used for debugging only
-		**/
-		void print_data();
+class Battery;
+class Sensor {
+  public:
 
     /**
-    * Determines if the sensor is ready, if the value on the sensor is within a good range
+    * Default constructor
     **/
-    virtual bool greenlight() = 0;
+    Sensor(Spi * s, Battery * b);
 
     /**
-    * Deetermines if a given value is between a range
-    **/
-    static bool inRange(double value, double minimum, double maximum);
+    * Updates the buffers with the most recent data
+    * Note: may not do anything
+    * Note: dirty bit/timers
+    * Note: maybe should be private? **/
+    void update_buffers();
 
     /**
-    * Translation function definitions 
-    **/
-    static double no_trans(double x);
-    static double adc_trans(double x);
-    static double current_trans(double x);
-    static double rpm_trans(double x);
-    static double thermo_ext_trans(double x);
-    static double thermo_int_trans(double x);
+    * Returns a pointer to a struct corresponding to the scaled data for the Sensor_ID
+    * Note: it is up to the user to match the returned struct with the right data
+    * @param id the id of the sensor to be queried
+    * @return data the data associated with the sensor
+    */
+    Data get_data(Data_ID id);
 
 
+    #ifdef SIM
+      void parse_sim(Data_ID id, char * data);
+    #endif
 
-	protected:
-	
-		const int simulation;
+  private:
+    #ifdef SIM
+      data_map_t data_map; 
+      fd_set readfds;
+      struct timeval timeout;
+    #else
+      Spi * spi;
+      Battery * battery;
+      calculation_map_t calculation_map;
+      raw_data_map_t raw_data_map;
+      parse_map_t parse_map;
 
-		Sensor_Type type;
 
-		vector<double> data;
+      Arbitrary_Data get_raw_data(Data_ID id);
+      std::vector<Data_ID> ids;
 
-		mutex sensor_group_mutex;
-		size_t first_index = 0; // index offset to read from spi
-		size_t device = 0; //xmega device number (0 or 1)
-		size_t count = 0; //number of sensors
-    array<double (*)(double), MAX_SENSORS> translation_array = {{no_trans}};
-    string name = "Sensor Group";
-    array<string, MAX_SENSORS> name_array = {{"Sensor Group"}};
+    #endif
+
+    std::mutex sensor_mutex;
 
 };
-
-class Thermocouple : public Sensor_Group {
-
-	public:
-		Thermocouple(Sensor_Configuration configuration);
-
-		~Thermocouple();
-
-		/**
-		* Receives new data from the XMega or calls simulations
-		**/
-		void update(Spi * spi);
-
-		/**
-		* Resets and recalibrates sensors
-		**/
-		void reset();
-
-		/**
-		* Gets all data and stores it into a buffer
-		**/
-		uint8_t * get_data_buffer();
-
-		/**
-		* Calculates the size of the buffer for each sensor
-		**/
-		size_t get_buffer_size();
-
-    /**
-    * Returns true if the sensor is reporting values in range
-    **/
-    bool greenlight();
-
-
-	private:
-		/**
-		* Simulates set values in the vector
-		**/
-		void simulation_1();
-};
-
-class XAccelerometer : public Sensor_Group {
-
-	public:
-		XAccelerometer(Sensor_Configuration configuration);
-
-		~XAccelerometer();
-
-		/**
-		* Receives new data from the XMega or calls simulations
-		**/
-		void update(Spi * spi);
-
-		/**
-		* Resets and recalibrates sensors
-		**/
-		void reset();
-		/**
-		* Gets all data and stores it into a buffer
-		**/
-		uint8_t * get_data_buffer();
-
-		/**
-		* Calculates the size of the buffer for each sensor
-		**/
-		size_t get_buffer_size();
-
-    /**
-    * Returns true if the sensor is reporting values in range
-    **/
-    bool greenlight();
-
-	private:
-		/**
-		* Simulates set values in the vector
-		**/
-		void simulation_1();
-
-    void simulation_2();
-};
-
-class YZAccelerometer : public Sensor_Group {
-
-	public:
-		YZAccelerometer(Sensor_Configuration configuration);
-
-		~YZAccelerometer();
-
-		/**
-		* Receives new data from the XMega or calls simulations
-		**/
-		void update(Spi * spi);
-
-		/**
-		* Resets and recalibrates sensors
-		**/
-		void reset();
-		/**
-		* Gets all data and stores it into a buffer
-		**/
-		uint8_t * get_data_buffer();
-
-		/**
-		* Calculates the size of the buffer for each sensor
-		**/
-		size_t get_buffer_size();
-
-    /**
-    * Returns true if the sensor is reporting values in range
-    **/
-    bool greenlight();
-
-	private:
-		/**
-		* Simulates set values in the vector
-		**/
-		void simulation_1();
-};
-
-class Ride_Height : public Sensor_Group {
-
-	public:
-		Ride_Height(Sensor_Configuration configuration);
-
-		~Ride_Height();
-
-		/**
-		* Receives new data from the XMega or calls simulations
-		**/
-		void update(Spi * spi);
-
-		/**
-		* Resets and recalibrates sensors
-		**/
-		void reset();
-		/**
-		* Gets all data and stores it into a buffer
-		**/
-		uint8_t * get_data_buffer();
-
-		/**
-		* Calculates the size of the buffer for each sensor
-		**/
-		size_t get_buffer_size();
-
-		
-    /**
-    * Returns true if the sensor is reporting values in range
-    **/
-    bool greenlight();
-
-	private:
-		/**
-		* Simulates set values in the vector
-		**/
-		void simulation_1();
-};
-
-
-class Tape_Count : public Sensor_Group {
-
-	public:
-		Tape_Count(Sensor_Configuration configuration);
-
-		~Tape_Count();
-
-		/**
-		* Receives new data from the XMega or calls simulations
-		**/
-		void update(Spi * spi);
-
-		/**
-		* Resets and recalibrates sensors
-		**/
-		void reset();
-		/**
-		* Gets all data and stores it into a buffer
-		**/
-		uint8_t * get_data_buffer();
-
-		/**
-		* Calculates the size of the buffer for each sensor
-		**/
-		size_t get_buffer_size();
-
-    /**
-    * Returns true if the sensor is reporting values in range
-    **/
-    bool greenlight();
-
-	private:
-		/**
-		* Simulates set values in the vector
-		**/
-		void simulation_1();
-    void simulation_2();
-};
-
-class Optical : public Sensor_Group {
-
-	public:
-		Optical(Sensor_Configuration configuration);
-
-		~Optical();
-
-		/**
-		* Receives new data from the XMega or calls simulations
-		**/
-		void update(Spi * spi);
-
-		/**
-		* Resets and recalibrates sensors
-		**/
-		void reset();
-		/**
-		* Gets all data and stores it into a buffer
-		**/
-		uint8_t * get_data_buffer();
-
-		/**
-		* Calculates the size of the buffer for each sensor
-		**/
-		size_t get_buffer_size();
-
-
-    /**
-    * Returns true if the sensor is reporting values in range
-    **/
-    bool greenlight();
-
-	private:
-		/**
-		* Simulates set values in the vector
-		**/
-		void simulation_1();
-    void simulation_2();
-};
-
-class Brake_Pressure : public Sensor_Group {
-
-	public:
-		Brake_Pressure(Sensor_Configuration configuration);
-
-		~Brake_Pressure();
-
-		/**
-		* Receives new data from the XMega or calls simulations
-		**/
-		void update(Spi * spi);
-
-		/**
-		* Resets and recalibrates sensors
-		**/
-		void reset();
-		/**
-		* Gets all data and stores it into a buffer
-		**/
-		uint8_t * get_data_buffer();
-
-		/**
-		* Calculates the size of the buffer for each sensor
-		**/
-		size_t get_buffer_size();
-
-    /**
-    * Returns true if the sensor is reporting values in range
-    **/
-    bool greenlight();
-	private:
-		/**
-		* Simulates set values in the vector
-		**/
-		void simulation_1();
-};
-
-
-class Battery : public Sensor_Group {
-
-	public:
-		Battery(Sensor_Configuration configuration);
-
-		~Battery();
-
-		/**
-		* Receives new data from the XMega or calls simulations
-		**/
-		void update(Spi * spi);
-
-		/**
-		* Resets and recalibrates sensors
-		**/
-		void reset();
-		/**
-		* Gets all data and stores it into a buffer
-		**/
-		uint8_t * get_data_buffer();
-
-		/**
-		* Calculates the size of the buffer for each sensor
-		**/
-		size_t get_buffer_size();
-
-
-    /**
-    * Returns true if the sensor is reporting values in range
-    **/
-    bool greenlight();
-
-	private:
-		/**
-		* Simulates set values in the vector
-		**/
-		void simulation_1();
-};
-
-class Current : public Sensor_Group {
-
-	public:
-		Current(Sensor_Configuration configuration);
-
-		~Current();
-
-		/**
-		* Receives new data from the XMega or calls simulations
-		**/
-		void update(Spi * spi);
-
-		/**
-		* Resets and recalibrates sensors
-		**/
-		void reset();
-		/**
-		* Gets all data and stores it into a buffer
-		**/
-		uint8_t * get_data_buffer();
-
-		/**
-		* Calculates the size of the buffer for each sensor
-		**/
-		size_t get_buffer_size();
-
-
-
-    /**
-    * Returns true if the sensor is reporting values in range
-    **/
-    bool greenlight();
-
-	private:
-		/**
-		* Simulates set values in the vector
-		**/
-		void simulation_1();
-};
-
-class Pull_Tab : public Sensor_Group {
-
-	public:
-		Pull_Tab(Sensor_Configuration configuration);
-
-		~Pull_Tab();
-
-		/**
-		* Receives new data from the XMega or calls simulations
-		**/
-		void update(Spi * spi);
-
-		/**
-		* Resets and recalibrates sensors
-		**/
-		void reset();
-		/**
-		* Gets all data and stores it into a buffer
-		**/
-		uint8_t * get_data_buffer();
-
-		/**
-		* Calculates the size of the buffer for each sensor
-		**/
-		size_t get_buffer_size();
-
-
-    /**
-    * Returns true if the sensor is reporting values in range
-    **/
-    bool greenlight();
-	private:
-		/**
-		* Simulates set values in the vector
-		**/
-		void simulation_1();
-    void simulation_2();
-};
-
-class Sensor_Package; 
-
-class True_Sensor : public Sensor_Group {
-
-	public:
-		True_Sensor(Sensor_Configuration configuration, Sensor_Package * pack);
-		~True_Sensor();
-
-		void update(Spi * spi);
-		void reset();
-
-		/**
-		* Gets all data and stores it into a buffer
-		**/
-		uint8_t * get_data_buffer();
-
-		/**
-		* Calculates the size of the buffer for each sensor
-		**/
-		size_t get_buffer_size();
-    /**
-    * Returns true if the sensor is reporting values in range
-    **/
-    bool greenlight();
-	
-	protected:
-		Sensor_Package * package;
-
-    double calibrated_baseline = 0;
-    const int total_samples = 100;
-    int current_sample = 0;
-    bool calibrated = false;
-};
-
-
-class True_Position : public True_Sensor {
-	public:	
-		True_Position(Sensor_Configuration configuration, Sensor_Package * pack);
-		void update(Spi * spi);
-    /**
-    * Returns true if the sensor is reporting values in range
-    **/
-    bool greenlight();
-};
-
-
-class True_Acceleration : public True_Sensor {
-
-	public:	
-		True_Acceleration(Sensor_Configuration configuration, Sensor_Package * pack);
-		void update(Spi * spi);
-    /**
-    * Returns true if the sensor is reporting values in range
-    **/
-    bool greenlight();
-
-    const double volts_per_g = 0.330;
-};
-
-class True_Velocity : public True_Sensor {
-
-	public:	
-		True_Velocity(Sensor_Configuration configuration, Sensor_Package * pack);
-		void update(Spi * spi);
-    /**
-    * Returns true if the sensor is reporting values in range
-    **/
-    bool greenlight();
-};
-
 
 #endif
