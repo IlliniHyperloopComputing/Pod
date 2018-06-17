@@ -3,8 +3,7 @@
 #include "../Data.h"
 #include "../Sensor.h"
 struct Distance_Raw {
-  uint32_t tape_count;
-  uint32_t encoder_count;
+  uint16_t encoder_count;
 };
 
 struct Distance_Calc {
@@ -12,6 +11,6 @@ struct Distance_Calc {
 };
 
 Arbitrary_Data distance_calculation(Arbitrary_Data raw);
-void distance_parse(Spi * spi, Arbitrary_Data raw);
+void distance_parse(void * source, Arbitrary_Data raw);
 
 #endif // DISTANCE_H

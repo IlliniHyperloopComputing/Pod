@@ -1,6 +1,5 @@
 #ifndef BRAKE_H
 #define BRAKE_H
-#include "Xmega.h"
 
 /**
 * Controllor class for brakes
@@ -11,7 +10,7 @@ class Brake {
     /**
     * Default constructor
     **/
-    Brake(Xmega * xmega);
+    Brake();
 
 
     /**

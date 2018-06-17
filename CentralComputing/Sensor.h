@@ -1,22 +1,20 @@
 #ifndef SENSOR_H
 #define SENSOR_H
 
-#include "Xmega.h"
 #include <map>
+#include "Spi.h"
 #include <string.h>
 #include "Data.h"
 #include <mutex>
 #include <vector>
+#include "Battery.h"
 
 #include "Sensor_Aux/Distance.h"
 #include "Sensor_Aux/Temperature.h"
-#include "Sensor_Aux/Ride_Height.h"
 #include "Sensor_Aux/Null.h"
 #include "Sensor_Aux/Acceleration_X.h"
 #include "Sensor_Aux/Acceleration_Y.h"
 #include "Sensor_Aux/Acceleration_Z.h"
-#include "Sensor_Aux/Current.h"
-#include "Sensor_Aux/Brake_Pressure.h"
 
 #define XMEGA1 0
 #define XMEGA2 1
@@ -25,27 +23,40 @@ enum Xmega_1_Indices {
   X_ACCELERATION_INDEX_1 = 0,
   X_ACCELERATION_INDEX_2 = 1,
   X_ACCELERATION_INDEX_3 = 2,
-  BRAKE_PRESSURE_INDEX = 3,
-  ENCODER_RPM_INDEX = 4,
-  ENCODER_COUNT_INDEX = 5,
+  Y_ACCELERATION_INDEX = 3,
+  Z_ACCELERATION_INDEX = 4,
+  //GARBAGE STUFF
+  BRAKE_PRESSURE_INDEX = 90,
+  ENCODER_RPM_INDEX = 91,
+  ENCODER_COUNT_INDEX = 92,
 };
 
 enum Xmega_2_Indices {
-  Y_ACCELERATION_INDEX = 0,
-  Z_ACCELERATION_INDEX = 1,
-  RIDE_HEIGHT_INDEX_1 = 2,
-  RIDE_HEIGHT_INDEX_2 = 3,
-  RIDE_HEIGHT_INDEX_3 = 4,
-  BATTERY_CELL_INDEX_1 = 5,
-  BATTERY_CELL_INDEX_2 = 6,
-  THERMOCOUPLE_INDEX_1 = 7,
-  THERMOCOUPLE_INDEX_2 = 8,
-  THERMOCOUPLE_INDEX_3 = 9,
-  THERMOCOUPLE_INDEX_4 = 10,
-  THERMOCOUPLE_INDEX_5 = 11,
-  CURRENT_INDEX_1 = 12,
-  CURRENT_INDEX_2 = 13,
-  TAPE_COUNT_INDEX = 14
+  TACH1_LAST_TIME_INDEX = 0,
+  TACH2_LAST_TIME_INDEX = 1,
+  TACH3_LAST_TIME_INDEX = 2,
+  TACH4_LAST_TIME_INDEX = 3,
+  OPT_LAST_TIME_INDEX = 4,
+  TACH1_DELTA_INDEX = 5,
+  TACH2_DELTA_INDEX = 6,
+  TACH3_DELTA_INDEX = 7,
+  TACH4_DELTA_INDEX = 8,
+  OPT_ENCODER_DELTA = 9,
+  OPT_ENCODER_COUNT = 10,
+//GARBAGE STUFF
+  RIDE_HEIGHT_INDEX_1 = 92,
+  RIDE_HEIGHT_INDEX_2 = 93,
+  RIDE_HEIGHT_INDEX_3 = 94,
+  BATTERY_CELL_INDEX_1 = 95,
+  BATTERY_CELL_INDEX_2 = 96,
+  THERMOCOUPLE_INDEX_1 = 97,
+  THERMOCOUPLE_INDEX_2 = 98,
+  THERMOCOUPLE_INDEX_3 = 99,
+  THERMOCOUPLE_INDEX_4 = 910,
+  THERMOCOUPLE_INDEX_5 = 911,
+  CURRENT_INDEX_1 = 912,
+  CURRENT_INDEX_2 = 913,
+  TAPE_COUNT_INDEX = 914
 };
 
 /**Every Data_ID needs:
@@ -63,21 +74,28 @@ enum Data_ID {
   ACCELERATION_X = 2,
 	ACCELERATION_Y = 3,
 	ACCELERATION_Z = 4,
-	VOLTAGE = 5,
-	CURRENT = 6,
-	BRAKE_PRESSURE = 7,
-  TEMPERATURE = 8,
-  RIDE_HEIGHT = 9,
-  //etc etc
-  STATE_ID = 10 // State ID is an invalid ID to request, query the state machine instead
+  MOTOR_INFO = 5,
+  STATE_INFO = 6, // State ID is an invalid ID to request, query the state machine instead
+  BATTERY_FLAGS = 7,
+  BATTERY_VOLT = 8,
+  BATTERY_AMP = 9,
+  BATTERY_TEMP = 10,
+  BATTERY_OHM = 11,
+  BATTERY_INFO  = 12,
+//leftover states
+	VOLTAGE = 13,
+	CURRENT = 14,
+	BRAKE_PRESSURE = 15,
+  TEMPERATURE = 16,
+  RIDE_HEIGHT = 17,
 };
 
 //You can think of Arbitrary Data as a uint8_t * in most circumstances, it just also gives a size
 
 // A calculation function takes in a pointer to raw data and converts it to real units
 typedef Arbitrary_Data (*calculation_func_t)(Arbitrary_Data);
-// A parse function takes in a spi reference, and stores necessary data within a Raw_Data_Struct 
-typedef void (*parse_func_t)(Spi * spi, Arbitrary_Data data);
+// A parse function takes in a source reference, and stores necessary data within a Raw_Data_Struct 
+typedef void (*parse_func_t)(void * source, Arbitrary_Data data);
 // Calculation  map takes in a Data_ID and gives a calculation function
 typedef std::map<Data_ID, calculation_func_t> calculation_map_t;
 // Raw data map maps a data_id to some raw_data *
@@ -88,13 +106,14 @@ typedef std::map<Data_ID, parse_func_t> parse_map_t;
 typedef std::map<Data_ID, Data > data_map_t; 
 
 
+class Battery;
 class Sensor {
   public:
 
     /**
     * Default constructor
     **/
-    Sensor(Spi * s);
+    Sensor(Spi * s, Battery * b);
 
     /**
     * Updates the buffers with the most recent data
@@ -123,6 +142,7 @@ class Sensor {
       struct timeval timeout;
     #else
       Spi * spi;
+      Battery * battery;
       calculation_map_t calculation_map;
       raw_data_map_t raw_data_map;
       parse_map_t parse_map;

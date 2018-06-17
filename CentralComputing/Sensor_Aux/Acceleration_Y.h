@@ -7,5 +7,5 @@ struct Acceleration_Y_Raw {
 	uint16_t one;
 };
 
-void acceleration_y_parse(Spi * spi, Arbitrary_Data raw);
+void acceleration_y_parse(void * source, Arbitrary_Data raw);
 #endif

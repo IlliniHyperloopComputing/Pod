@@ -12,7 +12,7 @@ struct Velocity_Calc{
 };
 
 Arbitrary_Data velocity_calculation(Arbitrary_Data raw);
-void velocity_parse(Spi * spi, Arbitrary_Data raw);
+void velocity_parse(void * source, Arbitrary_Data raw);
 
 #endif // VELOCITY_H
 

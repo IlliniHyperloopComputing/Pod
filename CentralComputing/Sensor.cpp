@@ -1,7 +1,7 @@
 #ifndef SIM
 #include "Sensor.h"
 
-Sensor::Sensor(Spi * s) : spi(s){
+Sensor::Sensor(Spi * s, Battery * b) : spi(s), battery(b) {
   //setup maps
   raw_data_map = raw_data_map_t();
   calculation_map = calculation_map_t();
@@ -15,24 +15,6 @@ Sensor::Sensor(Spi * s) : spi(s){
   raw_data_map[Data_ID::DISTANCE] = distance;
   calculation_map[Data_ID::DISTANCE] = distance_calculation;
   parse_map[Data_ID::DISTANCE] = distance_parse;
-
-  //Temperature
-  Arbitrary_Data temperature = {
-    sizeof(Temperature_Raw),
-    (uint8_t *) malloc(sizeof(Temperature_Raw))
-  };
-  raw_data_map[Data_ID::TEMPERATURE] = temperature;
-  calculation_map[Data_ID::TEMPERATURE] = no_calculation;
-  parse_map[Data_ID::TEMPERATURE] = temperature_parse;
-
-  //Ride Height
-  Arbitrary_Data ride_height= {
-    sizeof(Ride_Height_Raw),
-    (uint8_t *) malloc(sizeof(Ride_Height_Raw))
-  };
-  raw_data_map[Data_ID::RIDE_HEIGHT] = ride_height; 
-  calculation_map[Data_ID::RIDE_HEIGHT] = no_calculation;
-  parse_map[Data_ID::RIDE_HEIGHT] = ride_height_parse;
 
   //AccelerationX
   Arbitrary_Data acceleration_x= {
@@ -61,27 +43,6 @@ Sensor::Sensor(Spi * s) : spi(s){
 	calculation_map[Data_ID::ACCELERATION_Z] = no_calculation;
 	parse_map[Data_ID::ACCELERATION_Z] = acceleration_z_parse;
 
-  //Current 
-  Arbitrary_Data current= {
-    sizeof(Current_Raw),
-    (uint8_t *) malloc(sizeof(Current_Raw))
-  };
-	raw_data_map[Data_ID::CURRENT] = current; 
-	calculation_map[Data_ID::CURRENT] = no_calculation;
-	parse_map[Data_ID::CURRENT] = current_parse;
-
-  //Brake Pressure
-  Arbitrary_Data brake_pressure = {
-    sizeof(Brake_Pressure_Raw),
-    (uint8_t *) malloc(sizeof(Brake_Pressure_Raw))
-  };
-	raw_data_map[Data_ID::BRAKE_PRESSURE] = brake_pressure;
-	calculation_map[Data_ID::BRAKE_PRESSURE] = no_calculation;
-	parse_map[Data_ID::BRAKE_PRESSURE] = brake_pressure_parse;
-
-
-
-
 }
 
 Data Sensor::get_data(Data_ID id){
@@ -107,11 +68,48 @@ Arbitrary_Data Sensor::get_raw_data(Data_ID id){
 
 void Sensor::update_buffers() {
   //update from Xmega
+  Xmega_Transfer transfer = {XMEGA1, X_C_NONE, X_R_ALL};
+  uint8_t status = spi->transfer(transfer);
+  if(status != X_TF_NONE){
+    //Do something if error, like count how many misses
+  }
+  else{
+    //Do something if not error
+    //If sending command, don't need to resend
+  }
 
-  for(Data_ID id : ids){
+  transfer.device = XMEGA2;
+  status = spi->transfer(transfer);
+  if(status != X_TF_NONE){
+    //Do something if error, like count how many misses
+  }
+  else{
+    //Do something if not error
+    //If sending command, don't need to resend
+  }
+
+
+  //
+  // CAN BUS GOES HERE PROBABLY MAYBE
+  //
+  
+  //update from sources
+  //if I were cool, I would have made Spi and Data_ID be subclasses of some kind of Source class but 
+  //I'm far too lazy for that. Void Pointers to the rescue!
+
+  for(int i = 0; i < Data_ID::MOTOR_INFO; i++){
+    Data_ID id = (Data_ID)i;
     parse_func_t fun = parse_map[id];
     Arbitrary_Data raw = raw_data_map[id];
     fun(spi, raw);
+  }
+  //gotta skip over motor info/state info ugh
+  for(int j = Data_ID::BATTERY_FLAGS; j <= Data_ID::BATTERY_INFO; j++){
+    //Then, each parse function should just read from the file
+    Data_ID id = (Data_ID)j;
+    parse_func_t fun = parse_map[id];
+    Arbitrary_Data raw = raw_data_map[id];
+    fun(battery, raw);
   }
 }
 
