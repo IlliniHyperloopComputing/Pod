@@ -2,39 +2,68 @@
 
 echo "Compiling the overlays from .dts to .dtbo"
  
-dtc -O dtb -o BB-SPI-M-01-00A0.dtbo -b 0 -@ BB-SPI-M-01-00A0.dts
-dtc -O dtb -o bspm_P9_12_27-00A0.dtbo -b 0 -@ bspm_P9_12_27-00A0.dts
-dtc -O dtb -o bspm_P9_15_f-00A0.dtbo -b 0 -@ bspm_P9_15_f-00A0.dts
+#dtc -O dtb -o BB-SPI-M-01-00A0.dtbo -b 0 -@ BB-SPI-M-01-00A0.dts
+#dtc -O dtb -o bspm_P9_12_27-00A0.dtbo -b 0 -@ bspm_P9_12_27-00A0.dts
+#dtc -O dtb -o bspm_P9_15_f-00A0.dtbo -b 0 -@ bspm_P9_15_f-00A0.dts
 dtc -O dtb -o BB-DCAN1-00A0.dtbo -b 0 -@ BB-DCAN1-00A0.dts
+dtc -O dtb -o BB-ADC-00A0.dtbo -b 0 -@ BB-ADC-00A0.dts
+dtc -O dtb -o BB-DS18B20-01-00A0.dtbo -b 0 -@ BB-DS18B20-01-00A0.dts
+dtc -O dtb -o BB-PWM1-00A0.dtbo -b 0 -@ BB-PWM1-00A0.dts
 
-cp BB-SPI-M-01-00A0.dtbo /lib/firmware
-cp bspm_P9_12_27-00A0.dtbo /lib/firmware
-cp bspm_P9_15_f-00A0.dtbo  /lib/firmware
+#cp BB-SPI-M-01-00A0.dtbo /lib/firmware
+#cp bspm_P9_12_27-00A0.dtbo /lib/firmware
+#cp bspm_P9_15_f-00A0.dtbo  /lib/firmware
 cp BB-DCAN1-00A0.dtbo /lib/firmware
+cp BB-ADC-00A0.dtbo /lib/firmware
+cp BB-DS18B20-01-00A0.dtbo /lib/firmware
+cp BB-PWM1-00A0.dtbo /lib/firmware
 
-echo "Before"
-cat /sys/devices/platform/bone_capemgr/slots
 
-echo BB-SPI-M-01 > /sys/devices/platform/bone_capemgr/slots
-echo bspm_P9_12_27 > /sys/devices/platform/bone_capemgr/slots
-echo bspm_P9_15_f  > /sys/devices/platform/bone_capemgr/slots
-echo BB-DCAN1 > /sys/devices/platform/bone_capemgr/slots
+cat /sys/devices/platform/bone_capemgr/slots | grep BB-ADC > /dev/null
+if [ $? -ne 0 ] ; then
+  echo "Writing ADC"
+  echo BB-ADC > /sys/devices/platform/bone_capemgr/slots
+fi
 
-echo "After"
-cat /sys/devices/platform/bone_capemgr/slots
+cat /sys/devices/platform/bone_capemgr/slots | grep BB-DS18B20-01 > /dev/null
+if [ $? -ne 0 ] ; then
+  echo "Writing DS18B20-01"
+  echo BB-DS18B20-01 > /sys/devices/platform/bone_capemgr/slots
+fi
 
-modprobe can
-modprobe can-dev
-modprobe can-raw
+cat /sys/devices/platform/bone_capemgr/slots | grep BB-PWM1 > /dev/null
+if [ $? -ne 0 ] ; then
+  echo "Writing PWM1"
+  echo BB-PWM1 > /sys/devices/platform/bone_capemgr/slots
+  echo 0 > /sys/class/pwm/pwmchip0/export # This sets up pwm0 for use. Check README.md
+fi
 
-ifconfig | grep can0 > /dev/null
-while [ $? -ne 0 ] ; do
-  echo "Sleeping one, can0 not present"
-  sleep 1
+cat /sys/devices/platform/bone_capemgr/slots | grep BB-DCAN1 > /dev/null
+if [ $? -ne 0 ] ; then
+  echo "Writing CAN"
+  echo BB-DCAN1 > /sys/devices/platform/bone_capemgr/slots
+  modprobe can
+  modprobe can-dev
+  modprobe can-raw
+  
+  echo "Configuring CAN. This might take a second"
   ifconfig | grep can0 > /dev/null
-done
+  while [ $? -ne 0 ] ; do
+    echo "Sleeping one, can0 not present"
+    sleep 1
+    ifconfig | grep can0 > /dev/null
+  done
 
-ip link set can0 up type can bitrate 500000
-ifconfig can0 up
+  ip link set can0 up type can bitrate 500000
+  ifconfig can0 up
+fi
+
+#echo BB-SPI-M-01 > /sys/devices/platform/bone_capemgr/slots
+#echo bspm_P9_12_27 > /sys/devices/platform/bone_capemgr/slots
+#echo bspm_P9_15_f  > /sys/devices/platform/bone_capemgr/slots
+
+cat /sys/devices/platform/bone_capemgr/slots
+
+
 
 exit 0
