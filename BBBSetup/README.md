@@ -18,6 +18,7 @@ This folder contains all of the setup information for the BBB. Device tree overl
   * Look in the `/sys/class/pwm/pwmchip0/pwm0/` folder for the ability to write to PWM
   * The above was setup following instructions in the reference guide.
 * GPIO input for PRU, for Optical inputs, device tree overlay setup
+  * Great guide on setting the PRUSS (Programmable Real-time Unit Sub System). [Derek Molloy's site](http://exploringbeaglebone.com/chapter13/)
   * [Device-Tree Overlay Generator](http://www.kilobaser.com/blog/2014-07-28-beaglebone-black-devicetreeoverlay-generator). 
 * GPIO output device tree overlay setup
   * [Device-Tree Overlay Generator](http://www.kilobaser.com/blog/2014-07-28-beaglebone-black-devicetreeoverlay-generator). 
