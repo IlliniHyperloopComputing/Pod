@@ -1,4 +1,9 @@
-This folder contains all of the device tree overlays, kernal modules, and a script to set everything up. All of the source files must be copied over to the BBB, of course.
+This folder contains all of the setup information for the BBB. Device tree overlays, pinout information, kernal modules, and a script to set everything up.
+
+# How to apply settings
+1. Copy over all `.dts` files to the BBB using `scp`
+2. Copy over the `initOverlay` script to the BBB   
+3. Run the `./initOverlay` script. This must be in the same directory as the `.dts` files. Change the permissions of this file if necessary
 
 # BBB setup includes: 
 * CAN Bus device tree overlay and kernal module setup
@@ -21,9 +26,21 @@ This folder contains all of the device tree overlays, kernal modules, and a scri
   * Check the comments, there are syntax errors. There is a missing `;` on line 37.
   * Look in `/sys/devices/` for the sensors. They must be plugged in before anything will show up.
 
-# How to apply settings
-1. Copy over all `.dts` files to the BBB using `scp`
-2. Copy over the `initOverlay` script to the BBB   
-3. Run the `./initOverlay` script. This must be in the same directory as the `.dts` files. Change the permissions of this file if necessary
+
+# Pin reference
+* The two PDFs in this directory contain detailed information about each header. 
+* ![default BBB pinout](beaglebone-black-pinout.jpg)
+* CAN Bus 
+  * P9-24 (CAN RX) and P9-26 (CAN TX).
+* ADC 
+  * P9-33 through P9-40
+* PWM
+  * P9-14 (EHRPWM1A) or P9-16 (EHRPWM1B)
+* GPIO input for PRU, Optical sensors
+  * P8-27 through P8-29, and P8-39 through P8-46
+* GPIO output 
+  * P8-22 through P8-26
+* DS18B20 temperature sensors
+  * P8-11
 
 
