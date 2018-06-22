@@ -25,11 +25,13 @@ This folder contains all of the setup information for the BBB. Device tree overl
   * [Reference here](http://www.bonebrews.com/temperature-monitoring-with-the-ds18b20-on-a-beaglebone-black/).
   * Check the comments, there are syntax errors. There is a missing `;` on line 37.
   * Look in `/sys/devices/` for the sensors. They must be plugged in before anything will show up.
+* I2C is already enabled by default by the kernal. On I2C2 bus.
+* View all device trees on BBB: `dtc -f -I fs /proc/device-tree | less `
+
 
 
 # Pin reference
 * The two PDFs in this directory contain detailed information about each header. 
-* ![default BBB pinout](beaglebone-black-pinout.jpg)
 * CAN Bus 
   * P9-24 (CAN RX) and P9-26 (CAN TX).
 * ADC 
@@ -42,5 +44,8 @@ This folder contains all of the setup information for the BBB. Device tree overl
   * P8-22 through P8-26
 * DS18B20 temperature sensors
   * P8-11
+* I2C2
+  * P9-19 and P9-20
+* ![default BBB pinout](beaglebone-black-pinout.jpg)
 
 
