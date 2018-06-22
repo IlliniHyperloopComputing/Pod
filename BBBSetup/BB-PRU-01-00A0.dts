@@ -17,17 +17,17 @@
 
          pru_pru_pins: pinmux_pru_pru_pins {   // The PRU pin modes
             pinctrl-single,pins = <
-                0x0e0 0x05 /* P8_27 pr1_pru1_pru_r30_8,   MODE5 | INPUT | 0000101 */
-                0x0e8 0x05 /* P8_28 pr1_pru1_pru_r30_10,  MODE5 | INPUT | 0000101 */
-                0x0e4 0x05 /* P8_29 pr1_pru1_pru_r30_9,   MODE5 | INPUT | 0000101 */
-                0x0b8 0x05 /* P8_39 pr1_pru1_pru_r30_6,   MODE5 | INPUT | 0000101 */
-                0x0bc 0x05 /* P8_40 pr1_pru1_pru_r30_7,   MODE5 | INPUT | 0000101 */
-                0x0b0 0x05 /* P8_41 pr1_pru1_pru_r30_4,   MODE5 | INPUT | 0000101 */
-                0x0b4 0x05 /* P8_42 pr1_pru1_pru_r30_5,   MODE5 | INPUT | 0000101 */
-                0x0a8 0x05 /* P8_43 pr1_pru1_pru_r30_2,   MODE5 | INPUT | 0000101 */
-                0x0ac 0x05 /* P8_44 pr1_pru1_pru_r30_3,   MODE5 | INPUT | 0000101 */
-                0x0a0 0x05 /* P8_45 pr1_pru1_pru_r30_0,   MODE5 | INPUT | 0000101 */
-                0x0a4 0x05 /* P8_46 pr1_pru1_pru_r30_1,   MODE5 | INPUT | 0000101 */
+                0x0e0 0x06 /* P8_27 pr1_pru1_pru_r31_8,   MODE6 | INPUT | 0000110 */
+                0x0e8 0x06 /* P8_28 pr1_pru1_pru_r31_10,  MODE6 | INPUT | 0000110 */
+                0x0e4 0x06 /* P8_29 pr1_pru1_pru_r31_9,   MODE6 | INPUT | 0000110 */
+                0x0b8 0x06 /* P8_39 pr1_pru1_pru_r31_6,   MODE6 | INPUT | 0000110 */
+                0x0bc 0x06 /* P8_40 pr1_pru1_pru_r31_7,   MODE6 | INPUT | 0000110 */
+                0x0b0 0x06 /* P8_41 pr1_pru1_pru_r31_4,   MODE6 | INPUT | 0000110 */
+                0x0b4 0x06 /* P8_42 pr1_pru1_pru_r31_5,   MODE6 | INPUT | 0000110 */
+                0x0a8 0x06 /* P8_43 pr1_pru1_pru_r31_2,   MODE6 | INPUT | 0000110 */
+                0x0ac 0x06 /* P8_44 pr1_pru1_pru_r31_3,   MODE6 | INPUT | 0000110 */
+                0x0a0 0x06 /* P8_45 pr1_pru1_pru_r31_0,   MODE6 | INPUT | 0000110 */
+                0x0a4 0x06 /* P8_46 pr1_pru1_pru_r31_1,   MODE6 | INPUT | 0000110 */
             >;
          };
       };

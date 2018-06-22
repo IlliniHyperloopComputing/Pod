@@ -19,6 +19,8 @@ This folder contains all of the setup information for the BBB. Device tree overl
   * The above was setup following instructions in the reference guide.
 * GPIO input for PRU, for Optical inputs, device tree overlay setup
   * Great guide on setting the PRUSS (Programmable Real-time Unit Sub System). [Derek Molloy's site](http://exploringbeaglebone.com/chapter13/)
+  * (elinux guide)[https://elinux.org/EBC_Exercise_30_PRU_via_remoteproc_and_RPMsg]
+  * (Another developer blog with links)[https://ianrrees.github.io/2016/11/20/getting-started-with-beaglebone-pru-programming-the-new-way.html]
   * [Device-Tree Overlay Generator](http://www.kilobaser.com/blog/2014-07-28-beaglebone-black-devicetreeoverlay-generator). 
 * GPIO output device tree overlay setup
   * [Device-Tree Overlay Generator](http://www.kilobaser.com/blog/2014-07-28-beaglebone-black-devicetreeoverlay-generator). 
