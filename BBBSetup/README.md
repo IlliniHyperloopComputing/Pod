@@ -19,10 +19,14 @@ This folder contains all of the setup information for the BBB. Device tree overl
   * The above was setup following instructions in the reference guide.
 * GPIO input for PRU, for Optical inputs, device tree overlay setup
   * Great guide on setting the PRUSS (Programmable Real-time Unit Sub System). [Derek Molloy's site](http://exploringbeaglebone.com/chapter13/)
-  * (elinux guide)[https://elinux.org/EBC_Exercise_30_PRU_via_remoteproc_and_RPMsg]
+  * (elinux guide)[https://elinux.org/EBC\_Exercise\_30\_PRU\_via\_remoteproc\_and\_RPMsg]
+  * (TI's walk through guide)[http://processors.wiki.ti.com/index.php/PRU\_Training:_Hands-on_Labs]
+  * The PRU Header files necessary for development with their IDE are included in this repo. They were found [here](http://www.ti.com/tool/PROCESSOR-SDK-AM335X). Pretty confusing, but it was in the "PROCESSOR\_SDK\_LINUX\_AM335X", once installed it was in some example files for the PRU.
   * (Another developer blog with links)[https://ianrrees.github.io/2016/11/20/getting-started-with-beaglebone-pru-programming-the-new-way.html]
   * [Device-Tree Overlay Generator](http://www.kilobaser.com/blog/2014-07-28-beaglebone-black-devicetreeoverlay-generator). 
 * GPIO output device tree overlay setup
+  * [Derek Molloy's site](http://derekmolloy.ie/gpios-on-the-beaglebone-black-using-device-tree-overlays/). Goes through how to install the device tree, and most importently how to initialize the GPIO once it has been setup in the device tree.
+  * Check `/sys/class/gpio/` 
   * [Device-Tree Overlay Generator](http://www.kilobaser.com/blog/2014-07-28-beaglebone-black-devicetreeoverlay-generator). 
 * One-Wire communication protocol for DS18B20 temperature sensor device tree overlay
   * [Reference here](http://www.bonebrews.com/temperature-monitoring-with-the-ds18b20-on-a-beaglebone-black/).
@@ -44,9 +48,9 @@ This folder contains all of the setup information for the BBB. Device tree overl
 * GPIO input for PRU, Optical sensors
   * P8-27 through P8-29, and P8-39 through P8-46
 * GPIO output 
-  * P8-22 through P8-26
+  * P8-7 through P8-10
 * DS18B20 temperature sensors
-  * P8-11
+  * P8-11 (and optionally P8-12)
 * I2C2
   * P9-19 and P9-20
 * ![default BBB pinout](beaglebone-black-pinout.jpg)
