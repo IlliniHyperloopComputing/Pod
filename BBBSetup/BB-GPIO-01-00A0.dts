@@ -1,0 +1,37 @@
+/dts-v1/;
+/plugin/;
+
+/{
+  compatible = "ti,beaglebone", "ti,beaglebone-black";
+  part_number = "BB-GPIO-01";
+
+  exclusive-use =
+    "P8.07", "P8.08", "P8.09", "P8.10", "gpio2_2", "gpio2_3", "gpio2_5", "gpio2_4" ;
+
+  fragment@0 {
+    target = <&am33xx_pinmux>;
+    __overlay__ {
+      gpio_pins: pinmux_gpio_pins {
+        pinctrl-single,pins = <
+            0x090 0x0f /* P8_07, MODE7 | GPIO | 0001111 */
+            0x094 0x0f /* P8_07, MODE7 | GPIO | 0001111 */
+            0x09c 0x0f /* P8_07, MODE7 | GPIO | 0001111 */
+            0x098 0x0f /* P8_07, MODE7 | GPIO | 0001111 */
+            >; 
+      };
+    };
+  };
+
+  fragment@1 {
+    target = <&ocp>;
+    __overlay__ {
+      //bs_pinmode_P9_12_0x27_pinmux {
+        //compatible = "bone-pinmux-helper";
+        status = "okay";
+        pinctrl-names = "default";
+        pinctrl-0 = <&gpio_pins>;
+      //};
+    };
+  };
+};
+

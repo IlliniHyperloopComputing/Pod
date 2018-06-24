@@ -10,6 +10,7 @@ dtc -O dtb -o BB-ADC-00A0.dtbo -b 0 -@ BB-ADC-00A0.dts
 dtc -O dtb -o BB-DS18B20-01-00A0.dtbo -b 0 -@ BB-DS18B20-01-00A0.dts
 dtc -O dtb -o BB-PWM1-00A0.dtbo -b 0 -@ BB-PWM1-00A0.dts
 dtc -O dtb -o BB-PRU-01-00A0.dtbo -b 0 -@ BB-PRU-01-00A0.dts
+dtc -O dtb -o BB-GPIO-01-00A0.dtbo -b 0 -@ BB-GPIO-01-00A0.dts
 
 #cp BB-SPI-M-01-00A0.dtbo /lib/firmware
 #cp bspm_P9_12_27-00A0.dtbo /lib/firmware
@@ -19,6 +20,7 @@ cp BB-ADC-00A0.dtbo /lib/firmware
 cp BB-DS18B20-01-00A0.dtbo /lib/firmware
 cp BB-PWM1-00A0.dtbo /lib/firmware
 cp BB-PRU-01-00A0.dtbo /lib/firmware
+cp BB-GPIO-01-00A0.dtbo /lib/firmware
 
 
 cat /sys/devices/platform/bone_capemgr/slots | grep BB-ADC > /dev/null
@@ -44,6 +46,16 @@ cat /sys/devices/platform/bone_capemgr/slots | grep BB-PRU-01 > /dev/null
 if [ $? -ne 0 ] ; then
   echo "Writing PRU Pins"
   echo BB-PRU-01 > /sys/devices/platform/bone_capemgr/slots
+fi
+
+cat /sys/devices/platform/bone_capemgr/slots | grep BB-GPIO-01 > /dev/null
+if [ $? -ne 0 ] ; then
+  echo "Writing GPIO Pins"
+  echo BB-GPIO-01 > /sys/devices/platform/bone_capemgr/slots
+  echo 66 > /sys/class/gpio/export # sets up P8_11
+  echo 67 > /sys/class/gpio/export # sets up P8_12
+  echo 69 > /sys/class/gpio/export # sets up P8_13
+  echo 68 > /sys/class/gpio/export # sets up P8_14
 fi
 
 cat /sys/devices/platform/bone_capemgr/slots | grep BB-DCAN1 > /dev/null
