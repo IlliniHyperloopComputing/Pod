@@ -22,6 +22,7 @@ This folder contains all of the setup information for the BBB. Device tree overl
   * (elinux guide)[https://elinux.org/EBC\_Exercise\_30\_PRU\_via\_remoteproc\_and\_RPMsg]
   * (TI's walk through guide)[http://processors.wiki.ti.com/index.php/PRU\_Training:_Hands-on_Labs]
   * The PRU Header files necessary for development with their IDE are included in this repo. They were found [here](http://www.ti.com/tool/PROCESSOR-SDK-AM335X). Pretty confusing, but it was in the "PROCESSOR\_SDK\_LINUX\_AM335X", once installed it was in some example files for the PRU.
+  * [Best reference](https://elinux.org/images/d/da/Am335xPruReferenceGuide.pdf) I could find explaining all of the nitty-gritty details of the PRU. 
   * (Another developer blog with links)[https://ianrrees.github.io/2016/11/20/getting-started-with-beaglebone-pru-programming-the-new-way.html]
   * [Device-Tree Overlay Generator](http://www.kilobaser.com/blog/2014-07-28-beaglebone-black-devicetreeoverlay-generator). 
 * GPIO output device tree overlay setup
