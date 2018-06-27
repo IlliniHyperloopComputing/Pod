@@ -60,14 +60,16 @@ if [ $? -ne 0 ] ; then
   modprobe can
   modprobe can-dev
   modprobe can-raw
-  
+
   echo "Configuring CAN. This might take a second"
-  ifconfig | grep can0 > /dev/null
-  while [ $? -ne 0 ] ; do
-    echo "Sleeping one, can0 not present"
-    sleep 1
-    ifconfig | grep can0 > /dev/null
-  done
+  sleep 3
+  
+  # ifconfig | grep can0 > /dev/null
+  # while [ $? -ne 0 ] ; do
+  #   echo "Sleeping one, can0 not present"
+  #   sleep 1
+  #   ifconfig | grep can0 > /dev/null
+  # done
 
   ip link set can0 up type can bitrate 500000
   ifconfig can0 up
