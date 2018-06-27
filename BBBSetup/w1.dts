@@ -10,33 +10,33 @@
 */
 /dts-v1/;
 /plugin/;
- 
+
 / {
     compatible = "ti,beaglebone", "ti,beaglebone-black";
-    part-number = "BB-DS18B20-01";
+    part-number = "BB-W1";
     version = "00A0";
- 
-    exclusive-use = "P8.11";
- 
+
+    exclusive-use = "P8.12";
+
     fragment@0 {
         target = <&am33xx_pinmux>;
         __overlay__ {
-             bb_ds18b20_01_pins: pinmux_bb_ds18b20_01_pins {
-                 pinctrl-single,pins =  <0x34 0x37 /* gpmc_ad13.gpio1_13, OMAP_PIN_INPUT_PULLUP | OMAP_MUX_MODE7 - ds18b20-01-gpio */ >;
+             bb_w1_pins: pinmux_bb_w1_pins {
+                 pinctrl-single,pins =  <0x34 0x37 /* gpmc_ad13.gpio1_13, OMAP_PIN_INPUT_PULLUP | OMAP_MUX_MODE7 - w1-gpio */ >;
              };
         };
     };
- 
+
     fragment@1 {
         target = <&ocp>;
         __overlay__ {
             onewire@0 {
                 status          = "okay";
-                compatible      = "ds18b20-01-gpio";
+                compatible      = "w1-gpio";
                 pinctrl-names   = "default";
-                pinctrl-0       = <&bb_ds18b20_01_pins>;
- 
-                gpios = <&gpio2 13 0>;
+                pinctrl-0       = <&bb_w1_pins>;
+
+                gpios = <&gpio1 13 0>;
             };
         };
     };

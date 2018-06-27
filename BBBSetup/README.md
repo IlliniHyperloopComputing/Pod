@@ -32,7 +32,7 @@ This folder contains all of the setup information for the BBB. Device tree overl
 * One-Wire communication protocol for DS18B20 temperature sensor device tree overlay
   * [Reference here](http://www.bonebrews.com/temperature-monitoring-with-the-ds18b20-on-a-beaglebone-black/).
   * Check the comments, there are syntax errors. There is a missing `;` on line 37.
-  * Look in `/sys/devices/` for the sensors. They must be plugged in before anything will show up.
+  * Run `cat /sys/bus/w1/devices/28-*/w1_slave` to get the temperature, multiplied by 1000.
 * I2C is already enabled by default by the kernal. On I2C2 bus.
 * View all device trees on BBB: `dtc -f -I fs /proc/device-tree | less `
 

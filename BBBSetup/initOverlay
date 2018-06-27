@@ -2,25 +2,19 @@
 
 echo "Compiling the overlays from .dts to .dtbo"
  
-#dtc -O dtb -o BB-SPI-M-01-00A0.dtbo -b 0 -@ BB-SPI-M-01-00A0.dts
-#dtc -O dtb -o bspm_P9_12_27-00A0.dtbo -b 0 -@ bspm_P9_12_27-00A0.dts
-#dtc -O dtb -o bspm_P9_15_f-00A0.dtbo -b 0 -@ bspm_P9_15_f-00A0.dts
 dtc -O dtb -o BB-DCAN1-00A0.dtbo -b 0 -@ BB-DCAN1-00A0.dts
 dtc -O dtb -o BB-ADC-00A0.dtbo -b 0 -@ BB-ADC-00A0.dts
-dtc -O dtb -o BB-DS18B20-01-00A0.dtbo -b 0 -@ BB-DS18B20-01-00A0.dts
 dtc -O dtb -o BB-PWM1-00A0.dtbo -b 0 -@ BB-PWM1-00A0.dts
 dtc -O dtb -o BB-PRU-01-00A0.dtbo -b 0 -@ BB-PRU-01-00A0.dts
 dtc -O dtb -o BB-GPIO-01-00A0.dtbo -b 0 -@ BB-GPIO-01-00A0.dts
+dtc -O dtb -o w1-00A0.dtbo -b 0 -@ w1.dts
 
-#cp BB-SPI-M-01-00A0.dtbo /lib/firmware
-#cp bspm_P9_12_27-00A0.dtbo /lib/firmware
-#cp bspm_P9_15_f-00A0.dtbo  /lib/firmware
 cp BB-DCAN1-00A0.dtbo /lib/firmware
 cp BB-ADC-00A0.dtbo /lib/firmware
-cp BB-DS18B20-01-00A0.dtbo /lib/firmware
 cp BB-PWM1-00A0.dtbo /lib/firmware
 cp BB-PRU-01-00A0.dtbo /lib/firmware
 cp BB-GPIO-01-00A0.dtbo /lib/firmware
+cp w1-00A0.dtbo /lib/firmware
 
 
 cat /sys/devices/platform/bone_capemgr/slots | grep BB-ADC > /dev/null
@@ -31,8 +25,9 @@ fi
 
 cat /sys/devices/platform/bone_capemgr/slots | grep BB-DS18B20-01 > /dev/null
 if [ $? -ne 0 ] ; then
-  echo "Writing DS18B20-01"
-  echo BB-DS18B20-01 > /sys/devices/platform/bone_capemgr/slots
+  echo "Writing W1"
+  echo w1 > /sys/devices/platform/bone_capemgr/slots
+
 fi
 
 cat /sys/devices/platform/bone_capemgr/slots | grep BB-PWM1 > /dev/null
