@@ -49,7 +49,7 @@ int socketfd;
 int clientfd;
 int udp_socket;
 
-std::atomic<bool> running;
+std::atomic<bool> running(false);
 sockaddr_storage addr_dest = {};
 SafeQueue<Network_Command *> network_queue;
 
@@ -88,6 +88,7 @@ static uint8_t start_server(const char * hostname, const char * port) {
   }
   print_info("Server setup successfully\n");
   free(result);
+
   running.store(true);
   return socketfd;
 }
@@ -160,60 +161,51 @@ static void send_packet() {
 
 }
 
-static std::thread start_read_thread();
-static std::thread start_write_thread();
-static std::thread start_network_loop() {
-  thread ret([](){
-		while(running){
-			int fd = accept_client();
-			print_info("Client fd is: %d\n", clientfd);
-			if(fd > 0){
-				print_info("Starting network threads\n");
-				thread read_thread = start_read_thread();
-				thread write_thread = start_write_thread();
+static void read_loop();
+static void write_loop();
+static void network_loop() {
+  while(running){
+    int fd = accept_client();
+    print_info("Client fd is: %d\n", clientfd);
+    if(fd > 0){
+      print_info("Starting network threads\n");
+      thread read_thread(read_loop);
+      thread write_thread(write_loop);
 
-				read_thread.join();
-				write_thread.join();
-				print_info("Client exited, looking for next client\n");
+      read_thread.join();
+      write_thread.join();
+      print_info("Client exited, looking for next client\n");
 
-			} else {
-				PRINT_ERRNO("Accept failed, abort.")
-				break;
-			}
-		}   
-  });
-  return ret;
-}
-
-static std::thread start_read_thread() {
-  thread ret([](){
-   bool active_connection = true;
-    Network_Command buffer;
-    while (running && active_connection){
-      int bytes_read = read_command(&buffer);
-      active_connection = bytes_read != -1;
-      Network_Command * command = new Network_Command(buffer);
-      network_queue.enqueue(command);
+    } else {
+      PRINT_ERRNO("Accept failed, abort.")
+      break;
     }
-
-    PRINT_ERRNO("Read Loop exiting.") 
-  });
-  return ret;
+  }   
 }
 
-static std::thread start_write_thread() {
-  thread ret([](){
- 		bool active_connection = true;
-		while(running && active_connection){
-			usleep(100000); //TODO: Change to actual value at some point
-			int written = write_data();
-			print_debug("Written is %d\n", written);
-			active_connection = written != -1;
-		}
+static void read_loop() {
+  bool active_connection = true;
+  Network_Command buffer;
+  while (running && active_connection){
+    int bytes_read = read_command(&buffer);
+    active_connection = bytes_read != -1;
+    Network_Command * command = new Network_Command(buffer);
+    network_queue.enqueue(command);
+  }
 
-		PRINT_ERRNO("Write Loop exiting.") 
-  });
-  return ret;
+  PRINT_ERRNO("Read Loop exiting.") 
+}
+
+static void write_loop() {
+  bool active_connection = true;
+  while(running && active_connection){
+    usleep(100000); //TODO: Change to actual value at some point
+    int written = write_data();
+    print_debug("Written is %d\n", written);
+    active_connection = written != -1;
+  }
+
+  PRINT_ERRNO("Write Loop exiting.") 
 }
 
 static void stop_threads() {
