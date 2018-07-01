@@ -2,6 +2,8 @@
 
 using namespace std;
 int main() {
-  cout << ParameterManager::velocity.Get().Value << endl;
+  NetworkManager::start_server("127.0.0.1", "8800");
+  thread network_thread(NetworkManager::network_loop);
+  network_thread.join();
 
 }
