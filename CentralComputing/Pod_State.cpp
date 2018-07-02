@@ -5,21 +5,18 @@
 Pod_State::Pod_State()
   : StateMachine(ST_MAX_STATES)
 {
-/*
-  transition_map[TRANS_SAFE_MODE] = &Pod_State::move_safe_mode;  
-  transition_map[TRANS_FUNCTIONAL_TEST] = &Pod_State::move_functional_tests;
-  transition_map[TRANS_LOADING] = &Pod_State::move_loading;
-  transition_map[TRANS_LAUNCH_READY] = &Pod_State::move_launch_ready;
-  transition_map[LAUNCH] = &Pod_State::accelerate;
-  transition_map[EMERGENCY_BRAKE] = &Pod_State::emergency_brake;
+  transition_map[NetworkManager::TRANS_SAFE_MODE] = &Pod_State::move_safe_mode;  
+  transition_map[NetworkManager::TRANS_FUNCTIONAL_TEST] = &Pod_State::move_functional_tests;
+  transition_map[NetworkManager::TRANS_LOADING] = &Pod_State::move_loading;
+  transition_map[NetworkManager::TRANS_LAUNCH_READY] = &Pod_State::move_launch_ready;
+  transition_map[NetworkManager::LAUNCH] = &Pod_State::accelerate;
+  transition_map[NetworkManager::EMERGENCY_BRAKE] = &Pod_State::emergency_brake;
 //non state transition commands
-  transition_map[ENABLE_MOTOR] = &Pod_State::move_loading;
-  transition_map[DISABLE_MOTOR] = &Pod_State::no_transition;
-  transition_map[SET_MOTOR_SPEED] = &Pod_State::no_transition;
-  transition_map[ACTIVATE_BRAKE_MAGNET] = &Pod_State::no_transition;
-  transition_map[DEACTIVATE_BRAKE_MAGNET] = &Pod_State::no_transition;
-*/
-/*
+  transition_map[NetworkManager::ENABLE_MOTOR] = &Pod_State::move_loading;
+  transition_map[NetworkManager::DISABLE_MOTOR] = &Pod_State::no_transition;
+  transition_map[NetworkManager::SET_MOTOR_SPEED] = &Pod_State::no_transition;
+  transition_map[NetworkManager::ACTIVATE_BRAKE_MAGNET] = &Pod_State::no_transition;
+  transition_map[NetworkManager::DEACTIVATE_BRAKE_MAGNET] = &Pod_State::no_transition;
   steady_state_map[ST_SAFE_MODE] = &Pod_State::steady_safe_mode;
   steady_state_map[ST_FUNCTIONAL_TEST] = &Pod_State::steady_functional;
   steady_state_map[ST_LOADING] = &Pod_State::steady_loading;
@@ -27,7 +24,6 @@ Pod_State::Pod_State()
   steady_state_map[ST_FLIGHT_ACCEL] = &Pod_State::steady_flight_accelerate;
   steady_state_map[ST_FLIGHT_COAST] = &Pod_State::steady_flight_coast;
   steady_state_map[ST_FLIGHT_BRAKE] = &Pod_State::steady_flight_brake;
-  */
 }
 // returns the current state as a E_States enum
 Pod_State::E_States Pod_State::get_current_state() {
@@ -172,50 +168,52 @@ void Pod_State::ST_Flight_Brake() {
 /////////////////////////////
 // STEADY STATE FUNCTIONS //
 ///////////////////////////
-/*
-void Pod_State::steady_safe_mode(Network_Command * command) {
+void Pod_State::steady_safe_mode(std::shared_ptr<NetworkManager::Network_Command> command) {
   //not much special stuff to do here  
   print_info("In safe mode\n");
 }
 
-void Pod_State::steady_functional(Network_Command * command) {
+void Pod_State::steady_functional(std::shared_ptr<NetworkManager::Network_Command> command) {
   //process command, let manual commands go through
   print_info("In functional test\n");
 	switch (command->id) {
-		case ENABLE_MOTOR: 
-			motor_->enable_motors();
+		case NetworkManager::ENABLE_MOTOR: 
+      //MotorManager::enable_motors();
 			break;
-		case DISABLE_MOTOR:
-			motor_->disable_motors();
+		case NetworkManager::DISABLE_MOTOR:
+      //MotorManager::disable_motors();
 			break;
-		case SET_MOTOR_SPEED:
-			motor_->set_throttle(command->value);
+		case NetworkManager::SET_MOTOR_SPEED:
+      //MotorManager::set_throttle(command->value);
 			break;
-  	case ACTIVATE_BRAKE_MAGNET:
-			brake_->enable_brakes();
+  	case NetworkManager::ACTIVATE_BRAKE_MAGNET:
+      //Brake_Manager::activate_brakes();
 			break;
-		case DEACTIVATE_BRAKE_MAGNET:
-			brake_->disable_brakes();
+		case NetworkManager::DEACTIVATE_BRAKE_MAGNET:
+      //Brake_Manager::deactivate_brakes();
 			break;
+    default:
+      PRINT_ERRNO("Invalid command ID");
+      break;
 	}
 }
 
-void Pod_State::steady_loading(Network_Command * command) {
+void Pod_State::steady_loading(std::shared_ptr<NetworkManager::Network_Command> command) {
 
 }
 
-void Pod_State::steady_launch_ready(Network_Command * command) {
+void Pod_State::steady_launch_ready(std::shared_ptr<NetworkManager::Network_Command> command) {
 
 }
 
-void Pod_State::steady_flight_accelerate(Network_Command * command) {
+void Pod_State::steady_flight_accelerate(std::shared_ptr<NetworkManager::Network_Command> command) {
 
 }
 
-void Pod_State::steady_flight_coast(Network_Command * command) {
+void Pod_State::steady_flight_coast(std::shared_ptr<NetworkManager::Network_Command> command) {
 
 }
 
-void Pod_State::steady_flight_brake(Network_Command * command) {
+void Pod_State::steady_flight_brake(std::shared_ptr<NetworkManager::Network_Command> command) {
 
-}*/
+}
