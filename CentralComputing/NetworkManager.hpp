@@ -45,13 +45,13 @@ struct Network_Command {
 };
 
 
-int socketfd;
-int clientfd;
-int udp_socket;
+static int socketfd;
+static int clientfd;
+static int udp_socket;
 
-std::atomic<bool> running(false);
-sockaddr_storage addr_dest = {};
-SafeQueue<Network_Command *> network_queue;
+static std::atomic<bool> running(false);
+static sockaddr_storage addr_dest = {};
+static SafeQueue<Network_Command *> network_queue;
 
 
 /**

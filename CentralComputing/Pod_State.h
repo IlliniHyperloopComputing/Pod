@@ -1,5 +1,5 @@
-#ifndef _POD_STATE
-#define _POD_STATE
+#ifndef POD_STATE_H
+#define POD_STATE_H
 
 #include "StateMachineCompact/StateMachine.h"
 #include "NetworkManager.hpp"
