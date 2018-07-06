@@ -2,6 +2,8 @@
 #define POD_STATE_H
 
 #include "StateMachineCompact/StateMachine.h"
+#include "BrakeManager.hpp"
+#include "MotorManager.hpp"
 #include "NetworkManager.hpp"
 #include <iostream>
 #include <string>

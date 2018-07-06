@@ -12,7 +12,7 @@ Pod_State::Pod_State()
   transition_map[NetworkManager::LAUNCH] = &Pod_State::accelerate;
   transition_map[NetworkManager::EMERGENCY_BRAKE] = &Pod_State::emergency_brake;
 //non state transition commands
-  transition_map[NetworkManager::ENABLE_MOTOR] = &Pod_State::move_loading;
+  transition_map[NetworkManager::ENABLE_MOTOR] = &Pod_State::no_transition;
   transition_map[NetworkManager::DISABLE_MOTOR] = &Pod_State::no_transition;
   transition_map[NetworkManager::SET_MOTOR_SPEED] = &Pod_State::no_transition;
   transition_map[NetworkManager::ACTIVATE_BRAKE_MAGNET] = &Pod_State::no_transition;
@@ -50,10 +50,10 @@ void Pod_State::move_functional_tests(){
 
 void Pod_State::move_safe_mode() {
 	BEGIN_TRANSITION_MAP							/* Current state */
-		TRANSITION_MAP_ENTRY(ST_SAFE_MODE)			/* Safe Mode */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Functional test */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Loading */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Launch ready */
+		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Safe Mode */
+		TRANSITION_MAP_ENTRY(ST_SAFE_MODE)			/* Functional test */
+		TRANSITION_MAP_ENTRY(ST_SAFE_MODE)			/* Loading */
+		TRANSITION_MAP_ENTRY(ST_SAFE_MODE)			/* Launch ready */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight accel */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight coast */
 		TRANSITION_MAP_ENTRY(ST_SAFE_MODE)			/* Flight brake */
@@ -63,8 +63,8 @@ void Pod_State::move_safe_mode() {
 void Pod_State::move_loading() {
 	BEGIN_TRANSITION_MAP							/* Current state */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Safe Mode */
-		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Functional test */
-		TRANSITION_MAP_ENTRY(ST_LOADING)	  		/* Loading */
+		TRANSITION_MAP_ENTRY(ST_LOADING)			/* Functional test */
+		TRANSITION_MAP_ENTRY(EVENT_IGNORED)	  		/* Loading */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Launch ready */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight accel */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight coast */
@@ -178,22 +178,21 @@ void Pod_State::steady_functional(std::shared_ptr<NetworkManager::Network_Comman
   print_info("In functional test\n");
 	switch (command->id) {
 		case NetworkManager::ENABLE_MOTOR: 
-      //MotorManager::enable_motors();
+      MotorManager::enable_motors();
 			break;
 		case NetworkManager::DISABLE_MOTOR:
-      //MotorManager::disable_motors();
+      MotorManager::disable_motors();
 			break;
 		case NetworkManager::SET_MOTOR_SPEED:
-      //MotorManager::set_throttle(command->value);
+      MotorManager::set_throttle(command->value);
 			break;
   	case NetworkManager::ACTIVATE_BRAKE_MAGNET:
-      //Brake_Manager::activate_brakes();
+      BrakeManager::activate_brakes();
 			break;
 		case NetworkManager::DEACTIVATE_BRAKE_MAGNET:
-      //Brake_Manager::deactivate_brakes();
+      BrakeManager::deactivate_brakes();
 			break;
     default:
-      PRINT_ERRNO("Invalid command ID");
       break;
 	}
 }

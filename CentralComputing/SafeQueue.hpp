@@ -23,7 +23,7 @@ class SafeQueue {
     T dequeue() {
       std::lock_guard<std::mutex> guard(m_mutex);
       if(m_queue.empty()){
-        return T();
+        return nullptr;
       } else {
         T ret = m_queue.front();
         m_queue.pop();
