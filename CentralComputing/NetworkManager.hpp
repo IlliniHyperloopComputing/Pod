@@ -11,6 +11,7 @@
 #include <poll.h>
 #include <atomic>
 #include <thread>
+#include <sys/ioctl.h>
 
 #define SETUP_FAILURE -1
 #define SETUP_SUCCESS 0
@@ -45,14 +46,13 @@ struct Network_Command {
 };
 
 
-static int socketfd;
-static int clientfd;
-static int udp_socket;
+extern int socketfd;
+extern int clientfd;
+extern int udp_socket;
 
-static std::atomic<bool> running(false);
-static sockaddr_storage addr_dest = {};
-static SafeQueue<Network_Command *> network_queue;
-
+extern std::atomic<bool> running;
+extern sockaddr_storage addr_dest;
+extern SafeQueue<shared_ptr<NetworkManager::Network_Command>> command_queue;
 
 /**
 * Starts the TCP server
@@ -60,70 +60,21 @@ static SafeQueue<Network_Command *> network_queue;
 * @param port the port to connect to
 * @return SETUP_SUCCESS  or SETUP_FAILURE
 **/
-static uint8_t start_server(const char * hostname, const char * port) {
-  socketfd = socket(AF_INET, SOCK_STREAM, 0);
-  int enable = 1;
-  if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
-    perror("setsockopt(SO_REUSEADDR) failed");
-  }
-
-  struct addrinfo hints, *result;
-  memset(&hints, 0, sizeof(hints));
-  hints.ai_family = AF_INET;
-  hints.ai_socktype = SOCK_STREAM;
-  hints.ai_flags = AI_PASSIVE;
-
-  int s = getaddrinfo(NULL, port, &hints, &result);
-  if(s != 0){
-    print_info("getaddrinfo: %s\n", gai_strerror(s));
-    exit(1);
-  }
-  if(bind(socketfd, result->ai_addr, result->ai_addrlen) != 0){
-    perror("bind");
-    exit(1);
-  }
-  if(listen(socketfd, 1) != 0){
-    perror("listen");
-    exit(1);
-  }
-  print_info("Server setup successfully\n");
-  free(result);
-
-  running.store(true);
-  return socketfd;
-}
-
+uint8_t start_server(const char * hostname, const char * port);
 /**
 * Starts UDP server
 * @param hostname the IP address
 * @param port the port
 * @return SETUP_SUCCESS or SETUP_FAILURE
 **/
-static uint8_t start_udp(const char * hostname, const char * port) {
-  return 0;
-}
+uint8_t start_udp(const char * hostname, const char * port);
 
 /**
 * Blocking call--waits for client to connect
 * Exits if socket is closed`
 * @return the clientfd or -1
 **/
-static int accept_client() {
-  struct pollfd p;
-  p.fd = socketfd;
-  p.events = POLLIN;
-  int ret = 0;
-  print_info("Awaiting connection\n");
-  while(1) {
-    ret = poll(&p, 1, 1000);
-    if(ret == 1) {//there's something trying to connect
-      clientfd = accept(socketfd, NULL, NULL);
-      print_info("Connected!\n"); 
-      return clientfd;
-    }
-  }
-  return -1;
-}
+int accept_client();
 
 /**
 * Reads from socketfd, parses read bytes into a Network_Command struct
@@ -131,86 +82,30 @@ static int accept_client() {
 * @param buffer a pointer to the network command that was read
 * @return the number of bytes read
 **/
-static int read_command(Network_Command * buffer) {
-  return read(clientfd, buffer, sizeof(Network_Command));
-}
+int read_command(Network_Command * buffer);
 
 /** 
 * Collects data from sensor, writes to socket
 * @return bytes written or -1 if failed
 **/
-static int write_data() {
-  // TODO 
-  // Write ParameterManager::GetNetworkReport, write the report to clientfd
-  return -1;
-}
+int write_data();
 
 /**
 * Closes the socket, ending all transmission with the LabView
 * Should be called from a signal handler
 **/
-static void close_server() {
-  close(clientfd);
-  close(socketfd);
-}
+void close_server();
 
 /**
 * Sends a UDP Datagram with sensor data
 **/
-static void send_packet() {
+void send_packet();
 
-}
+void read_loop();
+void write_loop();
+void network_loop();
 
-static void read_loop();
-static void write_loop();
-static void network_loop() {
-  while(running){
-    int fd = accept_client();
-    print_info("Client fd is: %d\n", clientfd);
-    if(fd > 0){
-      print_info("Starting network threads\n");
-      thread read_thread(read_loop);
-      thread write_thread(write_loop);
-
-      read_thread.join();
-      write_thread.join();
-      print_info("Client exited, looking for next client\n");
-
-    } else {
-      PRINT_ERRNO("Accept failed, abort.")
-      break;
-    }
-  }   
-}
-
-static void read_loop() {
-  bool active_connection = true;
-  Network_Command buffer;
-  while (running && active_connection){
-    int bytes_read = read_command(&buffer);
-    active_connection = bytes_read != -1;
-    Network_Command * command = new Network_Command(buffer);
-    network_queue.enqueue(command);
-  }
-
-  PRINT_ERRNO("Read Loop exiting.") 
-}
-
-static void write_loop() {
-  bool active_connection = true;
-  while(running && active_connection){
-    usleep(100000); //TODO: Change to actual value at some point
-    int written = write_data();
-    print_debug("Written is %d\n", written);
-    active_connection = written != -1;
-  }
-
-  PRINT_ERRNO("Write Loop exiting.") 
-}
-
-static void stop_threads() {
-  running.store(false);
-}
+void stop_threads();
 
 }
 

@@ -12,7 +12,7 @@
 * Gets the current time since program startup
 * @return a long long representing the number of microseconds since startup
 **/
-long long get_elapsed_time();
+long long microseconds();
 
 /**
 * Wrapper for printf, prints only in debug mode
