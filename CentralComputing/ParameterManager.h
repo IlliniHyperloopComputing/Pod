@@ -1,5 +1,5 @@
-#ifndef PARAMETERMANAGER_H
-#define PARAMETERMANAGER_H
+#ifndef PARAMETER_MANAGER_H
+#define PARAMETER_MANAGER_H
 
 #include "Velocity.hpp"
 

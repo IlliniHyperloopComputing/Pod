@@ -2,8 +2,6 @@
 
 using namespace std;
 
-PRUManager SourceManager::PRU(1.0);
-
 shared_ptr<Pod_State> state_machine;
 bool running = true;
 
@@ -40,13 +38,15 @@ int main() {
   system("cpufreq-set -f 1000MHz");
   print_info("CPU freq set to 1GHz\n");    
   state_machine = make_shared<Pod_State>();
-  
- 
+  SourceManager::startup();  
+  sleep(1);
+  print_info("Getting a value %d\n", ParameterManager::velocity.Get().Value);
 
   NetworkManager::start_server("127.0.0.1", "8800");
   thread network_thread(NetworkManager::network_loop);
   thread logic_thread(logic_loop);
   logic_thread.join();
   network_thread.join();
+  SourceManager::stop();  
 
 }
