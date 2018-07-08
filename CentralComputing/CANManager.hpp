@@ -1,17 +1,17 @@
-#ifndef PRU_MANAGER_HPP
-#define PRU_MANAGER_HPP
+#ifndef CAN_MANAGER_HPP
+#define CAN_MANAGER_HPP
 
 #include "SourceManagerBase.hpp"
 
-class PRUManager : public SourceManagerBase {
+class CANManager : public SourceManagerBase {
 
   public:
 
-    PRUManager(double delay_in_seconds):
+    CANManager(double delay_in_seconds):
       SourceManagerBase(delay_in_seconds)
     {}
 
-    int getPRUData(){
+    int getCANData(){
       return 7;
     }
 
@@ -20,10 +20,7 @@ class PRUManager : public SourceManagerBase {
     void refresh(){
       //Do work here to update data
       //this is running in its own thread
-      
     }
-
-
 };
 
 #endif

@@ -4,7 +4,6 @@
 #include "NetworkManager.hpp"
 #include "Utils.h"
 
-
 class SourceManagerBase {
 
   public:
@@ -20,7 +19,7 @@ class SourceManagerBase {
 
   private:
 
-    void refresh(){};
+    virtual void refresh() = 0;
 
     double delay_in_usecs;
 
