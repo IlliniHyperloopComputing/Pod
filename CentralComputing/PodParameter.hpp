@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <vector>
+#include "SourceManager.h"
 
 using namespace std;
 
