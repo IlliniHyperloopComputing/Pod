@@ -42,6 +42,9 @@ int main() {
   //Start all SourceManager threads
   SourceManager::PRU.initialize();
   SourceManager::CAN.initialize();
+  SourceManager::TMP.initialize();
+  SourceManager::ADC.initialize();
+  SourceManager::I2C.initialize();
 
   //ParameterManager testing with SourceManager, feel free to remove
   print_info("Getting value %f\n", *ParameterManager::velocity.Get());
@@ -66,5 +69,8 @@ int main() {
   //Stop all source managers
   SourceManager::PRU.stop();
   SourceManager::CAN.stop();
+  SourceManager::TMP.stop();
+  SourceManager::ADC.stop();
+  SourceManager::I2C.stop();
 
 }
