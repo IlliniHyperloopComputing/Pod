@@ -39,8 +39,15 @@ int main() {
   print_info("CPU freq set to 1GHz\n");    
   state_machine = make_shared<Pod_State>();
   SourceManager::startup();  
-  sleep(1);
-  print_info("Getting a value %d\n", ParameterManager::velocity.Get().Value);
+
+  //ParameterManager testing with SourceManager, feel free to remove
+  print_info("Getting value %f\n", *ParameterManager::velocity.Get());
+  sleep(2);
+  print_info("Getting value %f\n", *ParameterManager::velocity.Get());
+  sleep(2);
+  print_info("Getting value %f\n", *ParameterManager::velocity.Get());
+  sleep(2);
+
 
   NetworkManager::start_server("127.0.0.1", "8800");
   thread network_thread(NetworkManager::network_loop);
