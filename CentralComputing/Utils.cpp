@@ -34,7 +34,7 @@ float clamp(float v, float l, float h)
     else return v; 
   }
 
-long long get_elapsed_time() {
+long long microseconds() {
   static long long start_time = -1;
   auto now = std::chrono::system_clock::now();
   auto duration = now.time_since_epoch();
