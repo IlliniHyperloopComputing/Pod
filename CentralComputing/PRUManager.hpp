@@ -8,7 +8,7 @@ struct PRUData {
   int dummy_data;
 };
 
-class PRUManager : public SourceManagerBase<1, PRUData> {
+class PRUManager : public SourceManagerBase<(long long) (1.0 * 1E6), PRUData> {
   private:
     shared_ptr<PRUData> refresh() {
       //this is where you would query the PRU and get new data

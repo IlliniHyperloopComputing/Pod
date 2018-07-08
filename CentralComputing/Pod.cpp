@@ -38,7 +38,10 @@ int main() {
   system("cpufreq-set -f 1000MHz");
   print_info("CPU freq set to 1GHz\n");    
   state_machine = make_shared<Pod_State>();
-  SourceManager::startup();  
+
+  //Start all SourceManager threads
+  SourceManager::PRU.initialize();
+  SourceManager::CAN.initialize();
 
   //ParameterManager testing with SourceManager, feel free to remove
   print_info("Getting value %f\n", *ParameterManager::velocity.Get());
@@ -49,11 +52,19 @@ int main() {
   sleep(2);
 
 
+  //Setup Network Server
   NetworkManager::start_server("127.0.0.1", "8800");
+
+  //Start Network and main loop thread.
   thread network_thread(NetworkManager::network_loop);
   thread logic_thread(logic_loop);
+
+  //Join all threads
   logic_thread.join();
   network_thread.join();
-  SourceManager::stop();  
+
+  //Stop all source managers
+  SourceManager::PRU.stop();
+  SourceManager::CAN.stop();
 
 }
