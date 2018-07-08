@@ -4,7 +4,7 @@
 #include "NetworkManager.hpp"
 #include "Utils.h"
 
-template <int Delay, class Data>
+template <long long DelayInUsecs, class Data>
 class SourceManagerBase {
 
   public:
@@ -18,9 +18,9 @@ class SourceManagerBase {
     void initialize() {
       data = refresh();
       running.store(true);
-      worker = std::thread([&]() {
-        refresh_loop(); // I don't know how to start a thread using a member function, but I know how to use lambdas so suck it C++
-      });
+
+      // I don't know how to start a thread using a member function, but I know how to use lambdas so suck it C++
+      worker = std::thread( [=] { refresh_loop(); } );
     }
     
     void stop() {
@@ -37,7 +37,7 @@ class SourceManagerBase {
         mutex.lock();
         data = new_data;
         mutex.unlock();
-        usleep(Delay * 1e6);
+        usleep(DelayInUsecs);
       }
     }
 
