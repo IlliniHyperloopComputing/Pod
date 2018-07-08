@@ -1,8 +1,8 @@
 #include "Pod.h"
 
-
-
 using namespace std;
+
+PRUManager SourceManager::PRU(1.0);
 
 shared_ptr<Pod_State> state_machine;
 bool running = true;
