@@ -53,6 +53,12 @@ int main() {
   sleep(2);
   print_info("Getting value %f\n", *ParameterManager::velocity.Get());
   sleep(2);
+  print_info("Getting value %f\n", *ParameterManager::velocity.Get());
+  sleep(2);
+  shared_ptr<TMPData> d = ParameterManager::temperature.Get();
+  for(int i = 0; i< 4; i++){
+    print_info("tmp_data: %i, %f\n", i, (*d).tmp_data[i]);
+  }
 
 
   //Setup Network Server
