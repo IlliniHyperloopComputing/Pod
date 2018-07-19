@@ -1,24 +1,49 @@
-#ifndef SOURCE_MANAGER_HPP
-#define SOURCE_MANAGER_HPP
+#ifndef SOURCE_MANAGER_BASE_HPP
+#define SOURCE_MANAGER_BASE_HPP
 
-#include "PRUManager.hpp"
-#include "CANManager.hpp"
-#include "TMPManager.hpp"
-#include "ADCManager.hpp"
-#include "I2CManager.hpp"
+#include "NetworkManager.hpp"
+#include "Utils.h"
 
-namespace SourceManager {
-  extern PRUManager PRU;
-  extern CANManager CAN;
-  extern TMPManager TMP;
-  extern ADCManager ADC;
-  extern I2CManager I2C;
-}
+template <long long DelayInUsecs, class Data>
+class SourceManagerBase {
 
-PRUManager SourceManager::PRU;
-CANManager SourceManager::CAN;
-TMPManager SourceManager::TMP;
-ADCManager SourceManager::ADC;
-I2CManager SourceManager::I2C;
+  public:
+    shared_ptr<Data> Get() {
+      mutex.lock();
+      shared_ptr<Data> ret = data;
+      mutex.unlock();
+      return ret;
+    }
 
+    void initialize() {
+      data = refresh();
+      running.store(true);
+
+      // I don't know how to start a thread using a member function, but I know how to use lambdas so suck it C++
+      worker = std::thread( [=] { refresh_loop(); } );
+    }
+    
+    void stop() {
+      running.store(false);
+      worker.join();
+    }
+
+  private:
+    virtual shared_ptr<Data> refresh() = 0; //constructs a new Data object and fills it in
+
+    void refresh_loop() {
+      while(running.load()) {
+        shared_ptr<Data> new_data = refresh();
+        mutex.lock();
+        data = new_data;
+        mutex.unlock();
+        usleep(DelayInUsecs);
+      }
+    }
+
+    shared_ptr<Data> data;
+    std::mutex mutex;
+    std::atomic<bool> running;
+    std::thread worker;
+};
 #endif
