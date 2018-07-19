@@ -3,27 +3,24 @@
 
 #include "SourceManagerBase.hpp"
 
-class PRUManager : public SourceManagerBase {
+struct PRUData {
+  //replace with actual data structure
+  int dummy_data;
+};
 
-  public:
-
-    PRUManager(double delay_in_seconds):
-      SourceManagerBase(delay_in_seconds)
-    {}
-
-    int getPRUData(){
-      return 7;
-    }
-
+class PRUManager : public SourceManagerBase<(long long) (1.0 * 1E6), PRUData> {
   private:
-
-    void refresh(){
-      //Do work here to update data
-      //this is running in its own thread
+    shared_ptr<PRUData> refresh() {
+      //this is where you would query the PRU and get new data
       
+      shared_ptr<PRUData> new_data = make_shared<PRUData>();
+      new_data->dummy_data = i;
+      i++;
+      return new_data;
     }
 
-
+    //iterator for testing purposes, remove
+    int i = 5;
 };
 
 #endif

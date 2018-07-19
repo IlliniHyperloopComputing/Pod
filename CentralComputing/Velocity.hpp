@@ -5,12 +5,11 @@
 
 class Velocity : public PodParameter<double> {
   public:
-    Param<double> Get() {
+    shared_ptr<double> Get() {
       // Pull most up to date data from SourceManager
-      // PRUManager.GetRPM()
-      Param<double> p; 
-      p.Value = 4.0;
-      p.Timestamp = 9.0;
+      shared_ptr<double> p = make_shared<double>(); 
+      //replace with actual variables from PRUManager/OpticalManager
+      *p = SourceManager::PRU.Get()->dummy_data;
       return p;
     }
 };

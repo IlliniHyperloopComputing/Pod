@@ -1,27 +1,24 @@
 #ifndef SOURCE_MANAGER_HPP
 #define SOURCE_MANAGER_HPP
 
-#include "NetworkManager.hpp"
-#include "Utils.h"
+#include "PRUManager.hpp"
+#include "CANManager.hpp"
+#include "TMPManager.hpp"
+#include "ADCManager.hpp"
+#include "I2CManager.hpp"
 
-class SourceManagerBase {
+namespace SourceManager {
+  extern PRUManager PRU;
+  extern CANManager CAN;
+  extern TMPManager TMP;
+  extern ADCManager ADC;
+  extern I2CManager I2C;
+}
 
-  public:
+PRUManager SourceManager::PRU;
+CANManager SourceManager::CAN;
+TMPManager SourceManager::TMP;
+ADCManager SourceManager::ADC;
+I2CManager SourceManager::I2C;
 
-    SourceManagerBase(double delay_in_seconds):
-      delay_in_usecs(delay_in_seconds*1E6)
-    {}
-
-    void work(){
-      usleep(delay_in_usecs);
-      refresh();
-    }
-
-  private:
-
-    virtual void refresh() = 0;
-
-    double delay_in_usecs;
-
-};
 #endif
