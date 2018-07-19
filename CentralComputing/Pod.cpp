@@ -2,8 +2,6 @@
 
 using namespace std;
 
-PRUManager SourceManager::PRU(1.0);
-
 shared_ptr<Pod_State> state_machine;
 bool running = true;
 
@@ -40,13 +38,45 @@ int main() {
   system("cpufreq-set -f 1000MHz");
   print_info("CPU freq set to 1GHz\n");    
   state_machine = make_shared<Pod_State>();
-  
- 
 
+  //Start all SourceManager threads
+  SourceManager::PRU.initialize();
+  SourceManager::CAN.initialize();
+  SourceManager::TMP.initialize();
+  SourceManager::ADC.initialize();
+  SourceManager::I2C.initialize();
+
+  //ParameterManager testing with SourceManager, feel free to remove
+  print_info("Getting value %f\n", *ParameterManager::velocity.Get());
+  sleep(2);
+  print_info("Getting value %f\n", *ParameterManager::velocity.Get());
+  sleep(2);
+  print_info("Getting value %f\n", *ParameterManager::velocity.Get());
+  sleep(2);
+  print_info("Getting value %f\n", *ParameterManager::velocity.Get());
+  sleep(2);
+  shared_ptr<TMPData> d = ParameterManager::temperature.Get();
+  for(int i = 0; i< 4; i++){
+    print_info("tmp_data: %i, %f\n", i, (*d).tmp_data[i]);
+  }
+
+
+  //Setup Network Server
   NetworkManager::start_server("127.0.0.1", "8800");
+
+  //Start Network and main loop thread.
   thread network_thread(NetworkManager::network_loop);
   thread logic_thread(logic_loop);
+
+  //Join all threads
   logic_thread.join();
   network_thread.join();
+
+  //Stop all source managers
+  SourceManager::PRU.stop();
+  SourceManager::CAN.stop();
+  SourceManager::TMP.stop();
+  SourceManager::ADC.stop();
+  SourceManager::I2C.stop();
 
 }
