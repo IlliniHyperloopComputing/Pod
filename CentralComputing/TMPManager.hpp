@@ -4,6 +4,7 @@
 #include "SourceManagerBase.hpp"
 #include <string>
 #include <iostream>
+#include <fstream>
 
 #define NUM_TMP 4
 
