@@ -4,6 +4,7 @@
 #include "NetworkManager.hpp"
 #include "ParameterManager.h"
 #include "Pod_State.h"
+#include "gtest/gtest.h"
 
 void logic_loop();
 
