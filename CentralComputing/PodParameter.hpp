@@ -13,10 +13,13 @@ class PodParameter {
   public:
     virtual shared_ptr<Type> Get() = 0;
 
-    vector<uint8_t> GetNetworkData() {
-      vector<uint8_t> vec(sizeof(Type)); 
+    //[size][data]
+    vector<uint8_t> get_network_packet() {
+      vector<uint8_t> vec(4 + sizeof(Type)); 
+      int size = sizeof(Type);
+      memcpy(vec.data(), size, sizeof(size));
       shared_ptr<Type> val = Get();
-      memcpy(vec.data(), val, sizeof(Type));
+      memcpy(vec.data() + 4, val, sizeof(Type));
       return vec;
     }
   //we could add functions for storing the most recent data to do filtering/moving average
