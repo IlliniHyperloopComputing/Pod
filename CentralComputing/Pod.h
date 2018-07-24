@@ -4,6 +4,7 @@
 #include "NetworkManager.hpp"
 #include "ParameterManager.hpp"
 #include "Pod_State.h"
+#include "gtest/gtest.h"
 
 
 class Pod {

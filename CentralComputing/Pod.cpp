@@ -79,7 +79,12 @@ void Pod::startup() {
 
 }
 
-int main() {
-  auto pod = make_shared<Pod>();
-  pod->startup();
+int main(int argc, char **argv) {
+  #ifndef SIM
+    auto pod = make_shared<Pod>();
+    pod->startup();
+  #else
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
+  #endif
 }

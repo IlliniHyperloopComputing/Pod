@@ -33,7 +33,7 @@ POD_CROSS_D = dcross
 POD_CROSS_T = scross
 
 .PHONY: all
-all : msg mkdir_obj ${LIB_DIR}/gtest-all.o msg_d $(POD_D)
+all : msg mkdir_obj ${LIB_DIR}/gtest-all.o msg_d $(POD_D) msg_s $(POD_T)
 
 # Compile libgtest
 ${LIB_DIR}/gtest-all.o : ${GTEST_DIR}/src/gtest-all.cc 
