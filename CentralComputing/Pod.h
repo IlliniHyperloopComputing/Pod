@@ -2,9 +2,8 @@
 #define POD_H
 
 #include "NetworkManager.hpp"
-#include "ParameterManager.h"
+#include "ParameterManager.hpp"
 #include "Pod_State.h"
-#include "gtest/gtest.h"
 
 
 class Pod {

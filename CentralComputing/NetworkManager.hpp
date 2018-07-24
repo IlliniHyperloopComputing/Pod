@@ -64,7 +64,6 @@ extern int clientfd;
 extern int udp_socket;
 
 extern std::atomic<bool> running;
-extern sockaddr_storage addr_dest;
 extern SafeQueue<shared_ptr<NetworkManager::Network_Command>> command_queue;
 
 /**
