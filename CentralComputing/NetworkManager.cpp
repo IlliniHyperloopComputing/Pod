@@ -7,7 +7,6 @@ int NetworkManager::clientfd = 0;
 int NetworkManager::udp_socket = 0;
 
 std::atomic<bool> NetworkManager::running(false);
-sockaddr_storage NetworkManager::addr_dest = {};
 SafeQueue<shared_ptr<NetworkManager::Network_Command>> NetworkManager::command_queue;
 
 uint8_t NetworkManager::start_server(const char * hostname, const char * port) {

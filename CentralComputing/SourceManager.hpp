@@ -14,11 +14,4 @@ namespace SourceManager {
   extern ADCManager ADC;
   extern I2CManager I2C;
 }
-
-PRUManager SourceManager::PRU;
-CANManager SourceManager::CAN;
-TMPManager SourceManager::TMP;
-ADCManager SourceManager::ADC;
-I2CManager SourceManager::I2C;
-
 #endif
