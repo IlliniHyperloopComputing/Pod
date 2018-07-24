@@ -2,10 +2,8 @@
 
 using namespace std;
 
-shared_ptr<Pod_State> state_machine;
-bool running = true;
 
-void logic_loop() {
+void Pod::logic_loop() {
 	while(running){
     // Start processing/pod logic
 		shared_ptr<NetworkManager::Network_Command> command = NetworkManager::command_queue.dequeue();
@@ -27,7 +25,7 @@ void logic_loop() {
   } 
 }
 
-int main() {
+void Pod::startup() {
   microseconds();
  	print_info("==================\n");
   print_info("ILLINI  HYPERLOOP \n");
@@ -66,7 +64,7 @@ int main() {
 
   //Start Network and main loop thread.
   thread network_thread(NetworkManager::network_loop);
-  thread logic_thread(logic_loop);
+  thread logic_thread([&](){ logic_loop(); }); // I don't know how to use member functions as a thread function, but lambdas work
 
   //Join all threads
   logic_thread.join();
@@ -79,4 +77,9 @@ int main() {
   SourceManager::ADC.stop();
   SourceManager::I2C.stop();
 
+}
+
+int main() {
+  auto pod = make_shared<Pod>();
+  pod->startup();
 }

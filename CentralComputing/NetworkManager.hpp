@@ -36,6 +36,19 @@ enum Network_Command_ID {
   DEACTIVATE_BRAKE_MAGNET = 10 
 };
 
+//enum specifying what data is sent
+//[1 byte Data ID][4 byte size][size byte chunk]
+//TODO figure out if CPP automatically assigns enums in order, would make adding new params easier
+enum Network_Data_ID {
+  POD_STATE = 0,
+  BRAKE_STATUS = 1,
+  MOTOR_STATUS = 2,
+  POSITION = 3,
+  VELOCITY = 4,
+  ACCELERATION = 5,
+  TEMPERATURE = 6
+};
+
 /**
 * A network command is returned by read and parsed within Pod.cpp
 **/
@@ -101,10 +114,24 @@ void close_server();
 **/
 void send_packet();
 
+/**
+ * Thread function, continually reads commands from the socket and pushes them onto the queue
+ */
 void read_loop();
+
+/**
+ * Thread function, continually gets most recent state/motor/brake/sensor data and sends a packet
+ */
 void write_loop();
+
+/*
+ * Thread function, handles attaching new clients and starting read/write loop
+ */
 void network_loop();
 
+/*
+ * Stops threads and exits
+ */
 void stop_threads();
 
 }
