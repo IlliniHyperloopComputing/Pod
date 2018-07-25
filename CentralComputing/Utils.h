@@ -8,26 +8,23 @@
 #include <stdint.h>
 #include <string.h>
 
+namespace Utils {
 /**
 * Gets the current time since program startup
 * @return a long long representing the number of microseconds since startup
 **/
 long long microseconds();
 
-/**
-* Wrapper for printf, prints only in debug mode
-**/
-void print_debug(const char * format, ...);
+enum LogLevel {
+  LOG_EDEBUG = 0, //excesive debug
+  LOG_DEBUG = 1, //debug
+  LOG_INFO = 2,
+  LOG_ERROR = 3
+};
 
-/**
-* Wrapper for printf, prints only in test mode
-**/
-void print_test(const char * format, ...);
+extern LogLevel loglevel;
 
-/**
-* Wrapper for printf, always prints
-**/
-void print_info(const char * format, ...);
+void print(LogLevel level, const char * format, ...);
 
 /**
 * Prints errno, with user defined message prepended
@@ -36,13 +33,15 @@ void print_info(const char * format, ...);
   {\
     char err_buf[500];\
     char* err_str = strerror_r(errno, err_buf, (size_t)500);\
-    print_info("%s errno: %s\n",S, err_str);\
+    print(LogLevel::LOG_ERROR, "%s errno: %s\n",S, err_str);\
   }
 
 /**
 * Define utility clamp function
 **/ 
-float clamp(float v, float l, float h) ;
+float clamp(float v, float l, float h);
 
 ssize_t write_all_to_socket(int socket, uint8_t * buffer, size_t count);
+
+}
 #endif // UTILS_H

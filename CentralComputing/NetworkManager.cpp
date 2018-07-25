@@ -1,6 +1,7 @@
 #include "NetworkManager.hpp"
 
 using namespace std;
+using namespace Utils;
 
 int NetworkManager::socketfd = 0;
 int NetworkManager::clientfd = 0;
@@ -26,7 +27,7 @@ uint8_t NetworkManager::start_server(const char * hostname, const char * port) {
 
   int s = getaddrinfo(NULL, port, &hints, &result);
   if(s != 0){
-    print_info("getaddrinfo: %s\n", gai_strerror(s));
+    print(LogLevel::LOG_ERROR, "getaddrinfo: %s\n", gai_strerror(s));
     exit(1);
   }
   if(bind(socketfd, result->ai_addr, result->ai_addrlen) != 0){
@@ -37,7 +38,7 @@ uint8_t NetworkManager::start_server(const char * hostname, const char * port) {
     perror("listen");
     exit(1);
   }
-  print_info("Server setup successfully\n");
+  print(LogLevel::LOG_INFO, "Server setup successfully\n");
   free(result);
 
   running.store(true);
@@ -53,12 +54,12 @@ int NetworkManager::accept_client() {
   p.fd = socketfd;
   p.events = POLLIN;
   int ret = 0;
-  print_info("Awaiting connection\n");
+  print(LogLevel::LOG_INFO, "Awaiting connection\n");
   while(1) {
     ret = poll(&p, 1, 1000);
     if(ret == 1) {//there's something trying to connect
       clientfd = accept(socketfd, NULL, NULL);
-      print_info("Connected!\n"); 
+      print(LogLevel::LOG_INFO, "Connected!\n"); 
       return clientfd;
     }
   }
@@ -93,15 +94,15 @@ void NetworkManager::send_packet() {
 void NetworkManager::network_loop() {
   while(running){
     int fd = accept_client();
-    print_info("Client fd is: %d\n", clientfd);
+    print(LogLevel::LOG_INFO, "Client fd is: %d\n", clientfd);
     if(fd > 0){
-      print_info("Starting network threads\n");
+      print(LogLevel::LOG_INFO, "Starting network threads\n");
       thread read_thread(read_loop);
       thread write_thread(write_loop);
 
       read_thread.join();
       write_thread.join();
-      print_info("Client exited, looking for next client\n");
+      print(LogLevel::LOG_INFO, "Client exited, looking for next client\n");
 
     } else {
       PRINT_ERRNO("Accept failed, abort.")
@@ -124,7 +125,7 @@ void NetworkManager::read_loop() {
     }
   }
 
-  print_info("Read Loop exiting.\n");
+  print(LogLevel::LOG_INFO, "Read Loop exiting.\n");
 }
 
 void NetworkManager::write_loop() {
@@ -135,7 +136,7 @@ void NetworkManager::write_loop() {
     active_connection = written != -1;
   }
 
-  print_info("Write Loop exiting.\n");
+  print(LogLevel::LOG_INFO, "Write Loop exiting.\n");
 }
 
 void NetworkManager::stop_threads() {
