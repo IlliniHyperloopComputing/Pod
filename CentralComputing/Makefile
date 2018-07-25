@@ -14,7 +14,7 @@ CXX_NORM	:= g++
 CXX_BBB 	:= arm-linux-gnueabihf-g++
 WARNINGS 	:= -Wall -Wextra -pedantic -Wdouble-promotion -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Wno-unused
 
-INCLUDE_DIRS	:= -IStateMachineCompact -I${GTEST_DIR}/include 
+INCLUDE_DIRS	:= -IStateMachineCompact -I${GTEST_DIR}/include -I.
 CFLAGS_RELEASE 	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG
 CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG 
 CFLAGS_SIM 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG -DSIM
@@ -175,8 +175,7 @@ $(OBJ_DIR)/%-cross-sim.o : %.cpp
 .PHONY: clean
 clean:
 	rm -f $(POD) $(POD_D) $(POD_T) $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)
-	rm -f $(OBJ_DIR)/*.o  $(OBJ_DIR)/StateMachineCompact/*.o
-	rm -f $(OBJ_DIR)/*.d  $(OBJ_DIR)/StateMachineCompact/*.d
+	rm -rf $(OBJ_DIR)/  
 
 .PHONY: clean_lib
 clean_lib:

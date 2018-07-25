@@ -1,4 +1,4 @@
-#include <gtest/gtest.h> // googletest header file
+#include "Pod.h" // Include Pod.h for google test header
 
 #include <string>
 using std::string;
