@@ -1,6 +1,8 @@
 #include "Pod_State.h"
 #include "Simulation.h"
 
+using namespace Utils;
+
 //Pod_State::Pod_State(Brake * brake, Motor * motor, Sensor * sensor)
 Pod_State::Pod_State()
   : StateMachine(ST_MAX_STATES)
@@ -170,12 +172,12 @@ void Pod_State::ST_Flight_Brake() {
 ///////////////////////////
 void Pod_State::steady_safe_mode(std::shared_ptr<NetworkManager::Network_Command> command) {
   //not much special stuff to do here  
-  print_info("In safe mode\n");
+  print(LogLevel::LOG_INFO, "In safe mode\n");
 }
 
 void Pod_State::steady_functional(std::shared_ptr<NetworkManager::Network_Command> command) {
   //process command, let manual commands go through
-  print_info("In functional test\n");
+  print(LogLevel::LOG_INFO, "In functional test\n");
 	switch (command->id) {
 		case NetworkManager::ENABLE_MOTOR: 
       MotorManager::enable_motors();

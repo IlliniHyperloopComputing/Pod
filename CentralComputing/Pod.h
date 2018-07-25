@@ -9,12 +9,14 @@
 
 class Pod {
   public:
+    Pod();
+
     void startup();
-  private:
-    void logic_loop();
 
     shared_ptr<Pod_State> state_machine;
-    bool running = true;
+    atomic<bool> running;
+  private:
+    void logic_loop();
 };
 
 
