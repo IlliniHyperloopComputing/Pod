@@ -96,9 +96,9 @@ void NetworkManager::send_packet() {
 void NetworkManager::network_loop() {
   while(running){
     int fd = accept_client();
-    print(LogLevel::LOG_INFO, "Client fd is: %d\n", clientfd);
     if(fd > 0){
       print(LogLevel::LOG_INFO, "Starting network threads\n");
+      print(LogLevel::LOG_INFO, "Client fd is: %d\n", clientfd);
       thread read_thread(read_loop);
       thread write_thread(write_loop);
 
@@ -107,11 +107,11 @@ void NetworkManager::network_loop() {
       print(LogLevel::LOG_INFO, "Client exited, looking for next client\n");
 
     } else {
-      PRINT_ERRNO("Accept failed, abort.")
       running.store(false);
       break;
     }
   }   
+  print(LogLevel::LOG_INFO, "Exiting Network loop\n");
 }
 
 void NetworkManager::read_loop() {
