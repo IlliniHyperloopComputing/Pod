@@ -4,6 +4,7 @@ using namespace std;
 using namespace Utils;
 Pod::Pod() {
   running.store(false);
+  sem_init(&ready_semaphore, 0, 0);
 }
 
 void Pod::logic_loop() {
@@ -33,12 +34,14 @@ void Pod::startup() {
  	print(LogLevel::LOG_INFO, "==================\n");
   print(LogLevel::LOG_INFO, "ILLINI  HYPERLOOP \n");
   print(LogLevel::LOG_INFO, "==================\n\n");
-  print(LogLevel::LOG_INFO, "Runing setup...\n");
+  print(LogLevel::LOG_INFO, "Running setup...\n");
 
   //Set maximum CPU frequency because GOTTA GO F A S T  
   system("cpufreq-set -f 1000MHz");
   print(LogLevel::LOG_INFO, "CPU freq set to 1GHz\n");    
   state_machine = make_shared<Pod_State>();
+
+  print(LogLevel::LOG_INFO, "Pod State: %s\n", state_machine->get_current_state_string().c_str());
 
   //Start all SourceManager threads
   SourceManager::PRU.initialize();
@@ -52,7 +55,11 @@ void Pod::startup() {
 
   //Start Network and main loop thread.
   thread network_thread(NetworkManager::network_loop);
+  running.store(true);
   thread logic_thread([&](){ logic_loop(); }); // I don't know how to use member functions as a thread function, but lambdas work
+  
+  //ready to begin testing
+  sem_post(&ready_semaphore);
 
   //Join all threads
   logic_thread.join();
@@ -67,11 +74,19 @@ void Pod::startup() {
 
 }
 
+void Pod::stop() {
+  running.store(false); 
+  NetworkManager::stop_threads();
+  NetworkManager::close_server();
+}
+
 int main(int argc, char **argv) {
   #ifndef SIM
+    Utils::loglevel = LOG_EDEBUG;
     auto pod = make_shared<Pod>();
     pod->startup();
   #else
+    Utils::loglevel = LOG_EDEBUG;
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
   #endif

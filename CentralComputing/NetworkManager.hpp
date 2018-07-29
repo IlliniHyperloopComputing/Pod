@@ -3,6 +3,7 @@
 
 #include "Utils.h"
 #include "SafeQueue.hpp"
+#include "ParameterManager.hpp"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <stdlib.h>
@@ -38,15 +39,14 @@ enum Network_Command_ID {
 
 //enum specifying what data is sent
 //[1 byte Data ID][4 byte size][size byte chunk]
-//TODO figure out if CPP automatically assigns enums in order, would make adding new params easier
 enum Network_Data_ID {
-  POD_STATE = 0,
-  BRAKE_STATUS = 1,
-  MOTOR_STATUS = 2,
-  POSITION = 3,
-  VELOCITY = 4,
-  ACCELERATION = 5,
-  TEMPERATURE = 6
+  POD_STATE,
+  BRAKE_STATUS,
+  MOTOR_STATUS,
+  POSITION,
+  VELOCITY,
+  ACCELERATION,
+  TEMPERATURE
 };
 
 /**
