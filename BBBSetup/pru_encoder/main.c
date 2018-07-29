@@ -1,7 +1,6 @@
 
 
 #include <stdint.h>
-#include "optical.h"
 #include <pru_cfg.h>
 #include <pru_iep.h>
 
@@ -24,15 +23,28 @@ volatile register uint32_t __R31;
 #define ENC6    (1 << 5)  // P8_42
 #define ENC7    (1 << 2)  // P8_43
 #define ENC8    (1 << 3)  // P8_44
-#define ENC9   (1 << 0)   // P8_45
+#define ENC9    (1 << 0)  // P8_45
 #define ENC10   (1 << 1)  // P8_46
+
+// array of masks so I can easily loop through them
+uint32_t masks[11] = {ENC0, ENC1, ENC2, ENC3, ENC4, ENC5, ENC6, ENC7, ENC8, ENC9, ENC10};
 
 uint32_t htime_ctr = 0;
 
-uint32_t htime[11] = {0};
-uint32_t ltime[11] = {0};
-uint32_t counts[11] = {0};
-uint8_t high[11] = {0};
+uint32_t counts[11] = {0}; //Number of times we have seen the signal
+uint32_t htime[11] = {0}; //upper 32 bits of last time there was a high or low signal
+uint32_t ltime[11] = {0}; //lower 32 bits of last time there was a high or low signal
+
+uint32_t hlasthigh[11] = {0};
+uint32_t llasthigh[11] = {0}; // These are what the time deltas are based off of.
+
+uint32_t hdelta[11] = {0}; //time between the most recently seen signal and the signal before that one.
+uint32_t ldelta[11] = {0};
+
+uint8_t isHigh[11] = {0}; //Signal is currently high, need it to go low.
+
+
+#include "optical.h"
 
 void main(void)
 
@@ -56,8 +68,11 @@ void main(void)
 
 
     while (1) {
+        int i;
+        for(i = 0; i<11; i++){
+            debounce(masks[i], i);
+        }
 
-        debounce(ENC0, counts[0], high[0], htime[0], ltime[0]);
 
         if ((__R31 & ENC1) == ENC1) {
 
@@ -66,9 +81,10 @@ void main(void)
 
             __delay_cycles(100000000);
 
-
         }
 
     }
 
 }
+
+
