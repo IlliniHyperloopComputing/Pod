@@ -21,7 +21,7 @@ class Simulator {
      * @param hostname the hostname to connect to
      * @param port the port to connect to
      */
-    bool connect(const char * hostname, const char * port);
+    bool sim_connect(const char * hostname, const char * port);
 
     /**
      * Sends the given command to the connected pod
@@ -46,6 +46,7 @@ class Simulator {
     Pod_State::E_States current_state; //current state of the pod as read by the network controller
 
     atomic<bool> active_connection;
+    thread read_thread;
 
     int socketfd;
 

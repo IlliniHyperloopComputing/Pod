@@ -25,7 +25,7 @@ uint8_t NetworkManager::start_server(const char * hostname, const char * port) {
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = AI_PASSIVE;
 
-  int s = getaddrinfo(NULL, port, &hints, &result);
+  int s = getaddrinfo(hostname, port, &hints, &result);
   if(s != 0){
     print(LogLevel::LOG_ERROR, "getaddrinfo: %s\n", gai_strerror(s));
     exit(1);
@@ -57,9 +57,10 @@ int NetworkManager::accept_client() {
   print(LogLevel::LOG_INFO, "Awaiting connection\n");
   while(1) {
     ret = poll(&p, 1, 1000);
-    if(ret == 1) {//there's something trying to connect
+    if(ret == 1) {//there's something trying to connect, or we are exiting
       clientfd = accept(socketfd, NULL, NULL);
-      print(LogLevel::LOG_INFO, "Connected!\n"); 
+      if(clientfd != -1)
+        print(LogLevel::LOG_INFO, "Connected!\n"); 
       return clientfd;
     }
   }
@@ -79,7 +80,8 @@ int NetworkManager::read_command(Network_Command * buffer) {
 int NetworkManager::write_data() {
   // TODO 
   // Write ParameterManager::GetNetworkReport, write the report to clientfd
-  return -1;
+  vector<uint8_t> bytes = ParameterManager::get_network_packet(); 
+  return write(clientfd, bytes.data(), bytes.size());
 }
 
 void NetworkManager::close_server() {
@@ -106,6 +108,7 @@ void NetworkManager::network_loop() {
 
     } else {
       PRINT_ERRNO("Accept failed, abort.")
+      running.store(false);
       break;
     }
   }   
