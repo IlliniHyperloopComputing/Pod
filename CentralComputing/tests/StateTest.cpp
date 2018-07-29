@@ -1,6 +1,5 @@
-#include <gtest/gtest.h>
-#include <../Pod.h>
-#include <../Simulator.hpp>
+#include "Pod.h"
+#include "Simulator.hpp"
 
 using namespace Utils;
 

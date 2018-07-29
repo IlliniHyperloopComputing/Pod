@@ -40,7 +40,7 @@ class SourceManagerBase {
         mutex.lock();
         data = new_data;
         mutex.unlock();
-        usleep(DelayInUsecs);
+        std::this_thread::sleep_for(std::chrono::microseconds(DelayInUsecs));
       }
     }
 
