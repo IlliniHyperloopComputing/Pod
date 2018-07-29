@@ -25,8 +25,9 @@ void Pod::logic_loop() {
 
     auto func = state_machine->get_steady_function();
     ((*state_machine).*(func))(command); //calls the steady state function for the current state
-    sleep(5);
+    sleep(1);
   } 
+  print(LogLevel::LOG_INFO, "Exiting Pod Logic Loop\n");
 }
 
 void Pod::startup() {
@@ -64,13 +65,15 @@ void Pod::startup() {
   //Join all threads
   logic_thread.join();
   network_thread.join();
-
+  
+  print(LogLevel::LOG_INFO, "Source Managers closing\n");
   //Stop all source managers
   SourceManager::PRU.stop();
   SourceManager::CAN.stop();
   SourceManager::TMP.stop();
   SourceManager::ADC.stop();
   SourceManager::I2C.stop();
+  print(LogLevel::LOG_INFO, "Source Managers closed, Pod shutting down\n");
 
 }
 
