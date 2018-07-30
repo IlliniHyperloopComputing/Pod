@@ -6,6 +6,12 @@ void Event::wait() {
   lk.unlock();
 }
 
+void Event::wait_for(long long micros) {
+  std::unique_lock<std::mutex> lk(mutex);
+  cond.wait_for(lk, std::chrono::microseconds(micros), [&]{ return condition; });
+  lk.unlock();
+}
+
 void Event::invoke() {
   std::unique_lock<std::mutex> lk(mutex);
   condition = true;

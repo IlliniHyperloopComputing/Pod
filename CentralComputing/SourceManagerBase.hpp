@@ -2,6 +2,7 @@
 #define SOURCE_MANAGER_BASE_HPP
 
 #include "Utils.h"
+#include "Event.hpp"
 #include <memory>
 #include <thread>
 #include <mutex>
@@ -28,6 +29,7 @@ class SourceManagerBase {
     
     void stop() {
       running.store(false);
+      closing.invoke();
       worker.join();
     }
 
@@ -40,13 +42,14 @@ class SourceManagerBase {
         mutex.lock();
         data = new_data;
         mutex.unlock();
-        std::this_thread::sleep_for(std::chrono::microseconds(DelayInUsecs));
+        closing.wait_for(DelayInUsecs);
       }
     }
 
     std::shared_ptr<Data> data;
     std::mutex mutex;
     std::atomic<bool> running;
+    Event closing;
     std::thread worker;
 };
 #endif

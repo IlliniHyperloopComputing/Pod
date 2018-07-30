@@ -27,7 +27,8 @@ void Pod::logic_loop() {
 
     auto func = state_machine->get_steady_function();
     ((*state_machine).*(func))(command); //calls the steady state function for the current state
-    sleep(1);
+
+    closing.wait_for(1000000);
   } 
   //process all commands before closing
    
@@ -85,6 +86,7 @@ void Pod::startup() {
 
 void Pod::stop() {
   running.store(false); 
+  closing.invoke();
   NetworkManager::stop_threads();
   NetworkManager::close_server();
 }
