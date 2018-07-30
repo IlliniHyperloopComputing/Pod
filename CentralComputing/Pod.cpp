@@ -91,10 +91,18 @@ void Pod::stop() {
   NetworkManager::close_server();
 }
 
+std::function<void(int)> shutdown_handler;
+void signal_handler(int signal) {shutdown_handler(signal); }
+
 int main(int argc, char **argv) {
   #ifndef SIM
+
     Utils::loglevel = LOG_EDEBUG;
     auto pod = make_shared<Pod>();
+    signal(SIGINT, signal_handler);
+    shutdown_handler = [&](int signal) {
+      pod->stop();
+    };
     pod->startup();
   #else
     Utils::loglevel = LOG_EDEBUG;
