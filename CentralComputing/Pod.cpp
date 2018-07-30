@@ -13,11 +13,11 @@ void Pod::logic_loop() {
     // Start processing/pod logic
 		shared_ptr<NetworkManager::Network_Command> command = NetworkManager::command_queue.dequeue();
     if(command.get() != nullptr){
-      processing_command.invoke(); 
       print(LogLevel::LOG_INFO, "Command : %d %d\n", command->id, command->value);
       NetworkManager::Network_Command_ID id = (NetworkManager::Network_Command_ID) command->id;
       auto transition = state_machine->get_transition_function(id);
       ((*state_machine).*(transition))(); //transitions to requested state
+      processing_command.invoke(); 
     } else {
       print(LogLevel::LOG_INFO, "No Command\n");
       command = make_shared<NetworkManager::Network_Command>();
