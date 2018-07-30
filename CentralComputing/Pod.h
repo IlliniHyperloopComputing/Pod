@@ -3,6 +3,7 @@
 
 #include "NetworkManager.hpp"
 #include "ParameterManager.hpp"
+#include "Event.hpp"
 #include "Pod_State.h"
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wctor-dtor-privacy"
@@ -21,7 +22,8 @@ class Pod {
 
     shared_ptr<Pod_State> state_machine;
     atomic<bool> running;
-    sem_t ready_semaphore;
+    Event ready;
+    Event processing_command;
 
   private:
     void logic_loop();

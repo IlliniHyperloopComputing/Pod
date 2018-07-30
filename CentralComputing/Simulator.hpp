@@ -46,6 +46,7 @@ class Simulator {
     Pod_State::E_States current_state; //current state of the pod as read by the network controller
 
     atomic<bool> active_connection;
+    Event closed;
     thread read_thread;
 
     int socketfd;

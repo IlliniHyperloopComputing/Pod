@@ -4,6 +4,7 @@
 #include "Utils.h"
 #include "SafeQueue.hpp"
 #include "ParameterManager.hpp"
+#include "Event.hpp"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <stdlib.h>
@@ -19,7 +20,6 @@
 
 #define WRITE_FAILURE -1
 
-using namespace std;
 namespace NetworkManager {
 
 enum Network_Command_ID {
@@ -54,7 +54,7 @@ enum Network_Data_ID {
 **/
 struct Network_Command {
   //state transtitions
-  Network_Command_ID id; //id is just a network command
+  uint8_t id; //id is just a network command
   uint8_t value;
 };
 
@@ -65,6 +65,8 @@ extern int udp_socket;
 
 extern std::atomic<bool> running;
 extern SafeQueue<shared_ptr<NetworkManager::Network_Command>> command_queue;
+
+extern Event connected;
 
 /**
 * Starts the TCP server

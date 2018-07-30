@@ -7,6 +7,8 @@ int NetworkManager::socketfd = 0;
 int NetworkManager::clientfd = 0;
 int NetworkManager::udp_socket = 0;
 
+Event NetworkManager::connected;
+
 std::atomic<bool> NetworkManager::running(false);
 SafeQueue<shared_ptr<NetworkManager::Network_Command>> NetworkManager::command_queue;
 
@@ -102,6 +104,7 @@ void NetworkManager::network_loop() {
       thread read_thread(read_loop);
       thread write_thread(write_loop);
 
+      connected.invoke();
       read_thread.join();
       write_thread.join();
       print(LogLevel::LOG_INFO, "Client exited, looking for next client\n");
@@ -119,6 +122,8 @@ void NetworkManager::read_loop() {
   Network_Command buffer;
   while (running && active_connection){
     int bytes_read = read_command(&buffer);
+    print(LogLevel::LOG_INFO, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
+    
     active_connection = bytes_read > 0;
     if (bytes_read > 0) {
       auto command = make_shared<Network_Command>();
@@ -136,6 +141,7 @@ void NetworkManager::write_loop() {
   while(running && active_connection){
     usleep(100000); //TODO: Change to actual value at some point
     int written = write_data();
+    //print(LogLevel::LOG_EDEBUG, "Wrote %d bytes\n", written);
     active_connection = written != -1;
   }
 
