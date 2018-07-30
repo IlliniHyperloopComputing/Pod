@@ -18,12 +18,14 @@ This folder contains all of the setup information for the BBB. Device tree overl
   * Look in the `/sys/class/pwm/pwmchip0/pwm0/` folder for the ability to write to PWM
   * The above was setup following instructions in the reference guide.
 * GPIO input for PRU, for Optical inputs, device tree overlay setup
-  * Great guide on setting the PRUSS (Programmable Real-time Unit Sub System). [Derek Molloy's site](http://exploringbeaglebone.com/chapter13/)
-  * (elinux guide)[https://elinux.org/EBC\_Exercise\_30\_PRU\_via\_remoteproc\_and\_RPMsg]
-  * (TI's walk through guide)[http://processors.wiki.ti.com/index.php/PRU\_Training:_Hands-on_Labs]
+  * The main challenge with the PRU is that most of the guides were written several years ago (when the BBB came out) and since there have been updates to the kernal. We are on kernal version 4.4. 
+  * (elinux guide)[https://elinux.org/EBC\_Exercise\_30\_PRU\_via\_remoteproc\_and\_RPMsg] Look at the BeagleScope example, and see how they load modules.
+  * (TI's walk through guide)[http://processors.wiki.ti.com/index.php/PRU\_Training:_Hands-on_Labs]. However, their method of loading firmware onto the PRU is old. But modules built with their IDE still work!
   * The PRU Header files necessary for development with their IDE are included in this repo. They were found [here](http://www.ti.com/tool/PROCESSOR-SDK-AM335X). Pretty confusing, but it was in the "PROCESSOR\_SDK\_LINUX\_AM335X", once installed it was in some example files for the PRU.
-  * [Best reference](https://elinux.org/images/d/da/Am335xPruReferenceGuide.pdf) I could find explaining all of the nitty-gritty details of the PRU. 
-  * (Another developer blog with links)[https://ianrrees.github.io/2016/11/20/getting-started-with-beaglebone-pru-programming-the-new-way.html]
+  * [Best reference](https://elinux.org/images/d/da/Am335xPruReferenceGuide.pdf) I could find explaining all of the register level details of the PRU. 
+  * An alternative method for [loading modules](https://groups.google.com/forum/#!topic/beagleboard-gsoc/amMNLt4EoHM), which links to this [gist](https://gist.github.com/alexanderhiam/2c4187c710b2c409d8dde8c4015fe007).
+  * _OLD_ (Another developer blog with links)[https://ianrrees.github.io/2016/11/20/getting-started-with-beaglebone-pru-programming-the-new-way.html]
+  * _OLD_ guide on setting the PRUSS (Programmable Real-time Unit Sub System). [Derek Molloy's site](http://exploringbeaglebone.com/chapter13/)
   * [Device-Tree Overlay Generator](http://www.kilobaser.com/blog/2014-07-28-beaglebone-black-devicetreeoverlay-generator). 
 * GPIO output device tree overlay setup
   * [Derek Molloy's site](http://derekmolloy.ie/gpios-on-the-beaglebone-black-using-device-tree-overlays/). Goes through how to install the device tree, and most importently how to initialize the GPIO once it has been setup in the device tree.
