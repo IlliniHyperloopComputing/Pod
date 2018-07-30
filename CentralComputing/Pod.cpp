@@ -2,9 +2,10 @@
 
 using namespace std;
 using namespace Utils;
+
+
 Pod::Pod() {
   running.store(false);
-  sem_init(&ready_semaphore, 0, 0);
 }
 
 void Pod::logic_loop() {
@@ -12,9 +13,10 @@ void Pod::logic_loop() {
     // Start processing/pod logic
 		shared_ptr<NetworkManager::Network_Command> command = NetworkManager::command_queue.dequeue();
     if(command.get() != nullptr){
+      processing_command.invoke(); 
       print(LogLevel::LOG_INFO, "Command : %d %d\n", command->id, command->value);
-      print(LogLevel::LOG_INFO, "Processing command %d\n", command->id);
-      auto transition = state_machine->get_transition_function(command->id);
+      NetworkManager::Network_Command_ID id = (NetworkManager::Network_Command_ID) command->id;
+      auto transition = state_machine->get_transition_function(id);
       ((*state_machine).*(transition))(); //transitions to requested state
     } else {
       print(LogLevel::LOG_INFO, "No Command\n");
@@ -27,6 +29,8 @@ void Pod::logic_loop() {
     ((*state_machine).*(func))(command); //calls the steady state function for the current state
     sleep(1);
   } 
+  //process all commands before closing
+   
   print(LogLevel::LOG_INFO, "Exiting Pod Logic Loop\n");
 }
 
@@ -39,6 +43,7 @@ void Pod::startup() {
 
   //Set maximum CPU frequency because GOTTA GO F A S T  
   system("cpufreq-set -f 1000MHz");
+  signal(SIGPIPE, SIG_IGN);
   print(LogLevel::LOG_INFO, "CPU freq set to 1GHz\n");    
   state_machine = make_shared<Pod_State>();
 
@@ -60,9 +65,10 @@ void Pod::startup() {
   thread logic_thread([&](){ logic_loop(); }); // I don't know how to use member functions as a thread function, but lambdas work
   
   //ready to begin testing
-  sem_post(&ready_semaphore);
+  ready.invoke();
 
   //Join all threads
+ 
   logic_thread.join();
   network_thread.join();
   

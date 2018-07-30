@@ -1,5 +1,4 @@
 #include "Pod_State.h"
-#include "Simulation.h"
 
 using namespace Utils;
 
@@ -142,29 +141,22 @@ void Pod_State::no_transition() {
 }
 
 void Pod_State::ST_Safe_Mode() {
-  write_sim_command(STATE, get_current_state()); 
 }
 
 void Pod_State::ST_Functional_Test() {
-  write_sim_command(STATE, get_current_state());
 }
 void Pod_State::ST_Loading() {
-  write_sim_command(STATE, get_current_state());
 }
 void Pod_State::ST_Launch_Ready() {
-  write_sim_command(STATE, get_current_state());
 }
 
 void Pod_State::ST_Flight_Accel() {
-  write_sim_command(STATE, get_current_state());
 }
 
 void Pod_State::ST_Flight_Coast() {
-  write_sim_command(STATE, get_current_state());
 }
 
 void Pod_State::ST_Flight_Brake() {
-  write_sim_command(STATE, get_current_state());
 }
 
 /////////////////////////////
