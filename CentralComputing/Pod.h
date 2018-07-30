@@ -30,5 +30,7 @@ class Pod {
     void logic_loop();
 };
 
+void signal_handler(int signal);
+
 
 #endif

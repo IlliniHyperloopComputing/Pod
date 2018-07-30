@@ -141,22 +141,29 @@ void Pod_State::no_transition() {
 }
 
 void Pod_State::ST_Safe_Mode() {
+  print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
 }
 
 void Pod_State::ST_Functional_Test() {
+  print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
 }
 void Pod_State::ST_Loading() {
+  print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
 }
 void Pod_State::ST_Launch_Ready() {
+  print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
 }
 
 void Pod_State::ST_Flight_Accel() {
+  print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
 }
 
 void Pod_State::ST_Flight_Coast() {
+  print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
 }
 
 void Pod_State::ST_Flight_Brake() {
+  print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
 }
 
 /////////////////////////////
@@ -164,12 +171,10 @@ void Pod_State::ST_Flight_Brake() {
 ///////////////////////////
 void Pod_State::steady_safe_mode(std::shared_ptr<NetworkManager::Network_Command> command) {
   //not much special stuff to do here  
-  print(LogLevel::LOG_INFO, "In safe mode\n");
 }
 
 void Pod_State::steady_functional(std::shared_ptr<NetworkManager::Network_Command> command) {
   //process command, let manual commands go through
-  print(LogLevel::LOG_INFO, "In functional test\n");
 	switch (command->id) {
 		case NetworkManager::ENABLE_MOTOR: 
       MotorManager::enable_motors();
