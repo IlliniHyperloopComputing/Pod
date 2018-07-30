@@ -24,6 +24,7 @@ class Pod {
     atomic<bool> running;
     Event ready;
     Event processing_command;
+    Event closing;
 
   private:
     void logic_loop();

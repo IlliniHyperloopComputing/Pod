@@ -8,6 +8,7 @@ int NetworkManager::clientfd = 0;
 int NetworkManager::udp_socket = 0;
 
 Event NetworkManager::connected;
+Event NetworkManager::closing;
 
 std::atomic<bool> NetworkManager::running(false);
 SafeQueue<shared_ptr<NetworkManager::Network_Command>> NetworkManager::command_queue;
@@ -58,7 +59,7 @@ int NetworkManager::accept_client() {
   int ret = 0;
   print(LogLevel::LOG_INFO, "Awaiting connection\n");
   while(1) {
-    ret = poll(&p, 1, 1000);
+    ret = poll(&p, 1, 200);
     if(ret == 1) {//there's something trying to connect, or we are exiting
       clientfd = accept(socketfd, NULL, NULL);
       if(clientfd != -1)
@@ -122,10 +123,10 @@ void NetworkManager::read_loop() {
   Network_Command buffer;
   while (running && active_connection){
     int bytes_read = read_command(&buffer);
-    print(LogLevel::LOG_INFO, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
     
     active_connection = bytes_read > 0;
     if (bytes_read > 0) {
+      print(LogLevel::LOG_INFO, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
       auto command = make_shared<Network_Command>();
       command->id = buffer.id;
       command->value = buffer.value;
@@ -139,7 +140,7 @@ void NetworkManager::read_loop() {
 void NetworkManager::write_loop() {
   bool active_connection = true;
   while(running && active_connection){
-    usleep(100000); //TODO: Change to actual value at some point
+    closing.wait_for(100000);
     int written = write_data();
     //print(LogLevel::LOG_EDEBUG, "Wrote %d bytes\n", written);
     active_connection = written != -1;
@@ -150,6 +151,7 @@ void NetworkManager::write_loop() {
 
 void NetworkManager::stop_threads() {
   running.store(false);
+  closing.invoke();
 }
 
 

@@ -67,6 +67,7 @@ extern std::atomic<bool> running;
 extern SafeQueue<shared_ptr<NetworkManager::Network_Command>> command_queue;
 
 extern Event connected;
+extern Event closing;
 
 /**
 * Starts the TCP server

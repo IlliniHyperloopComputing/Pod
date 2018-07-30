@@ -15,6 +15,12 @@ class Event {
    */
   void wait();
 
+
+  /*
+   * Causes this thread to wait for a time period or until the event is invoked
+   */
+  void wait_for(long long micros);
+
   /*
    * Wakes up all waiting threads
    */
@@ -24,6 +30,7 @@ class Event {
    * Reset Event
    */
   void reset();
+
 
   private:
 
