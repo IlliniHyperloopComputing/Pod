@@ -109,7 +109,6 @@ target/
 *.lai
 *.la
 *.a
-*.lib
 
 # Executables
 *.exe

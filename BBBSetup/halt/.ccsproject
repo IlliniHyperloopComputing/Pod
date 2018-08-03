@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?ccsproject version="1.0"?>
+<projectOptions>
+	<ccsVersion value="7.4.0"/>
+	<deviceVariant value="TMS192C2026.AM3359.BeagleBone_Black"/>
+	<deviceFamily value="PRU"/>
+	<deviceEndianness value="little"/>
+	<codegenToolVersion value="2.2.1"/>
+	<isElfFormat value="true"/>
+	<linkerCommandFile value="AM335x_PRU.cmd"/>
+	<rts value="libc.a"/>
+	<createSlaveProjects value=""/>
+	<templateProperties value="id=com.ti.ccstudio.project.templates.basic_pru,"/>
+	<filesToOpen value="main.c,"/>
+</projectOptions>

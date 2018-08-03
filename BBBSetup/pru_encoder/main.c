@@ -35,8 +35,8 @@ volatile register uint32_t __R31;
  * Using the name 'rpmsg-pru' will probe the rpmsg_pru driver found
  * at linux-x.y.z/drivers/rpmsg/rpmsg_pru.c
  */
-#define CHAN_NAME           "rpmsg-client-sample"
-//#define CHAN_NAME         "rpmsg-pru"
+//#define CHAN_NAME           "rpmsg-client-sample"
+#define CHAN_NAME         "rpmsg-pru"
 
 #define CHAN_DESC           "Channel 31"
 #define CHAN_PORT           31
@@ -128,12 +128,7 @@ void main(void)
     CT_IEP.TMR_CNT = 0x1; // Write 1 to clear counter
     CT_IEP.TMR_CMP_CFG_bit.CMP0_RST_CNT_EN = 0x0; // Disable reset of counter if CMP0 event occurs
     CT_IEP.TMR_CMP_CFG_bit.CMP_EN = 0x0; // Disable all CMP[n] events
-
-
-    payload[0] = 'h';
-    payload[1] = 'i';
-    payload[2] = '\n';
-
+    CT_IEP.TMR_GLB_CFG_bit.CNT_EN = 0x1; // enable counter
 
 
     int i, j;
@@ -142,16 +137,14 @@ void main(void)
             debounce(masks[i], i);
         }
 
-        while (1) {
-            /* Check bit 30 of register R31 to see if the ARM has kicked us */
-            if (__R31 & HOST_INT) {
-                /* Clear the event status */
-                CT_INTC.SICR_bit.STS_CLR_IDX = FROM_ARM_HOST;
-                /* Receive all available messages, multiple messages can be sent per kick */
-                while (pru_rpmsg_receive(&transport, &src, &dst, payload, &len) == PRU_RPMSG_SUCCESS) {
-                    /* Echo the message back to the same address from which we just received */
-                    pru_rpmsg_send(&transport, dst, src, payload, len);
-                }
+        /* Check bit 30 of register R31 to see if the ARM has kicked us */
+        if (__R31 & HOST_INT) {
+            /* Clear the event status */
+            CT_INTC.SICR_bit.STS_CLR_IDX = FROM_ARM_HOST;
+            /* Receive all available messages, multiple messages can be sent per kick */
+            while (pru_rpmsg_receive(&transport, &src, &dst, payload, &len) == PRU_RPMSG_SUCCESS) {
+                /* Echo the message back to the same address from which we just received */
+                pru_rpmsg_send(&transport, dst, src, (uint8_t*)&htime_ctr, sizeof(htime_ctr));
             }
         }
 

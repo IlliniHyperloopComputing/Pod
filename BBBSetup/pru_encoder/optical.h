@@ -42,6 +42,7 @@ uint32_t ltime_diff = 0;
 inline
 void debounce(const uint32_t mask, const uint32_t i) {
     if(!isHigh[i]){
+        diff_time(htime_diff, ltime_diff, htime[i], ltime[i]);
         if((__R31 & mask) == mask){
 
             diff_time(htime_diff, ltime_diff, htime[i], ltime[i]);
@@ -61,6 +62,7 @@ void debounce(const uint32_t mask, const uint32_t i) {
         }
     }
     else{
+        diff_time(htime_diff, ltime_diff, htime[i], ltime[i]);
         if((__R31 & mask) != mask){
             diff_time(htime_diff, ltime_diff, htime[i], ltime[i]);
 
