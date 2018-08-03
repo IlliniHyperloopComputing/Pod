@@ -58,4 +58,16 @@ This folder contains all of the setup information for the BBB. Device tree overl
   * P9-19 and P9-20
 * ![default BBB pinout](beaglebone-black-pinout.jpg)
 
+# BBB OS Setup
+  * Using this [Debian 9.4 image](http://debian.beagleboard.org/images/bone-debian-9.4-iot-armhf-2018-06-17-4gb.img.xz)
+  * Setup network by editing `/etc/network/interfaces` and adding:
+```
+allow-hotplug eth0
+iface eth0 inet static
+  address 192.168.137.100
+  netmask 255.255.255.0
+  gateway 192.168.137.0
+  network 129.168.137.1
+```
+  * I also modified the config file for `connman`, the network service. I removed `wifi` from preferred devices list, and black listed it. I also black listed `can0`. the config file is `/etc/connman/main.conf`
 
