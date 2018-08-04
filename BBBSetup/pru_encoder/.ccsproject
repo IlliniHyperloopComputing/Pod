@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<?ccsproject version="1.0"?>
+<projectOptions>
+	<ccsVersion value="7.4.0"/>
+	<deviceVariant value="TMS192C2026.AM3359.BeagleBone_Black"/>
+	<deviceFamily value="PRU"/>
+	<deviceEndianness value="little"/>
+	<codegenToolVersion value="2.2.1"/>
+	<isElfFormat value="true"/>
+	<connection value="common/targetdb/connections/TIXDS100v3_Dot7_Connection.xml"/>
+	<linkerCommandFile value="AM335x_PRU.cmd"/>
+	<rts value="libc.a"/>
+	<createSlaveProjects value=""/>
+	<templateProperties value="id=com.ti.common.project.core.emptyProjectWithMainTemplate,"/>
+	<filesToOpen value="main.c,"/>
+	<isTargetManual value="false"/>
+</projectOptions>

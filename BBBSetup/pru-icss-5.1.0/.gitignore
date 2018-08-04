@@ -1,0 +1,6 @@
+Debug/
+Release/
+gen/
+*.core.resources.prefs
+*~
+
