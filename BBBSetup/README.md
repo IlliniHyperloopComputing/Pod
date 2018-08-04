@@ -12,7 +12,7 @@ iface eth0 inet static
   gateway 192.168.137.0
   network 129.168.137.1
 ```
-    * I like having a static ethernet port so it is easy to SSH into. SSHing over USB is slower and usually cuts out for some reason
+  * I like having a static ethernet port so it is easy to SSH into. SSHing over USB is slower and usually cuts out for some reason
   * I also modified the config file for `connman`, the network service. I removed `wifi` from preferred devices list, and black listed it. I also black listed `can0`. the config file is `/etc/connman/main.conf`
   * Changes made to `boot/uEnv.txt`: (To enable our overlays that we will setup later)
 ```
@@ -32,7 +32,7 @@ disable_uboot_overlay_audio=1
 ```
 
 # Steps to get BBB configured:
-1. Do the above to make sure 
+1. Do the above to make sure the following will work
 2. Run `copyAll` to move over all necessary files to BBB. Password is `temppwd`, which is the default for the user `debian`
 3. `ssh` into the BBB using `debian@192.168.137.100` with password `temppwd`
 4. Run `./setupOverlay`. Change the permissions of this file if necessary
