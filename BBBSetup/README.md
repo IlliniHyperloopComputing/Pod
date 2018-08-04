@@ -53,7 +53,7 @@ disable_uboot_overlay_audio=1
   * The above was setup following instructions in the reference guide.
 * GPIO input for PRU, for Optical inputs, device tree overlay setup
   * The main challenge with the PRU is that many of the guides were written several years ago (when the BBB came out) and since there have been updates to the kernel. (now on 4.14)
-  * Use this --> (TI's walk through guide)[http://processors.wiki.ti.com/index.php/PRU_Training:_Hands-on_Labs]. 
+  * Use this --> [TI's walk through guide](http://processors.wiki.ti.com/index.php/PRU_Training:_Hands-on_Labs). 
   * This is [pretty good guide too](http://processors.wiki.ti.com/index.php/RPMsg_Quick_Start_Guide#Booting_the_Board_and_Testing_RPMsg)
   * [elinux guide](https://elinux.org/EBC_Exercise_30_PRU_via_remoteproc_and_RPMsg) Look at the BeagleScope example for how someone else has done it.
   * [Best reference](https://elinux.org/images/d/da/Am335xPruReferenceGuide.pdf) I could find explaining all of the register level details of the PRU. 
