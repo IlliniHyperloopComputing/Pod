@@ -48,7 +48,7 @@ volatile register uint32_t __R31;
 
 /* Defines */
 
-#define MESSAGE_PERIOD  600000 // 3ms right now
+#define MESSAGE_PERIOD  600000 * 20 // 60ms right now
 
 #define ENC0    (1 << 8)  // P8_27
 #define ENC1    (1 << 10) // P8_28
@@ -135,77 +135,88 @@ void main(void)
 
     // Delay doing anything until we receive a start signal
     /////////////////////////////////////////////
-    while (! (__R31 & HOST_INT));
-    /* Clear the event status */
-    CT_INTC.SICR_bit.STS_CLR_IDX = FROM_ARM_HOST;
-    /* Receive all available messages, multiple messages can be sent per kick */
-    while (pru_rpmsg_receive(&transport, &src, &dst, payload, &len) == PRU_RPMSG_SUCCESS) {
-        /* Write that we are starting */
-        pru_rpmsg_send(&transport, dst, src, STARTING, sizeof(STARTING));
-    }
+    uint8_t notRecieved = 1;
+    while(notRecieved){
+        if(__R31 & HOST_INT){
+            /* Clear the event status */
+            CT_INTC.SICR_bit.STS_CLR_IDX = FROM_ARM_HOST;
+            /* Receive all available messages, multiple messages can be sent per kick */
+            while (pru_rpmsg_receive(&transport, &src, &dst, payload, &len) == PRU_RPMSG_SUCCESS) {
+                /* Write that we are starting */
+                pru_rpmsg_send(&transport, dst, src, STARTING, sizeof(STARTING));
+                notRecieved=0;
+            }
+        }
 
+    }
 
     // Loop Forever
     // If we receive any message from the host, reset all values
     /////////////////////////////////////////////
     uint32_t tic = CT_IEP.TMR_CNT;
-    uint32_t tic_diff = 0;
     uint8_t send_idx;
+    uint8_t send_buffer[132];
     int i;
     while (1) {
 
+
+        // This loop takes at most 8E-6 seconds to run
         for(i = 0; i<11; i++){
             debounce(masks[i], i);
         }
 
-        /* Check bit 30 of register R31 to see if the ARM has kicked us */
-        if (__R31 & HOST_INT){
+        // When entered and we read an input (side note, we can enter and have nothing to read)
+        // It takes at most 8E-6 seconds to run
+        if(__R31 & HOST_INT){
             /* Clear the event status */
             CT_INTC.SICR_bit.STS_CLR_IDX = FROM_ARM_HOST;
             /* Receive all available messages, multiple messages can be sent per kick */
+            tic = CT_IEP.TMR_CNT;
             while (pru_rpmsg_receive(&transport, &src, &dst, payload, &len) == PRU_RPMSG_SUCCESS) {
-                /* Write that we are reseting */
-                pru_rpmsg_send(&transport, dst, src, RESETING, sizeof(RESETING));
 
-                //Reset all values
-                htime_ctr = 0;
-                for(i=0; i<11; i++){
-                    counts[i] = 0;
-                    hdecay[i] = 0;
-                    ldecay[i] = 0;
-                    hdelta[i] = 0;
-                    ldelta[i] = 0;
-                    htime[i] = 0;
-                    ltime[i] = 0;
-                    isHigh[i] = 0;
+                if(len == 9){
+                    /* Write that we are reseting */
+                    pru_rpmsg_send(&transport, dst, src, RESETING, sizeof(RESETING));
+
+                    //Reset all values
+                    htime_ctr = 0;
+                    for(i=0; i<11; i++){
+                        counts[i] = 0;
+                        hdecay[i] = 0;
+                        ldecay[i] = 0;
+                        hdelta[i] = 0;
+                        ldelta[i] = 0;
+                        htime[i] = 0;
+                        ltime[i] = 0;
+                        isHigh[i] = 0;
+                    }
                 }
-            }
-        }
+                else{
+                    memcpy(send_buffer, counts, sizeof(counts));
+                    memcpy(send_buffer+44, ldecay, sizeof(ldecay));
+                    memcpy(send_buffer+88, ldelta, sizeof(ldelta));
 
-        // Need to send data to ARM
-        // Can't send all at once
-        // Can send something every 3 ms
+                    /*send_buffer[0] = send_idx;
+                    switch (send_idx){
+                        case 0:
+                            tmp_buffer = counts;
+                            send_idx ++;
+                            break;
+                        case 1:
+                            tmp_buffer = ldecay;
+                            send_idx ++;
+                            break;
+                        case 2:
+                            tmp_buffer = ldelta;
+                            send_idx = 0;
+                            break;
+                    }
+                    */
 
-        tic_diff = CT_IEP.TMR_CNT - tic;
-        if(tic_diff > MESSAGE_PERIOD){
 
-            //Send what type of data are we sending
-            pru_rpmsg_send(&transport, dst, src, &send_idx, sizeof(send_idx));
-
-            //Send the rest of the data
-            switch (send_idx){
-                case 0:
-                    pru_rpmsg_send(&transport, dst, src, counts, sizeof(counts));
-                    send_idx ++;
-                    break;
-                case 1:
-                    pru_rpmsg_send(&transport, dst, src, ldecay, sizeof(ldecay));
-                    send_idx ++;
-                    break;
-                case 2:
-                    pru_rpmsg_send(&transport, dst, src, ldelta, sizeof(ldelta));
-                    send_idx = 0;
-                    break;
+                    pru_rpmsg_send(&transport, dst, src, send_buffer, sizeof(send_buffer));
+                    counts[0] = CT_IEP.TMR_CNT - tic;
+                }
             }
         }
     }
