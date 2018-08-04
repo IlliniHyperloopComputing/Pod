@@ -3,6 +3,8 @@
 
 #include "Utils.h"
 #include "SafeQueue.hpp"
+#include "ParameterManager.hpp"
+#include "Event.hpp"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <stdlib.h>
@@ -18,7 +20,6 @@
 
 #define WRITE_FAILURE -1
 
-using namespace std;
 namespace NetworkManager {
 
 enum Network_Command_ID {
@@ -36,12 +37,24 @@ enum Network_Command_ID {
   DEACTIVATE_BRAKE_MAGNET = 10 
 };
 
+//enum specifying what data is sent
+//[1 byte Data ID][4 byte size][size byte chunk]
+enum Network_Data_ID {
+  POD_STATE,
+  BRAKE_STATUS,
+  MOTOR_STATUS,
+  POSITION,
+  VELOCITY,
+  ACCELERATION,
+  TEMPERATURE
+};
+
 /**
 * A network command is returned by read and parsed within Pod.cpp
 **/
 struct Network_Command {
   //state transtitions
-  Network_Command_ID id; //id is just a network command
+  uint8_t id; //id is just a network command
   uint8_t value;
 };
 
@@ -51,8 +64,10 @@ extern int clientfd;
 extern int udp_socket;
 
 extern std::atomic<bool> running;
-extern sockaddr_storage addr_dest;
 extern SafeQueue<shared_ptr<NetworkManager::Network_Command>> command_queue;
+
+extern Event connected;
+extern Event closing;
 
 /**
 * Starts the TCP server
@@ -101,10 +116,24 @@ void close_server();
 **/
 void send_packet();
 
+/**
+ * Thread function, continually reads commands from the socket and pushes them onto the queue
+ */
 void read_loop();
+
+/**
+ * Thread function, continually gets most recent state/motor/brake/sensor data and sends a packet
+ */
 void write_loop();
+
+/*
+ * Thread function, handles attaching new clients and starting read/write loop
+ */
 void network_loop();
 
+/*
+ * Stops threads and exits
+ */
 void stop_threads();
 
 }

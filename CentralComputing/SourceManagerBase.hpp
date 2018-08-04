@@ -1,16 +1,20 @@
 #ifndef SOURCE_MANAGER_BASE_HPP
 #define SOURCE_MANAGER_BASE_HPP
 
-#include "NetworkManager.hpp"
 #include "Utils.h"
+#include "Event.hpp"
+#include <memory>
+#include <thread>
+#include <mutex>
+#include <atomic>
 
 template <long long DelayInUsecs, class Data>
 class SourceManagerBase {
 
   public:
-    shared_ptr<Data> Get() {
+    std::shared_ptr<Data> Get() {
       mutex.lock();
-      shared_ptr<Data> ret = data;
+      std::shared_ptr<Data> ret = data;
       mutex.unlock();
       return ret;
     }
@@ -20,30 +24,32 @@ class SourceManagerBase {
       running.store(true);
 
       // I don't know how to start a thread using a member function, but I know how to use lambdas so suck it C++
-      worker = std::thread( [=] { refresh_loop(); } );
+      worker = std::thread( [&] { refresh_loop(); } );
     }
     
     void stop() {
       running.store(false);
+      closing.invoke();
       worker.join();
     }
 
   private:
-    virtual shared_ptr<Data> refresh() = 0; //constructs a new Data object and fills it in
+    virtual std::shared_ptr<Data> refresh() = 0; //constructs a new Data object and fills it in
 
     void refresh_loop() {
       while(running.load()) {
-        shared_ptr<Data> new_data = refresh();
+        std::shared_ptr<Data> new_data = refresh();
         mutex.lock();
         data = new_data;
         mutex.unlock();
-        usleep(DelayInUsecs);
+        closing.wait_for(DelayInUsecs);
       }
     }
 
-    shared_ptr<Data> data;
+    std::shared_ptr<Data> data;
     std::mutex mutex;
     std::atomic<bool> running;
+    Event closing;
     std::thread worker;
 };
 #endif

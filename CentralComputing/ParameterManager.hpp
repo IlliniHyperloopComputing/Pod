@@ -3,13 +3,18 @@
 
 #include "Velocity.hpp"
 #include "Temperature.hpp"
+#include "NetworkManager.hpp"
+
 
 namespace ParameterManager {
-  extern Velocity velocity; 
-  extern Temperature temperature; 
+
+extern Velocity velocity; 
+extern Temperature temperature; 
+
+vector<uint8_t> get_network_packet();
+
 }
 
-Velocity ParameterManager::velocity;
-Temperature ParameterManager::temperature;
+
 
 #endif

@@ -10,14 +10,7 @@ struct ADCData {
 
 class ADCManager : public SourceManagerBase<(long long) (1.0 * 1E6), ADCData> {
   private:
-    shared_ptr<ADCData> refresh() {
-      //this is where you would query the ADC and get new data
-      
-      shared_ptr<ADCData> new_data = make_shared<ADCData>();
-      new_data->dummy_data = i;
-      i++;
-      return new_data;
-    }
+    std::shared_ptr<ADCData> refresh();
 
     //iterator for testing purposes, remove
     int i = 5;

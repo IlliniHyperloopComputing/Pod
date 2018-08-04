@@ -1,13 +1,16 @@
 #include "NetworkManager.hpp"
 
 using namespace std;
+using namespace Utils;
 
 int NetworkManager::socketfd = 0;
 int NetworkManager::clientfd = 0;
 int NetworkManager::udp_socket = 0;
 
+Event NetworkManager::connected;
+Event NetworkManager::closing;
+
 std::atomic<bool> NetworkManager::running(false);
-sockaddr_storage NetworkManager::addr_dest = {};
 SafeQueue<shared_ptr<NetworkManager::Network_Command>> NetworkManager::command_queue;
 
 uint8_t NetworkManager::start_server(const char * hostname, const char * port) {
@@ -25,9 +28,9 @@ uint8_t NetworkManager::start_server(const char * hostname, const char * port) {
   hints.ai_socktype = SOCK_STREAM;
   hints.ai_flags = AI_PASSIVE;
 
-  int s = getaddrinfo(NULL, port, &hints, &result);
+  int s = getaddrinfo(hostname, port, &hints, &result);
   if(s != 0){
-    print_info("getaddrinfo: %s\n", gai_strerror(s));
+    print(LogLevel::LOG_ERROR, "getaddrinfo: %s\n", gai_strerror(s));
     exit(1);
   }
   if(bind(socketfd, result->ai_addr, result->ai_addrlen) != 0){
@@ -38,7 +41,7 @@ uint8_t NetworkManager::start_server(const char * hostname, const char * port) {
     perror("listen");
     exit(1);
   }
-  print_info("Server setup successfully\n");
+  print(LogLevel::LOG_INFO, "Server setup successfully\n");
   free(result);
 
   running.store(true);
@@ -54,12 +57,13 @@ int NetworkManager::accept_client() {
   p.fd = socketfd;
   p.events = POLLIN;
   int ret = 0;
-  print_info("Awaiting connection\n");
+  print(LogLevel::LOG_INFO, "Awaiting connection\n");
   while(1) {
-    ret = poll(&p, 1, 1000);
-    if(ret == 1) {//there's something trying to connect
+    ret = poll(&p, 1, 200);
+    if(ret == 1) {//there's something trying to connect, or we are exiting
       clientfd = accept(socketfd, NULL, NULL);
-      print_info("Connected!\n"); 
+      if(clientfd != -1)
+        print(LogLevel::LOG_INFO, "Connected!\n"); 
       return clientfd;
     }
   }
@@ -79,7 +83,8 @@ int NetworkManager::read_command(Network_Command * buffer) {
 int NetworkManager::write_data() {
   // TODO 
   // Write ParameterManager::GetNetworkReport, write the report to clientfd
-  return -1;
+  vector<uint8_t> bytes = ParameterManager::get_network_packet(); 
+  return write(clientfd, bytes.data(), bytes.size());
 }
 
 void NetworkManager::close_server() {
@@ -94,21 +99,23 @@ void NetworkManager::send_packet() {
 void NetworkManager::network_loop() {
   while(running){
     int fd = accept_client();
-    print_info("Client fd is: %d\n", clientfd);
     if(fd > 0){
-      print_info("Starting network threads\n");
+      print(LogLevel::LOG_INFO, "Starting network threads\n");
+      print(LogLevel::LOG_INFO, "Client fd is: %d\n", clientfd);
       thread read_thread(read_loop);
       thread write_thread(write_loop);
 
+      connected.invoke();
       read_thread.join();
       write_thread.join();
-      print_info("Client exited, looking for next client\n");
+      print(LogLevel::LOG_INFO, "Client exited, looking for next client\n");
 
     } else {
-      PRINT_ERRNO("Accept failed, abort.")
+      running.store(false);
       break;
     }
   }   
+  print(LogLevel::LOG_INFO, "Exiting Network loop\n");
 }
 
 void NetworkManager::read_loop() {
@@ -116,8 +123,10 @@ void NetworkManager::read_loop() {
   Network_Command buffer;
   while (running && active_connection){
     int bytes_read = read_command(&buffer);
+    
     active_connection = bytes_read > 0;
     if (bytes_read > 0) {
+      print(LogLevel::LOG_INFO, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
       auto command = make_shared<Network_Command>();
       command->id = buffer.id;
       command->value = buffer.value;
@@ -125,22 +134,24 @@ void NetworkManager::read_loop() {
     }
   }
 
-  print_info("Read Loop exiting.\n");
+  print(LogLevel::LOG_INFO, "Read Loop exiting.\n");
 }
 
 void NetworkManager::write_loop() {
   bool active_connection = true;
   while(running && active_connection){
-    usleep(100000); //TODO: Change to actual value at some point
+    closing.wait_for(100000);
     int written = write_data();
+    //print(LogLevel::LOG_EDEBUG, "Wrote %d bytes\n", written);
     active_connection = written != -1;
   }
 
-  print_info("Write Loop exiting.\n");
+  print(LogLevel::LOG_INFO, "Write Loop exiting.\n");
 }
 
 void NetworkManager::stop_threads() {
   running.store(false);
+  closing.invoke();
 }
 
 
