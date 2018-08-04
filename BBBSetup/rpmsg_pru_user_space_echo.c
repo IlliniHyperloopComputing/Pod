@@ -1,5 +1,4 @@
 /*
- * Copyright (C) 2015 Texas Instruments Incorporated - http://www.ti.com/
  *
  *
  * Redistribution and use in source and binary forms, with or without

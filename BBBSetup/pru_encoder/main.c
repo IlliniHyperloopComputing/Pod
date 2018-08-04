@@ -153,8 +153,6 @@ void main(void)
     // Loop Forever
     // If we receive any message from the host, reset all values
     /////////////////////////////////////////////
-    uint32_t tic = CT_IEP.TMR_CNT;
-    uint8_t send_idx;
     uint8_t send_buffer[132];
     int i;
     while (1) {
@@ -190,32 +188,14 @@ void main(void)
                         ltime[i] = 0;
                         isHigh[i] = 0;
                     }
+                    CT_IEP.TMR_CNT = 0x1; // Write 1 to clear counter
                 }
                 else{
                     memcpy(send_buffer, counts, sizeof(counts));
                     memcpy(send_buffer+44, ldecay, sizeof(ldecay));
                     memcpy(send_buffer+88, ldelta, sizeof(ldelta));
 
-                    /*send_buffer[0] = send_idx;
-                    switch (send_idx){
-                        case 0:
-                            tmp_buffer = counts;
-                            send_idx ++;
-                            break;
-                        case 1:
-                            tmp_buffer = ldecay;
-                            send_idx ++;
-                            break;
-                        case 2:
-                            tmp_buffer = ldelta;
-                            send_idx = 0;
-                            break;
-                    }
-                    */
-
-
                     pru_rpmsg_send(&transport, dst, src, send_buffer, sizeof(send_buffer));
-                    counts[0] = CT_IEP.TMR_CNT - tic;
                 }
             }
         }
