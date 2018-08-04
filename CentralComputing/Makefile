@@ -5,18 +5,22 @@ SRC := $(patsubst ./%.cpp, %.cpp, $(SRC))
 SRC := $(sort $(SRC))
 OBJ := $(patsubst %.cpp, %.o, $(SRC))
 
-# Set up compiler
-CXX_NORM	:= g++
-CXX_BBB 	:= arm-linux-gnueabihf-g++
-WARNINGS 	:= -Wall -Wextra -pedantic -Wdouble-promotion -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Wundef -Wno-unused
+# Set up path to test library
+GTEST_DIR := googletest/googletest
+LIB_DIR   := .lib
 
-INCLUDE_DIRS	:= -I. -I./Sensor_Aux -I./StateMachineCompact -I./network
+# Set up compiler
+CXX_NORM	:= g++ -fpermissive
+CXX_BBB 	:= arm-linux-gnueabihf-g++
+WARNINGS 	:= -Wall -Wextra -pedantic -Wdouble-promotion -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Wno-unused
+
+INCLUDE_DIRS	:= -IStateMachineCompact -I${GTEST_DIR}/include -I.
 CFLAGS_RELEASE 	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG
 CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG 
 CFLAGS_SIM 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG -DSIM
 
 #Set up linker
-LDFLAGS := -pthread -lm -static-libgcc -static-libstdc++
+LDFLAGS := -pthread -lm -static-libgcc -static-libstdc++ ${LIB_DIR}/libgtest.a
 LD_NORM := $(CXX_NORM)
 LD_BBB  := $(CXX_BBB)
 
@@ -29,7 +33,12 @@ POD_CROSS_D = dcross
 POD_CROSS_T = scross
 
 .PHONY: all
-all : msg mkdir_obj msg_d $(POD_D) msg_s $(POD_T)
+all : msg mkdir_obj ${LIB_DIR}/gtest-all.o msg_d $(POD_D) msg_s $(POD_T)
+
+# Compile libgtest
+${LIB_DIR}/gtest-all.o : ${GTEST_DIR}/src/gtest-all.cc 
+	g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all.o
+	ar -rv ${LIB_DIR}/libgtest.a ${LIB_DIR}/gtest-all.o
 
 .PHONY: msg
 msg : 
@@ -73,8 +82,11 @@ msg_s :
 .PHONY: mkdir_obj
 mkdir_obj:
 	@mkdir -p $(OBJ_DIR)
-	@mkdir -p $(OBJ_DIR)/Sensor_Aux
+	@mkdir -p $(LIB_DIR)
 	@mkdir -p $(OBJ_DIR)/StateMachineCompact
+	@mkdir -p $(OBJ_DIR)/tests
+
+
  
 ####
 # All Build Rules are similar, except for different names and slightly different paths. 
@@ -163,8 +175,11 @@ $(OBJ_DIR)/%-cross-sim.o : %.cpp
 .PHONY: clean
 clean:
 	rm -f $(POD) $(POD_D) $(POD_T) $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)
-	rm -f $(OBJ_DIR)/*.o $(OBJ_DIR)/Sensor_Aux/*.o 	$(OBJ_DIR)/StateMachineCompact/*.o
-	rm -f $(OBJ_DIR)/*.d $(OBJ_DIR)/Sensor_Aux/*.o  $(OBJ_DIR)/StateMachineCompact/*.d
+	rm -rf $(OBJ_DIR)/  
+
+.PHONY: clean_lib
+clean_lib:
+	rm -f $(LIB_DIR)/*
 
 .PHONY: push
 push: $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)

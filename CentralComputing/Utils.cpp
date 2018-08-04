@@ -2,39 +2,26 @@
 #include <chrono>
 #include <unistd.h>
 #include <errno.h>
-void print_debug(const char * format, ...){
-      #ifdef DEBUG
-      va_list args;
-      va_start(args, format);
-      vfprintf(stderr, format, args);
-      va_end(args);
-      #endif
+
+Utils::LogLevel Utils::loglevel = LOG_ERROR;
+
+void Utils::print(LogLevel level, const char * format, ...){
+      if(loglevel <= level){
+        va_list args;
+        va_start(args, format);
+        vfprintf(stdout, format, args);
+        va_end(args);
+      }
 }
 
-void print_info(const char * format, ...){
-      va_list args;
-      va_start(args, format);
-      vfprintf(stderr, format, args);
-      va_end(args);
+float Utils::clamp(float v, float l, float h) 
+{
+  if(v < l) return l;
+  else if(v > h) return h; 
+  else return v; 
 }
 
-void print_test(const char * format, ...){
-      #ifdef TEST_POD
-      va_list args;
-      va_start(args, format);
-      vfprintf(stderr, format, args);
-      va_end(args);
-      #endif
-}
-
-float clamp(float v, float l, float h) 
-  {
-    if(v < l) return l;
-    else if(v > h) return h; 
-    else return v; 
-  }
-
-long long get_elapsed_time() {
+long long Utils::microseconds() {
   static long long start_time = -1;
   auto now = std::chrono::system_clock::now();
   auto duration = now.time_since_epoch();
@@ -46,7 +33,7 @@ long long get_elapsed_time() {
   }
 }
 
-ssize_t write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
+ssize_t Utils::write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
   size_t bytes_written = 0;
   while(bytes_written != count){
     //fprintf(stderr,"Writing to socket\n");
@@ -63,3 +50,4 @@ ssize_t write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
   }
   return (ssize_t)bytes_written;
 }
+
