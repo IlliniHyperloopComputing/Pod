@@ -54,13 +54,13 @@ disable_uboot_overlay_audio=1
 * GPIO input for PRU, for Optical inputs, device tree overlay setup
   * The main challenge with the PRU is that many of the guides were written several years ago (when the BBB came out) and since there have been updates to the kernel. (now on 4.14)
   * Use this --> (TI's walk through guide)[http://processors.wiki.ti.com/index.php/PRU_Training:_Hands-on_Labs]. 
-  * This is (pretty good guide too)[http://processors.wiki.ti.com/index.php/RPMsg_Quick_Start_Guide#Booting_the_Board_and_Testing_RPMsg]
-  * (elinux guide)[https://elinux.org/EBC_Exercise_30_PRU_via_remoteproc_and_RPMsg] Look at the BeagleScope example for how someone else has done it.
+  * This is [pretty good guide too](http://processors.wiki.ti.com/index.php/RPMsg_Quick_Start_Guide#Booting_the_Board_and_Testing_RPMsg)
+  * [elinux guide](https://elinux.org/EBC_Exercise_30_PRU_via_remoteproc_and_RPMsg) Look at the BeagleScope example for how someone else has done it.
   * [Best reference](https://elinux.org/images/d/da/Am335xPruReferenceGuide.pdf) I could find explaining all of the register level details of the PRU. 
   * The PRU Header files necessary for development with their IDE are included in this repo. They were found [here](http://www.ti.com/tool/PROCESSOR-SDK-AM335X). Pretty confusing, but it was in the "PROCESSOR\_SDK\_LINUX\_AM335X", once installed it was in some example files for the PRU.
   * _OLD_ An alternative method for [loading modules](https://groups.google.com/forum/#!topic/beagleboard-gsoc/amMNLt4EoHM), which links to this [gist](https://gist.github.com/alexanderhiam/2c4187c710b2c409d8dde8c4015fe007).
-  * _OLD_ (Another developer blog with links)[https://ianrrees.github.io/2016/11/20/getting-started-with-beaglebone-pru-programming-the-new-way.html]
-  * _OLD_ guide on setting the PRUSS (Programmable Real-time Unit Sub System). [Derek Molloy's site](http://exploringbeaglebone.com/chapter13/)
+  * _OLD_ [Another developer blog with links](https://ianrrees.github.io/2016/11/20/getting-started-with-beaglebone-pru-programming-the-new-way.html)
+  * _OLD_ guide on setting the PRUSS -- Programmable Real-time Unit Sub System. [Derek Molloy's site](http://exploringbeaglebone.com/chapter13/)
 * GPIO output device tree overlay setup
   * [Derek Molloy's site](http://derekmolloy.ie/gpios-on-the-beaglebone-black-using-device-tree-overlays/). Goes through how to install the device tree, and most importently how to initialize the GPIO once it has been setup in the device tree.
   * Check `/sys/class/gpio/` 
