@@ -13,6 +13,7 @@ class Velocity : public PodParameter<double> {
   public:
     
     int    velocity_idx[NUM_VEL_INPUTS] = {1, 3, 5, 7}; 
+    int    distance[NUM_VEL_INPUTS] = {1, 3, 5, 7}; 
     double velocities[NUM_VEL_INPUTS] = {0};
     double velocity_output = 0;
 
@@ -33,7 +34,9 @@ class Velocity : public PodParameter<double> {
         uint32_t decay = decays[velocity_idx[i]];   
         uint32_t delta = deltas[velocity_idx[i]];   
 
-        double vel = std::max(decay, delta) * (21.474836475 / 4294967295.0);
+        double time_diff = std::max(decay, delta) * (21.474836475 / 4294967295.0);
+        double vel = distance[i] / time_diff;
+
 
         velocities[i] = Filter::LowPass(velocities[i], vel);
       }

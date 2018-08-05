@@ -1,5 +1,9 @@
 #include "TMPManager.hpp"
 
+bool TMPManager::initialize_source(){
+
+  return true;
+}
 
 std::shared_ptr<TMPData> TMPManager::refresh() {
   //create the data struct that we will return
