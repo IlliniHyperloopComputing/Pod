@@ -19,16 +19,16 @@ void Pod::logic_loop() {
       ((*state_machine).*(transition))(); //transitions to requested state
       processing_command.invoke(); 
     } else {
-      print(LogLevel::LOG_INFO, "No Command\n");
+     //print(LogLevel::LOG_INFO, "No Command\n");
       command = make_shared<NetworkManager::Network_Command>();
-      command->id = (NetworkManager::Network_Command_ID) 0;
+      command->id = 0;
       command->value = 0;
     }
 
     auto func = state_machine->get_steady_function();
     ((*state_machine).*(func))(command); //calls the steady state function for the current state
 
-    closing.wait_for(1000000);
+    closing.wait_for(1000);
   } 
   //process all commands before closing
    

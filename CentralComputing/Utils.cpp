@@ -50,3 +50,4 @@ ssize_t Utils::write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
   }
   return (ssize_t)bytes_written;
 }
+
