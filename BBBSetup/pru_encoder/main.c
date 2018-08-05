@@ -70,10 +70,10 @@ uint32_t masks[11] = {ENC0, ENC1, ENC2, ENC3, ENC4, ENC5, ENC6, ENC7, ENC8, ENC9
 uint32_t counts[11] = {0}; //Number of times we have seen the signal
 
 uint32_t hdecay[11] = {0}; //upper 32 bits of the last time the signal was high
-uint32_t ldecay[11] = {0}; //lower 32 bits of the last time the signal was high
+uint32_t ldecay[11] = {UINT32_MAX}; //lower 32 bits of the last time the signal was high
 
 uint32_t hdelta[11] = {0}; //upper 32 bits of the time between the most recently seen signal and the signal before that one.
-uint32_t ldelta[11] = {0}; //lower 32 bits of the time between the most recently seen signal and the signal before that one.
+uint32_t ldelta[11] = {UINT32_MAX}; //lower 32 bits of the time between the most recently seen signal and the signal before that one.
 
 // Used in debouncing, and to calculate the above
 uint32_t htime_ctr = 0;
@@ -169,7 +169,6 @@ void main(void)
             /* Clear the event status */
             CT_INTC.SICR_bit.STS_CLR_IDX = FROM_ARM_HOST;
             /* Receive all available messages, multiple messages can be sent per kick */
-            tic = CT_IEP.TMR_CNT;
             while (pru_rpmsg_receive(&transport, &src, &dst, payload, &len) == PRU_RPMSG_SUCCESS) {
 
                 if(len == 9){
@@ -181,9 +180,9 @@ void main(void)
                     for(i=0; i<11; i++){
                         counts[i] = 0;
                         hdecay[i] = 0;
-                        ldecay[i] = 0;
+                        ldecay[i] = UINT32_MAX;
                         hdelta[i] = 0;
-                        ldelta[i] = 0;
+                        ldelta[i] = UINT32_MAX;
                         htime[i] = 0;
                         ltime[i] = 0;
                         isHigh[i] = 0;

@@ -13,7 +13,7 @@ class Velocity : public PodParameter<double> {
   public:
     
     int    velocity_idx[NUM_VEL_INPUTS] = {1, 3, 5, 7}; 
-    int    distance[NUM_VEL_INPUTS] = {1, 3, 5, 7}; 
+    double distance[NUM_VEL_INPUTS] = {0.5, 0.5, 0.5, 0.5}; 
     double velocities[NUM_VEL_INPUTS] = {0};
     double velocity_output = 0;
 
@@ -34,10 +34,20 @@ class Velocity : public PodParameter<double> {
         uint32_t decay = decays[velocity_idx[i]];   
         uint32_t delta = deltas[velocity_idx[i]];   
 
-        double time_diff = std::max(decay, delta) * (21.474836475 / 4294967295.0);
-        double vel = distance[i] / time_diff;
+        // Pick the one that gives us the slower velocity
+        uint32_t slower = std::max(decay, delta);
 
+        double vel;
+        if(slower == UINT32_MAX){// register this as 0 velocity
+          vel = 0;
+        }
+        else{
+          // Do the proper conversion into m/s
+          double time_diff = slower * (21.474836475 / 4294967295.0);
+          vel = distance[i] / time_diff;
+        }
 
+        // Low pass filter
         velocities[i] = Filter::LowPass(velocities[i], vel);
       }
 
@@ -45,7 +55,8 @@ class Velocity : public PodParameter<double> {
       double tmp_v[NUM_VEL_INPUTS];
       memcpy(tmp_v, velocities, sizeof(tmp_v));
 
-      // Find the median value, array will be modified
+      // Find the median value 
+      // Array will be modified, which is why we needed them temporary
       std::nth_element(tmp_v, tmp_v + NUM_VEL_INPUTS/2, tmp_v + NUM_VEL_INPUTS);
       double median = tmp_v[NUM_VEL_INPUTS/2];
       
