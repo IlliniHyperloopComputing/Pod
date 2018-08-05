@@ -7,6 +7,8 @@
 
 #define NUM_VEL_INPUTS 4
 
+using namespace Utils;
+
 class Velocity : public PodParameter<double> {
   public:
     

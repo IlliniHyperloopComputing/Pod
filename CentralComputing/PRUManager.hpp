@@ -17,13 +17,14 @@ struct PRUData {
 };
 
 class PRUManager : public SourceManagerBase<(long long) (0.010 * 1E6), PRUData> {
+  public:
+    void initialize();
   private:
     std::shared_ptr<PRUData> refresh();
 
-    bool initalized;
-    bool failed;
     uint8_t readBuf[MAX_BUFFER_SIZE];
 	  struct pollfd pollfds[1];
+    bool initalized;
       
 };
 

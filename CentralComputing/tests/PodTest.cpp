@@ -1,14 +1,19 @@
-#include <../Pod.h>
-#include "../Event.hpp"
-#include <../Simulator.hpp>
+#include "Pod.h"
+#include "Event.hpp"
+#include "Simulator.hpp"
 
 using namespace Utils;
 class PodTest : public ::testing::Test
 {
   protected:
   virtual void SetUp() {
+    // Create the Pod object
     pod = make_shared<Pod>();
+
+    // Set the Pod running in its own thread
     pod_thread = std::thread([&](){ pod->startup();});
+
+    // We wait until pod->startup() is done
     pod->ready.wait();
    
     EXPECT_EQ(pod->state_machine->get_current_state(), Pod_State::E_States::ST_SAFE_MODE);
