@@ -1,8 +1,11 @@
 #include "I2CManager.hpp"
 
 bool I2CManager::initialize_source(){
-
   return true;
+}
+
+void I2CManager::stop_source(){
+
 }
 
 std::shared_ptr<I2CData> I2CManager::refresh() {

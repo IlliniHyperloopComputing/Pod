@@ -37,7 +37,7 @@ class SourceManagerBase {
       else{
 
         // Did not setup correctly. Print error and set garbage data
-        print(LogLevel::LOG_ERROR, "Failed to initialize. Not running worker thread ");
+        print(LogLevel::LOG_ERROR, "Failed to initialize. Not running worker thread\n");
 
         // Set garbage data
         data = std::make_shared<Data>();
@@ -52,11 +52,15 @@ class SourceManagerBase {
         running.store(false);
         closing.invoke();
         worker.join();
+        stop_source();
       }
     }
 
   private:
+    // Init and Stop functions can setup devices/ file I/O
+    // Stop will only be called if init returns true
     virtual bool initialize_source() = 0;
+    virtual void stop_source() = 0;
     
     virtual std::shared_ptr<Data> refresh() = 0; //constructs a new Data object and fills it in
 

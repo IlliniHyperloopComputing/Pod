@@ -5,6 +5,10 @@ bool ADCManager::initialize_source(){
   return true;
 }
 
+void ADCManager::stop_source(){
+  
+}
+
 std::shared_ptr<ADCData> ADCManager::refresh() {
 
   //this is where you would query the ADC and get new data

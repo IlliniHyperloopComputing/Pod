@@ -11,6 +11,7 @@ struct I2CData {
 class I2CManager : public SourceManagerBase<(long long) (1.0 * 1E6), I2CData> {
   private:
     bool initialize_source();
+    void stop_source();
     std::shared_ptr<I2CData> refresh();
 
     //iterator for testing purposes, remove

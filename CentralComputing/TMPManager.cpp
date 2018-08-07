@@ -5,6 +5,9 @@ bool TMPManager::initialize_source(){
   return true;
 }
 
+void TMPManager::stop_source(){
+}
+
 std::shared_ptr<TMPData> TMPManager::refresh() {
   //create the data struct that we will return
   std::shared_ptr<TMPData> new_data = std::make_shared<TMPData>();

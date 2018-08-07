@@ -12,9 +12,9 @@ using namespace Utils;
 class Velocity : public PodParameter<double> {
   public:
     
-    int    velocity_idx[NUM_VEL_INPUTS] = {1, 3, 5, 7}; 
-    double distance[NUM_VEL_INPUTS] = {0.5, 0.5, 0.5, 0.5}; 
-    double velocities[NUM_VEL_INPUTS] = {0};
+    int    velocity_idx[NUM_VEL_INPUTS] = {1, 2, 3, 4}; 
+    double distance[NUM_VEL_INPUTS] = {1, 1, 1, 1};
+    double velocities[NUM_VEL_INPUTS] = {0, 0, 0, 0};
     double velocity_output = 0;
 
     shared_ptr<double> Get() {
@@ -49,7 +49,9 @@ class Velocity : public PodParameter<double> {
 
         // Low pass filter
         velocities[i] = Filter::LowPass(velocities[i], vel);
+      	print(LogLevel::LOG_EDEBUG, "Velocity[%d]: %f\t",i, velocities[i]);
       }
+      print(LogLevel::LOG_EDEBUG, "\n");
 
       // Create temporary array
       double tmp_v[NUM_VEL_INPUTS];
@@ -59,9 +61,13 @@ class Velocity : public PodParameter<double> {
       // Array will be modified, which is why we needed them temporary
       std::nth_element(tmp_v, tmp_v + NUM_VEL_INPUTS/2, tmp_v + NUM_VEL_INPUTS);
       double median = tmp_v[NUM_VEL_INPUTS/2];
+
+      print(LogLevel::LOG_EDEBUG, "Velocity Median: %f\n", median);
       
       // LowPass filter once more
       velocity_output = Filter::LowPass(velocity_output, median);
+
+      print(LogLevel::LOG_EDEBUG, "Velocity Output: %f\n", velocity_output);
 
       // Set the return value
       *p = velocity_output;

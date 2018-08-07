@@ -15,6 +15,7 @@ struct TMPData {
 class TMPManager : public SourceManagerBase<(long long) (1.0 * 1E6), TMPData> {
   private:
     bool initialize_source();
+    void stop_source();
     std::shared_ptr<TMPData> refresh();
 
     std::string prefix = "/sys/bus/w1/devices/";

@@ -25,7 +25,12 @@ bool PRUManager::initialize_source(){
     return false;
   }
 
+  print(LogLevel::LOG_INFO, "PRU setup successful\n");
   return true;
+}
+
+void PRUManager::stop_source(){
+	close(pollfds[0].fd);
 }
 
 std::shared_ptr<PRUData> PRUManager::refresh() {
