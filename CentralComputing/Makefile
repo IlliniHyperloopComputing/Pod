@@ -188,8 +188,8 @@ clean_lib:
 	rm -f $(LIB_DIR)/*
 
 .PHONY: push
-push: $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)
-	scp $(POD_CROSS)   debian@192.168.137.100:~/
-	scp $(POD_CROSS_D) debian@192.168.137.100:~/
+push: msg mkdir_obj $(POD_CROSS_T) #########$(POD_CROSS) $(POD_CROSS_D) 
+	# scp $(POD_CROSS)   debian@192.168.137.100:~/
+	# scp $(POD_CROSS_D) debian@192.168.137.100:~/
 	scp $(POD_CROSS_T) debian@192.168.137.100:~/
 
