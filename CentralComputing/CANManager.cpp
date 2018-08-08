@@ -2,10 +2,12 @@
 
 bool CANManager::initialize_source(){
 
+  print(LogLevel::LOG_DEBUG, "CAN Manger setup successful\n");
   return true;
 }
 
 void CANManager::stop_source(){
+  print(LogLevel::LOG_DEBUG, "CAN Manger stopped\n");
 
 }
 

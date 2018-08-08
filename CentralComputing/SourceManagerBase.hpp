@@ -70,6 +70,7 @@ class SourceManagerBase {
         mutex.lock();
         data = new_data;
         mutex.unlock();
+        print(LogLevel::LOG_DEBUG, "running through wait: %lu\n", DelayInUsecs);
         closing.wait_for(DelayInUsecs);
       }
     }

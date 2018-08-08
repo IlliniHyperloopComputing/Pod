@@ -2,10 +2,12 @@
 
 bool TMPManager::initialize_source(){
 
+  print(LogLevel::LOG_DEBUG, "TMP Manger setup successful\n");
   return true;
 }
 
 void TMPManager::stop_source(){
+  print(LogLevel::LOG_DEBUG, "TMP Manger stopped\n");
 }
 
 std::shared_ptr<TMPData> TMPManager::refresh() {
@@ -28,12 +30,15 @@ std::shared_ptr<TMPData> TMPManager::refresh() {
     //Set the new value
     old_data.tmp_data[idx] = rawTmp/1000.0;
   }
+  else{
+    print(LogLevel::LOG_ERROR, "TMP Manager: File[%d], device: %s not opened correctly\n", idx, devices[idx].c_str());
+  }
   
   //Copy the values into the new_data struct
   memcpy(new_data.get(), &old_data, sizeof(TMPData));
 
   //increment the index
   idx = (idx+1) % NUM_TMP;
-
+  
   return new_data;
 }

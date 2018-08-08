@@ -70,6 +70,7 @@ void Pod::startup() {
   SourceManager::TMP.initialize();
   SourceManager::ADC.initialize();
   SourceManager::I2C.initialize();
+  print(LogLevel::LOG_INFO, "Source Managers started\n");
 
   //Setup Network Server
   NetworkManager::start_server("127.0.0.1", "8800");

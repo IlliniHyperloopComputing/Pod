@@ -22,7 +22,7 @@ void Utils::print(LogLevel level, const char * format, ...){
         else if(level == LOG_INFO){
           snprintf(buffer, 256, "%s[INFO ]:%s %s", ANSI_COLOR_GREEN, ANSI_COLOR_RESET, format);
         }
-        else if(level == LOG_INFO){
+        else if(level == LOG_DEBUG){
           snprintf(buffer, 256, "%s[DEBUG]:%s %s", ANSI_COLOR_YELLOW, ANSI_COLOR_RESET, format);
         }
         else if(level == LOG_EDEBUG){
