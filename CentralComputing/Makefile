@@ -34,6 +34,9 @@ POD_CROSS = cross
 POD_CROSS_D = dcross
 POD_CROSS_T = scross
 
+
+ARM_COMPILER_EXISTS := $(shell command -v $(CXX_BBB) 2> /dev/null)
+
 .PHONY: all
 all : msg mkdir_obj ${LIB_DIR}/gtest-all.o ${LIB_DIR}/gtest-all-arm.o msg_d $(POD_D) msg_s $(POD_T)
 
@@ -42,9 +45,16 @@ ${LIB_DIR}/gtest-all.o : ${GTEST_DIR}/src/gtest-all.cc
 	g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all.o
 	ar -rv ${LIB_DIR}/libgtest.a ${LIB_DIR}/gtest-all.o
 
+ifdef ARM_COMPILER_EXISTS
 ${LIB_DIR}/gtest-all-arm.o : ${GTEST_DIR}/src/gtest-all.cc 
 	arm-linux-gnueabihf-g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all-arm.o
 	ar -rv ${LIB_DIR}/libgtest-arm.a ${LIB_DIR}/gtest-all-arm.o
+endif
+
+ifndef ARM_COMPILER_EXISTS
+${LIB_DIR}/gtest-all-arm.o : ${GTEST_DIR}/src/gtest-all.cc 
+	$(info = Cant compile for ARM. install arm-linux-gnueabihf-g++)
+endif
 
 .PHONY: msg
 msg : 
@@ -106,7 +116,7 @@ mkdir_obj:
 $(POD) : CXX 	= $(CXX_NORM)
 $(POD) : CFLAGS = $(CFLAGS_RELEASE)
 $(POD) : LD  	= $(LD_NORM)
-$(POD) : build-$(POD)
+$(POD) : mkdir_obj build-$(POD)
 build-$(POD) : $(OBJ:%.o=$(OBJ_DIR)/%-build.o)
 	$(LD) $? $(LDFLAGS) $(LD_TEST_NORM)  -o $(POD)
 
@@ -119,7 +129,7 @@ $(OBJ_DIR)/%-build.o : %.cpp
 $(POD_D) : CXX		= $(CXX_NORM)
 $(POD_D) : CFLAGS  	= $(CFLAGS_DEBUG)
 $(POD_D) : LD  		= $(LD_NORM)
-$(POD_D) : build-$(POD_D)
+$(POD_D) : mkdir_obj build-$(POD_D)
 build-$(POD_D) : $(OBJ:%.o=$(OBJ_DIR)/%-build-debug.o)
 	$(LD) $? $(LDFLAGS) $(LD_TEST_NORM) -o $(POD_D)
 
@@ -132,7 +142,7 @@ $(OBJ_DIR)/%-build-debug.o : %.cpp
 $(POD_T) : CXX 		= $(CXX_NORM)
 $(POD_T) : CFLAGS  	= $(CFLAGS_SIM)
 $(POD_T) : LD  		= $(LD_NORM)
-$(POD_T) : build-$(POD_T)
+$(POD_T) : mkdir_obj build-$(POD_T)
 build-$(POD_T) : $(OBJ:%.o=$(OBJ_DIR)/%-build-sim.o)
 	$(LD) $? $(LDFLAGS) $(LD_TEST_NORM) -o $(POD_T)
 
@@ -145,7 +155,7 @@ $(OBJ_DIR)/%-build-sim.o : %.cpp
 $(POD_CROSS) : CXX 	= $(CXX_BBB)
 $(POD_CROSS) : CFLAGS  	= $(CFLAGS_RELEASE)
 $(POD_CROSS) : LD  	= $(LD_BBB)
-$(POD_CROSS) : build-$(POD_CROSS)
+$(POD_CROSS) : mkdir_obj build-$(POD_CROSS)
 build-$(POD_CROSS) : $(OBJ:%.o=$(OBJ_DIR)/%-cross.o)
 	$(LD) $? $(LDFLAGS) $(LD_TEST_ARM) -o $(POD_CROSS)
 
@@ -158,7 +168,7 @@ $(OBJ_DIR)/%-cross.o : %.cpp
 $(POD_CROSS_D) : CXX 	= $(CXX_BBB)
 $(POD_CROSS_D) : CFLAGS = $(CFLAGS_DEBUG)
 $(POD_CROSS_D) : LD     = $(LD_BBB)
-$(POD_CROSS_D) : build-$(POD_CROSS_D)
+$(POD_CROSS_D) : mkdir_obj build-$(POD_CROSS_D)
 build-$(POD_CROSS_D) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-debug.o)
 	$(CXX) $? $(LDFLAGS) $(LD_TEST_ARM) -o $(POD_CROSS_D)
 
@@ -171,7 +181,7 @@ $(OBJ_DIR)/%-cross-debug.o : %.cpp
 $(POD_CROSS_T) : CXX 	= $(CXX_BBB)
 $(POD_CROSS_T) : CFLAGS = $(CFLAGS_SIM)
 $(POD_CROSS_T) : LD  	= $(LD_BBB)
-$(POD_CROSS_T) : build-$(POD_CROSS_T)
+$(POD_CROSS_T) : mkdir_obj build-$(POD_CROSS_T)
 build-$(POD_CROSS_T) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-sim.o)
 	$(LD) $? $(LDFLAGS) $(LD_TEST_ARM) -o $(POD_CROSS_T)
 
