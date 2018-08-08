@@ -21,7 +21,6 @@ class PodTest : public ::testing::Test
     EXPECT_TRUE(simulator->sim_connect("127.0.0.1", "8800"));//TODO make these variables somewhere
     NetworkManager::connected.wait();
     print(LogLevel::LOG_INFO, "Done setting up test, running test\n");
-    print(LogLevel::LOG_ERROR, "%s\n", SourceManager::DUMMY.c_str());
   }
 
   virtual void TearDown() {
