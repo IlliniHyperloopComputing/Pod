@@ -25,6 +25,7 @@ class SourceManagerBase {
 
       // Initialize the source manager
       initialized_correctly = initialize_source();
+      closing.reset();
       if(initialized_correctly){
         
         // If the source manager initialized correcly, setup the worker
@@ -70,7 +71,6 @@ class SourceManagerBase {
         mutex.lock();
         data = new_data;
         mutex.unlock();
-        print(LogLevel::LOG_DEBUG, "running through wait: %lu\n", DelayInUsecs);
         closing.wait_for(DelayInUsecs);
       }
     }
