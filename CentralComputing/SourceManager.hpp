@@ -13,5 +13,6 @@ namespace SourceManager {
   extern TMPManager TMP;
   extern ADCManager ADC;
   extern I2CManager I2C;
+  extern std::string DUMMY;
 }
 #endif

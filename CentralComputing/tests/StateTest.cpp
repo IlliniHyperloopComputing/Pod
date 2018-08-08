@@ -2,7 +2,7 @@
 
 
 TEST_F(PodTest, ConnectDisconnect) {
-
+  SourceManager::DUMMY = "gtest blows"; 
 }
 
 
