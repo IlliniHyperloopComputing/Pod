@@ -1,23 +1,30 @@
-#include <../Pod.h>
-#include "../Event.hpp"
-#include <../Simulator.hpp>
+#include "Pod.h"
+#include "Event.hpp"
+#include "Simulator.hpp"
 
 using namespace Utils;
 class PodTest : public ::testing::Test
 {
   protected:
   virtual void SetUp() {
+    // Create the Pod object
     pod = make_shared<Pod>();
+
+    // Set the Pod running in its own thread
     pod_thread = std::thread([&](){ pod->startup();});
+
+    // We wait until pod->startup() is done
     pod->ready.wait();
    
     EXPECT_EQ(pod->state_machine->get_current_state(), Pod_State::E_States::ST_SAFE_MODE);
     simulator = std::make_shared<Simulator>(nullptr);
     EXPECT_TRUE(simulator->sim_connect("127.0.0.1", "8800"));//TODO make these variables somewhere
     NetworkManager::connected.wait();
+    print(LogLevel::LOG_INFO, "Done setting up test, running test\n");
   }
 
   virtual void TearDown() {
+    print(LogLevel::LOG_INFO, "Test finished, tearing down\n");
     simulator->disconnect();
     pod->stop();
     pod_thread.join();

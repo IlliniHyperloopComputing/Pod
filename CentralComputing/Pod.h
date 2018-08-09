@@ -5,10 +5,10 @@
 #include "ParameterManager.hpp"
 #include "Event.hpp"
 #include "Pod_State.h"
+#include <semaphore.h>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wctor-dtor-privacy"
 #include "gtest/gtest.h"
-#include <semaphore.h>
 #pragma GCC diagnostic pop
 
 

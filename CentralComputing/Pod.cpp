@@ -42,10 +42,24 @@ void Pod::startup() {
   print(LogLevel::LOG_INFO, "==================\n\n");
   print(LogLevel::LOG_INFO, "Running setup...\n");
 
-  //Set maximum CPU frequency because GOTTA GO F A S T  
-  system("cpufreq-set -f 1000MHz");
+  // If we are on the BBB, run specific setup
+  if(system("hostname | grep beaglebone > /dev/null") == 0){
+
+    // Start up PRU
+    if(system("ls /dev | grep rpmsg > /dev/null") != 0){
+      if(system("./initPRU > /dev/null") != 0){
+        print(LogLevel::LOG_ERROR, "PRU not responding\n");
+        exit(1);
+      }
+    }
+    print(LogLevel::LOG_INFO, "PRU is on\n");    
+
+    // Set maximum CPU frequency, gotta GO F A S T  
+    system("cpufreq-set -f 1000MHz");
+    print(LogLevel::LOG_INFO, "CPU freq set to 1GHz\n");    
+  }
+
   signal(SIGPIPE, SIG_IGN);
-  print(LogLevel::LOG_INFO, "CPU freq set to 1GHz\n");    
   state_machine = make_shared<Pod_State>();
 
   print(LogLevel::LOG_INFO, "Pod State: %s\n", state_machine->get_current_state_string().c_str());
@@ -56,6 +70,7 @@ void Pod::startup() {
   SourceManager::TMP.initialize();
   SourceManager::ADC.initialize();
   SourceManager::I2C.initialize();
+  print(LogLevel::LOG_INFO, "Source Managers started\n");
 
   //Setup Network Server
   NetworkManager::start_server("127.0.0.1", "8800");

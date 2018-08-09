@@ -10,6 +10,8 @@ struct ADCData {
 
 class ADCManager : public SourceManagerBase<(long long) (1.0 * 1E6), ADCData> {
   private:
+    bool initialize_source();
+    void stop_source();
     std::shared_ptr<ADCData> refresh();
 
     //iterator for testing purposes, remove

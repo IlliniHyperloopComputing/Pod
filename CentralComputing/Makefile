@@ -20,7 +20,9 @@ CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_
 CFLAGS_SIM 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG -DSIM
 
 #Set up linker
-LDFLAGS := -pthread -lm -static-libgcc -static-libstdc++ ${LIB_DIR}/libgtest.a
+LDFLAGS := -pthread -lm -static-libgcc -static-libstdc++ 
+LD_TEST_NORM := ${LIB_DIR}/libgtest.a
+LD_TEST_ARM  := ${LIB_DIR}/libgtest-arm.a
 LD_NORM := $(CXX_NORM)
 LD_BBB  := $(CXX_BBB)
 
@@ -32,13 +34,27 @@ POD_CROSS = cross
 POD_CROSS_D = dcross
 POD_CROSS_T = scross
 
+
+ARM_COMPILER_EXISTS := $(shell command -v $(CXX_BBB) 2> /dev/null)
+
 .PHONY: all
-all : msg mkdir_obj ${LIB_DIR}/gtest-all.o msg_d $(POD_D) msg_s $(POD_T)
+all : msg mkdir_obj ${LIB_DIR}/gtest-all.o ${LIB_DIR}/gtest-all-arm.o msg_d $(POD_D) msg_s $(POD_T)
 
 # Compile libgtest
 ${LIB_DIR}/gtest-all.o : ${GTEST_DIR}/src/gtest-all.cc 
 	g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all.o
 	ar -rv ${LIB_DIR}/libgtest.a ${LIB_DIR}/gtest-all.o
+
+ifdef ARM_COMPILER_EXISTS
+${LIB_DIR}/gtest-all-arm.o : ${GTEST_DIR}/src/gtest-all.cc 
+	arm-linux-gnueabihf-g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all-arm.o
+	ar -rv ${LIB_DIR}/libgtest-arm.a ${LIB_DIR}/gtest-all-arm.o
+endif
+
+ifndef ARM_COMPILER_EXISTS
+${LIB_DIR}/gtest-all-arm.o : ${GTEST_DIR}/src/gtest-all.cc 
+	$(info = Cant compile for ARM. install arm-linux-gnueabihf-g++)
+endif
 
 .PHONY: msg
 msg : 
@@ -100,12 +116,12 @@ mkdir_obj:
 $(POD) : CXX 	= $(CXX_NORM)
 $(POD) : CFLAGS = $(CFLAGS_RELEASE)
 $(POD) : LD  	= $(LD_NORM)
-$(POD) : build-$(POD)
+$(POD) : mkdir_obj build-$(POD)
 build-$(POD) : $(OBJ:%.o=$(OBJ_DIR)/%-build.o)
-	$(CXX) $? $(LDFLAGS) -o $(POD)
+	$(LD) $? $(LDFLAGS) $(LD_TEST_NORM)  -o $(POD)
 
 $(OBJ_DIR)/%-build.o : %.cpp
-	$(LD) $? $(CFLAGS) -o $@
+	$(CXX) $? $(CFLAGS) -o $@
 
 #####
 # build-debug
@@ -113,12 +129,12 @@ $(OBJ_DIR)/%-build.o : %.cpp
 $(POD_D) : CXX		= $(CXX_NORM)
 $(POD_D) : CFLAGS  	= $(CFLAGS_DEBUG)
 $(POD_D) : LD  		= $(LD_NORM)
-$(POD_D) : build-$(POD_D)
+$(POD_D) : mkdir_obj build-$(POD_D)
 build-$(POD_D) : $(OBJ:%.o=$(OBJ_DIR)/%-build-debug.o)
-	$(CXX) $? $(LDFLAGS) -o $(POD_D)
+	$(LD) $? $(LDFLAGS) $(LD_TEST_NORM) -o $(POD_D)
 
 $(OBJ_DIR)/%-build-debug.o : %.cpp
-	$(LD) $? $(CFLAGS) -o $@
+	$(CXX) $? $(CFLAGS) -o $@
 
 #####
 # build-test
@@ -126,12 +142,12 @@ $(OBJ_DIR)/%-build-debug.o : %.cpp
 $(POD_T) : CXX 		= $(CXX_NORM)
 $(POD_T) : CFLAGS  	= $(CFLAGS_SIM)
 $(POD_T) : LD  		= $(LD_NORM)
-$(POD_T) : build-$(POD_T)
+$(POD_T) : mkdir_obj build-$(POD_T)
 build-$(POD_T) : $(OBJ:%.o=$(OBJ_DIR)/%-build-sim.o)
-	$(CXX) $? $(LDFLAGS) -o $(POD_T)
+	$(LD) $? $(LDFLAGS) $(LD_TEST_NORM) -o $(POD_T)
 
 $(OBJ_DIR)/%-build-sim.o : %.cpp
-	$(LD) $? $(CFLAGS) -o $@
+	$(CXX) $? $(CFLAGS) -o $@
 
 #####
 # cross
@@ -139,12 +155,12 @@ $(OBJ_DIR)/%-build-sim.o : %.cpp
 $(POD_CROSS) : CXX 	= $(CXX_BBB)
 $(POD_CROSS) : CFLAGS  	= $(CFLAGS_RELEASE)
 $(POD_CROSS) : LD  	= $(LD_BBB)
-$(POD_CROSS) : build-$(POD_CROSS)
+$(POD_CROSS) : mkdir_obj build-$(POD_CROSS)
 build-$(POD_CROSS) : $(OBJ:%.o=$(OBJ_DIR)/%-cross.o)
-	$(CXX) $? $(LDFLAGS) -o $(POD_CROSS)
+	$(LD) $? $(LDFLAGS) $(LD_TEST_ARM) -o $(POD_CROSS)
 
 $(OBJ_DIR)/%-cross.o : %.cpp
-	$(LD) $? $(CFLAGS) -o $@
+	$(CXX) $? $(CFLAGS) -o $@
 
 #####
 # cross-debug
@@ -152,9 +168,9 @@ $(OBJ_DIR)/%-cross.o : %.cpp
 $(POD_CROSS_D) : CXX 	= $(CXX_BBB)
 $(POD_CROSS_D) : CFLAGS = $(CFLAGS_DEBUG)
 $(POD_CROSS_D) : LD     = $(LD_BBB)
-$(POD_CROSS_D) : build-$(POD_CROSS_D)
+$(POD_CROSS_D) : mkdir_obj build-$(POD_CROSS_D)
 build-$(POD_CROSS_D) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-debug.o)
-	$(CXX) $? $(LDFLAGS) -o $(POD_CROSS_D)
+	$(CXX) $? $(LDFLAGS) $(LD_TEST_ARM) -o $(POD_CROSS_D)
 
 $(OBJ_DIR)/%-cross-debug.o : %.cpp
 	$(LD) $? $(CFLAGS) -o $@
@@ -165,12 +181,12 @@ $(OBJ_DIR)/%-cross-debug.o : %.cpp
 $(POD_CROSS_T) : CXX 	= $(CXX_BBB)
 $(POD_CROSS_T) : CFLAGS = $(CFLAGS_SIM)
 $(POD_CROSS_T) : LD  	= $(LD_BBB)
-$(POD_CROSS_T) : build-$(POD_CROSS_T)
+$(POD_CROSS_T) : mkdir_obj build-$(POD_CROSS_T)
 build-$(POD_CROSS_T) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-sim.o)
-	$(CXX) $? $(LDFLAGS) -o $(POD_CROSS_T)
+	$(LD) $? $(LDFLAGS) $(LD_TEST_ARM) -o $(POD_CROSS_T)
 
 $(OBJ_DIR)/%-cross-sim.o : %.cpp
-	$(LD) $? $(CFLAGS) -o $@
+	$(CXX) $? $(CFLAGS) -o $@
 
 .PHONY: clean
 clean:
@@ -182,8 +198,8 @@ clean_lib:
 	rm -f $(LIB_DIR)/*
 
 .PHONY: push
-push: $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)
-	scp $(POD_CROSS)   debian@192.168.137.100:~/
-	scp $(POD_CROSS_D) debian@192.168.137.100:~/
+push: msg mkdir_obj $(POD_CROSS_T) #########$(POD_CROSS) $(POD_CROSS_D) 
+	# scp $(POD_CROSS)   debian@192.168.137.100:~/
+	# scp $(POD_CROSS_D) debian@192.168.137.100:~/
 	scp $(POD_CROSS_T) debian@192.168.137.100:~/
 

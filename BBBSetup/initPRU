@@ -10,13 +10,20 @@ echo "Rebooting pru core 0"
 echo 'stop' > /sys/class/remoteproc/remoteproc1/state
 echo 'am335x_pru0_fw' > /sys/class/remoteproc/remoteproc1/firmware
 echo 'start' > /sys/class/remoteproc/remoteproc1/state
+pru1Stat=$?
 echo "pru core 0 is now loaded"
 
 echo "Rebooting pru core 1"
 echo 'stop' > /sys/class/remoteproc/remoteproc2/state
 echo 'am335x_pru1_fw' > /sys/class/remoteproc/remoteproc2/firmware
 echo 'start' > /sys/class/remoteproc/remoteproc2/state
+pru2Stat=$?
 echo "pru core 1 is now loaded"
 
+if [ $pru1Stat -eq 0 ] && [ $pru2Stat -eq 0 ] then
+  exit 0
+else
+  exit 1
+fi
 
 

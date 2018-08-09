@@ -14,6 +14,8 @@ std::atomic<bool> NetworkManager::running(false);
 SafeQueue<shared_ptr<NetworkManager::Network_Command>> NetworkManager::command_queue;
 
 uint8_t NetworkManager::start_server(const char * hostname, const char * port) {
+  connected.reset();
+  closing.reset();
   socketfd = socket(AF_INET, SOCK_STREAM, 0);
   int enable = 1;
   int blocking = 0;
