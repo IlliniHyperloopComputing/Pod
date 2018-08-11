@@ -1,6 +1,7 @@
 #ifndef FILTER_H
 #define FILTER_H
 
+#include "MotorManager.hpp"
 #include "MotionModel.hpp"
 struct StateSpace; // stub for compiling
 
@@ -31,7 +32,6 @@ namespace Filter{
   void ConstantGainFilter(StateSpace & state, 
                           StateSpace & meas, 
                           StateSpace & gain,
-                          double mass,
                           double delta);
 
   double drag_profile( double velocity);

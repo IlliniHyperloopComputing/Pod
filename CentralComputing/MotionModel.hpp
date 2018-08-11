@@ -9,6 +9,8 @@
 
 using namespace Utils;
 
+#define MASS 1.0
+
 struct StateSpace {
   double x[3]; //Position/Velocity/Accel
   //x[0] = x
