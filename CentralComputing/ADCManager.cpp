@@ -7,6 +7,7 @@ bool ADCManager::initialize_source(){
 }
 
 void ADCManager::stop_source(){
+  SourceManager::ADC_update.invoke();
   print(LogLevel::LOG_DEBUG, "ADC Manger stopped\n");
 }
 
@@ -17,6 +18,8 @@ std::shared_ptr<ADCData> ADCManager::refresh() {
   std::shared_ptr<ADCData> new_data = std::make_shared<ADCData>();
   new_data->dummy_data = i;
   i++;
+
+  SourceManager::ADC_update.invoke();
   return new_data;
 }
 

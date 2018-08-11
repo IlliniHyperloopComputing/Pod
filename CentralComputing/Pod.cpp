@@ -70,6 +70,7 @@ void Pod::startup() {
   SourceManager::TMP.initialize();
   SourceManager::ADC.initialize();
   SourceManager::I2C.initialize();
+  SourceManager::MM.initialize();
   print(LogLevel::LOG_INFO, "Source Managers started\n");
 
   //Setup Network Server
@@ -90,6 +91,7 @@ void Pod::startup() {
   
   print(LogLevel::LOG_INFO, "Source Managers closing\n");
   //Stop all source managers
+  SourceManager::MM.stop(); // Must be called first
   SourceManager::PRU.stop();
   SourceManager::CAN.stop();
   SourceManager::TMP.stop();
