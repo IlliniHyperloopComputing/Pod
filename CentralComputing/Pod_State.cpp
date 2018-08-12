@@ -4,7 +4,9 @@ using namespace Utils;
 
 //Pod_State::Pod_State(Brake * brake, Motor * motor, Sensor * sensor)
 Pod_State::Pod_State()
-  : StateMachine(ST_MAX_STATES)
+  : StateMachine(ST_MAX_STATES),
+  motor()
+    
 {
   transition_map[NetworkManager::TRANS_SAFE_MODE] = &Pod_State::move_safe_mode;  
   transition_map[NetworkManager::TRANS_FUNCTIONAL_TEST] = &Pod_State::move_functional_tests;
@@ -177,13 +179,13 @@ void Pod_State::steady_functional(std::shared_ptr<NetworkManager::Network_Comman
   //process command, let manual commands go through
 	switch (command->id) {
 		case NetworkManager::ENABLE_MOTOR: 
-      MotorManager::enable_motors();
+      motor.enable_motors();
 			break;
 		case NetworkManager::DISABLE_MOTOR:
-      MotorManager::disable_motors();
+      motor.disable_motors();
 			break;
 		case NetworkManager::SET_MOTOR_SPEED:
-      MotorManager::set_throttle(command->value);
+      motor.set_throttle(command->value);
 			break;
   	case NetworkManager::ACTIVATE_BRAKE_MAGNET:
       BrakeManager::activate_brakes();
