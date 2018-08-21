@@ -16,6 +16,10 @@ void MotorManager::disable_motors() {
   print(LogLevel::LOG_DEBUG, "Motors Disabled\n");
 }
 
+bool MotorManager::is_enabled(){
+  return enabled;
+}
+
 int16_t MotorManager::calculate_throttle(double dt, int16_t last_throttle){
   // Get velocity
   // And current disk RPM

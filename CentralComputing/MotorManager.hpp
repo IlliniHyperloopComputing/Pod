@@ -34,6 +34,11 @@ class MotorManager {
     void disable_motors();
 
     /*
+     * is_enabled returns enabled variable
+     */
+    bool is_enabled();
+
+    /*
      * Uses a PI loop to calculate the appropriate motor throttle
      */
     int16_t calculate_throttle(double dt, int16_t last_throttle);
