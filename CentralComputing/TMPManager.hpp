@@ -12,7 +12,7 @@ struct TMPData {
   double tmp_data[NUM_TMP];
 };
 
-class TMPManager : public SourceManagerBase<(long long) (1.0 * 1E6), TMPData> {
+class TMPManager : public SourceManagerBase<(long long) (1.0 * 1E6), TMPData, false> {
   private:
     bool initialize_source();
     void stop_source();

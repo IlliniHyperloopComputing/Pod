@@ -8,20 +8,20 @@ bool PRUManager::initialize_source(){
   pollfds[0].fd = open(DEVICE_NAME, O_RDWR);
 
   if (pollfds[0].fd < 0) {
-    print(LogLevel::LOG_ERROR, "FAILED TO OPEN %s\n", DEVICE_NAME);
+    print(LogLevel::LOG_ERROR, "PRU FAILED TO OPEN %s\n", DEVICE_NAME);
     return false;
   }
 
   int result = write(pollfds[0].fd, "start", 6);
   if(result == 0){
-    print(LogLevel::LOG_ERROR, "Unable to write during init: %s\n", DEVICE_NAME);
+    print(LogLevel::LOG_ERROR, "PRU Unable to write during init: %s\n", DEVICE_NAME);
     return false;
   }
 
   /* Poll until we receive a message from the PRU and then print it */
   result = read(pollfds[0].fd, readBuf, MAX_BUFFER_SIZE);
   if(result == 0){
-    print(LogLevel::LOG_ERROR, "Unable to read during init: %s\n", DEVICE_NAME);
+    print(LogLevel::LOG_ERROR, "PRU Unable to read during init: %s\n", DEVICE_NAME);
     return false;
   }
 
@@ -31,7 +31,6 @@ bool PRUManager::initialize_source(){
 
 void PRUManager::stop_source(){
 	close(pollfds[0].fd);
-  SourceManager::PRU_update.invoke();
   print(LogLevel::LOG_DEBUG, "PRU Manager stopped\n");
 }
 
@@ -82,9 +81,6 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
   // Store in shared_ptr
   std::shared_ptr<PRUData> ret_data = std::make_shared<PRUData>();
   *ret_data = new_data;
-
-  // TODO: Technically this creates a race condition
-  SourceManager::PRU_update.invoke();
 
   return ret_data;
 }

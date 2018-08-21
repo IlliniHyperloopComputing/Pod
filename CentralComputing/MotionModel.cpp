@@ -10,23 +10,28 @@ bool MotionModel::initialize_source(){
   
   last_time = microseconds();
 
+  if(!SourceManager::PRU.is_running() || !SourceManager::ADC.is_running()){
+    print(LogLevel::LOG_ERROR, "Motion Model setup Failed. PRU or ADC is not up\n");
+    return false;
+  }
+  
   print(LogLevel::LOG_DEBUG, "Motion Model setup successful\n");
   return true;
 }
 
 void MotionModel::stop_source(){
 
-  SourceManager::PRU_update.reset();
-  SourceManager::ADC_update.reset();
+  SourceManager::ADC.data_event_reset();
+  SourceManager::PRU.data_event_reset();
   print(LogLevel::LOG_DEBUG, "Motion Model stopped\n");
 
 }
 
 std::shared_ptr<StateSpace> MotionModel::refresh(){
-  SourceManager::ADC_update.wait();
-  SourceManager::PRU_update.wait();
-  SourceManager::ADC_update.reset();
-  SourceManager::PRU_update.reset();
+  SourceManager::PRU.data_event_wait();
+  SourceManager::ADC.data_event_wait();
+  SourceManager::ADC.data_event_reset();
+  SourceManager::PRU.data_event_reset();
 
   // Grab current time
   long long cur_time = microseconds();

@@ -10,7 +10,7 @@
 
 using namespace Utils;
 
-template <long long DelayInUsecs, class Data>
+template <long long DelayInUsecs, class Data, bool DataEvent >
 class SourceManagerBase {
 
   public:
@@ -39,6 +39,7 @@ class SourceManagerBase {
 
         // Did not setup correctly. Print error and set garbage data
         print(LogLevel::LOG_ERROR, "Failed to initialize. Not running worker thread\n");
+        running.store(false);
 
         // Set garbage data
         data = std::make_shared<Data>();
@@ -52,9 +53,25 @@ class SourceManagerBase {
       if(initialized_correctly){
         running.store(false);
         closing.invoke();
+
+        if(DataEvent){
+          data_event.invoke();
+        }
+
         worker.join();
         stop_source();
       }
+    }
+
+    void data_event_wait(){
+      data_event.wait();
+    }
+    void data_event_reset(){
+      data_event.reset();
+    }
+
+    bool is_running(){
+      return running.load();
     }
 
   private:
@@ -71,6 +88,11 @@ class SourceManagerBase {
         mutex.lock();
         data = new_data;
         mutex.unlock();
+        
+        if(DataEvent) {
+          data_event.invoke();
+        }
+
         closing.wait_for(DelayInUsecs);
       }
     }
@@ -79,6 +101,7 @@ class SourceManagerBase {
     std::mutex mutex;
     std::atomic<bool> running;
     Event closing;
+    Event data_event;
     std::thread worker;
     bool initialized_correctly;
 };

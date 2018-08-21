@@ -24,8 +24,5 @@ namespace SourceManager {
   extern ADCManager ADC;
   extern I2CManager I2C;
   extern MotionModel MM;
-
-  extern Event PRU_update;
-  extern Event ADC_update;
 }
 #endif
