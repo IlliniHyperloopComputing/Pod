@@ -16,12 +16,19 @@
 
 #define MOTOR_OFF -50.0
 
+
 #define KP 1.0
 #define KD 0.0
 #define KI 1.0
 
 class MotorManager {
   public:
+
+    /*
+     * Constructor
+     * Setup the PWM pins
+     */
+    MotorManager();
 
     /*
      * Arms the motors
@@ -49,6 +56,12 @@ class MotorManager {
     void set_throttle(int16_t value);
 
   private:
+
+    void set_enable(bool enable);
+
+    static const std::string pwm_chip;
+    static const std::string pwm_pin;
+
     double integral;
 
     bool enabled;
