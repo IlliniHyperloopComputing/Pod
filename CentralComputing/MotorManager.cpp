@@ -1,8 +1,8 @@
 #include "MotorManager.hpp"
 using namespace Utils;
 
-const std::string MotorManager::pwm_chip = "/sys/class/pwm/pwmchip0/";
-const std::string MotorManager::pwm_pin =  "/sys/class/pwm/pwmchip0/pwm0/";
+std::string MotorManager::pwm_chip = "/sys/class/pwm/pwmchip0/";
+std::string MotorManager::pwm_pin =  "/sys/class/pwm/pwmchip0/pwm0/";
 
 MotorManager::MotorManager(){
   // Following guide in: 
@@ -45,7 +45,7 @@ void MotorManager::disable_motors() {
 
 void MotorManager::set_enable(bool enable){
 
-  std::ofstream out(pwm_chip + "enable", std::ofstream::trunc);
+  std::ofstream out(pwm_pin + "enable", std::ofstream::trunc);
   if(out){
     if(enable){
       out << "1";
@@ -92,7 +92,7 @@ int16_t MotorManager::calculate_throttle(double dt, int16_t last_throttle){
 
 void MotorManager::set_throttle(int16_t value) {
   if(enabled){
-    std::ofstream out(pwm_chip + "duty_cycle", std::ofstream::trunc);
+    std::ofstream out(pwm_pin + "duty_cycle", std::ofstream::trunc);
     if(out){
       // Why do we need conversion?
       // throttle setting is from 0 to 1000 (negative values are off)
@@ -106,4 +106,9 @@ void MotorManager::set_throttle(int16_t value) {
 
     print(LogLevel::LOG_DEBUG, "Setting motor throttle: %d\n", value);
   }
+}
+
+void MotorManager::debug_set_pwm_pin(std::string & path){
+  print(LogLevel::LOG_DEBUG, "Setting pwm pin path: %s\n",path.c_str());
+  pwm_pin = path;
 }

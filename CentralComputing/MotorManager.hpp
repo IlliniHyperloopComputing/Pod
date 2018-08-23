@@ -55,12 +55,14 @@ class MotorManager {
      */
     void set_throttle(int16_t value);
 
+    void debug_set_pwm_pin(std::string & path);
+
   private:
 
     void set_enable(bool enable);
 
-    static const std::string pwm_chip;
-    static const std::string pwm_pin;
+    static std::string pwm_chip;
+    static std::string pwm_pin;
 
     double integral;
 
