@@ -13,17 +13,20 @@ bool Simulator::sim_connect(const char * hostname, const char * port) {
   hints.ai_socktype = SOCK_STREAM;
   int rv;
   if((rv = getaddrinfo(hostname, port, &hints, &servinfo)) != 0) {
+    freeaddrinfo(servinfo);
     print(LogLevel::LOG_ERROR, "Error get addrinfo\n");
     return false;
   }
 
   if((socketfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol)) == -1) {
+    freeaddrinfo(servinfo);
     print(LogLevel::LOG_ERROR, "Error getting socket\n");
     return false;
   }
 
   if(connect(socketfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1) {
     close(socketfd);
+    freeaddrinfo(servinfo);
     print(LogLevel::LOG_ERROR, "Error connecting\n");
     return false;
   }
@@ -34,6 +37,8 @@ bool Simulator::sim_connect(const char * hostname, const char * port) {
   read_thread = std::thread([&]() {
     read_loop();
   });
+
+  freeaddrinfo(servinfo);
   return true;
 }
 
