@@ -18,7 +18,6 @@ TEST_F(PodTest, MotorTest) {
   system("touch tests/enable");
   system("touch tests/duty_cycle");
   std::string path = "tests/";
-  pod->state_machine->motor.debug_set_pwm_pin(path);
 
   //Enable motors
   MoveState(NetworkManager::Network_Command_ID::ENABLE_MOTOR, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);

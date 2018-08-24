@@ -14,6 +14,10 @@ class CANManager : public SourceManagerBase<(long long) (1.0 * 1E6), CANData, fa
     void stop_source();
     std::shared_ptr<CANData> refresh();
 
+    std::string name(){
+      return "can";
+    }
+
     //iterator for testing purposes, remove
     int i = 5;
 };

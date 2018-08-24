@@ -8,6 +8,14 @@
 #include <mutex>
 #include <atomic>
 
+#ifdef SIM
+#include <fstream>
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wctor-dtor-privacy"
+#include "gtest/gtest.h"
+#pragma GCC diagnostic pop
+#endif
+
 using namespace Utils;
 
 template <long long DelayInUsecs, class Data, bool DataEvent >
@@ -23,13 +31,31 @@ class SourceManagerBase {
 
     void initialize() {
 
-      // Initialize the source manager
-      initialized_correctly = initialize_source();
+      #ifdef SIM
+        // Get name of current test case 
+        const ::testing::TestInfo* const test_info = 
+          ::testing::UnitTest::GetInstance()->current_test_info();
+        // Create path to file // test_info->name() and test_info->test_case_name()
+        std::string file =  std::string("tests/data/") 
+                            + test_info->name() + std::string("/") 
+                            + name() + std::string(".txt");
+        test_data.open(file);
+        initialized_correctly = test_data.is_open();
+      #else
+        // Initialize the source manager
+        initialized_correctly = initialize_source();
+      #endif
+
       closing.reset();
       if(initialized_correctly){
+        // If initialized correcly, setup the worker
         
-        // If the source manager initialized correcly, setup the worker
-        data = refresh();
+        #ifdef SIM
+          data = read_test_data();
+        #else
+          data = refresh();
+        #endif
+
         running.store(true);
 
         // I don't know how to start a thread using a member function, but I know how to use lambdas so suck it C++
@@ -38,7 +64,11 @@ class SourceManagerBase {
       else{
 
         // Did not setup correctly. Print error and set garbage data
-        print(LogLevel::LOG_ERROR, "Failed to initialize. Not running worker thread\n");
+        #ifdef SIM
+          print(LogLevel::LOG_ERROR, "Failed to initialize: %s. Can't open file: %s\n", name().c_str(), file.c_str());
+        #else
+          print(LogLevel::LOG_ERROR, "Failed to initialize: %s. Not running worker thread\n", name().c_str());
+        #endif
         running.store(false);
 
         // Set garbage data
@@ -60,6 +90,9 @@ class SourceManagerBase {
 
         worker.join();
         stop_source();
+        #ifdef SIM
+          test_data.close();
+        #endif
       }
     }
 
@@ -79,12 +112,18 @@ class SourceManagerBase {
     // Stop will only be called if init returns true
     virtual bool initialize_source() = 0;
     virtual void stop_source() = 0;
+
+    virtual std::string name() = 0;
     
     virtual std::shared_ptr<Data> refresh() = 0; //constructs a new Data object and fills it in
 
     void refresh_loop() {
       while(running.load()) {
-        std::shared_ptr<Data> new_data = refresh();
+        #ifndef SIM
+          std::shared_ptr<Data> new_data = refresh();
+        #else
+          std::shared_ptr<Data> new_data = read_test_data();
+        #endif
         mutex.lock();
         data = new_data;
         mutex.unlock();
@@ -96,6 +135,15 @@ class SourceManagerBase {
         closing.wait_for(DelayInUsecs);
       }
     }
+
+    #ifdef SIM
+    std::shared_ptr<Data> read_test_data(){
+      std::shared_ptr<Data> d = std::make_shared<Data>();
+      memset(d.get(), (uint8_t)0, sizeof(Data));
+      return d;
+    }
+    std::ifstream test_data;  
+    #endif
 
     std::shared_ptr<Data> data;
     std::mutex mutex;

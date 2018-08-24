@@ -20,6 +20,10 @@ class ADCManager : public SourceManagerBase<(long long) (1.0 * 1E6), ADCData, tr
     void stop_source();
     std::shared_ptr<ADCData> refresh();
 
+    std::string name(){
+      return "adc";
+    }
+
     //iterator for testing purposes, remove
     int i = 5;
 };

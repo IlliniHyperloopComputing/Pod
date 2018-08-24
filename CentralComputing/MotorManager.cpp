@@ -1,10 +1,16 @@
 #include "MotorManager.hpp"
 using namespace Utils;
 
+#ifdef SIM
+std::string MotorManager::pwm_chip = "tests/";
+std::string MotorManager::pwm_pin =  "tests/";
+#else
 std::string MotorManager::pwm_chip = "/sys/class/pwm/pwmchip0/";
 std::string MotorManager::pwm_pin =  "/sys/class/pwm/pwmchip0/pwm0/";
+#endif
 
 MotorManager::MotorManager(){
+
   // Following guide in: 
   // https://www.teachmemicro.com/beaglebone-black-pwm-ubuntu-device-tree/
   
@@ -77,7 +83,6 @@ int16_t MotorManager::calculate_throttle(double dt, int16_t last_throttle){
   // Calculate integral term
   integral += (error * dt);
 
-
   //TODO: Set limit on dt ?
   //TODO: Clamp integral term ? 
 
@@ -95,7 +100,7 @@ void MotorManager::set_throttle(int16_t value) {
     std::ofstream out(pwm_pin + "duty_cycle", std::ofstream::trunc);
     if(out){
       // Why do we need conversion?
-      // throttle setting is from 0 to 1000 (negative values are off)
+      // throttle setting is from 0 to 1000 (negative values are valid)
       // because that is easy to understand
       // need to add 1000 to get into 1000 to 2000 range
       // need to be in nanoseconds, so multiply by 1000
@@ -106,9 +111,4 @@ void MotorManager::set_throttle(int16_t value) {
 
     print(LogLevel::LOG_DEBUG, "Setting motor throttle: %d\n", value);
   }
-}
-
-void MotorManager::debug_set_pwm_pin(std::string & path){
-  print(LogLevel::LOG_DEBUG, "Setting pwm pin path: %s\n",path.c_str());
-  pwm_pin = path;
 }

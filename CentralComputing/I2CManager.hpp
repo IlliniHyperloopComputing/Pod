@@ -14,6 +14,10 @@ class I2CManager : public SourceManagerBase<(long long) (1.0 * 1E6), I2CData, fa
     void stop_source();
     std::shared_ptr<I2CData> refresh();
 
+    std::string name(){
+      return "i2c";
+    }
+
     //iterator for testing purposes, remove
     int i = 5;
 };

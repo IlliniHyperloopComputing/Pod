@@ -25,6 +25,10 @@ class TMPManager : public SourceManagerBase<(long long) (1.0 * 1E6), TMPData, fa
                                     "28-0417029a0dff", 
                                     "28-051701e603ff"};
 
+    std::string name(){
+      return "tmp";
+    }
+
     int idx = 0;
 
     TMPData old_data;
