@@ -38,7 +38,7 @@ POD_CROSS_T = scross
 ARM_COMPILER_EXISTS := $(shell command -v $(CXX_BBB) 2> /dev/null)
 
 .PHONY: all
-all : msg mkdir_obj ${LIB_DIR}/gtest-all.o ${LIB_DIR}/gtest-all-arm.o msg_d $(POD_D) msg_s $(POD_T)
+all : msg mkdir_obj ${LIB_DIR}/gtest-all.o ${LIB_DIR}/gtest-all-arm.o msg_d $(POD_D) msg_s $(POD_T) msg_success
 
 # Compile libgtest
 ${LIB_DIR}/gtest-all.o : ${GTEST_DIR}/src/gtest-all.cc 
@@ -82,6 +82,13 @@ msg :
 	$(info =                 /  /     /  /   /  / /  /   /  / /  /                   ) 
 	$(info =             ___/  /___  /__/   /  / /__/   /  / /  /                    )
 	$(info =          __ __/______/ /______/__/ /______/__/ /__/                     )  
+
+.PHONY: msg_success
+msg_success :
+	$(info  =   ___ _   _  ___ ___ ___  ___ ___  )
+	$(info	=  / __| | | |/ __/ __/ _ \/ __/ __| )
+	${info	=  \__ \ |_| | (_| (_|  __/\__ \__ \ }
+	$(info	=  |___/\__,_|\___\___\___||___/___/ )	
 
 .PHONY: msg_d
 msg_d : 
