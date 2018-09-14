@@ -30,6 +30,12 @@ class PodTest : public ::testing::Test
     pod_thread.join();
   }
 
+  /*
+   * Handy helper function for testing state transitions
+   * @param id the command to run
+   * @param state the target state the command will bring you to
+   * @param allow true if this transition should be allowed, false otherwises
+   */
   void MoveState(NetworkManager::Network_Command_ID id, Pod_State::E_States state, bool allow) {
     auto command = std::make_shared<NetworkManager::Network_Command>();
     command->id = id;
