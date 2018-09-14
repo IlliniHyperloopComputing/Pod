@@ -106,7 +106,7 @@ void Pod::stop() {
   NetworkManager::close_server();
 }
 
-std::function<void(int)> shutdown_handler;
+function<void(int)> shutdown_handler;
 void signal_handler(int signal) {shutdown_handler(signal); }
 
 int main(int argc, char **argv) {
