@@ -42,7 +42,7 @@ Test_F(PodTest, FlightAccel) {
   MoveState(NetworkManager::Network_Command_ID::TRANS_LAUNCH_READY, Pod_State::E_States::ST_LAUNCH_READY, true);
   MoveState(NetworkManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, true);
 }
-
+/*
 // All tests to emergency brake from each mode
 TEST_F(PodTest, SafeModeBrake) {
   MoveState(NetworkManager::Network_Command_ID::EMERGENCY_BRAKE, Pod_State::E_States::ST_FLIGHT_BRAKE, true);
@@ -144,4 +144,4 @@ Test_F(PodTest, FlightAccelFailures) {
   MoveState(NetworkManager::Network_Command_ID::TRANS_LAUNCH_READY, Pod_State::E_States::ST_LAUNCH_READY, false);
   MoveState(NetworkManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, Pod_State::E_States::ST_FUNCTIONAL_TEST, false);
 }
-
+*/
