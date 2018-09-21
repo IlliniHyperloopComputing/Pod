@@ -30,7 +30,7 @@ TEST_F(PodTest, EmergencyBrake) {
 
 //Not sure about this but probably cant launch if the motor is turned off and so are the brakes
 
-EST_F(PodTest, NonTransitionalTest) {
+TEST_F(PodTest, NonTransitionalTest) {
   MoveState(NetworkManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
   MoveState(NetworkManager::Network_Command_ID::TRANS_LOADING, Pod_State::E_States::ST_LOADING, true);
   MoveState(NetworkManager::Network_Command_ID::DISABLE_MOTOR, Pod_State::E_States::ST_LOADING, true);
