@@ -2,6 +2,10 @@
 
 using namespace Utils;
 
+std::string PRUManager::name() {
+  return "pru";
+}
+
 bool PRUManager::initialize_source(){
   
   /* Open the rpmsg_pru character device file */

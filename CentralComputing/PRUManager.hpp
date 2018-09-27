@@ -36,9 +36,7 @@ class PRUManager : public SourceManagerBase<(long long) (0.010 * 1E6), PRUData, 
 
     double convert_to_velocity(uint32_t decay, uint32_t delta, double distance);
 
-    std::string name(){
-      return "pru";
-    }
+    std::string name();
 
     uint8_t readBuf[MAX_BUFFER_SIZE];
 	  struct pollfd pollfds[1];
