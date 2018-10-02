@@ -37,10 +37,11 @@ void Pod::logic_loop() {
 
 void Pod::startup() {
   microseconds();
+ 	print(LogLevel::LOG_INFO, "\n");
  	print(LogLevel::LOG_INFO, "==================\n");
   print(LogLevel::LOG_INFO, "ILLINI  HYPERLOOP \n");
-  print(LogLevel::LOG_INFO, "==================\n\n");
-  print(LogLevel::LOG_INFO, "Running setup...\n");
+  print(LogLevel::LOG_INFO, "==================\n");
+  print(LogLevel::LOG_INFO, "Running Startup\n");
 
   // If we are on the BBB, run specific setup
   if(system("hostname | grep beaglebone > /dev/null") == 0){
@@ -70,6 +71,7 @@ void Pod::startup() {
   SourceManager::TMP.initialize();
   SourceManager::ADC.initialize();
   SourceManager::I2C.initialize();
+  SourceManager::MM.initialize();
   print(LogLevel::LOG_INFO, "Source Managers started\n");
 
   //Setup Network Server
@@ -79,6 +81,9 @@ void Pod::startup() {
   thread network_thread(NetworkManager::network_loop);
   running.store(true);
   thread logic_thread([&](){ logic_loop(); }); // I don't know how to use member functions as a thread function, but lambdas work
+
+  print(LogLevel::LOG_INFO, "Finished Startup\n");
+  print(LogLevel::LOG_INFO, "================\n\n");
   
   //ready to begin testing
   ready.invoke();
@@ -90,6 +95,7 @@ void Pod::startup() {
   
   print(LogLevel::LOG_INFO, "Source Managers closing\n");
   //Stop all source managers
+  SourceManager::MM.stop(); // Must be called first
   SourceManager::PRU.stop();
   SourceManager::CAN.stop();
   SourceManager::TMP.stop();

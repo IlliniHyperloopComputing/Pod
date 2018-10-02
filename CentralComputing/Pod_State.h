@@ -98,6 +98,11 @@ class Pod_State : public StateMachine {
     transition_function get_transition_function(NetworkManager::Network_Command_ID id) {
       return transition_map[id];
     }
+
+    /**
+     * Motor and brake objects here
+     */
+    MotorManager motor;
 		
 	private:
     map<NetworkManager::Network_Command_ID, transition_function> transition_map; 
