@@ -3,7 +3,7 @@
 
 #include "Utils.h"
 #include "SafeQueue.hpp"
-#include "ParameterManager.hpp"
+#include "SourceManager.hpp"
 #include "Event.hpp"
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -13,6 +13,7 @@
 #include <poll.h>
 #include <atomic>
 #include <thread>
+#include <memory>
 #include <sys/ioctl.h>
 
 #define SETUP_FAILURE -1
@@ -64,7 +65,7 @@ extern int clientfd;
 extern int udp_socket;
 
 extern std::atomic<bool> running;
-extern SafeQueue<shared_ptr<NetworkManager::Network_Command>> command_queue;
+extern SafeQueue<std::shared_ptr<NetworkManager::Network_Command>> command_queue;
 
 extern Event connected;
 extern Event closing;

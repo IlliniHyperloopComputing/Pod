@@ -188,10 +188,10 @@ void Pod_State::steady_functional(std::shared_ptr<NetworkManager::Network_Comman
       motor.set_throttle(command->value);
 			break;
   	case NetworkManager::ACTIVATE_BRAKE_MAGNET:
-      BrakeManager::activate_brakes();
+      //activate brakes
 			break;
 		case NetworkManager::DEACTIVATE_BRAKE_MAGNET:
-      BrakeManager::deactivate_brakes();
+      //deactivate brakes
 			break;
     default:
       break;

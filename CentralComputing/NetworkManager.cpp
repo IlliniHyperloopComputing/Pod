@@ -83,9 +83,8 @@ int NetworkManager::read_command(Network_Command * buffer) {
 }
 
 int NetworkManager::write_data() {
-  // TODO 
-  // Write ParameterManager::GetNetworkReport, write the report to clientfd
-  vector<uint8_t> bytes = ParameterManager::get_network_packet(); 
+  // TODO write real data
+  vector<uint8_t> bytes = { static_cast<uint8_t>(0xdeadbeef) };
   return write(clientfd, bytes.data(), bytes.size());
 }
 
@@ -103,7 +102,7 @@ void NetworkManager::network_loop() {
     int fd = accept_client();
     if(fd > 0){
       print(LogLevel::LOG_INFO, "Starting network threads\n");
-      print(LogLevel::LOG_INFO, "Client fd is: %d\n", clientfd);
+      //print(LogLevel::LOG_INFO, "Client fd is: %d\n", clientfd);
       thread read_thread(read_loop);
       thread write_thread(write_loop);
 
@@ -128,7 +127,7 @@ void NetworkManager::read_loop() {
     
     active_connection = bytes_read > 0;
     if (bytes_read > 0) {
-      print(LogLevel::LOG_INFO, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
+      //print(LogLevel::LOG_INFO, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
       auto command = make_shared<Network_Command>();
       command->id = buffer.id;
       command->value = buffer.value;

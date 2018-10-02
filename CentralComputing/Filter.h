@@ -1,8 +1,8 @@
 #ifndef FILTER_H
 #define FILTER_H
 
-#include "MotorManager.hpp"
 #include "MotionModel.hpp"
+#include "Motor.hpp"
 struct StateSpace; // stub for compiling
 
 #define LOWPASS_PERCENT 0.9

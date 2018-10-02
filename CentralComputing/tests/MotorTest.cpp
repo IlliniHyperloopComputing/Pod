@@ -20,32 +20,36 @@ TEST_F(PodTest, MotorTest) {
   std::string path = "tests/";
 
   //Enable motors
-  MoveState(NetworkManager::Network_Command_ID::ENABLE_MOTOR, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
-  usleep(100000);
+  SendCommand(NetworkManager::Network_Command_ID::ENABLE_MOTOR, 0);
   EXPECT_EQ(pod->state_machine->motor.is_enabled(), true);
   check_test_eq(path+"enable", "1");
 
   //Disable motors
+  pod->processing_command.reset();
   MoveState(NetworkManager::Network_Command_ID::DISABLE_MOTOR, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
-  usleep(100000);
+  pod->processing_command.wait();
+  SendCommand(NetworkManager::Network_Command_ID::ENABLE_MOTOR, 0);
   EXPECT_EQ(pod->state_machine->motor.is_enabled(), false);
   check_test_eq(path+"enable", "0");
 
   //Enable motors
+  pod->processing_command.reset();
   MoveState(NetworkManager::Network_Command_ID::ENABLE_MOTOR, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
-  usleep(100000);
+  pod->processing_command.wait();
   EXPECT_EQ(pod->state_machine->motor.is_enabled(), true);
   check_test_eq(path+"enable", "1");
 
   //Disable motors
+  pod->processing_command.reset();
   MoveState(NetworkManager::Network_Command_ID::DISABLE_MOTOR, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
-  usleep(100000);
+  pod->processing_command.wait();
   EXPECT_EQ(pod->state_machine->motor.is_enabled(), false);
   check_test_eq(path+"enable", "0");
 
   //Enable motors
+  pod->processing_command.reset();
   MoveState(NetworkManager::Network_Command_ID::ENABLE_MOTOR, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
-  usleep(100000);
+  pod->processing_command.wait();
   EXPECT_EQ(pod->state_machine->motor.is_enabled(), true);
   check_test_eq(path+"enable", "1");
 

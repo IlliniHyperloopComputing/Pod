@@ -1,5 +1,5 @@
-#ifndef MOTORMANAGER_HPP
-#define MOTORMANAGER_HPP
+#ifndef MOTOR_HPP
+#define MOTOR_HPP
 
 #include "Utils.h"
 #include "SourceManager.hpp"
@@ -21,14 +21,14 @@
 #define KD 0.0
 #define KI 1.0
 
-class MotorManager {
+class Motor {
   public:
 
     /*
      * Constructor
      * Setup the PWM pins
      */
-    MotorManager();
+    Motor();
 
     /*
      * Arms the motors
