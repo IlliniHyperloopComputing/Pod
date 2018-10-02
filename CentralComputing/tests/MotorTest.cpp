@@ -49,17 +49,14 @@ TEST_F(PodTest, MotorTest) {
 
 
   //Try setting motor values
-  ////TODO use send command for these parts
-  pod->state_machine->motor.set_throttle(0);
+  SendCommand(NetworkManager::Network_Command_ID::SET_MOTOR_SPEED, 0);
   check_test_eq(path+"duty_cycle", "1000000");
 
-  pod->state_machine->motor.set_throttle(1);
-  check_test_eq(path+"duty_cycle", "1001000");
 
-  pod->state_machine->motor.set_throttle(500);
+  SendCommand(NetworkManager::Network_Command_ID::SET_MOTOR_SPEED, 125);
   check_test_eq(path+"duty_cycle", "1500000");
 
-  pod->state_machine->motor.set_throttle(1000);
+  SendCommand(NetworkManager::Network_Command_ID::SET_MOTOR_SPEED, 250);
   check_test_eq(path+"duty_cycle", "2000000");
 
   //Disable again

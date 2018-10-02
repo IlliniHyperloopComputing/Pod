@@ -185,7 +185,7 @@ void Pod_State::steady_functional(std::shared_ptr<NetworkManager::Network_Comman
       motor.disable_motors();
 			break;
 		case NetworkManager::SET_MOTOR_SPEED:
-      motor.set_throttle(command->value);
+      motor.set_throttle(command->value * 4); //value is 0-250, set_throttle expects 0-1000
 			break;
   	case NetworkManager::ACTIVATE_BRAKE_MAGNET:
       //activate brakes
