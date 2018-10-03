@@ -20,32 +20,27 @@ TEST_F(PodTest, MotorTest) {
   std::string path = "tests/";
 
   //Enable motors
-  MoveState(NetworkManager::Network_Command_ID::ENABLE_MOTOR, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
-  usleep(100000);
+  SendCommand(NetworkManager::Network_Command_ID::ENABLE_MOTOR, 0);
   EXPECT_EQ(pod->state_machine->motor.is_enabled(), true);
   check_test_eq(path+"enable", "1");
 
   //Disable motors
-  MoveState(NetworkManager::Network_Command_ID::DISABLE_MOTOR, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
-  usleep(100000);
+  SendCommand(NetworkManager::Network_Command_ID::DISABLE_MOTOR, 0);
   EXPECT_EQ(pod->state_machine->motor.is_enabled(), false);
   check_test_eq(path+"enable", "0");
 
   //Enable motors
-  MoveState(NetworkManager::Network_Command_ID::ENABLE_MOTOR, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
-  usleep(100000);
+  SendCommand(NetworkManager::Network_Command_ID::ENABLE_MOTOR, 0);
   EXPECT_EQ(pod->state_machine->motor.is_enabled(), true);
   check_test_eq(path+"enable", "1");
 
   //Disable motors
-  MoveState(NetworkManager::Network_Command_ID::DISABLE_MOTOR, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
-  usleep(100000);
+  SendCommand(NetworkManager::Network_Command_ID::DISABLE_MOTOR, 0);
   EXPECT_EQ(pod->state_machine->motor.is_enabled(), false);
   check_test_eq(path+"enable", "0");
 
   //Enable motors
-  MoveState(NetworkManager::Network_Command_ID::ENABLE_MOTOR, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
-  usleep(100000);
+  SendCommand(NetworkManager::Network_Command_ID::ENABLE_MOTOR, 0);
   EXPECT_EQ(pod->state_machine->motor.is_enabled(), true);
   check_test_eq(path+"enable", "1");
 
@@ -54,21 +49,18 @@ TEST_F(PodTest, MotorTest) {
 
 
   //Try setting motor values
-  pod->state_machine->motor.set_throttle(0);
+  SendCommand(NetworkManager::Network_Command_ID::SET_MOTOR_SPEED, 0);
   check_test_eq(path+"duty_cycle", "1000000");
 
-  pod->state_machine->motor.set_throttle(1);
-  check_test_eq(path+"duty_cycle", "1001000");
 
-  pod->state_machine->motor.set_throttle(500);
+  SendCommand(NetworkManager::Network_Command_ID::SET_MOTOR_SPEED, 125);
   check_test_eq(path+"duty_cycle", "1500000");
 
-  pod->state_machine->motor.set_throttle(1000);
+  SendCommand(NetworkManager::Network_Command_ID::SET_MOTOR_SPEED, 250);
   check_test_eq(path+"duty_cycle", "2000000");
 
   //Disable again
-  MoveState(NetworkManager::Network_Command_ID::DISABLE_MOTOR, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
-  usleep(100000);
+  SendCommand(NetworkManager::Network_Command_ID::DISABLE_MOTOR, 0);
   EXPECT_EQ(pod->state_machine->motor.is_enabled(), false);
   check_test_eq(path+"enable", "0");
   check_test_eq(path+"duty_cycle", "950000");

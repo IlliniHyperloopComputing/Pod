@@ -51,6 +51,16 @@ class PodTest : public ::testing::Test
     }
   }
 
+  void SendCommand(NetworkManager::Network_Command_ID id, uint8_t value) {
+
+    auto command = std::make_shared<NetworkManager::Network_Command>();
+    command->id = id;
+    command->value = value;
+    pod->processing_command.reset();
+    EXPECT_TRUE(simulator->send_command(command));
+    pod->processing_command.wait();
+  }
+
   std::shared_ptr<Pod> pod;
   std::thread pod_thread;
   std::shared_ptr<Simulator> simulator;

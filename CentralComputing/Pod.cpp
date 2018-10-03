@@ -12,12 +12,13 @@ void Pod::logic_loop() {
 	while(running.load()){
     // Start processing/pod logic
 		shared_ptr<NetworkManager::Network_Command> command = NetworkManager::command_queue.dequeue();
+    bool command_processed = false;
     if(command.get() != nullptr){
-      print(LogLevel::LOG_INFO, "Command : %d %d\n", command->id, command->value);
+      //print(LogLevel::LOG_INFO, "Command : %d %d\n", command->id, command->value);
       NetworkManager::Network_Command_ID id = (NetworkManager::Network_Command_ID) command->id;
       auto transition = state_machine->get_transition_function(id);
       ((*state_machine).*(transition))(); //transitions to requested state
-      processing_command.invoke(); 
+      command_processed = true;
     } else {
      //print(LogLevel::LOG_INFO, "No Command\n");
       command = make_shared<NetworkManager::Network_Command>();
@@ -28,6 +29,9 @@ void Pod::logic_loop() {
     auto func = state_machine->get_steady_function();
     ((*state_machine).*(func))(command); //calls the steady state function for the current state
 
+    if(command_processed){
+      processing_command.invoke(); 
+    }
     closing.wait_for(1000);
   } 
   //process all commands before closing

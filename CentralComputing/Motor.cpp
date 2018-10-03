@@ -1,15 +1,15 @@
-#include "MotorManager.hpp"
+#include "Motor.hpp"
 using namespace Utils;
 
 #ifdef SIM
-std::string MotorManager::pwm_chip = "tests/";
-std::string MotorManager::pwm_pin =  "tests/";
+std::string Motor::pwm_chip = "tests/";
+std::string Motor::pwm_pin =  "tests/";
 #else
-std::string MotorManager::pwm_chip = "/sys/class/pwm/pwmchip0/";
-std::string MotorManager::pwm_pin =  "/sys/class/pwm/pwmchip0/pwm0/";
+std::string Motor::pwm_chip = "/sys/class/pwm/pwmchip0/";
+std::string Motor::pwm_pin =  "/sys/class/pwm/pwmchip0/pwm0/";
 #endif
 
-MotorManager::MotorManager(){
+Motor::Motor(){
 
   // Following guide in: 
   // https://www.teachmemicro.com/beaglebone-black-pwm-ubuntu-device-tree/
@@ -31,7 +31,7 @@ MotorManager::MotorManager(){
 
 }
 
-void MotorManager::enable_motors() {
+void Motor::enable_motors() {
   integral = 0;
   enabled = true;
   set_throttle(MOTOR_OFF);
@@ -40,7 +40,7 @@ void MotorManager::enable_motors() {
   print(LogLevel::LOG_DEBUG, "Motors Enabled\n");
 }
 
-void MotorManager::disable_motors() {
+void Motor::disable_motors() {
   set_throttle(MOTOR_OFF);
   set_enable(false);
   integral = 0;
@@ -49,7 +49,7 @@ void MotorManager::disable_motors() {
   print(LogLevel::LOG_DEBUG, "Motors Disabled\n");
 }
 
-void MotorManager::set_enable(bool enable){
+void Motor::set_enable(bool enable){
 
   std::ofstream out(pwm_pin + "enable", std::ofstream::trunc);
   if(out){
@@ -64,11 +64,11 @@ void MotorManager::set_enable(bool enable){
 
 }
 
-bool MotorManager::is_enabled(){
+bool Motor::is_enabled(){
   return enabled;
 }
 
-int16_t MotorManager::calculate_throttle(double dt, int16_t last_throttle){
+int16_t Motor::calculate_throttle(double dt, int16_t last_throttle){
   // Get velocity
   // And current disk RPM
   std::shared_ptr<StateSpace> stateSpace = SourceManager::MM.Get();
@@ -95,7 +95,7 @@ int16_t MotorManager::calculate_throttle(double dt, int16_t last_throttle){
   return (int16_t) Utils::clamp(output, 0, 1000);
 }
 
-void MotorManager::set_throttle(int16_t value) {
+void Motor::set_throttle(int16_t value) {
   if(enabled){
     std::ofstream out(pwm_pin + "duty_cycle", std::ofstream::trunc);
     if(out){

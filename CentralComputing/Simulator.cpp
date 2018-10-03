@@ -44,7 +44,7 @@ bool Simulator::sim_connect(const char * hostname, const char * port) {
 
 bool Simulator::send_command(shared_ptr<NetworkManager::Network_Command> command) {
   int bytes_written = write(socketfd, command.get(), sizeof(NetworkManager::Network_Command));
-  print(LogLevel::LOG_EDEBUG, "Bytes written : %d, ID : %d, Value : %d\n", bytes_written, command->id, command->value);
+  //print(LogLevel::LOG_EDEBUG, "Bytes written : %d, ID : %d, Value : %d\n", bytes_written, command->id, command->value);
   int size = sizeof(NetworkManager::Network_Command);
   return bytes_written == size;
 
