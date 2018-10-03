@@ -30,27 +30,12 @@ class PodTest : public ::testing::Test
     pod_thread.join();
   }
 
+  
   /*
-   * Handy helper function for testing state transitions
-   * @param id the command to run
-   * @param state the target state the command will bring you to
-   * @param allow true if this transition should be allowed, false otherwises
+   * Helper function to send a command using the simulator
+   * @param id the id of the command to run
+   * @param value the value for the command
    */
-  void MoveState(NetworkManager::Network_Command_ID id, Pod_State::E_States state, bool allow) {
-    auto command = std::make_shared<NetworkManager::Network_Command>();
-    command->id = id;
-    command->value = 0;
-    Pod_State::E_States start_state = pod->state_machine->get_current_state();
-    pod->processing_command.reset();
-    EXPECT_TRUE(simulator->send_command(command));
-    pod->processing_command.wait();
-    if(allow) {
-      EXPECT_EQ(pod->state_machine->get_current_state(), state);
-    } else {
-      EXPECT_EQ(pod->state_machine->get_current_state(), start_state);
-    }
-  }
-
   void SendCommand(NetworkManager::Network_Command_ID id, uint8_t value) {
 
     auto command = std::make_shared<NetworkManager::Network_Command>();
@@ -60,6 +45,24 @@ class PodTest : public ::testing::Test
     EXPECT_TRUE(simulator->send_command(command));
     pod->processing_command.wait();
   }
+  /*
+   * Handy helper function for testing state transitions
+   * @param id the command to run
+   * @param state the target state the command will bring you to
+   * @param allow true if this transition should be allowed, false otherwises
+   */
+  void MoveState(NetworkManager::Network_Command_ID id, Pod_State::E_States state, bool allow) {
+
+    auto start_state = pod->state_machine->get_current_state();
+    SendCommand(id, 0);
+
+    if(allow) {
+      EXPECT_EQ(pod->state_machine->get_current_state(), state);
+    } else {
+      EXPECT_EQ(pod->state_machine->get_current_state(), start_state);
+    }
+  }
+
 
   std::shared_ptr<Pod> pod;
   std::thread pod_thread;
