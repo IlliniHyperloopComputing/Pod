@@ -1,7 +1,10 @@
 #include "Simulator.hpp"
 
 using namespace Utils;
-Simulator::Simulator(const char * logfile) : logpath(logfile) {
+
+Simulator SimulatorManager::sim;
+
+Simulator::Simulator() {
   //TODO set up internal variables
 }
 
