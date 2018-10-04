@@ -17,15 +17,14 @@ class PodTest : public ::testing::Test
     pod->ready.wait();
    
     EXPECT_EQ(pod->state_machine->get_current_state(), Pod_State::E_States::ST_SAFE_MODE);
-    simulator = std::make_shared<Simulator>(nullptr);
-    EXPECT_TRUE(simulator->sim_connect("127.0.0.1", "8800"));//TODO make these variables somewhere
+    EXPECT_TRUE(SimulatorManager::sim.sim_connect("127.0.0.1", "8800"));//TODO make these variables somewhere
     NetworkManager::connected.wait();
     print(LogLevel::LOG_INFO, "Done setting up test, running test\n");
   }
 
   virtual void TearDown() {
     print(LogLevel::LOG_INFO, "Test finished, tearing down\n");
-    simulator->disconnect();
+    SimulatorManager::sim.disconnect();
     pod->stop();
     pod_thread.join();
   }
@@ -42,7 +41,7 @@ class PodTest : public ::testing::Test
     command->id = id;
     command->value = value;
     pod->processing_command.reset();
-    EXPECT_TRUE(simulator->send_command(command));
+    EXPECT_TRUE(SimulatorManager::sim.send_command(command));
     pod->processing_command.wait();
   }
   /*
@@ -66,7 +65,6 @@ class PodTest : public ::testing::Test
 
   std::shared_ptr<Pod> pod;
   std::thread pod_thread;
-  std::shared_ptr<Simulator> simulator;
 };
 
 

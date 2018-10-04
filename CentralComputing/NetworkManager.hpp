@@ -34,8 +34,9 @@ enum Network_Command_ID {
   ENABLE_MOTOR = 6,
   DISABLE_MOTOR = 7,
   SET_MOTOR_SPEED = 8,
-  ACTIVATE_BRAKE_MAGNET = 9,
-  DEACTIVATE_BRAKE_MAGNET = 10 
+  ENABLE_BRAKE = 9,
+  DISABLE_BRAKE = 10,
+  SET_BRAKE_PRESSURE = 11,
 };
 
 //enum specifying what data is sent
