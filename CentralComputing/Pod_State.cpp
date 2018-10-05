@@ -13,6 +13,8 @@ Pod_State::Pod_State()
   transition_map[NetworkManager::TRANS_LOADING] = &Pod_State::move_loading;
   transition_map[NetworkManager::TRANS_LAUNCH_READY] = &Pod_State::move_launch_ready;
   transition_map[NetworkManager::LAUNCH] = &Pod_State::accelerate;
+  transition_map[NetworkManager::TRANS_FLIGHT_COAST] = &Pod_State::coast;
+  transition_map[NetworkManager::TRANS_FLIGHT_BRAKE] = &Pod_State::brake;
   transition_map[NetworkManager::EMERGENCY_BRAKE] = &Pod_State::emergency_brake;
 //non state transition commands
   transition_map[NetworkManager::ENABLE_MOTOR] = &Pod_State::no_transition;
