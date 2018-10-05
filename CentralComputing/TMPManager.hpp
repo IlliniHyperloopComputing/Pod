@@ -12,7 +12,7 @@ struct TMPData {
   double tmp_data[NUM_TMP];
 };
 
-class TMPManager : public SourceManagerBase<(long long) (1.0 * 1E6), TMPData> {
+class TMPManager : public SourceManagerBase<(long long) (1.0 * 1E6), TMPData, false> {
   private:
     bool initialize_source();
     void stop_source();
@@ -24,6 +24,10 @@ class TMPManager : public SourceManagerBase<(long long) (1.0 * 1E6), TMPData> {
                                     "28-0417029885ff", 
                                     "28-0417029a0dff", 
                                     "28-051701e603ff"};
+
+    std::string name(){
+      return "tmp";
+    }
 
     int idx = 0;
 

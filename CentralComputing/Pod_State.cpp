@@ -4,7 +4,9 @@ using namespace Utils;
 
 //Pod_State::Pod_State(Brake * brake, Motor * motor, Sensor * sensor)
 Pod_State::Pod_State()
-  : StateMachine(ST_MAX_STATES)
+  : StateMachine(ST_MAX_STATES),
+  motor()
+    
 {
   transition_map[NetworkManager::TRANS_SAFE_MODE] = &Pod_State::move_safe_mode;  
   transition_map[NetworkManager::TRANS_FUNCTIONAL_TEST] = &Pod_State::move_functional_tests;
@@ -16,8 +18,9 @@ Pod_State::Pod_State()
   transition_map[NetworkManager::ENABLE_MOTOR] = &Pod_State::no_transition;
   transition_map[NetworkManager::DISABLE_MOTOR] = &Pod_State::no_transition;
   transition_map[NetworkManager::SET_MOTOR_SPEED] = &Pod_State::no_transition;
-  transition_map[NetworkManager::ACTIVATE_BRAKE_MAGNET] = &Pod_State::no_transition;
-  transition_map[NetworkManager::DEACTIVATE_BRAKE_MAGNET] = &Pod_State::no_transition;
+  transition_map[NetworkManager::ENABLE_BRAKE] = &Pod_State::no_transition;
+  transition_map[NetworkManager::DISABLE_BRAKE] = &Pod_State::no_transition;
+  transition_map[NetworkManager::SET_BRAKE_PRESSURE] = &Pod_State::no_transition;
   steady_state_map[ST_SAFE_MODE] = &Pod_State::steady_safe_mode;
   steady_state_map[ST_FUNCTIONAL_TEST] = &Pod_State::steady_functional;
   steady_state_map[ST_LOADING] = &Pod_State::steady_loading;
@@ -177,20 +180,21 @@ void Pod_State::steady_functional(std::shared_ptr<NetworkManager::Network_Comman
   //process command, let manual commands go through
 	switch (command->id) {
 		case NetworkManager::ENABLE_MOTOR: 
-      MotorManager::enable_motors();
+      motor.enable_motors();
 			break;
 		case NetworkManager::DISABLE_MOTOR:
-      MotorManager::disable_motors();
+      motor.disable_motors();
 			break;
 		case NetworkManager::SET_MOTOR_SPEED:
-      MotorManager::set_throttle(command->value);
+      motor.set_throttle(command->value * 4); //value is 0-250, set_throttle expects 0-1000
 			break;
-  	case NetworkManager::ACTIVATE_BRAKE_MAGNET:
-      BrakeManager::activate_brakes();
+  	case NetworkManager::ENABLE_BRAKE:
+      //activate brakes
 			break;
-		case NetworkManager::DEACTIVATE_BRAKE_MAGNET:
-      BrakeManager::deactivate_brakes();
+		case NetworkManager::DISABLE_BRAKE:
+      //deactivate brakes
 			break;
+		case NetworkManager::SET_BRAKE_PRESSURE:
     default:
       break;
 	}

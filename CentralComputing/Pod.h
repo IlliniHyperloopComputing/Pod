@@ -2,7 +2,6 @@
 #define POD_H
 
 #include "NetworkManager.hpp"
-#include "ParameterManager.hpp"
 #include "Event.hpp"
 #include "Pod_State.h"
 #include <functional>
@@ -21,8 +20,8 @@ class Pod {
 
     void stop();
 
-    shared_ptr<Pod_State> state_machine;
-    atomic<bool> running;
+    std::shared_ptr<Pod_State> state_machine;
+    std::atomic<bool> running;
     Event ready;
     Event processing_command;
     Event closing;

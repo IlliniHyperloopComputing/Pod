@@ -39,7 +39,13 @@ void print(LogLevel level, const char * format, ...);
 /**
 * Define utility clamp function
 **/ 
-float clamp(float v, float l, float h);
+template <class T>
+T clamp(T v, T l, T h) 
+{
+  if(v < l) return l;
+  else if(v > h) return h; 
+  else return v; 
+}
 
 ssize_t write_all_to_socket(int socket, uint8_t * buffer, size_t count);
 

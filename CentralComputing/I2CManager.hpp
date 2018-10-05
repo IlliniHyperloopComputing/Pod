@@ -8,11 +8,15 @@ struct I2CData {
   int dummy_data;
 };
 
-class I2CManager : public SourceManagerBase<(long long) (1.0 * 1E6), I2CData> {
+class I2CManager : public SourceManagerBase<(long long) (1.0 * 1E6), I2CData, false> {
   private:
     bool initialize_source();
     void stop_source();
     std::shared_ptr<I2CData> refresh();
+
+    std::string name(){
+      return "i2c";
+    }
 
     //iterator for testing purposes, remove
     int i = 5;

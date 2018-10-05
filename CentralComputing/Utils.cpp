@@ -36,13 +36,6 @@ void Utils::print(LogLevel level, const char * format, ...){
       }
 }
 
-float Utils::clamp(float v, float l, float h) 
-{
-  if(v < l) return l;
-  else if(v > h) return h; 
-  else return v; 
-}
-
 long long Utils::microseconds() {
   static long long start_time = -1;
   auto now = std::chrono::system_clock::now();

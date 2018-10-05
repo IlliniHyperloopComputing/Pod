@@ -17,6 +17,7 @@ std::shared_ptr<ADCData> ADCManager::refresh() {
   std::shared_ptr<ADCData> new_data = std::make_shared<ADCData>();
   new_data->dummy_data = i;
   i++;
+
   return new_data;
 }
 

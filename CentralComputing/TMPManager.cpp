@@ -1,9 +1,18 @@
 #include "TMPManager.hpp"
 
 bool TMPManager::initialize_source(){
+  // Try to open a file
+  std::ifstream in(prefix + devices[idx] + suffix);
 
-  print(LogLevel::LOG_DEBUG, "TMP Manger setup successful\n");
-  return true;
+  if(in){
+    print(LogLevel::LOG_DEBUG, "TMP Manger setup successful\n");
+    return true;
+  }
+  else{
+    print(LogLevel::LOG_ERROR, "TMP Manger setup failed\n");
+    return false;
+  }
+
 }
 
 void TMPManager::stop_source(){

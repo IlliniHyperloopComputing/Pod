@@ -3,7 +3,7 @@
 
 #include "Utils.h"
 #include "SafeQueue.hpp"
-#include "ParameterManager.hpp"
+#include "SourceManager.hpp"
 #include "Event.hpp"
 #include <sys/socket.h>
 #include <sys/types.h>
@@ -13,6 +13,7 @@
 #include <poll.h>
 #include <atomic>
 #include <thread>
+#include <memory>
 #include <sys/ioctl.h>
 
 #define SETUP_FAILURE -1
@@ -33,8 +34,9 @@ enum Network_Command_ID {
   ENABLE_MOTOR = 6,
   DISABLE_MOTOR = 7,
   SET_MOTOR_SPEED = 8,
-  ACTIVATE_BRAKE_MAGNET = 9,
-  DEACTIVATE_BRAKE_MAGNET = 10 
+  ENABLE_BRAKE = 9,
+  DISABLE_BRAKE = 10,
+  SET_BRAKE_PRESSURE = 11,
 };
 
 //enum specifying what data is sent
@@ -64,7 +66,7 @@ extern int clientfd;
 extern int udp_socket;
 
 extern std::atomic<bool> running;
-extern SafeQueue<shared_ptr<NetworkManager::Network_Command>> command_queue;
+extern SafeQueue<std::shared_ptr<NetworkManager::Network_Command>> command_queue;
 
 extern Event connected;
 extern Event closing;

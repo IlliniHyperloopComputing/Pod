@@ -2,8 +2,7 @@
 #define POD_STATE_H
 
 #include "StateMachineCompact/StateMachine.h"
-#include "BrakeManager.hpp"
-#include "MotorManager.hpp"
+#include "Motor.hpp"
 #include "NetworkManager.hpp"
 #include <iostream>
 #include <string>
@@ -98,11 +97,13 @@ class Pod_State : public StateMachine {
     transition_function get_transition_function(NetworkManager::Network_Command_ID id) {
       return transition_map[id];
     }
+
+    Motor motor;
 		
 	private:
-    map<NetworkManager::Network_Command_ID, transition_function> transition_map; 
+    std::map<NetworkManager::Network_Command_ID, transition_function> transition_map; 
     
-    map<E_States, steady_state_function> steady_state_map;
+    std::map<E_States, steady_state_function> steady_state_map;
 		void ST_Safe_Mode();
 		void ST_Functional_Test();
     void ST_Loading();

@@ -17,19 +17,33 @@ class PodTest : public ::testing::Test
     pod->ready.wait();
    
     EXPECT_EQ(pod->state_machine->get_current_state(), Pod_State::E_States::ST_SAFE_MODE);
-    simulator = std::make_shared<Simulator>(nullptr);
-    EXPECT_TRUE(simulator->sim_connect("127.0.0.1", "8800"));//TODO make these variables somewhere
+    EXPECT_TRUE(SimulatorManager::sim.sim_connect("127.0.0.1", "8800"));//TODO make these variables somewhere
     NetworkManager::connected.wait();
     print(LogLevel::LOG_INFO, "Done setting up test, running test\n");
   }
 
   virtual void TearDown() {
     print(LogLevel::LOG_INFO, "Test finished, tearing down\n");
-    simulator->disconnect();
+    SimulatorManager::sim.disconnect();
     pod->stop();
     pod_thread.join();
   }
 
+  
+  /*
+   * Helper function to send a command using the simulator
+   * @param id the id of the command to run
+   * @param value the value for the command
+   */
+  void SendCommand(NetworkManager::Network_Command_ID id, uint8_t value) {
+
+    auto command = std::make_shared<NetworkManager::Network_Command>();
+    command->id = id;
+    command->value = value;
+    pod->processing_command.reset();
+    EXPECT_TRUE(SimulatorManager::sim.send_command(command));
+    pod->processing_command.wait();
+  }
   /*
    * Handy helper function for testing state transitions
    * @param id the command to run
@@ -37,13 +51,10 @@ class PodTest : public ::testing::Test
    * @param allow true if this transition should be allowed, false otherwises
    */
   void MoveState(NetworkManager::Network_Command_ID id, Pod_State::E_States state, bool allow) {
-    auto command = std::make_shared<NetworkManager::Network_Command>();
-    command->id = id;
-    command->value = 0;
-    Pod_State::E_States start_state = pod->state_machine->get_current_state();
-    pod->processing_command.reset();
-    EXPECT_TRUE(simulator->send_command(command));
-    pod->processing_command.wait();
+
+    auto start_state = pod->state_machine->get_current_state();
+    SendCommand(id, 0);
+
     if(allow) {
       EXPECT_EQ(pod->state_machine->get_current_state(), state);
     } else {
@@ -51,9 +62,9 @@ class PodTest : public ::testing::Test
     }
   }
 
+
   std::shared_ptr<Pod> pod;
   std::thread pod_thread;
-  std::shared_ptr<Simulator> simulator;
 };
 
 

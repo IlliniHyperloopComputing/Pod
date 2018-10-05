@@ -5,15 +5,13 @@
 #include "NetworkManager.hpp"
 #include "Pod_State.h"
 using namespace std;
-
 class Simulator {
  
   public:
     /**
      * Creates a command simulator object
-     * @param logfile filepath where pod network output will be sent to or dev/null if null
      */
-    Simulator(const char * logfile);
+    Simulator();
 
 
     /**
@@ -41,7 +39,6 @@ class Simulator {
     void disconnect();
 
 
-    const char * logpath; //logpath file
 
     Pod_State::E_States current_state; //current state of the pod as read by the network controller
 
@@ -54,5 +51,8 @@ class Simulator {
     //TODO:
     //Add brake status, motor status
 };
+namespace SimulatorManager {
+  extern Simulator sim;
+}
 
 #endif //SIMULATOR_HPP
