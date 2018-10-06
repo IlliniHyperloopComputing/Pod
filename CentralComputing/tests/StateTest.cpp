@@ -51,6 +51,15 @@ TEST_F(PodTest, FlightAccel) {
   MoveState(NetworkManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, true);
 }
 
+// Testing access from Launch to Coast
+TEST_F(PodTest, FlightCoast) {
+  MoveState(NetworkManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(NetworkManager::Network_Command_ID::TRANS_LOADING, Pod_State::E_States::ST_LOADING, true);
+  MoveState(NetworkManager::Network_Command_ID::TRANS_LAUNCH_READY, Pod_State::E_States::ST_LAUNCH_READY, true);
+  MoveState(NetworkManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, true);
+  MoveState(NetworkManager::Network_Command_ID::TRANS_LAUNCH_COAST, Pod_State::E_States::ST_FLIGHT_COAST, true);
+}
+
 /* 
  * All tests to emergency brake from each mode
  */
