@@ -211,13 +211,31 @@ void Pod_State::steady_launch_ready(std::shared_ptr<NetworkManager::Network_Comm
 }
 
 void Pod_State::steady_flight_accelerate(std::shared_ptr<NetworkManager::Network_Command> command) {
+	// Access Pos, Vel, and Accel from Motion Model
+	double MAX_DECCEL = 19.6;
+	double IDEAL_DECCEL = 9.8;
+	double LENGTH_OF_TRACK = 1000;
+	double BUFFER_LENGTH = 20;
+	double pos = MotionModel.get_state().x[0];
+	double vel = MotionModel.get_state().x[1];
+	double acc = MotionModel.get_state().x[2];
+	
+	double time = vel / IDEAL_DECCEL;
+	if (-.5*IDEAL_DECCEL*time*time+vel*time >= LENGTH_OF_TRACK - BUFFER_LENGTH - pos) {
+		NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST;
+	}
 
+	if (vel > MAX_VELOCITY) {
+		// Switch to coast
+		NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST;
+	}
 }
 
 void Pod_State::steady_flight_coast(std::shared_ptr<NetworkManager::Network_Command> command) {
-
+	// Switch to brake
+		NetworkManager::Network_Command_ID::TRANS_FLIGHT_BRAKE;
 }
 
 void Pod_State::steady_flight_brake(std::shared_ptr<NetworkManager::Network_Command> command) {
-
+	// Brakes are applied
 }
