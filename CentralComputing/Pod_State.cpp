@@ -211,7 +211,7 @@ void Pod_State::steady_launch_ready(std::shared_ptr<NetworkManager::Network_Comm
 
 void Pod_State::steady_flight_accelerate(std::shared_ptr<NetworkManager::Network_Command> command) {
 	std::shared_ptr<StateSpace> stateSpace = SourceManager::MM.Get();
-	NetworkManager::Network_Command_ID id = TRANS_COAST;
+	NetworkManager::Network_Command_ID id = NetworkManager::TRANS_COAST;
 	uint8_t value = 0;
 	double distance = stateSpace.get()->x[0];
 	double velocity = stateSpace.get()->x[1];
@@ -226,12 +226,11 @@ void Pod_State::steady_flight_accelerate(std::shared_ptr<NetworkManager::Network
 		SendCommand(id, value);
 	}
 
-
 }
 
 void Pod_State::steady_flight_coast(std::shared_ptr<NetworkManager::Network_Command> command) {
 	std::shared_ptr<StateSpace> stateSpace = SourceManager::MM.Get();
-	NetworkManager::Network_Command_ID id = TRANS_BRAKE;
+	NetworkManager::Network_Command_ID id = NetworkManager::TRANS_BRAKE;
 	uint8_t value = 0;
 	double distance = stateSpace.get()->x[0];
 	double velocity = stateSpace.get()->x[1];
