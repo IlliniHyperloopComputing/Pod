@@ -36,7 +36,6 @@ Pod_State::E_States Pod_State::get_current_state() {
 	return (E_States)StateMachine::getCurrentState();
 }
 
-
 /**
  * User controlled movement events
 **/
@@ -254,7 +253,7 @@ void Pod_State::steady_flight_brake(std::shared_ptr<NetworkManager::Network_Comm
 }
 
   /*
-   * Helper function to send a command using the simulator
+   * Helper function to send a command
    * @param id the id of the command to run
    * @param value the value for the command
    */
@@ -262,7 +261,4 @@ void SendCommand(NetworkManager::Network_Command_ID id, uint8_t value) {
 	auto command = std::make_shared<NetworkManager::Network_Command>();
 	command->id = id;
 	command->value = value;
-	pod->processing_command.reset();
-	EXPECT_TRUE(SimulatorManager::sim.send_command(command));
-	pod->processing_command.wait();
 }
