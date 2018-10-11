@@ -14,6 +14,8 @@ Pod_State::Pod_State()
   transition_map[NetworkManager::TRANS_LAUNCH_READY] = &Pod_State::move_launch_ready;
   transition_map[NetworkManager::LAUNCH] = &Pod_State::accelerate;
   transition_map[NetworkManager::EMERGENCY_BRAKE] = &Pod_State::emergency_brake;
+  transition_map[NetworkManager::TRANS_COAST] = &Pod_State::coast;
+  transition_map[NetworkManager::TRANS_BRAKE] = &Pod_State::brake;
 //non state transition commands
   transition_map[NetworkManager::ENABLE_MOTOR] = &Pod_State::no_transition;
   transition_map[NetworkManager::DISABLE_MOTOR] = &Pod_State::no_transition;
@@ -209,13 +211,58 @@ void Pod_State::steady_launch_ready(std::shared_ptr<NetworkManager::Network_Comm
 }
 
 void Pod_State::steady_flight_accelerate(std::shared_ptr<NetworkManager::Network_Command> command) {
+	std::shared_ptr<StateSpace> stateSpace = SourceManager::MM.Get();
+	NetworkManager::Network_Command_ID id = TRANS_COAST;
+	uint8_t value = 0;
+	double distance = stateSpace.get()->x[0];
+	double velocity = stateSpace.get()->x[1];
+	//assumes track is 1km long, brake and motor accel/decel at 9.8 m/s^2
+	double accel = 9.8;
+	double track_length = 1000;
+	//TODO Calculate bufferDist value --> accounting for coast time and safety
+	double bufferDist = 100;
+	double buffer = bufferDist * (2 * accel);
+	double position = track_length - distance;
+	if (position * (2 * accel) < (velocity * velocity) + buffer) {
+		SendCommand(id, value);
+	}
+
 
 }
 
 void Pod_State::steady_flight_coast(std::shared_ptr<NetworkManager::Network_Command> command) {
+	std::shared_ptr<StateSpace> stateSpace = SourceManager::MM.Get();
+	NetworkManager::Network_Command_ID id = TRANS_BRAKE;
+	uint8_t value = 0;
+	double distance = stateSpace.get()->x[0];
+	double velocity = stateSpace.get()->x[1];
+	//Assumptions about acceleration and track length
+	double accel = 9.8;
+	double track_length = 1000;
+	//TODO calculate safety bufferDist value
+	double bufferDist = 50;
+	double buffer = bufferDist * (2 * accel);
+	double position = track_length - distance;
+	if (position * (2 * accel) < (velocity * velocity) + buffer) {
+		SendCommand(id, value);
+	}
 
 }
 
 void Pod_State::steady_flight_brake(std::shared_ptr<NetworkManager::Network_Command> command) {
 
+}
+
+  /*
+   * Helper function to send a command using the simulator
+   * @param id the id of the command to run
+   * @param value the value for the command
+   */
+void SendCommand(NetworkManager::Network_Command_ID id, uint8_t value) {
+	auto command = std::make_shared<NetworkManager::Network_Command>();
+	command->id = id;
+	command->value = value;
+	pod->processing_command.reset();
+	EXPECT_TRUE(SimulatorManager::sim.send_command(command));
+	pod->processing_command.wait();
 }
