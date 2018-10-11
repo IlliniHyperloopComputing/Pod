@@ -57,19 +57,19 @@ void Simulator::sim_set_throttle(uint8_t value) {
   print(LogLevel::LOG_DEBUG, "Setting motor throttle: %d\n", value);
 }
 
-void sim_brake_enable() {
+void Simulator::sim_brake_enable() {
   // TODO simulator brake hasn't been implemented yet
 }
 
-void sim_brake_disable() {
+void Simulator::sim_brake_disable() {
   // TODO simulator brake hasn't been implemented yet
 }
 
-void sim_brake_set_pressure(uint8_t value) {
+void Simulator::sim_brake_set_pressure(uint8_t value) {
   // TODO simulator brake hasn't been implemented yet
 }
 
-uint8_t sim_get_position() {
+uint8_t Simulator::sim_get_position() {
   // TODO add something similar to the motion model except values will be calculated from
   // time differentials on when certain commands are called within the simulation such as what
   // time the motor is enabled and with what throttle and when the brakes get activated
