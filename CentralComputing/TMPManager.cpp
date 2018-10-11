@@ -51,3 +51,7 @@ std::shared_ptr<TMPData> TMPManager::refresh() {
   
   return new_data;
 }
+
+std::shared_ptr<TMPData> TMPManager::refresh_sim() {
+  return empty_data();
+}

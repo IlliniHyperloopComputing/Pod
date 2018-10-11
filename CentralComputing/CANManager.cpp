@@ -17,3 +17,7 @@ std::shared_ptr<CANData> CANManager::refresh() {
   i++;
   return new_data;
 }
+
+std::shared_ptr<CANData> CANManager::refresh_sim() {
+  return empty_data();
+}

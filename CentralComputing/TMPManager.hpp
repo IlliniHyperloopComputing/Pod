@@ -17,6 +17,7 @@ class TMPManager : public SourceManagerBase<(long long) (1.0 * 1E6), TMPData, fa
     bool initialize_source();
     void stop_source();
     std::shared_ptr<TMPData> refresh();
+    std::shared_ptr<TMPData> refresh_sim();
 
     std::string prefix = "/sys/bus/w1/devices/";
     std::string suffix = "/w1_slave";

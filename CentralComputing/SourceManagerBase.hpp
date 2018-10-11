@@ -36,11 +36,7 @@ class SourceManagerBase {
         const ::testing::TestInfo* const test_info = 
           ::testing::UnitTest::GetInstance()->current_test_info();
         // Create path to file // test_info->name() and test_info->test_case_name()
-        std::string file =  std::string("tests/data/") 
-                            + test_info->name() + std::string("/") 
-                            + name() + std::string(".txt");
-        test_data.open(file);
-        initialized_correctly = test_data.is_open();
+        initialized_correctly = true;
       #else
         // Initialize the source manager
         initialized_correctly = initialize_source();
@@ -51,7 +47,7 @@ class SourceManagerBase {
         // If initialized correcly, setup the worker
         
         #ifdef SIM
-          data = read_test_data();
+          data = refresh_sim();
         #else
           data = refresh();
         #endif
@@ -65,7 +61,7 @@ class SourceManagerBase {
 
         // Did not setup correctly. Print error and set garbage data
         #ifdef SIM
-          print(LogLevel::LOG_ERROR, "Failed to initialize: %s. Can't open file: %s\n", name().c_str(), file.c_str());
+          print(LogLevel::LOG_ERROR, "Failed to initialize: %s.\n", name().c_str());
         #else
           print(LogLevel::LOG_ERROR, "Failed to initialize: %s. Not running worker thread\n", name().c_str());
         #endif
@@ -90,9 +86,6 @@ class SourceManagerBase {
 
         worker.join();
         stop_source();
-        #ifdef SIM
-          test_data.close();
-        #endif
       }
     }
 
@@ -107,6 +100,14 @@ class SourceManagerBase {
       return running.load();
     }
 
+  protected:
+
+    std::shared_ptr<Data> empty_data(){
+      std::shared_ptr<Data> d = std::make_shared<Data>();
+      memset(d.get(), (uint8_t)0, sizeof(Data));
+      return d;
+    }
+
   private:
     // Init and Stop functions can setup devices/ file I/O
     // Stop will only be called if init returns true
@@ -117,12 +118,14 @@ class SourceManagerBase {
     
     virtual std::shared_ptr<Data> refresh() = 0; //constructs a new Data object and fills it in
 
+    virtual std::shared_ptr<Data> refresh_sim() = 0; //constructs a new Data object and fills it in with data from the simulator
+
     void refresh_loop() {
       while(running.load()) {
         #ifndef SIM
           std::shared_ptr<Data> new_data = refresh();
         #else
-          std::shared_ptr<Data> new_data = read_test_data();
+          std::shared_ptr<Data> new_data = refresh_sim();
         #endif
         mutex.lock();
         data = new_data;
@@ -136,14 +139,6 @@ class SourceManagerBase {
       }
     }
 
-    #ifdef SIM
-    std::shared_ptr<Data> read_test_data(){
-      std::shared_ptr<Data> d = std::make_shared<Data>();
-      memset(d.get(), (uint8_t)0, sizeof(Data));
-      return d;
-    }
-    std::ifstream test_data;  
-    #endif
 
     std::shared_ptr<Data> data;
     std::mutex mutex;

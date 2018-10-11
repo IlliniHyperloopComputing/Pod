@@ -33,6 +33,7 @@ class PRUManager : public SourceManagerBase<(long long) (0.010 * 1E6), PRUData, 
     bool initialize_source();
     void stop_source();
     std::shared_ptr<PRUData> refresh();
+    std::shared_ptr<PRUData> refresh_sim();
 
     double convert_to_velocity(uint32_t decay, uint32_t delta, double distance);
 

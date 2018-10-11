@@ -73,3 +73,7 @@ std::shared_ptr<StateSpace> MotionModel::refresh(){
   return new_data;
 }
 
+
+std::shared_ptr<StateSpace> MotionModel::refresh_sim() {
+  return empty_data();
+}
