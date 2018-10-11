@@ -223,7 +223,10 @@ void Pod_State::steady_flight_accelerate(std::shared_ptr<NetworkManager::Network
 	double buffer = bufferDist * (2 * accel);
 	double position = track_length - distance;
 	if (position * (2 * accel) < (velocity * velocity) + buffer) {
-		SendCommand(id, value);
+		auto command = std::make_shared<NetworkManager::Network_Command>();
+		command->id = id;
+		command->value = value;
+		NetworkManager::command_queue.enqueue(command);
 	}
 
 }
@@ -242,7 +245,10 @@ void Pod_State::steady_flight_coast(std::shared_ptr<NetworkManager::Network_Comm
 	double buffer = bufferDist * (2 * accel);
 	double position = track_length - distance;
 	if (position * (2 * accel) < (velocity * velocity) + buffer) {
-		SendCommand(id, value);
+		auto command = std::make_shared<NetworkManager::Network_Command>();
+		command->id = id;
+		command->value = value;
+		NetworkManager::command_queue.enqueue(command);
 	}
 
 }
@@ -251,14 +257,3 @@ void Pod_State::steady_flight_brake(std::shared_ptr<NetworkManager::Network_Comm
 
 }
 
-  /*
-   * Helper function to send a command
-   * @param id the id of the command to run
-   * @param value the value for the command
-   */
-void SendCommand(NetworkManager::Network_Command_ID id, uint8_t value) {
-	auto command = std::make_shared<NetworkManager::Network_Command>();
-	command->id = id;
-	command->value = value;
-	NetworkManager::command_queue.enqueue(command);
-}
