@@ -260,4 +260,5 @@ void SendCommand(NetworkManager::Network_Command_ID id, uint8_t value) {
 	auto command = std::make_shared<NetworkManager::Network_Command>();
 	command->id = id;
 	command->value = value;
+	NetworkManager::command_queue.enqueue(command);
 }
