@@ -45,15 +45,15 @@ bool Simulator::sim_connect(const char * hostname, const char * port) {
   return true;
 }
 
-void Simulator::sim_enable_motors() {
+void Simulator::sim_motor_enable() {
   print(LogLevel::LOG_DEBUG, "Enabling motors\n");
 }
 
-void Simulator::sim_disable_motors() {
+void Simulator::sim_motor_disable() {
   print(LogLevel::LOG_DEBUG, "Disabling motors\n");
 }
 
-void Simulator::sim_set_throttle(uint8_t value) {
+void Simulator::sim_motor_set_throttle(uint8_t value) {
   print(LogLevel::LOG_DEBUG, "Setting motor throttle: %d\n", value);
 }
 
@@ -73,6 +73,7 @@ uint8_t Simulator::sim_get_position() {
   // TODO add something similar to the motion model except values will be calculated from
   // time differentials on when certain commands are called within the simulation such as what
   // time the motor is enabled and with what throttle and when the brakes get activated
+  return 0;
 }
 
 bool Simulator::send_command(shared_ptr<NetworkManager::Network_Command> command) {

@@ -57,7 +57,7 @@ class Simulator {
      * Simulates setting the brake pressure to a specific Value
      * param value the new brake pressure
      */
-    void sim_brake_set_pressure(int8_t value);
+    void sim_brake_set_pressure(uint8_t value);
 
 
     /*
@@ -65,7 +65,7 @@ class Simulator {
      */
     uint8_t sim_get_position();
 
-    
+
     /**
      * Sends the given command to the connected pod
      * @param command the command to send
