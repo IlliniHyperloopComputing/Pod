@@ -25,7 +25,6 @@ struct StateSpace {
 
 class MotionModel : public SourceManagerBase<(long long) (0.005 * 1E6), StateSpace, false> {
   public:
-    std::shared_ptr<StateSpace> get_state();
 
   private:
     // Source Manager methods
