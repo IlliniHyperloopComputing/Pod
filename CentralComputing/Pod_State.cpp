@@ -223,10 +223,10 @@ void Pod_State::steady_flight_accelerate(std::shared_ptr<NetworkManager::Network
 	double buffer = bufferDist * (2 * accel);
 	double position = track_length - distance;
 	if (position * (2 * accel) < (velocity * velocity) + buffer) {
-		auto command = std::make_shared<NetworkManager::Network_Command>();
-		command->id = id;
-		command->value = value;
-		NetworkManager::command_queue.enqueue(command);
+		auto commands = std::make_shared<NetworkManager::Network_Command>();
+		commands->id = id;
+		commands->value = value;
+		NetworkManager::command_queue.enqueue(commands);
 	}
 
 }
@@ -245,10 +245,10 @@ void Pod_State::steady_flight_coast(std::shared_ptr<NetworkManager::Network_Comm
 	double buffer = bufferDist * (2 * accel);
 	double position = track_length - distance;
 	if (position * (2 * accel) < (velocity * velocity) + buffer) {
-		auto command = std::make_shared<NetworkManager::Network_Command>();
-		command->id = id;
-		command->value = value;
-		NetworkManager::command_queue.enqueue(command);
+		auto commands = std::make_shared<NetworkManager::Network_Command>();
+		commands->id = id;
+		commands->value = value;
+		NetworkManager::command_queue.enqueue(commands);
 	}
 
 }
