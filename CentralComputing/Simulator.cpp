@@ -45,6 +45,37 @@ bool Simulator::sim_connect(const char * hostname, const char * port) {
   return true;
 }
 
+void Simulator::sim_motor_enable() {
+  print(LogLevel::LOG_DEBUG, "Enabling motors\n");
+}
+
+void Simulator::sim_motor_disable() {
+  print(LogLevel::LOG_DEBUG, "Disabling motors\n");
+}
+
+void Simulator::sim_motor_set_throttle(uint8_t value) {
+  print(LogLevel::LOG_DEBUG, "Setting motor throttle: %d\n", value);
+}
+
+void Simulator::sim_brake_enable() {
+  // TODO simulator brake hasn't been implemented yet
+}
+
+void Simulator::sim_brake_disable() {
+  // TODO simulator brake hasn't been implemented yet
+}
+
+void Simulator::sim_brake_set_pressure(uint8_t value) {
+  // TODO simulator brake hasn't been implemented yet
+}
+
+uint8_t Simulator::sim_get_position() {
+  // TODO add something similar to the motion model except values will be calculated from
+  // time differentials on when certain commands are called within the simulation such as what
+  // time the motor is enabled and with what throttle and when the brakes get activated
+  return 0;
+}
+
 bool Simulator::send_command(shared_ptr<NetworkManager::Network_Command> command) {
   int bytes_written = write(socketfd, command.get(), sizeof(NetworkManager::Network_Command));
   //print(LogLevel::LOG_EDEBUG, "Bytes written : %d, ID : %d, Value : %d\n", bytes_written, command->id, command->value);
@@ -58,8 +89,8 @@ void Simulator::read_loop() {
     // dump the data because we don't need it or do anything with it.
     // TODO if we want to we can keep the data and use it for error checking purposes
     // but that seems redundant and like a lot of work
-    
-    char buf[100]; 
+
+    char buf[100];
     read(socketfd, buf, 100);
 
   }
