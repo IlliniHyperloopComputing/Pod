@@ -21,3 +21,6 @@ std::shared_ptr<ADCData> ADCManager::refresh() {
   return new_data;
 }
 
+std::shared_ptr<ADCData> ADCManager::refresh_sim() {
+  return empty_data();
+}

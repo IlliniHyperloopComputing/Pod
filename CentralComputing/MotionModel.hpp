@@ -32,6 +32,7 @@ class MotionModel : public SourceManagerBase<(long long) (0.005 * 1E6), StateSpa
     bool initialize_source();
     void stop_source();
     std::shared_ptr<StateSpace> refresh();
+    std::shared_ptr<StateSpace> refresh_sim();
 
     std::string name(){
       return "mm";

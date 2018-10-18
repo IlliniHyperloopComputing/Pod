@@ -105,3 +105,7 @@ double PRUManager::convert_to_velocity(uint32_t decay, uint32_t delta, double di
     }
 
 }
+
+std::shared_ptr<PRUData> PRUManager::refresh_sim() {
+  return empty_data();
+}
