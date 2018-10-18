@@ -237,7 +237,7 @@ void Pod_State::steady_flight_coast(std::shared_ptr<NetworkManager::Network_Comm
 	double velocity= motion->x[1];
 	double acceleration= motion ->x[2];
 
-	if((trackLength+distance) <= (velocity*velocity)/(2*deceleration)){
+	if((trackLength-distance) <= (velocity*velocity)/(2*deceleration)){
 		//Queue brake
 	}
 	else if((trackLength-(distance+coastdistance))<= (velocity*velocity)/(2*deceleration)){
