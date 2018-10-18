@@ -13,6 +13,8 @@ Pod_State::Pod_State()
   transition_map[NetworkManager::TRANS_LOADING] = &Pod_State::move_loading;
   transition_map[NetworkManager::TRANS_LAUNCH_READY] = &Pod_State::move_launch_ready;
   transition_map[NetworkManager::LAUNCH] = &Pod_State::accelerate;
+  transition_map[NetworkManager::TRANS_FLIGHT_COAST] = &Pod_State::coast;
+  transition_map[NetworkManager::FLIGHT_BRAKE] = &Pod_State::brake;
   transition_map[NetworkManager::EMERGENCY_BRAKE] = &Pod_State::emergency_brake;
 //non state transition commands
   transition_map[NetworkManager::ENABLE_MOTOR] = &Pod_State::no_transition;
@@ -208,12 +210,39 @@ void Pod_State::steady_launch_ready(std::shared_ptr<NetworkManager::Network_Comm
 
 }
 
-void Pod_State::steady_flight_accelerate(std::shared_ptr<NetworkManager::Network_Command> command) {
+double trackLength=1000;
+double deceleration=9.8;
+double coastdistance=50;
+double peakvelocity=200;
 
+
+void Pod_State::steady_flight_accelerate(std::shared_ptr<NetworkManager::Network_Command> command) {
+	std::shared_ptr<StateSpace> motion= SourceManager::MM.Get();
+	double distance= motion->x[0];
+	double velocity= motion->x[1];
+	double acceleration= motion ->x[2];
+
+	if(distance <= (velocity*velocity)/(2*deceleration)){ //immediately transition to brake
+		//Queue brake
+	}
+	else if((trackLength-(distance+coastdistance))<= (velocity*velocity)/(2*deceleration) || (velocity>peakvelocity)){
+		//queue coast
+	}
+	//else remain in accelerate
 }
 
-void Pod_State::steady_flight_coast(std::shared_ptr<NetworkManager::Network_Command> command) {
+void Pod_State::steady_flight_coast(std::shared_ptr<NetworkManager::Network_Command> command) {	
+	std::shared_ptr<StateSpace> motion= SourceManager::MM.Get();
+	double distance= motion->x[0];
+	double velocity= motion->x[1];
+	double acceleration= motion ->x[2];
 
+	if((trackLength+distance) <= (velocity*velocity)/(2*deceleration)){
+		//Queue brake
+	}
+	else if((trackLength-(distance+coastdistance))<= (velocity*velocity)/(2*deceleration)){
+		//remain in coast
+	}
 }
 
 void Pod_State::steady_flight_brake(std::shared_ptr<NetworkManager::Network_Command> command) {

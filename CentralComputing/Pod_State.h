@@ -59,6 +59,7 @@ class Pod_State : public StateMachine {
 		void move_functional_tests();
     void move_loading();
 		void move_launch_ready();
+		void move_flight_coast();
 		void accelerate();
 		void emergency_brake();
     void no_transition(); //used in map to make things nice
