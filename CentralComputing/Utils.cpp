@@ -36,14 +36,6 @@ void Utils::print(LogLevel level, const char * format, ...){
       }
 }
 
-void Utils::busyWait(int microseconds) {
-	double target = std::clock() + microseconds;
-	while (std::clock() < target) {
-		;;;
-	}
-	return;
-}
-
 long long Utils::microseconds() {
   static long long start_time = -1;
   auto now = std::chrono::system_clock::now();

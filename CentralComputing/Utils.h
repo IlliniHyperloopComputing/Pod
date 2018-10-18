@@ -26,8 +26,6 @@ extern LogLevel loglevel;
 
 void print(LogLevel level, const char * format, ...);
 
-void busyWait(int microseconds);
-
 /**
 * Prints errno, with user defined message prepended
 **/
