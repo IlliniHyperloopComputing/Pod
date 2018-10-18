@@ -1,6 +1,14 @@
-#include "Pod_State.h"
+#include "Pod_State.h" 
+#include "Pod.h"
+#include "SourceManager.hpp"
 
 using namespace Utils;
+
+double MAX_DECCEL = 19.6;
+double IDEAL_DECCEL = 9.8;
+double LENGTH_OF_TRACK = 1000;
+double BUFFER_LENGTH = 20;
+double MAX_VELOCITY = 550;
 
 //Pod_State::Pod_State(Brake * brake, Motor * motor, Sensor * sensor)
 Pod_State::Pod_State()
@@ -13,6 +21,8 @@ Pod_State::Pod_State()
   transition_map[NetworkManager::TRANS_LOADING] = &Pod_State::move_loading;
   transition_map[NetworkManager::TRANS_LAUNCH_READY] = &Pod_State::move_launch_ready;
   transition_map[NetworkManager::LAUNCH] = &Pod_State::accelerate;
+  transition_map[NetworkManager::TRANS_FLIGHT_COAST] = &Pod_State::coast;
+  transition_map[NetworkManager::TRANS_FLIGHT_BRAKE] = &Pod_State::brake;
   transition_map[NetworkManager::EMERGENCY_BRAKE] = &Pod_State::emergency_brake;
 //non state transition commands
   transition_map[NetworkManager::ENABLE_MOTOR] = &Pod_State::no_transition;
@@ -209,13 +219,52 @@ void Pod_State::steady_launch_ready(std::shared_ptr<NetworkManager::Network_Comm
 }
 
 void Pod_State::steady_flight_accelerate(std::shared_ptr<NetworkManager::Network_Command> command) {
+	// Access Pos, Vel, and Accel from Motion Model
+	std::shared_ptr<StateSpace> state = SourceManager::MM.Get();
+	double pos = state->x[0];
+	double vel = state->x[1];
+	double acc = state->x[2];
+	
+	if (shouldBrake(vel, pos)) {
+		
+		auto newCommand = std::make_shared<NetworkManager::Network_Command>();
+		newCommand->id = NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST;
+		newCommand->value = 0;
+		NetworkManager::command_queue.enqueue(newCommand);
+	}
 
+	if (vel > MAX_VELOCITY) {
+		// Switch to coast
+		auto newCommand = std::make_shared<NetworkManager::Network_Command>();
+		newCommand->id = NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST;
+		newCommand->value = 0;
+		NetworkManager::command_queue.enqueue(newCommand);
+	}
 }
 
 void Pod_State::steady_flight_coast(std::shared_ptr<NetworkManager::Network_Command> command) {
-
+	std::shared_ptr<StateSpace> state = SourceManager::MM.Get();
+	double pos = state->x[0];
+	double vel = state->x[1];
+	double acc = state->x[2];
+	
+	if (shouldBrake(vel, pos)) {
+		auto newCommand = std::make_shared<NetworkManager::Network_Command>();
+		newCommand->id = NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST;
+		newCommand->value = 0;
+		NetworkManager::command_queue.enqueue(newCommand);
+	}
 }
 
 void Pod_State::steady_flight_brake(std::shared_ptr<NetworkManager::Network_Command> command) {
+	// Brakes are applied
+}
 
+bool Pod_State::shouldBrake(double vel, double pos) {
+
+	if (-.5*vel*vel/IDEAL_DECCEL+vel*vel/IDEAL_DECCEL >= LENGTH_OF_TRACK - BUFFER_LENGTH - pos) {
+		return true;
+	} else {
+		return false;
+	}
 }

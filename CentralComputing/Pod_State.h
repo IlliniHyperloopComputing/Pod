@@ -8,6 +8,8 @@
 #include <string>
 #include <map>
 
+
+
 class Pod_State;
 typedef void (Pod_State::*steady_state_function) (std::shared_ptr<NetworkManager::Network_Command> command);
 typedef void (Pod_State::*transition_function) ();
@@ -60,6 +62,8 @@ class Pod_State : public StateMachine {
     void move_loading();
 		void move_launch_ready();
 		void accelerate();
+		void move_flight_coast();
+		void move_flight_brake();
 		void emergency_brake();
     void no_transition(); //used in map to make things nice
 
@@ -111,6 +115,8 @@ class Pod_State : public StateMachine {
 		void ST_Flight_Accel();
 		void ST_Flight_Coast();
 		void ST_Flight_Brake();
+
+		bool shouldBrake(double, double);
 
 
 		BEGIN_STATE_MAP
