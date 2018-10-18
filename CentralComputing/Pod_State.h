@@ -3,6 +3,7 @@
 
 #include "StateMachineCompact/StateMachine.h"
 #include "Motor.hpp"
+#include "Brake.hpp"
 #include "NetworkManager.hpp"
 #include <iostream>
 #include <string>
@@ -99,6 +100,7 @@ class Pod_State : public StateMachine {
     }
 
     Motor motor;
+    Brake podBrake;
 		
 	private:
     std::map<NetworkManager::Network_Command_ID, transition_function> transition_map; 

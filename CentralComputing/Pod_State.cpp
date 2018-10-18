@@ -159,14 +159,30 @@ void Pod_State::ST_Launch_Ready() {
 
 void Pod_State::ST_Flight_Accel() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  
+  podBrake.disable_brakes();
+  std::cout << "podBrake.is_enabled()";
+  
+  motor.enable_motors();
+  std::cout << "motor.is_enabled()";
 }
 
 void Pod_State::ST_Flight_Coast() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  
+  podBrake.disable_brakes();
+  std::cout << "podBrake.is_enabled()";
+  
+  motor.disable_motors();
+  std::cout << "motor.is_enabled()";
 }
 
 void Pod_State::ST_Flight_Brake() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  
+  podBrake.enable_brakes();
+  std::cout << "podBrake.is_enabled()";
+
 }
 
 /////////////////////////////
