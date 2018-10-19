@@ -168,14 +168,18 @@ void Pod_State::ST_Launch_Ready() {
 }
 
 void Pod_State::ST_Flight_Accel() {
+	brakes.disable_brakes();
+	motor.enable_motors();
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
 }
 
 void Pod_State::ST_Flight_Coast() {
+	motor.disable_motors();
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
 }
 
 void Pod_State::ST_Flight_Brake() {
+	brakes.enable_brakes();
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
 }
 

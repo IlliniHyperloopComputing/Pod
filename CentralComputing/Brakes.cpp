@@ -6,10 +6,14 @@ Brakes::Brakes(){
 }
 
 void Brakes::enable_brakes() {
+	set_enable(true);
+	enabled = true;
   print(LogLevel::LOG_DEBUG, "Brakes Enabled\n");
 }
 
 void Brakes::disable_brakes() {
+	set_enable(false);
+	enabled = false;
   print(LogLevel::LOG_DEBUG, "Brakes Disabled\n");
 }
 
