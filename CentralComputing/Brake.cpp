@@ -19,7 +19,7 @@ void Brake::set_enable(bool enable){
 }
 
 bool Brake::is_enabled(){
-  return 0;
+  return enabled;
 }
 
 int16_t Brake::calculate_pressure(double dt, int16_t last_pressure){

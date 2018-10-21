@@ -14,6 +14,8 @@ Pod_State::Pod_State()
   transition_map[NetworkManager::TRANS_LAUNCH_READY] = &Pod_State::move_launch_ready;
   transition_map[NetworkManager::LAUNCH] = &Pod_State::accelerate;
   transition_map[NetworkManager::EMERGENCY_BRAKE] = &Pod_State::emergency_brake;
+  transition_map[NetworkManager::TRANS_FLIGHT_COAST] = &Pod_State::move_flight_coast;
+  transition_map[NetworkManager::TRANS_FLIGHT_BRAKE] = &Pod_State::move_flight_brake;
 //non state transition commands
   transition_map[NetworkManager::ENABLE_MOTOR] = &Pod_State::no_transition;
   transition_map[NetworkManager::DISABLE_MOTOR] = &Pod_State::no_transition;
@@ -115,7 +117,7 @@ void Pod_State::accelerate() {
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight brake */
 	END_TRANSITION_MAP(NULL)
 }
-void Pod_State::coast() {
+void Pod_State::move_flight_coast() {
 	BEGIN_TRANSITION_MAP							/* Current state */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Safe Mode */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Functional test */
@@ -127,7 +129,7 @@ void Pod_State::coast() {
 	END_TRANSITION_MAP(NULL)
 }
 
-void Pod_State::brake() {
+void Pod_State::move_flight_brake() {
 	BEGIN_TRANSITION_MAP							/* Current state */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Safe Mode */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Functional test */
@@ -158,14 +160,17 @@ void Pod_State::ST_Launch_Ready() {
 }
 
 void Pod_State::ST_Flight_Accel() {
+  motor.enable_motors();
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
 }
 
 void Pod_State::ST_Flight_Coast() {
+  motor.disable_motors();
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
 }
 
 void Pod_State::ST_Flight_Brake() {
+  
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
 }
 
@@ -189,10 +194,10 @@ void Pod_State::steady_functional(std::shared_ptr<NetworkManager::Network_Comman
       motor.set_throttle(command->value * 4); //value is 0-250, set_throttle expects 0-1000
 			break;
   	case NetworkManager::ENABLE_BRAKE:
-      //activate brakes
+      brake.enable_Brakes();
 			break;
 		case NetworkManager::DISABLE_BRAKE:
-      //deactivate brakes
+      brake.disable_Brakes();
 			break;
 		case NetworkManager::SET_BRAKE_PRESSURE:
     default:
