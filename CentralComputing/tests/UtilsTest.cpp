@@ -8,12 +8,12 @@
 
 TEST(UtilsTest, busyWaitTest) {
 	//buffer based on how accurate busyWait needs to be while still passing the test
-	long buffer = 100;
+	long buffer = 100000;
 	std::clock_t start = std::clock();
 	//Set time according to how long the test should be for
-	long time = 10000;
+	long time = 1000000;
 	Utils::busyWait(time);
-	double elapsedTime = (double) (((std::clock() - start) / ((double) CLOCKS_PER_SEC)) * 1000);
+	double elapsedTime = (double) (((std::clock() - start) / ((double) CLOCKS_PER_SEC)) * 1000000);
 	EXPECT_GE((long) elapsedTime, time - buffer);
 	EXPECT_LE((long) elapsedTime, time + buffer);
 }
