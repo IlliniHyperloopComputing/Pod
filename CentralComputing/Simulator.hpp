@@ -99,9 +99,6 @@ class Simulator {
 
     int socketfd;
 
-    //TODO:
-    //Add brake status, motor status
-
     double timeLast = -1;
     double timeDelta = 0.000;
     
