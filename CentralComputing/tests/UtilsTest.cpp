@@ -1,11 +1,12 @@
 #include "Utils.h"
+#include "Pod.h"
 #include "Event.hpp"
 #include "Simulator.hpp"
 #include <ctime>
 #include <iostream>
 #include <cstdio>
 
-TEST(UtilsTest, busyWaitTest){
+TEST(UtilsTest, busyWaitTest) {
 	//buffer based on how accurate busyWait needs to be while still passing the test
 	long buffer = 100;
 	std::clock_t start = std::clock();
