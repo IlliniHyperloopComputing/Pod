@@ -62,48 +62,49 @@ void Simulator::sim_motor_set_throttle(uint8_t value) {
 }
 
 void Simulator::sim_brake_enable() {
-  // TODO simulator brake hasn't been implemented yet
+  print(LogLevel::LOG_DEBUG, "Enabling brakes\n");
   brakesOn = true;
 }
 
 void Simulator::sim_brake_disable() {
-  // TODO simulator brake hasn't been implemented yet
+  print(LogLevel::LOG_DEBUG, "Disabling brakes\n");
   brakesOn = false;
 }
 
 void Simulator::sim_brake_set_pressure(uint8_t value) {
-  // TODO simulator brake hasn't been implemented yet
+  print(LogLevel::LOG_DEBUG, "Setting brake pressure: %d\n", value);
   pressure = value;
 }
 
 std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
-   //use the current state of the brakes/motors to simulate the new position, velocity, acceleration and return them as a StateSpace object
-  //get time from Utils.cpp
+  //FOR FIRST CALL
   if (timeLast == -1) {
     timeDelta = 0.000;
     timeLast = Utils::microseconds();
-  }
-  else {
+  } else { //SUBSEQUENT CALLS
     timeDelta = Utils::microseconds() - timeLast;
   }
 
   if (motorsOn) {
-    acceleration = (MAX_ACCEL) * (throttle);
+    acceleration = MAX_ACCEL * throttle;
   } else if (brakesOn) {
-    acceleration = (MAX_DECEL) * (pressure);
+    acceleration = MAX_DECEL * pressure;
   } else {
     acceleration = 0;
   }
 
-  velocity = lastVelocity + (acceleration) * (timeDelta);
+  //KINEMATIC PHYSICS CALCULATIONS
+  velocity = lastVelocity + (acceleration * timeDelta);
   velocity = (lastVelocity + velocity)/2;
-  position = lastPosition + (velocity) * (timeDelta) + (0.5) * (acceleration) * (timeDelta * timeDelta);
+  position = lastPosition + (velocity * timeDelta) + (0.5 * acceleration * timeDelta * timeDelta);
 
+  //CREATING A STATESPACE OBJECT AND SETTINGS ITS ARRAY'S VALUES
   shared_ptr<StateSpace> space = std::make_shared<StateSpace>();
   space -> x[0] = position;
   space -> x[1] = velocity;
   space -> x[2] = acceleration;
 
+  //UPDATING VARIABLES
   lastPosition = position;
   lastVelocity = velocity;
   timeLast = Utils::microseconds();
