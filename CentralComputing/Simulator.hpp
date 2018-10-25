@@ -4,6 +4,10 @@
 
 #include "NetworkManager.hpp"
 #include "Pod_State.h"
+
+#define MAX_ACCEL 9.81
+#define MAX_DECEL -9.81
+
 using namespace std;
 class Simulator {
 
@@ -63,7 +67,7 @@ class Simulator {
     /*
      * Returns the pod's position within the simulation
      */
-    uint8_t sim_get_position();
+    std::shared_ptr<StateSpace> sim_get_motion();
 
 
     /**
@@ -96,6 +100,19 @@ class Simulator {
 
     //TODO:
     //Add brake status, motor status
+
+    bool brakeStatus;
+    bool motorStatus;
+
+    uint8_t pressure;
+    uint8_t throttle;
+
+    long long lastTime = -1;
+    double delta;
+    
+    double position;
+    double velocity;
+    double acceleration;
 };
 namespace SimulatorManager {
   extern Simulator sim;
