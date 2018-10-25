@@ -65,7 +65,8 @@ class Simulator {
 
 
     /*
-     * Returns the pod's position within the simulation
+     * Uses the current state of the brakes/motors to simulate the new position, velocity, 
+     * and acceleration and returns them as a StateSpace object
      */
     std::shared_ptr<StateSpace> sim_get_motion();
 
