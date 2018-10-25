@@ -101,18 +101,20 @@ class Simulator {
     //TODO:
     //Add brake status, motor status
 
-    bool brakeStatus;
-    bool motorStatus;
-
-    uint8_t pressure;
-    uint8_t throttle;
-
-    long long lastTime = -1;
-    double delta;
+    double timeLast = -1;
+    double timeDelta = 0.000;
     
-    double position;
-    double velocity;
-    double acceleration;
+    bool motorsOn = false;
+    bool brakesOn = false;
+    
+    uint8_t throttle = 0.000;
+    uint8_t pressure = 0.000;
+    
+    double position = 0.000;
+    double lastPosition = 0.000;
+    double velocity = 0.000;
+    double lastVelocity = 0.000;
+    double acceleration = 0.000;
 };
 namespace SimulatorManager {
   extern Simulator sim;
