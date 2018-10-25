@@ -47,12 +47,12 @@ bool Simulator::sim_connect(const char * hostname, const char * port) {
 
 void Simulator::sim_motor_enable() {
   print(LogLevel::LOG_DEBUG, "Enabling motors\n");
-  motorStatus = true;
+  motorsOn = true;
 }
 
 void Simulator::sim_motor_disable() {
   print(LogLevel::LOG_DEBUG, "Disabling motors\n");
-  motorStatus = false;
+  motorsOn = false;
 
 }
 
@@ -63,12 +63,12 @@ void Simulator::sim_motor_set_throttle(uint8_t value) {
 
 void Simulator::sim_brake_enable() {
   // TODO simulator brake hasn't been implemented yet
-  brakeStatus = true;
+  brakesOn = true;
 }
 
 void Simulator::sim_brake_disable() {
   // TODO simulator brake hasn't been implemented yet
-  brakeStatus = false;
+  brakesOn = false;
 }
 
 void Simulator::sim_brake_set_pressure(uint8_t value) {
@@ -77,33 +77,38 @@ void Simulator::sim_brake_set_pressure(uint8_t value) {
 }
 
 std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
-  // TODO add something similar to the motion model except values will be calculated from
-  // time differentials on when certain commands are called within the simulation such as what
-  // time the motor is enabled and with what throttle and when the brakes get activated
-  
-    double avgVelocity = 0.0;
-    if(lastTime == -1){
-	delta = 0;
-	lastTime = Utils::microseconds();
-	return 0;
-    }
-    else{
-	delta = Utils::microseconds() - lastTime;
-	if(motorStatus){
-	    acceleration = MAX_ACCEL * throttle;
-	} else if(brakeStatus){
-	    acceleration = MAX_DECEL * pressure;
-	}
-	avgVelocity = (velocity + acceleration * delta) / 2;
-	position += avgVelocity * delta + (0.5) * delta * delta * acceleration;
-	velocity = velocity + acceleration * delta;
-	shared_ptr<StateSpace> space = std::make_shared<StateSpace>();
-	space -> x[0] = position;
-	space -> x[1] = velocity;
-	space -> x[2] = acceleration;
-	lastTime = Utils::microseconds();
-	return space;
-    }
+   //use the current state of the brakes/motors to simulate the new position, velocity, acceleration and return them as a StateSpace object
+  //get time from Utils.cpp
+  if (timeLast == -1) {
+    timeDelta = 0.000;
+    timeLast = Utils::microseconds();
+  }
+  else {
+    timeDelta = Utils::microseconds() - timeLast;
+  }
+
+  if (motorsOn) {
+    acceleration = (MAX_ACCEL) * (throttle);
+  } else if (brakesOn) {
+    acceleration = (MAX_DECEL) * (pressure);
+  } else {
+    acceleration = 0;
+  }
+
+  velocity = lastVelocity + (acceleration) * (timeDelta);
+  velocity = (lastVelocity + velocity)/2;
+  position = lastPosition + (velocity) * (timeDelta) + (0.5) * (acceleration) * (timeDelta * timeDelta);
+
+  shared_ptr<StateSpace> space = std::make_shared<StateSpace>();
+  space -> x[0] = position;
+  space -> x[1] = velocity;
+  space -> x[2] = acceleration;
+
+  lastPosition = position;
+  lastVelocity = velocity;
+  timeLast = Utils::microseconds();
+
+  return space;
 }
 
 
