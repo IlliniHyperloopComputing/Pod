@@ -6,24 +6,25 @@ AccelerationRunTime = [];
 
 %Change parameters below
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-gearVec = 4.0:0.1:4; %loop through gear ratios for the Emrax
+gearVec = 3.6:0.1:4.2; %loop through gear ratios for the Emrax
 TP100GearRatio = 1; %Assuming direct drive
 runlength = 1200; %Assume 1.25 km track, want to leave 50 meter safety at the end
 
 radiusEmrax = 0.0762; %wheel Radius (meters)
 radiusTP100 = 0.0762; %wheel Radius (meters)
 
+powerVariables = 1:1:5;
 
-EmraxPower = 70; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT go over this value
-EmraxBatteryMaxPower = 90; % Max BATTERY OUTPUT in kw. THIS THROTTLES THE EMRAX. The BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
+EmraxPower = 60; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT go over this value
+EmraxBatteryMaxPower = 70; % Max BATTERY OUTPUT in kw. THIS THROTTLES THE EMRAX. The BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
 EmraxPeakTorque = 240; %Peak torque, in Nm
 EmraxMaxRPM = 4400; %Max RPM under load
 EmraxWeight = 12; %kg
 EmsisoWeight = 4.9;
-EmraxBatteryWeight = 40; %weight in kg
+EmraxBatteryWeight = 20; %weight in kg
 EmraxBatteryVoltage = 125; %Starting voltage
-EmraxBatteryAH = 3; 
-EmraxBatteryResistance = 0.04; 
+EmraxBatteryAH = 5.5*4; 
+EmraxBatteryResistance = 0.05; 
 EmraxControllerEfficiency = 0.95;
 
 TP100Power = 25; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT GO OVER THIS VALUE
@@ -31,22 +32,50 @@ TP100AvgBatteryMaxPower = 25; % % Max BATTERY. THIS THROTTLES A TP100. in kW. BA
 TP100PeakTorque = 9.75; %Peak torque, in Nm
 TP100MaxRPM = 25000; %Max RPM under load
 TP100Num = 6; %NUMBER OF TP100s
-TP100AvgWeight = 28/6.0; % According to UC's powerpoint
+TP100AvgWeight = (28)/6.0; % According to UC's powerpoint
+TP100AvgBatteryWeight = 30/6.0;
 TP100BatteryVoltage = 85;
-TP100AvgBatteryAH = 1;
+TP100AvgBatteryAH = 5.5*3/2.0;
 TP100AvgBatteryResistance = 0.03;%
 TP100ControllerEfficiency = 0.95;
 
 %Pod Mass (kg), Right now its (frame and structure) + Emrax + Emsiso + Emrax battery + TP100 system
-mass = 60 + EmraxWeight + EmsisoWeight + EmraxBatteryWeight + TP100AvgWeight*TP100Num; 
+mass = 60 + EmraxWeight + EmsisoWeight + EmraxBatteryWeight + TP100AvgWeight*TP100Num + TP100AvgBatteryWeight*TP100Num; 
 maxG = 5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%
-dt = 0.05; %delta time
+dt = 0.1; %delta time
 %%%%%%
 disp("ALL VALUES AND GRAPHS OF TP100 ARE FOR A SINGLE TP100");
 fprintf('Time | TransmissionRatio | TopSpeed(m/s) | BrakingForce(N) | AccelDistance(m) | BrakeDistance(m) | MaxGForce | heatEmrax | heatEmissio | heatEmraxBattery | heatTP100 | heatTP100ESC | heatTP100Battery \n');
+for p_opts = powerVariables
+if(p_opts ==1)
+  disp("POWER OPTION 1");
+  EmraxPower = 45;
+  EmraxBatteryMaxPower = 50;
+elseif(p_opts==2)
+  disp("POWER OPTION 2");
+  EmraxPower = 55;
+  EmraxBatteryMaxPower = 60;
+
+elseif(p_opts==3)
+  disp("POWER OPTION 3");
+  EmraxPower = 60;
+  EmraxBatteryMaxPower = 70;
+
+elseif(p_opts==4)
+  disp("POWER OPTION 4");
+  EmraxPower = 60;
+  EmraxBatteryMaxPower = 80;
+
+elseif(p_opts==5)
+  disp("POWER OPTION 5");
+  EmraxPower = 65;
+  EmraxBatteryMaxPower = 90;
+
+end
+
 for gear = gearVec
 
     t = 0;
@@ -191,7 +220,7 @@ for gear = gearVec
     
 
     %%%%%%%%Comment out the following to remove plots
-    Plot_things = true;
+    Plot_things = false;
     if(Plot_things)
         % Begin Plots
         %figure(1, 'position', [0,0, 1600, 1200]);
@@ -291,6 +320,7 @@ for gear = gearVec
             heatEmrax, heatEmissio, heatEmraxBattery,...
             heatTP100, heatTP100Controller, heatTP100Battery);
     disp(" ");
+end
 end
 
 [maxTopSpeed, k] = max(TopSpeedVec);
