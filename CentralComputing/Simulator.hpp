@@ -3,7 +3,6 @@
 
 
 #include "NetworkManager.hpp"
-#include "Pod_State.h"
 
 #define MAX_ACCEL 9.81
 #define MAX_DECEL -9.81
@@ -91,7 +90,6 @@ class Simulator {
 
 
 
-    Pod_State::E_States current_state; //current state of the pod as read by the network controller
 
     atomic<bool> active_connection;
     Event closed;

@@ -32,19 +32,30 @@ Motor::Motor(){
 }
 
 void Motor::enable_motors() {
+  #ifndef SIM
   integral = 0;
   enabled = true;
   set_throttle(MOTOR_OFF);
   set_enable(true);
 
+  #else
+  SimulatorManager::sim.sim_motor_enable();
+
+  #endif
   print(LogLevel::LOG_DEBUG, "Motors Enabled\n");
 }
 
 void Motor::disable_motors() {
+#ifndef SIM
   set_throttle(MOTOR_OFF);
   set_enable(false);
   integral = 0;
   enabled = false;
+
+#else
+  SimulatorManager::sim.sim_motor_disable();
+
+#endif
 
   print(LogLevel::LOG_DEBUG, "Motors Disabled\n");
 }
