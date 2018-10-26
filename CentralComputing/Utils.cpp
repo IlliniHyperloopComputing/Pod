@@ -60,7 +60,10 @@ void Utils::busyWait(long microseconds) {
 	struct timespec toEnd;
 	toEnd.tv_sec = secs;
 	toEnd.tv_nsec = ((microseconds * 1000) + currTime.tv_nsec) % 1000000000;
-	while (currTime.tv_sec <= toEnd.tv_sec || currTime.tv_nsec <= toEnd.tv_nsec) {
+	while (currTime.tv_sec <= toEnd.tv_sec) {
+    if (currTime.tv_sec == toEnd.tv_sec && currTime.tv_nsec > toEnd.tv_nsec) {
+      break;
+    }
 		clock_gettime(threadClockId, &currTime);
 	}
 	return;
