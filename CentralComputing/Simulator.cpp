@@ -96,7 +96,7 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
   velocity = lastVelocity + (acceleration * timeDelta);
   position = lastPosition + ((lastVelocity + velocity)/2 * timeDelta) + (0.5 * acceleration * timeDelta * timeDelta);
 
-  //CREATING A STATESPACE OBJECT AND SETTINGS ITS ARRAY'S VALUES
+  //CREATING A STATESPACE OBJECT AND SETTING ITS ARRAY'S VALUES
   shared_ptr<StateSpace> space = std::make_shared<StateSpace>();
   space -> x[0] = position;
   space -> x[1] = velocity;
