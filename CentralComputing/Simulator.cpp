@@ -80,7 +80,6 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
   //FOR FIRST CALL
   if (timeLast == -1) {
     timeDelta = 0.000;
-    timeLast = Utils::microseconds();
   } else { //SUBSEQUENT CALLS
     timeDelta = Utils::microseconds() - timeLast;
   }
@@ -95,8 +94,7 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
 
   //KINEMATIC PHYSICS CALCULATIONS
   velocity = lastVelocity + (acceleration * timeDelta);
-  velocity = (lastVelocity + velocity)/2;
-  position = lastPosition + (velocity * timeDelta) + (0.5 * acceleration * timeDelta * timeDelta);
+  position = lastPosition + ((lastVelocity + velocity)/2 * timeDelta) + (0.5 * acceleration * timeDelta * timeDelta);
 
   //CREATING A STATESPACE OBJECT AND SETTINGS ITS ARRAY'S VALUES
   shared_ptr<StateSpace> space = std::make_shared<StateSpace>();
