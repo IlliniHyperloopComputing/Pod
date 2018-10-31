@@ -3,26 +3,26 @@ AccelerationDistanceVec = [];
 BrakingForceVec = [];
 gVec = [];
 AccelerationRunTime = [];
+EmraxGearIdx = [];
+TP100GearIdx = [];
 
 %Change parameters below
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-gearVecTp100 = 0.4:0.1:0.8; %loop through gear ratios for the Emrax
-gearVecEmrax = 3.8:0.1:4.5;
+gearVecTp100 = 0.7;%0.68:0.01:0.72;%0.8%0.4:0.1:0.9; %loop through gear ratios for the Emrax
+gearVecEmrax = 4.0;%3.8:0.01:4.2;%4.5%3.8:0.1:4.5;
 TP100GearRatio = 1; %Assuming direct drive
 runlength = 1200; %Assume 1.25 km track, want to leave 50 meter safety at the end
 
 radiusEmrax = 0.0762; %wheel Radius (meters)
 radiusTP100 = 0.0762; %wheel Radius (meters)
 
-%Iterate through these didfferent power options
-emrax_mech_power        = [45];%[ 45  50  55  60  65  70 ];
-emrax_battery_max_power = [100];%[ 100 100 100 100 100 100 ];
+
 
 %%%%%%%%%
 %Emrax Specific
 %%%%%%%%%
-EmraxPower = 100; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT go over this value
-EmraxBatteryMaxPower = 200; % Max BATTERY OUTPUT in kw. THIS THROTTLES THE EMRAX. The BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
+EmraxPower = 50; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT go over this value
+EmraxBatteryMaxPower = 100; % Max BATTERY OUTPUT in kw. THIS THROTTLES THE EMRAX. The BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
 EmraxPeakTorque = 240; %Peak torque, in Nm
 EmraxMaxRPM = 4400; %Max RPM under load
 EmraxWeight = 12; %kg
@@ -33,13 +33,17 @@ EmraxBatteryAH = 5.5*4;
 EmraxBatteryResistance = 0.05; % P = I^2 * R
 EmraxControllerEfficiency = 0.95;
 
+%Iterate through these didfferent power options
+emrax_mech_power        = [EmraxPower];%[ 45  50  55  60  65  70 ];
+emrax_battery_max_power = [EmraxBatteryMaxPower];%[ 100 100 100 100 100 100 ];
+
 %Iterate through these different resistance values
-emraxResistanceVec = 0.04;%%[0.00001 0.01 0.02 0.03 0.04 0.05];
+emraxResistanceVec = [0.04];%%[0.00001 0.01 0.02 0.03 0.04 0.05];
 
 %%%%%%%%%
 %TP100 Specific
 %%%%%%%%%
-TP100Power = 25; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT GO OVER THIS VALUE
+TP100Power = 20; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT GO OVER THIS VALUE
 TP100AvgBatteryMaxPower = 25; % % Max BATTERY. THIS THROTTLES A TP100. in kW. BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
 TP100PeakTorque = 9.75; %Peak torque, in Nm
 TP100MaxRPM = 25000; %Max RPM under load
@@ -233,7 +237,7 @@ for gear_tp100 = gearVecTp100
         %figure(1, 'position', [0,0, 1600, 1200]);
         %Emrax:
         s1 = subplot (2, 4, 1);
-        emrax_rpm = velocity * 60 /(2*pi*radiusEmrax) / gear;
+        emrax_rpm = velocity * 60 /(2*pi*radiusEmrax) / gear_emrax;
         emrax_torque = mechPowerEmrax./(emrax_rpm/60 * 2 * pi);
         plot(emrax_rpm(1:i), emrax_torque(1:i));
         str = strcat("Emrax_rpm vs. emrax torque at gear: ", mat2str(gear));
@@ -243,7 +247,7 @@ for gear_tp100 = gearVecTp100
         Plot_Torque_Curve();
 
         s2 = subplot (2, 4, 5);
-        str = strcat("Emrax power at gear: ", mat2str(gear));
+        str = strcat("Emrax power at gear: ", mat2str(gear_emrax));
         title(str);
         xlabel("time");
         ylabel("Power");
@@ -255,7 +259,7 @@ for gear_tp100 = gearVecTp100
         legend("MechPowerEmrax", "MotorInputPowerEmrax", "ControllerInputPowerEmrax", "Battery Power", 'location', 'southeast');
 
         s3 = subplot (2, 4, 2);
-        str = strcat("Emrax voltage vs. time at gear: ", mat2str(gear));
+        str = strcat("Emrax voltage vs. time at gear: ", mat2str(gear_emrax));
         title(str);
         xlabel("time");
         ylabel("voltage");
@@ -265,7 +269,7 @@ for gear_tp100 = gearVecTp100
         legend("PackVoltage", "Voltage with sag", 'location', 'southeast');
 
         s4 = subplot (2, 4, 6);
-        str = strcat("Emrax currant vs. time at gear: ", mat2str(gear));
+        str = strcat("Emrax currant vs. time at gear: ", mat2str(gear_emrax));
         title(str);
         xlabel("time");
         ylabel("amps");
@@ -278,13 +282,13 @@ for gear_tp100 = gearVecTp100
         tp100_rpm = velocity * 60 /(2*pi*radiusTP100);
         tp100_torque = mechPowerTP100./(tp100_rpm/60 * 2 * pi);
         plot(tp100_rpm(1:i), tp100_torque(1:i));
-        str = strcat("tp100_rpm vs. tp100 torque at gear: ", mat2str(gear));
+        str = strcat("tp100_rpm vs. tp100 torque at gear: ", mat2str(gear_tp100));
         title(str);
         xlabel("RPM");
         ylabel("Torque");
 
         s6 = subplot (2, 4, 7);
-        str = strcat("tp100 power at gear: ", mat2str(gear));
+        str = strcat("tp100 power at gear: ", mat2str(gear_tp100));
         title(str);
         xlabel("time");
         ylabel("Power");
@@ -296,7 +300,7 @@ for gear_tp100 = gearVecTp100
         legend("MechPowertp100", "MotorInputPowertp100", "ControllerInputPowertp100", "Battery Power", 'location', 'southeast');
 
         s7 = subplot (2, 4, 4);
-        str = strcat("tp100 voltage vs. time at gear: ", mat2str(gear));
+        str = strcat("tp100 voltage vs. time at gear: ", mat2str(gear_tp100));
         title(str);
         xlabel("time");
         ylabel("voltage");
@@ -306,7 +310,7 @@ for gear_tp100 = gearVecTp100
         legend("PackVoltage", "Voltage with sag", 'location', 'southeast');
 
         s8 = subplot (2, 4, 8);
-        str = strcat("TP100 currant vs. time at gear: ", mat2str(gear));
+        str = strcat("TP100 currant vs. time at gear: ", mat2str(gear_tp100));
         title(str);
         xlabel("time");
         ylabel("amps");
@@ -321,6 +325,8 @@ for gear_tp100 = gearVecTp100
     AccelerationDistanceVec = [AccelerationDistanceVec AccelerationDistance];
     gVec = [gVec g];
     
+    EmraxGearIdx = [EmraxGearIdx gear_emrax];
+    TP100GearIdx = [TP100GearIdx gear_tp100];    
 
     fprintf('%.2f %10.2f %10.2f %17.4f %18.2f %17.2f %18.2f %13.2f %13.2f %13.2f %10.2f %18.2f %13.2f %10.2f %18.2f',...
             time(i),gear_emrax, gear_tp100, TopSpeed,BrakingForce,AccelerationDistance, runlength-AccelerationDistance,g,...
@@ -334,5 +340,5 @@ end
 
 [maxTopSpeed, k] = max(TopSpeedVec);
 
-fprintf('Time | TransmissionRatio | TopSpeed(m/s) | BrakingForce(N) | AccelDistance(m) | BrakeDistance(m) | MaxGForce \n')
-fprintf('Max:%.2f %10.2f %17.2f %18.2f %17.2f %18.2f %13.2f\n', AccelerationRunTime(k), gearVec(k),TopSpeedVec(k),BrakingForceVec(k),AccelerationDistanceVec(k), runlength-AccelerationDistanceVec(k),gVec(k))
+fprintf('Time | Emrax__Ratio | TP100__Ratio | TopSpeed(m/s) | BrakingForce(N) | AccelDistance(m) | BrakeDistance(m) | MaxGForce \n')
+fprintf('Max:%.2f %7.2f %10.2f %17.2f %18.2f %17.2f %18.2f %13.2f\n', AccelerationRunTime(k), EmraxGearIdx(k), TP100GearIdx(k), TopSpeedVec(k),BrakingForceVec(k),AccelerationDistanceVec(k), runlength-AccelerationDistanceVec(k),gVec(k))
