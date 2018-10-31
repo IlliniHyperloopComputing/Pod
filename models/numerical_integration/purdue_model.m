@@ -6,17 +6,23 @@ AccelerationRunTime = [];
 
 %Change parameters below
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-gearVec = 3.6:0.1:4.2; %loop through gear ratios for the Emrax
+gearVecTp100 = 0.4:0.1:0.8; %loop through gear ratios for the Emrax
+gearVecEmrax = 3.8:0.1:4.5;
 TP100GearRatio = 1; %Assuming direct drive
 runlength = 1200; %Assume 1.25 km track, want to leave 50 meter safety at the end
 
 radiusEmrax = 0.0762; %wheel Radius (meters)
 radiusTP100 = 0.0762; %wheel Radius (meters)
 
-powerVariables = 1:1:5;
+%Iterate through these didfferent power options
+emrax_mech_power        = [45];%[ 45  50  55  60  65  70 ];
+emrax_battery_max_power = [100];%[ 100 100 100 100 100 100 ];
 
-EmraxPower = 60; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT go over this value
-EmraxBatteryMaxPower = 70; % Max BATTERY OUTPUT in kw. THIS THROTTLES THE EMRAX. The BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
+%%%%%%%%%
+%Emrax Specific
+%%%%%%%%%
+EmraxPower = 100; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT go over this value
+EmraxBatteryMaxPower = 200; % Max BATTERY OUTPUT in kw. THIS THROTTLES THE EMRAX. The BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
 EmraxPeakTorque = 240; %Peak torque, in Nm
 EmraxMaxRPM = 4400; %Max RPM under load
 EmraxWeight = 12; %kg
@@ -24,9 +30,15 @@ EmsisoWeight = 4.9;
 EmraxBatteryWeight = 20; %weight in kg
 EmraxBatteryVoltage = 125; %Starting voltage
 EmraxBatteryAH = 5.5*4; 
-EmraxBatteryResistance = 0.05; 
+EmraxBatteryResistance = 0.05; % P = I^2 * R
 EmraxControllerEfficiency = 0.95;
 
+%Iterate through these different resistance values
+emraxResistanceVec = 0.04;%%[0.00001 0.01 0.02 0.03 0.04 0.05];
+
+%%%%%%%%%
+%TP100 Specific
+%%%%%%%%%
 TP100Power = 25; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT GO OVER THIS VALUE
 TP100AvgBatteryMaxPower = 25; % % Max BATTERY. THIS THROTTLES A TP100. in kW. BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
 TP100PeakTorque = 9.75; %Peak torque, in Nm
@@ -39,44 +51,34 @@ TP100AvgBatteryAH = 5.5*3/2.0;
 TP100AvgBatteryResistance = 0.03;%
 TP100ControllerEfficiency = 0.95;
 
+%%%%%%%%%
 %Pod Mass (kg), Right now its (frame and structure) + Emrax + Emsiso + Emrax battery + TP100 system
 mass = 60 + EmraxWeight + EmsisoWeight + EmraxBatteryWeight + TP100AvgWeight*TP100Num + TP100AvgBatteryWeight*TP100Num; 
+%mass = 60 + TP100AvgWeight*TP100Num + TP100AvgBatteryWeight*TP100Num; 
 maxG = 5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%
-dt = 0.1; %delta time
+dt = 0.01; %delta time
 %%%%%%
 disp("ALL VALUES AND GRAPHS OF TP100 ARE FOR A SINGLE TP100");
-fprintf('Time | TransmissionRatio | TopSpeed(m/s) | BrakingForce(N) | AccelDistance(m) | BrakeDistance(m) | MaxGForce | heatEmrax | heatEmissio | heatEmraxBattery | heatTP100 | heatTP100ESC | heatTP100Battery \n');
-for p_opts = powerVariables
-if(p_opts ==1)
-  disp("POWER OPTION 1");
-  EmraxPower = 45;
-  EmraxBatteryMaxPower = 50;
-elseif(p_opts==2)
-  disp("POWER OPTION 2");
-  EmraxPower = 55;
-  EmraxBatteryMaxPower = 60;
+fprintf('Time | GEAR_EMRAX | GEAR_TP100 | TopSpeed(m/s) | BrakingForce(N) | AccelDistance(m) | BrakeDistance(m) | MaxGForce | heatEmrax | heatEmissio | heatEmraxBattery | heatTP100 | heatTP100ESC | heatTP100Battery \n');
 
-elseif(p_opts==3)
-  disp("POWER OPTION 3");
-  EmraxPower = 60;
-  EmraxBatteryMaxPower = 70;
+for em_r = emraxResistanceVec
 
-elseif(p_opts==4)
-  disp("POWER OPTION 4");
-  EmraxPower = 60;
-  EmraxBatteryMaxPower = 80;
+EmraxBatteryResistance = em_r;
+fprintf("EMRAX BATTERY RESISTANCE: %.3f", EmraxBatteryResistance);
+disp(" \n");
 
-elseif(p_opts==5)
-  disp("POWER OPTION 5");
-  EmraxPower = 65;
-  EmraxBatteryMaxPower = 90;
+for p_opts = 1:length(emrax_mech_power)
 
-end
+  EmraxPower = emrax_mech_power(p_opts);
+  EmraxBatteryMaxPower = emrax_battery_max_power(p_opts);
+  fprintf("POWER OPTION %.2f EmraxMech: %.2f  EmraxBatteryMaxPower: %.2f", p_opts, EmraxPower, EmraxBatteryMaxPower);
+  disp("\n");
 
-for gear = gearVec
+for gear_emrax = gearVecEmrax
+for gear_tp100 = gearVecTp100
 
     t = 0;
     d = 0;
@@ -118,28 +120,28 @@ for gear = gearVec
     while d < runlength %track length in meters
     
         %To get perspective on how long it has been running
-        if(t <=1.0+dt && t>=1.0)
-          fprintf("#");
-        end
-        if(t <=5.0+dt && t>=5.0)
-          fprintf(" ##");
-        end
-        if(t <=7.0+dt && t>=7.0)
-          fprintf(" ###");
-        end
-        if(t <=10.0+dt && t>=10.0)
-          fprintf(" ####");
-        end
-         if(t <=12.0+dt && t>=12.0)
-          disp(" #####");
-        end
+%        if(t <=1.0+dt && t>=1.0)
+%          fprintf("#");
+%        end
+%        if(t <=5.0+dt && t>=5.0)
+%          fprintf(" ##");
+%        end
+%        if(t <=7.0+dt && t>=7.0)
+%          fprintf(" ###");
+%        end
+%        if(t <=10.0+dt && t>=10.0)
+%          fprintf(" ####");
+%        end
+%         if(t <=12.0+dt && t>=12.0)
+%          disp(" #####");
+%        end
         
         
         %%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%% Emrax
         %%%%%%%%%%%%%%%%%%%%%%%%
         EmraxWheelRPM = v * 60 /(2*pi*radiusEmrax); %calculate wheel RPM at point in time
-        EmraxRPM = EmraxWheelRPM / gear;
+        EmraxRPM = EmraxWheelRPM / gear_emrax;
         
         % Apply motor dynamics. This will throttle the power output
         [TorqueEmrax, MechPowerEmrax, MotorInputPowerEmrax, ControllerInputPowerEmrax, EmraxCurrent] = ...
@@ -161,13 +163,15 @@ for gear = gearVec
         emraxBatteryVoltage = emraxBatteryVoltage  - 1.0/(EmraxBatteryAH*3600) * EmraxCurrent*dt;
         
         % Determine torque at the wheel
-        TorqueEmraxWheel = TorqueEmrax / gear;
+        TorqueEmraxWheel = TorqueEmrax / gear_emrax;
         
         
         %%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%% TP100
-        %%%%%%%%%%%%%%%%%%%%%%%%
-        TP100RPM = v * 60 / (2*pi*radiusTP100);
+        TP100WheelRPM = v * 60 /(2*pi*radiusEmrax); %calculate wheel RPM at point in time
+        TP100RPM = TP100WheelRPM / gear_tp100;%%%%%%%%%%%%%%%%%%%%%%%%        
+        
+        %TP100RPM = v * 60 / (2*pi*radiusTP100);
         [TorqueTP100, MechPowerTP100, MotorInputPowerTP100, ControllerInputPowerTP100, TP100Current] = ...
           Motor_Dynamics(TP100RPM, TP100Power, TP100PeakTorque, TP100MaxRPM, TP100ControllerEfficiency...
                           ,TP100BatteryVoltage, TP100AvgBatteryResistance, TP100AvgBatteryMaxPower, false);
@@ -187,6 +191,7 @@ for gear = gearVec
         tp100BatteryVoltage = tp100BatteryVoltage  - 1.0/(TP100AvgBatteryAH*3600) * TP100Current*dt;
         
         
+        
         %%%%%%%%%%%%%%%%%%%%%%%%
         % Increment Time
         time = [time t];
@@ -194,11 +199,13 @@ for gear = gearVec
        
         % Caluclate traction force
         TractionForceEmrax = TorqueEmraxWheel / radiusEmrax;
-        TractionForceTP100 = TorqueTP100 / radiusTP100;
+        TorqueTP100Wheel = TorqueTP100 / gear_tp100;
+        TractionForceTP100 = TorqueTP100Wheel / radiusTP100;
 
         % Apply Kinematics
         acceleration = [acceleration a];
         a = TractionForceEmrax/mass + TP100Num * TractionForceTP100/mass;
+        
         
         velocity = [velocity v];
         v = v + a * dt;
@@ -315,11 +322,13 @@ for gear = gearVec
     gVec = [gVec g];
     
 
-    fprintf('%.2f %10.2f %17.4f %18.2f %17.2f %18.2f %13.2f %13.2f %13.2f %10.2f %18.2f %13.2f %10.2f %18.2f',...
-            time(i),gear,TopSpeed,BrakingForce,AccelerationDistance, runlength-AccelerationDistance,g,...
+    fprintf('%.2f %10.2f %10.2f %17.4f %18.2f %17.2f %18.2f %13.2f %13.2f %13.2f %10.2f %18.2f %13.2f %10.2f %18.2f',...
+            time(i),gear_emrax, gear_tp100, TopSpeed,BrakingForce,AccelerationDistance, runlength-AccelerationDistance,g,...
             heatEmrax, heatEmissio, heatEmraxBattery,...
             heatTP100, heatTP100Controller, heatTP100Battery);
     disp(" ");
+end
+end
 end
 end
 

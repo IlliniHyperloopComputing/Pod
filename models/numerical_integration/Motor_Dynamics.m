@@ -31,7 +31,7 @@ function [Torque, MechPower, MotorInputPower, ControllerInputPower, Current] ...
     ControllerInputPower = MotorInputPower/ControllerEfficiency;
     
     % Solve for Current using from this formula:
-    % P = V_pack*I_out - I_out^2*R_pack
+    % P = V_pack*I_out - I_out^2*R_pack 
     Current = (BatteryVoltage - sqrt(BatteryVoltage^2 - 4*BatteryResistance * ControllerInputPower))/(2*BatteryResistance);
     
     BatteryPower = Current * BatteryVoltage;
