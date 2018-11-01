@@ -39,6 +39,7 @@ enum Network_Command_ID {
   SET_BRAKE_PRESSURE = 11,
   TRANS_FLIGHT_COAST = 12,
   TRANS_FLIGHT_BRAKE = 13,
+  TRANS_ERROR_STATE=14,
 };
 
 //enum specifying what data is sent

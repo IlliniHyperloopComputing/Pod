@@ -24,6 +24,7 @@ Pod_State::Pod_State()
   transition_map[NetworkManager::TRANS_FLIGHT_COAST] = &Pod_State::coast;
   transition_map[NetworkManager::TRANS_FLIGHT_BRAKE] = &Pod_State::brake;
   transition_map[NetworkManager::EMERGENCY_BRAKE] = &Pod_State::emergency_brake;
+  transition_map[NetworkManager::TRANS_ERROR_STATE]= &Pod_State::error;
 //non state transition commands
   transition_map[NetworkManager::ENABLE_MOTOR] = &Pod_State::no_transition;
   transition_map[NetworkManager::DISABLE_MOTOR] = &Pod_State::no_transition;
@@ -38,6 +39,7 @@ Pod_State::Pod_State()
   steady_state_map[ST_FLIGHT_ACCEL] = &Pod_State::steady_flight_accelerate;
   steady_state_map[ST_FLIGHT_COAST] = &Pod_State::steady_flight_coast;
   steady_state_map[ST_FLIGHT_BRAKE] = &Pod_State::steady_flight_brake;
+  steady_state_map[ST_ERROR] = &Pod_State::steady_error_state;
 }
 // returns the current state as a E_States enum
 Pod_State::E_States Pod_State::get_current_state() {
@@ -59,6 +61,7 @@ void Pod_State::move_functional_tests(){
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight accel */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight coast */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight brake */
+		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			//Error State
 	END_TRANSITION_MAP(NULL)
 }
 
@@ -71,6 +74,7 @@ void Pod_State::move_safe_mode() {
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight accel */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight coast */
 		TRANSITION_MAP_ENTRY(ST_SAFE_MODE)			/* Flight brake */
+		TRANSITION_MAP_ENTRY(ST_SAFE_MODE)			//Error State
 	END_TRANSITION_MAP(NULL)
 }
 
@@ -83,6 +87,7 @@ void Pod_State::move_loading() {
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight accel */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight coast */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)		/* Flight brake */
+		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			//Error State
 	END_TRANSITION_MAP(NULL)
 }
 void Pod_State::move_launch_ready() {
@@ -94,6 +99,7 @@ void Pod_State::move_launch_ready() {
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight accel */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight coast */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight brake */
+		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			//Error State
 	END_TRANSITION_MAP(NULL)
 }
 
@@ -107,6 +113,7 @@ void Pod_State::emergency_brake() {
 		TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)			/* Flight accel */
 		TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)			/* Flight coast */
 		TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)			/* Flight brake */
+		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			//Error State
 	END_TRANSITION_MAP(NULL)
 }
 
@@ -123,6 +130,7 @@ void Pod_State::accelerate() {
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight accel */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight coast */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight brake */
+		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			//Error State
 	END_TRANSITION_MAP(NULL)
 }
 void Pod_State::coast() {
@@ -134,6 +142,7 @@ void Pod_State::coast() {
 		TRANSITION_MAP_ENTRY(ST_FLIGHT_COAST)			/* Flight accel */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight coast */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight brake */
+		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			//Error State
 	END_TRANSITION_MAP(NULL)
 }
 
@@ -146,7 +155,22 @@ void Pod_State::brake() {
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight accel */
 		TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)			/* Flight coast */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight brake */
+		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			//Error State
 	END_TRANSITION_MAP(NULL)
+}
+
+void Pod_State::error(){
+	BEGIN_TRANSITION_MAP							/* Current state */
+		TRANSITION_MAP_ENTRY(ST_ERROR)			/* Safe Mode */
+		TRANSITION_MAP_ENTRY(ST_ERROR)			/* Functional test */
+		TRANSITION_MAP_ENTRY(ST_ERROR)			/* Loading */
+		TRANSITION_MAP_ENTRY(ST_ERROR)			/* Launch ready */
+		TRANSITION_MAP_ENTRY(ST_ERROR)			/* Flight accel */
+		TRANSITION_MAP_ENTRY(ST_ERROR)			/* Flight coast */
+		TRANSITION_MAP_ENTRY(ST_ERROR)			/* Flight brake */
+		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			//Error State
+	END_TRANSITION_MAP(NULL)	
+
 }
 
 void Pod_State::no_transition() {
@@ -176,6 +200,9 @@ void Pod_State::ST_Flight_Coast() {
 }
 
 void Pod_State::ST_Flight_Brake() {
+  print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+}
+void Pod_State::ST_Error() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
 }
 
@@ -267,4 +294,9 @@ bool Pod_State::shouldBrake(double vel, double pos) {
 	} else {
 		return false;
 	}
+}
+
+void Pod_State::steady_error_state(std::shared_ptr<NetworkManager::Network_Command> command){
+	motor.disable_motors();
+	//enable brakes;
 }
