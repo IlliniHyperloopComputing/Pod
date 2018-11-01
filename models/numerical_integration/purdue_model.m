@@ -172,8 +172,9 @@ for gear_tp100 = gearVecTp100
         
         %%%%%%%%%%%%%%%%%%%%%%%%
         %%%%%%%% TP100
-        TP100WheelRPM = v * 60 /(2*pi*radiusEmrax); %calculate wheel RPM at point in time
-        TP100RPM = TP100WheelRPM / gear_tp100;%%%%%%%%%%%%%%%%%%%%%%%%        
+        %%%%%%%%%%%%%%%%%%%%%%%%
+        TP100WheelRPM = v * 60 /(2*pi*radiusTP100); %calculate wheel RPM at point in time
+        TP100RPM = TP100WheelRPM / gear_tp100;        
         
         %TP100RPM = v * 60 / (2*pi*radiusTP100);
         [TorqueTP100, MechPowerTP100, MotorInputPowerTP100, ControllerInputPowerTP100, TP100Current] = ...
@@ -218,7 +219,7 @@ for gear_tp100 = gearVecTp100
         d = d + v * dt + .5 * a * dt^2;
     end
     
-    gtotal = velocity.^2./(2 .* 9.80665 .* (runlength - distance));
+    gtotal = velocity.^2./(2 .* 9.80665 .* (runlength .- distance));
     [g,i] = min(abs(gtotal - maxG));
     g = g + maxG;
     TopSpeed = velocity(i);
@@ -229,18 +230,54 @@ for gear_tp100 = gearVecTp100
     
     AccelerationRunTime = [AccelerationRunTime time(i)];
     
+    stoptime = sqrt(2*(runlength-distance(i))/9.81/g);
+    
+    time = 0:dt:(time(i)+stoptime);
+    
+    for j = i:length(time)
+      acceleration(j) = -BrakingForce/mass;
+      velocity(j) = velocity(j-1) + acceleration(j) * dt;
+      distance(j) = distance(j-1) + velocity(j) * dt + .5 * acceleration(j) * dt^2;
+    end
+    
 
     %%%%%%%%Comment out the following to remove plots
-    Plot_things = false;
+    Plot_things = true;
     if(Plot_things)
         % Begin Plots
-        %figure(1, 'position', [0,0, 1600, 1200]);
+        
+        figure(2, 'position', [0,0, 1600, 1200]);
+        %Emrax:
+        s1 = subplot (2, 2, 1);
+        plot(time, distance);
+        str = strcat("distance vs time");
+        title(str);
+        xlabel("time (s)");
+        ylabel("distance (m)");
+
+        s2 = subplot (2, 2, 2);
+        str = strcat("velocity vs time");
+        title(str);
+        xlabel("time (s)");
+        ylabel("velocity (m/s)");
+        hold(s2,'on');
+        plot(time, velocity, 'color', 'g');
+        
+        s3 = subplot (2, 2, 3);
+        str = strcat("acceleration vs time");
+        title(str);
+        xlabel("time (s)");
+        ylabel("acceleration (m/s^2)");
+        hold(s3,'on');
+        plot(time, acceleration, 'color', 'r');
+        
+        figure(1, 'position', [0,0, 1600, 1200]);
         %Emrax:
         s1 = subplot (2, 4, 1);
         emrax_rpm = velocity * 60 /(2*pi*radiusEmrax) / gear_emrax;
         emrax_torque = mechPowerEmrax./(emrax_rpm/60 * 2 * pi);
         plot(emrax_rpm(1:i), emrax_torque(1:i));
-        str = strcat("Emrax_rpm vs. emrax torque at gear: ", mat2str(gear));
+        str = strcat("Emrax_rpm vs. emrax torque at gear: ", mat2str(gear_emrax));
         title(str);
         xlabel("RPM");
         ylabel("Torque");
