@@ -117,6 +117,11 @@ void Motor::set_throttle(int16_t value) {
     }
     out.close();
 
+    #ifdef SIM
+    SimulatorManager::sim.sim_motor_set_throttle(value);
+
+    #endif
+    
     print(LogLevel::LOG_DEBUG, "Setting motor throttle: %d\n", value);
   }
 }
