@@ -7,7 +7,9 @@
 #define MAX_ACCEL 9.81
 #define MAX_DECEL -9.81
 
-using namespace std;
+
+struct StateSpace;
+
 class Simulator {
 
   public:
@@ -74,7 +76,7 @@ class Simulator {
      * Sends the given command to the connected pod
      * @param command the command to send
      */
-    bool send_command(shared_ptr<NetworkManager::Network_Command> command);
+    bool send_command(std::shared_ptr<NetworkManager::Network_Command> command);
 
 
     /**
@@ -91,9 +93,9 @@ class Simulator {
 
 
 
-    atomic<bool> active_connection;
+    std::atomic<bool> active_connection;
     Event closed;
-    thread read_thread;
+    std::thread read_thread;
 
     int socketfd;
 

@@ -8,7 +8,7 @@ class PodTest : public ::testing::Test
   protected:
   virtual void SetUp() {
     // Create the Pod object
-    pod = make_shared<Pod>();
+    pod = std::make_shared<Pod>();
 
     // Set the Pod running in its own thread
     pod_thread = std::thread([&](){ pod->startup();});
