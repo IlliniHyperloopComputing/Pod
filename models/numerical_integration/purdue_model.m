@@ -253,7 +253,7 @@ for gear_tp100 = gearVecTp100
     
 
     %%%%%%%%Comment out the following to remove plots
-    Plot_things = false;
+    Plot_things = true;
     if(Plot_things)
         % Begin Plots
         
@@ -286,7 +286,7 @@ for gear_tp100 = gearVecTp100
         %Emrax:
         s1 = subplot (2, 4, 1);
         emrax_rpm = velocity * 60 /(2*pi*radiusEmrax) / gear_emrax;
-        emrax_torque = mechPowerEmrax./(emrax_rpm/60 * 2 * pi);
+        emrax_torque = mechPowerEmrax(1:i)./(emrax_rpm(1:i)/60 * 2 * pi);
         plot(emrax_rpm(1:i), emrax_torque(1:i));
         str = strcat("Emrax_rpm vs. emrax torque at gear: ", mat2str(gear_emrax));
         title(str);
@@ -328,7 +328,7 @@ for gear_tp100 = gearVecTp100
         %TP100s
         s5 = subplot (2, 4, 3);
         tp100_rpm = velocity * 60 /(2*pi*radiusTP100);
-        tp100_torque = mechPowerTP100./(tp100_rpm/60 * 2 * pi);
+        tp100_torque = mechPowerTP100(1:i)./(tp100_rpm(1:i)/60 * 2 * pi);
         plot(tp100_rpm(1:i), tp100_torque(1:i));
         str = strcat("tp100_rpm vs. tp100 torque at gear: ", mat2str(gear_tp100));
         title(str);
