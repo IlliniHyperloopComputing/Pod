@@ -6,22 +6,18 @@ Brakes::Brakes(){
 }
 
 void Brakes::enable_brakes() {
-  #ifndef SIM
-
-  #else
+    #ifdef SIM
     SimulatorManager::sim.sim_brake_enable();
 
-  #endif
+    #endif
   print(LogLevel::LOG_DEBUG, "Brakes Enabled\n");
 }
 
 void Brakes::disable_brakes() {
-  #ifndef SIM
-
-  #else
+    #ifdef SIM
     SimulatorManager::sim.sim_brake_disable();
 
-  #endif
+    #endif
 
   print(LogLevel::LOG_DEBUG, "Brakes Disabled\n");
 }
@@ -38,5 +34,10 @@ int16_t Brakes::calculate_pressure(double dt, int16_t last_throttle){
 }
 
 void Brakes::set_pressure(int16_t value) {
+
+    #ifdef SIM
+    SimulatorManager::sim.sim_brake_set_pressure(value);
+
+    #endif
       print(LogLevel::LOG_DEBUG, "Setting brake pressure: %d\n", value);
 }
