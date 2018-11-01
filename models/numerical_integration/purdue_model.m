@@ -8,8 +8,8 @@ TP100GearIdx = [];
 
 %Change parameters below
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-gearVecTp100 = 0.7;%0.68:0.01:0.72;%0.8%0.4:0.1:0.9; %loop through gear ratios for the Emrax
-gearVecEmrax = 4.0;%3.8:0.01:4.2;%4.5%3.8:0.1:4.5;
+gearVecTp100 = 0.7;%0.68:0.01:0.72;%0.8%0.4:0.1:0.9; %loop through gear ratios %(0.7:130m/s for just 6 tp100s)
+gearVecEmrax = 4.1;%3.8:0.01:4.2;%4.5%3.8:0.1:4.5; %(3.3:115m/s for just emrax)
 TP100GearRatio = 1; %Assuming direct drive
 runlength = 1200; %Assume 1.25 km track, want to leave 50 meter safety at the end
 
@@ -57,13 +57,14 @@ TP100ControllerEfficiency = 0.95;
 
 %%%%%%%%%
 %Pod Mass (kg), Right now its (frame and structure) + Emrax + Emsiso + Emrax battery + TP100 system
-mass = 60 + EmraxWeight + EmsisoWeight + EmraxBatteryWeight + TP100AvgWeight*TP100Num + TP100AvgBatteryWeight*TP100Num; 
+mass = 60 + EmraxWeight + EmsisoWeight + EmraxBatteryWeight + TP100AvgWeight*TP100Num + TP100AvgBatteryWeight*TP100Num;
+%mass = 60 + EmraxWeight + EmsisoWeight + EmraxBatteryWeight; 
 %mass = 60 + TP100AvgWeight*TP100Num + TP100AvgBatteryWeight*TP100Num; 
 maxG = 5;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%
-dt = 0.01; %delta time
+dt = 0.1; %delta time
 %%%%%%
 disp("ALL VALUES AND GRAPHS OF TP100 ARE FOR A SINGLE TP100");
 fprintf('Time | GEAR_EMRAX | GEAR_TP100 | TopSpeed(m/s) | BrakingForce(N) | AccelDistance(m) | BrakeDistance(m) | MaxGForce | heatEmrax | heatEmissio | heatEmraxBattery | heatTP100 | heatTP100ESC | heatTP100Battery \n');
@@ -234,6 +235,16 @@ for gear_tp100 = gearVecTp100
     
     time = 0:dt:(time(i)+stoptime);
     
+    BrakingForce = (0.5 * mass * TopSpeed^2) ./ (runlength - AccelerationDistance);
+    
+    BrakingForceVec = [BrakingForceVec BrakingForce];
+    
+    AccelerationDistanceVec = [AccelerationDistanceVec AccelerationDistance];
+    gVec = [gVec g];
+    
+    EmraxGearIdx = [EmraxGearIdx gear_emrax];
+    TP100GearIdx = [TP100GearIdx gear_tp100];
+    
     for j = i:length(time)
       acceleration(j) = -BrakingForce/mass;
       velocity(j) = velocity(j-1) + acceleration(j) * dt;
@@ -242,7 +253,7 @@ for gear_tp100 = gearVecTp100
     
 
     %%%%%%%%Comment out the following to remove plots
-    Plot_things = true;
+    Plot_things = false;
     if(Plot_things)
         % Begin Plots
         
@@ -354,16 +365,7 @@ for gear_tp100 = gearVecTp100
         hold(s8, 'on');
         plot(time(1:i), tp100Current(1:i) , 'color', 'r');
     end
-    %%%%%COmment out the above to remove plotting
-    
-    BrakingForce = (0.5 * mass * TopSpeed^2) ./ (runlength - AccelerationDistance);
-    BrakingForceVec = [BrakingForceVec BrakingForce];
-    
-    AccelerationDistanceVec = [AccelerationDistanceVec AccelerationDistance];
-    gVec = [gVec g];
-    
-    EmraxGearIdx = [EmraxGearIdx gear_emrax];
-    TP100GearIdx = [TP100GearIdx gear_tp100];    
+    %%%%%COmment out the above to remove plotting    
 
     fprintf('%.2f %10.2f %10.2f %17.4f %18.2f %17.2f %18.2f %13.2f %13.2f %13.2f %10.2f %18.2f %13.2f %10.2f %18.2f',...
             time(i),gear_emrax, gear_tp100, TopSpeed,BrakingForce,AccelerationDistance, runlength-AccelerationDistance,g,...
