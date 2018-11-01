@@ -29,6 +29,9 @@ void print(LogLevel level, const char * format, ...);
 /**
 * Prints errno, with user defined message prepended
 **/
+
+void BusyWait(long long microseconds);
+
 #define PRINT_ERRNO(S) \
   {\
     char err_buf[500];\
@@ -38,17 +41,16 @@ void print(LogLevel level, const char * format, ...);
 
 /**
 * Define utility clamp function
-**/ 
+**/
 template <class T>
-T clamp(T v, T l, T h) 
+T clamp(T v, T l, T h)
 {
   if(v < l) return l;
-  else if(v > h) return h; 
-  else return v; 
+  else if(v > h) return h;
+  else return v;
 }
 
 ssize_t write_all_to_socket(int socket, uint8_t * buffer, size_t count);
 
 }
 #endif // UTILS_H
-

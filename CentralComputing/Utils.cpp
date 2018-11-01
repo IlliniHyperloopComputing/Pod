@@ -48,6 +48,33 @@ long long Utils::microseconds() {
   }
 }
 
+
+void Utils::BusyWait(long long microseconds){
+  struct timespec currentTime; //tv_nsec to get nano seconds
+  struct timespec targetTime;
+  const int BILLION = 1000000000;
+
+  clockid_t threadClockId;
+
+  // Get thread clock Id from the thread the current process is on
+  pthread_getcpuclockid(pthread_self(), &threadClockId);
+
+  // Using thread clock Id get the clock time of the thread
+  clock_gettime(threadClockId, &currentTime);
+  clock_gettime(threadClockId, &targetTime);
+
+  //updates seconds and nanoseconds
+  targetTime.tv_sec += (1000 * microseconds) / BILLION;
+  targetTime.tv_nsec += (1000 * microseconds) % BILLION;
+
+  while (currentTime.tv_sec < targetTime.tv_sec) {
+    clock_gettime(threadClockId, &currentTime);
+  }
+  while (currentTime.tv_nsec < targetTime.tv_nsec) {
+    clock_gettime(threadClockId, &currentTime);
+  }
+}
+
 ssize_t Utils::write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
   size_t bytes_written = 0;
   while(bytes_written != count){
@@ -65,4 +92,3 @@ ssize_t Utils::write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
   }
   return (ssize_t)bytes_written;
 }
-
