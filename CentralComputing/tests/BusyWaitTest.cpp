@@ -1,4 +1,3 @@
-#define _GNU_SOURCE
 #include "Utils.h"
 #include "Event.hpp"
 #include "Pod.h"
@@ -10,25 +9,30 @@
 //Test to make sure the busy wait takes as long as it should, given a small margin of error
 TEST(BusyWaitTest, testWaiting) {
 
+  int waitTime = 500;
+  double marginOfError = 1.2;
+
   auto start = microseconds();
 
   //busWait for 100 microseconds
-  BusyWait(100);
+  BusyWait(waitTime);
 
   auto stop = microseconds();
 
   auto duration = (stop - start);
 
   //check to make sure that our busy wait of 100 microseconds took between 80 and 120 microseconds
-  EXPECT_LE(100, 120);
-  EXPECT_GE(100, 80);
+  EXPECT_LE(duration, marginOfError * waitTime);
+  EXPECT_GE(duration, waitTime);
 }
 
-//testing to make sure that busy wait behaves correctly by forcing non-parallelism (1 CPU and multipe cores)
+//testing to make sure that busy wait behaves correctly by forcing non-parallelism (1 CPU and multipe threads)
 TEST(BusyWaitTest, testNonParallel){
+  int waitTime = 500;
+  double marginOfError = 1.2;
   auto start = microseconds();
   constexpr unsigned num_threads = 4;
-
+  int thread_count = 4;
   //saves our cpu affinity so that we can revert back after the test
   cpu_set_t original;
   sched_getaffinity(0, sizeof(original), &original);
@@ -49,7 +53,7 @@ TEST(BusyWaitTest, testNonParallel){
   //create our threads, calling busy wait each time
   std::thread t[num_threads];
   for (unsigned int i = 0; i < num_threads; ++i) {
-      t[i] = std::thread(BusyWait, 90);
+      t[i] = std::thread(BusyWait, waitTime);
   }
 
   for (auto& thread : t) {
@@ -62,7 +66,8 @@ TEST(BusyWaitTest, testNonParallel){
 
   //expect that this process took AT LEAST as long as all of the busy BusyWaiting
   //we can assume it didn't take longer than it should've from our first test
-  EXPECT_GE(duration, 90 * 4);
+  EXPECT_GE(duration, waitTime * thread_count);
+  EXPECT_LE(duration, marginOfError * (waitTime * thread_count));
 
   //reverts scheduler affinity back to normal, expecting no error
   status = sched_setaffinity(0, sizeof(original), &original);
