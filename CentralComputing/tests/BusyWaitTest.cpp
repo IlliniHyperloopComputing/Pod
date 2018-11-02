@@ -21,6 +21,8 @@ TEST(BusyWaitTest, testWaiting) {
 
   auto duration = (stop - start);
 
+  print(LogLevel::LOG_DEBUG, "Busy Wait Time: %d\n", waitTime);
+  print(LogLevel::LOG_DEBUG, "Duration: %lu\n", duration);
   //check to make sure that our busy wait of 100 microseconds took between 80 and 120 microseconds
   EXPECT_LE(duration, marginOfError * waitTime);
   EXPECT_GE(duration, waitTime);
@@ -63,6 +65,9 @@ TEST(BusyWaitTest, testNonParallel){
   auto stop = microseconds();
 
   auto duration = (stop - start);
+
+  print(LogLevel::LOG_DEBUG, "Set Busy Wait Time: %d\n", waitTime * thread_count);
+  print(LogLevel::LOG_DEBUG, "Duration: %lu\n", duration);
 
   //expect that this process took AT LEAST as long as all of the busy BusyWaiting
   //we can assume it didn't take longer than it should've from our first test
