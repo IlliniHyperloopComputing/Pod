@@ -204,6 +204,8 @@ void Pod_State::ST_Flight_Brake() {
 }
 void Pod_State::ST_Error() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  motor.disable_motors();
+	//enable brakes;
 }
 
 /////////////////////////////
@@ -297,6 +299,4 @@ bool Pod_State::shouldBrake(double vel, double pos) {
 }
 
 void Pod_State::steady_error_state(std::shared_ptr<NetworkManager::Network_Command> command){
-	motor.disable_motors();
-	//enable brakes;
-}
+	}

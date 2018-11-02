@@ -131,6 +131,7 @@ class Pod_State : public StateMachine {
 			STATE_MAP_ENTRY(&Pod_State::ST_Flight_Accel)
 			STATE_MAP_ENTRY(&Pod_State::ST_Flight_Coast)
 			STATE_MAP_ENTRY(&Pod_State::ST_Flight_Brake)
+			STATE_MAP_ENTRY(&Pod_State::ST_Error)
 		END_STATE_MAP
 
 };

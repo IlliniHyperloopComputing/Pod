@@ -25,7 +25,7 @@ TEST_F(PodTest, ConnectDisconnect) {
  */
 //Testing access to Error 
  TEST_F(PodTest, Error){
-  	MoveState(NetworkManager::Network_Command_ID:: TRANS_ERROR_STATE, Pod_State::E_States::ST_ERROR,true);
+  	MoveState(NetworkManager::Network_Command_ID::TRANS_ERROR_STATE,Pod_State::E_States::ST_ERROR,true);
  }
 
 
@@ -320,7 +320,7 @@ TEST_F(PodTest, FlightBrakeFailures) {
   //Testing all failed accesses from Error State
   TEST_F(PodTest, ErrorFailures){
   	MoveState(NetworkManager::Network_Command_ID:: TRANS_ERROR_STATE, Pod_State::E_States::ST_ERROR,true);
-  	
+
   	MoveState(NetworkManager::Network_Command_ID::TRANS_SAFE_MODE, Pod_State::E_States::ST_SAFE_MODE, false);
   	MoveState(NetworkManager::Network_Command_ID:: TRANS_ERROR_STATE, Pod_State::E_States::ST_ERROR,false);
   	MoveState(NetworkManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, Pod_State::E_States::ST_FUNCTIONAL_TEST, false);
