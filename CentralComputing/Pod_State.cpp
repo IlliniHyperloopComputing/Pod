@@ -74,7 +74,7 @@ void Pod_State::move_safe_mode() {
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight accel */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight coast */
 		TRANSITION_MAP_ENTRY(ST_SAFE_MODE)			/* Flight brake */
-		TRANSITION_MAP_ENTRY(ST_SAFE_MODE)			//Error State
+		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			//Error State
 	END_TRANSITION_MAP(NULL)
 }
 
