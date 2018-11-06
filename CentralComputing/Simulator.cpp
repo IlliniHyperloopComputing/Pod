@@ -97,7 +97,7 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
   position = lastPosition + ((lastVelocity + velocity)/2 * timeDelta) + (0.5 * acceleration * timeDelta * timeDelta);
 
   //CREATING A STATESPACE OBJECT AND SETTING ITS ARRAY'S VALUES
-  shared_ptr<StateSpace> space = std::make_shared<StateSpace>();
+  std::shared_ptr<StateSpace> space = std::make_shared<StateSpace>();
   space -> x[0] = position;
   space -> x[1] = velocity;
   space -> x[2] = acceleration;
@@ -112,7 +112,7 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
 
 
 
-bool Simulator::send_command(shared_ptr<NetworkManager::Network_Command> command) {
+bool Simulator::send_command(std::shared_ptr<NetworkManager::Network_Command> command) {
   int bytes_written = write(socketfd, command.get(), sizeof(NetworkManager::Network_Command));
   //print(LogLevel::LOG_EDEBUG, "Bytes written : %d, ID : %d, Value : %d\n", bytes_written, command->id, command->value);
   int size = sizeof(NetworkManager::Network_Command);
