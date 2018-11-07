@@ -2,7 +2,7 @@
 using namespace Utils;
 
 Brakes::Brakes(){
-
+  enabled = false;
 }
 
 void Brakes::enable_brakes() {
