@@ -30,7 +30,6 @@ Pod_State::Pod_State()
   transition_map[NetworkManager::SET_MOTOR_SPEED] = &Pod_State::no_transition;
   transition_map[NetworkManager::ENABLE_BRAKE] = &Pod_State::no_transition;
   transition_map[NetworkManager::DISABLE_BRAKE] = &Pod_State::no_transition;
-  transition_map[NetworkManager::SET_BRAKE_PRESSURE] = &Pod_State::no_transition;
   steady_state_map[ST_SAFE_MODE] = &Pod_State::steady_safe_mode;
   steady_state_map[ST_FUNCTIONAL_TEST] = &Pod_State::steady_functional;
   steady_state_map[ST_LOADING] = &Pod_State::steady_loading;
@@ -211,8 +210,6 @@ void Pod_State::steady_functional(std::shared_ptr<NetworkManager::Network_Comman
       //deactivate brakes
       brakes.disable_brakes();
 			break;
-		case NetworkManager::SET_BRAKE_PRESSURE:
-      brakes.set_pressure(command->value * 4);
     default:
       break;
 	}
