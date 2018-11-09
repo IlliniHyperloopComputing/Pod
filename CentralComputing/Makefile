@@ -34,27 +34,15 @@ POD_CROSS = cross
 POD_CROSS_D = dcross
 POD_CROSS_T = scross
 
-
 ARM_COMPILER_EXISTS := $(shell command -v $(CXX_BBB) 2> /dev/null)
 
+
 .PHONY: all
-all : msg mkdir_obj ${LIB_DIR}/gtest-all.o ${LIB_DIR}/gtest-all-arm.o msg_d $(POD_D) msg_s $(POD_T) msg_success
-
-# Compile libgtest
-${LIB_DIR}/gtest-all.o : ${GTEST_DIR}/src/gtest-all.cc 
-	g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all.o
-	ar -rv ${LIB_DIR}/libgtest.a ${LIB_DIR}/gtest-all.o
-
-ifdef ARM_COMPILER_EXISTS
-${LIB_DIR}/gtest-all-arm.o : ${GTEST_DIR}/src/gtest-all.cc 
-	arm-linux-gnueabihf-g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all-arm.o
-	ar -rv ${LIB_DIR}/libgtest-arm.a ${LIB_DIR}/gtest-all-arm.o
-endif
-
-ifndef ARM_COMPILER_EXISTS
-${LIB_DIR}/gtest-all-arm.o : ${GTEST_DIR}/src/gtest-all.cc 
-	$(info = Cant compile for ARM. install arm-linux-gnueabihf-g++)
-endif
+all : msg mkdir_obj ${LIB_DIR}/gtest-all.o ${LIB_DIR}/gtest-all-arm.o msg_d $(POD_D) msg_s $(POD_T)
+	$(info  =   ___ _   _  ___ ___ ___  ___ ___  )
+	$(info	=  / __| | | |/ __/ __/ _ \/ __/ __| )
+	${info	=  \__ \ |_| | (_| (_|  __/\__ \__ \ }
+	$(info	=  |___/\__,_|\___\___\___||___/___/ )	
 
 .PHONY: msg
 msg : 
@@ -83,12 +71,28 @@ msg :
 	$(info =             ___/  /___  /__/   /  / /__/   /  / /  /                    )
 	$(info =          __ __/______/ /______/__/ /______/__/ /__/                     )  
 
-.PHONY: msg_success
-msg_success :
-	$(info  =   ___ _   _  ___ ___ ___  ___ ___  )
-	$(info	=  / __| | | |/ __/ __/ _ \/ __/ __| )
-	${info	=  \__ \ |_| | (_| (_|  __/\__ \__ \ }
-	$(info	=  |___/\__,_|\___\___\___||___/___/ )	
+.PHONY: mkdir_obj
+mkdir_obj:
+	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $(LIB_DIR)
+	@mkdir -p $(OBJ_DIR)/StateMachineCompact
+	@mkdir -p $(OBJ_DIR)/tests
+
+# Compile libgtest
+${LIB_DIR}/gtest-all.o : ${GTEST_DIR}/src/gtest-all.cc 
+	g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all.o
+	ar -rv ${LIB_DIR}/libgtest.a ${LIB_DIR}/gtest-all.o
+
+ifdef ARM_COMPILER_EXISTS
+${LIB_DIR}/gtest-all-arm.o : ${GTEST_DIR}/src/gtest-all.cc 
+	arm-linux-gnueabihf-g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all-arm.o
+	ar -rv ${LIB_DIR}/libgtest-arm.a ${LIB_DIR}/gtest-all-arm.o
+endif
+
+ifndef ARM_COMPILER_EXISTS
+${LIB_DIR}/gtest-all-arm.o : ${GTEST_DIR}/src/gtest-all.cc 
+	$(info = Cant compile for ARM. install arm-linux-gnueabihf-g++)
+endif
 
 .PHONY: msg_d
 msg_d : 
@@ -101,14 +105,6 @@ msg_s :
 	$(info  =====================)
 	$(info  ===Compiling   Sim===)
 	$(info  =====================)
-
-.PHONY: mkdir_obj
-mkdir_obj:
-	@mkdir -p $(OBJ_DIR)
-	@mkdir -p $(LIB_DIR)
-	@mkdir -p $(OBJ_DIR)/StateMachineCompact
-	@mkdir -p $(OBJ_DIR)/tests
-
 
  
 ####
@@ -150,6 +146,7 @@ $(POD_T) : CXX 		= $(CXX_NORM)
 $(POD_T) : CFLAGS  	= $(CFLAGS_SIM)
 $(POD_T) : LD  		= $(LD_NORM)
 $(POD_T) : mkdir_obj build-$(POD_T)
+
 build-$(POD_T) : $(OBJ:%.o=$(OBJ_DIR)/%-build-sim.o)
 	$(LD) $? $(LDFLAGS) $(LD_TEST_NORM) -o $(POD_T)
 
@@ -208,5 +205,5 @@ clean_lib:
 push: msg mkdir_obj $(POD_CROSS_T) #########$(POD_CROSS) $(POD_CROSS_D) 
 	# scp $(POD_CROSS)   debian@192.168.137.100:~/
 	# scp $(POD_CROSS_D) debian@192.168.137.100:~/
-	scp $(POD_CROSS_T) debian@192.168.137.100:~/
+	scp $(POD_CROSS_T) debian@128.174.163.125:~/
 
