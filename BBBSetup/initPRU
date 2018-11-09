@@ -20,7 +20,8 @@ echo 'start' > /sys/class/remoteproc/remoteproc2/state
 pru2Stat=$?
 echo "pru core 1 is now loaded"
 
-if [ $pru1Stat -eq 0 ] && [ $pru2Stat -eq 0 ] then
+if [ $pru1Stat -eq 0 ] && [ $pru2Stat -eq 0 ] 
+then
   exit 0
 else
   exit 1
