@@ -9,11 +9,11 @@ TP100GearIdx = [];
 %Change parameters below
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 gearVecTp100 = 0.7;%0.68:0.01:0.72;%0.8%0.4:0.1:0.9; %loop through gear ratios %(0.7:130m/s for just 6 tp100s)
-gearVecEmrax = 4.1;%3.8:0.01:4.2;%4.5%3.8:0.1:4.5; %(3.3:115m/s for just emrax)
+gearVecEmrax = 2.59;%:0.01:2.62;%3.8:0.01:4.2;%4.5%3.8:0.1:4.5; %(3.3:115m/s for just emrax)
 TP100GearRatio = 1; %Assuming direct drive
 runlength = 1200; %Assume 1.25 km track, want to leave 50 meter safety at the end
 
-radiusEmrax = 0.0762; %wheel Radius (meters)
+radiusEmrax = 0.2032/2; %wheel Radius (meters)
 radiusTP100 = 0.0762; %wheel Radius (meters)
 
 
@@ -21,7 +21,7 @@ radiusTP100 = 0.0762; %wheel Radius (meters)
 %%%%%%%%%
 %Emrax Specific
 %%%%%%%%%
-EmraxPower = 50; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT go over this value
+EmraxPower = 70; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT go over this value
 EmraxBatteryMaxPower = 100; % Max BATTERY OUTPUT in kw. THIS THROTTLES THE EMRAX. The BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
 EmraxPeakTorque = 240; %Peak torque, in Nm
 EmraxMaxRPM = 4400; %Max RPM under load
@@ -47,7 +47,7 @@ TP100Power = 20; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT GO OVE
 TP100AvgBatteryMaxPower = 25; % % Max BATTERY. THIS THROTTLES A TP100. in kW. BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
 TP100PeakTorque = 9.75; %Peak torque, in Nm
 TP100MaxRPM = 25000; %Max RPM under load
-TP100Num = 6; %NUMBER OF TP100s
+TP100Num = 0; %NUMBER OF TP100s
 TP100AvgWeight = (28)/6.0; % According to UC's powerpoint
 TP100AvgBatteryWeight = 30/6.0;
 TP100BatteryVoltage = 85;
@@ -57,10 +57,10 @@ TP100ControllerEfficiency = 0.95;
 
 %%%%%%%%%
 %Pod Mass (kg), Right now its (frame and structure) + Emrax + Emsiso + Emrax battery + TP100 system
-mass = 60 + EmraxWeight + EmsisoWeight + EmraxBatteryWeight + TP100AvgWeight*TP100Num + TP100AvgBatteryWeight*TP100Num;
+mass = 105.0974;%60 + EmraxWeight + EmsisoWeight + EmraxBatteryWeight + TP100AvgWeight*TP100Num + TP100AvgBatteryWeight*TP100Num;
 %mass = 60 + EmraxWeight + EmsisoWeight + EmraxBatteryWeight; 
 %mass = 60 + TP100AvgWeight*TP100Num + TP100AvgBatteryWeight*TP100Num; 
-maxG = 5;
+maxG = 5000/mass/9.80665;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%
