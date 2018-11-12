@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import './App.css';
 import { Circle } from 'rc-progress';
 
+// https://github.com/react-component/progress
 class App extends Component {
   render() {
     const circleContainerStyle = {
