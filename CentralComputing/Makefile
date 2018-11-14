@@ -106,6 +106,12 @@ msg_s :
 	$(info  ===Compiling   Sim===)
 	$(info  =====================)
 
+.PHONY: msg_p
+msg_p : 
+	$(info  =====================)
+	$(info  ===Compiling  Prod===)
+	$(info  =====================)
+
  
 ####
 # All Build Rules are similar, except for different names and slightly different paths. 
@@ -201,9 +207,32 @@ clean:
 clean_lib:
 	rm -f $(LIB_DIR)/*
 
+BBB := bbb1
+ADDR := 128.174.163.125
+
 .PHONY: push
-push: msg mkdir_obj $(POD_CROSS_T) #########$(POD_CROSS) $(POD_CROSS_D) 
-	# scp $(POD_CROSS)   debian@192.168.137.100:~/
-	# scp $(POD_CROSS_D) debian@192.168.137.100:~/
-	scp $(POD_CROSS_T) debian@128.174.163.125:~/
+push: 
+	$(info  ==============================================)
+	$(info  Ways to push to BBB:)
+	${info  (1) `make push_all`   for all of the following}
+	${info  (2) `make push_sim`   for sim build}
+	${info  (3) `make push_debug` for debug build}
+	${info  (4) `make push_prod`  for optimized build}
+	$(info  ==============================================)
+	
+
+.PHONY: push_all
+push_all: msg push_sim push_debug push_prod
+
+.PHONY: push_sim
+push_sim: msg_s mkdir_obj $(POD_CROSS_T) 
+	scp $(POD_CROSS_T) $(BBB)@$(ADDR):~/
+
+.PHONY: push_debug
+push_debug: msg_d mkdir_obj $(POD_CROSS_D) 
+	scp $(POD_CROSS_D) $(BBB)@$(ADDR):~/
+
+.PHONY: push_prod
+push_prod: msg_p mkdir_obj $(POD_CROSS)
+	scp $(POD_CROSS) $(BBB)@$(ADDR):~/
 
