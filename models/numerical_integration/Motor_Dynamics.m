@@ -3,6 +3,7 @@ function [Torque, MechPower, MotorInputPower, ControllerInputPower, Current] ...
           = Motor_Dynamics (RPM, MechPowerTarget, PeakTorque, MaxRPM, ControllerEfficiency...
                             ,BatteryVoltage, BatteryResistance, BatteryMaxPower, isEmrax)
   
+  MechPowerTarget = min(MechPowerTarget, 0.96*ControllerEfficiency*BatteryMaxPower);
   MechPowerTarget = MechPowerTarget+0.1; %measured in kw, this is adding 100w
   BatteryPower = BatteryMaxPower*1000 *2; %this gets overwritten, justs needs to be initally higher than BatteryMaxPower
   
@@ -18,8 +19,9 @@ function [Torque, MechPower, MotorInputPower, ControllerInputPower, Current] ...
   
   while(BatteryPower > BatteryMaxPower*1000)
     MechPowerTarget = MechPowerTarget - 0.1;
-  
+    
     [Torque, MechPower] = Torque_curve_reader(RPM, MechPowerTarget, PeakTorque, MaxRPM); %rpm, Motor Power (kW), Max Torque (Nm), Max RPM, gear ratio
+    
     if(isEmrax)
       Efficiency = Emrax_Efficiency_Map(Torque, RPM);
     else
