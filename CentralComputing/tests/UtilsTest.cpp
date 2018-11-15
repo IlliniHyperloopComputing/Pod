@@ -21,7 +21,7 @@ TEST(UtilsTest, busyWaitTest) {
 //Expecting set and get commands to go through by checking if return values are zero
 
 //tests the total wait time of threads created
-TEST(UtilsTest, busyWaitMultiThread){
+TEST(UtilsTest, busyWaitThreads) {
 	int threadCount = 10;
 	long time = 100000;
 	//buffer based on how accurate busyWait needs to be while still passing the test
@@ -52,7 +52,7 @@ TEST(UtilsTest, busyWaitMultiThread){
 }
 
 //tests the individual wait times of threads
-TEST(UtilsTest, busyWaitIndivThreads){
+TEST(UtilsTest, busyWaitIndivThreads) {
 	int threadCount = 10;
 	long time = 100000;
 	//buffer based on how accurate busyWait needs to be while still passing the test
