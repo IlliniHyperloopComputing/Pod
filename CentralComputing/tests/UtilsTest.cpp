@@ -22,7 +22,7 @@ TEST(UtilsTest, busyWaitTest) {
 
 //tests the total wait time of threads created
 TEST(UtilsTest, busyWaitThreads) {
-	int threadCount = 10;
+	constexpr int threadCount = 10;
 	long time = 100000;
 	//buffer based on how accurate busyWait needs to be while still passing the test
 	long buffer = 10000;
@@ -53,22 +53,21 @@ TEST(UtilsTest, busyWaitThreads) {
 
 //tests the individual wait times of threads
 TEST(UtilsTest, busyWaitIndivThreads) {
-	int threadCount = 10;
+	constexpr int threadCount = 10;
 	long time = 100000;
 	//buffer based on how accurate busyWait needs to be while still passing the test
 	long buffer = 10000;
-	std::clock_t start = std::clock();
 	//need to save the first affinity and set it back to that at the end
 	cpu_set_t first;
 	EXPECT_EQ(sched_getaffinity(0, sizeof(first), &first), 0);
-	/
+
 	cpu_set_t toRun;
 	CPU_ZERO(&toRun);
 	CPU_SET(0, &toRun);
 	EXPECT_EQ(sched_setaffinity(0, sizeof(toRun), &toRun), 0);
 
 	std::thread t[threadCount];
-	
+
 	for (int count = 0; count < threadCount; count++) {
 		t[count] = std::thread(Utils::busyWait, time);
 	}
