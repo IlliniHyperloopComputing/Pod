@@ -3,8 +3,13 @@
 
 
 #include "NetworkManager.hpp"
-#include "Pod_State.h"
-using namespace std;
+
+#define MAX_ACCEL 9.81
+#define MAX_DECEL -9.81
+
+
+struct StateSpace;
+
 class Simulator {
 
   public:
@@ -61,16 +66,17 @@ class Simulator {
 
 
     /*
-     * Returns the pod's position within the simulation
+     * Uses the current state of the brakes/motors to simulate the new position, velocity, 
+     * and acceleration and returns them as a StateSpace object
      */
-    uint8_t sim_get_position();
+    std::shared_ptr<StateSpace> sim_get_motion();
 
 
     /**
      * Sends the given command to the connected pod
      * @param command the command to send
      */
-    bool send_command(shared_ptr<NetworkManager::Network_Command> command);
+    bool send_command(std::shared_ptr<NetworkManager::Network_Command> command);
 
 
     /**
@@ -86,16 +92,27 @@ class Simulator {
 
 
 
-    Pod_State::E_States current_state; //current state of the pod as read by the network controller
 
-    atomic<bool> active_connection;
+    std::atomic<bool> active_connection;
     Event closed;
-    thread read_thread;
+    std::thread read_thread;
 
     int socketfd;
 
-    //TODO:
-    //Add brake status, motor status
+    double timeLast = -1;
+    double timeDelta = 0.000;
+    
+    bool motorsOn = false;
+    bool brakesOn = false;
+    
+    uint8_t throttle = 0.000;
+    uint8_t pressure = 0.000;
+    
+    double position = 0.000;
+    double lastPosition = 0.000;
+    double velocity = 0.000;
+    double lastVelocity = 0.000;
+    double acceleration = 0.000;
 };
 namespace SimulatorManager {
   extern Simulator sim;

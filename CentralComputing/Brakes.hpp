@@ -4,6 +4,7 @@
 #include "Utils.h"
 #include "SourceManager.hpp"
 #include "MotionModel.hpp"
+#include "Simulator.hpp"
 #include <cmath>
 
 
