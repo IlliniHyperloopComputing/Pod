@@ -56,7 +56,6 @@ def generateCompleteList():
     for key in latestDataLists[0]:
         if (latestDataLists[0][key] == None):
             for dataList in latestDataLists:
-                print(key,dataList)
                 if (dataList[key] != None):
                     listsToReturn.append(dataList)
                     break

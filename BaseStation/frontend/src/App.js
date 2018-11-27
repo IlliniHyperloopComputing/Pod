@@ -9,6 +9,15 @@ class App extends Component {
   };
 
   componentDidMount() {
+    this.intervalID = setInterval(
+      () => this.tick(),
+      20
+    );
+  }
+  componentWillUnmount() {
+    clearInterval(this.intervalID);
+  }
+  tick() {
     this.callApi()
       .then(res => this.setState({ body: res }))
       .catch(err => console.log(err));
