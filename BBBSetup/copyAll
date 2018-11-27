@@ -2,13 +2,13 @@
 echo "Sorry, you are going to have to type the password multiple times"
 echo "And before you ask why I didn't do it another way, like using 'expect' or 'sshpass', its because this is a one time thing, and those packages aren't always readily avaliable to everyone. They weren't even installed by default on my version of Ubuntu."
 echo "password: temppwd"
-scp BB-ADC-00A0.dts debian@192.168.137.100:~/
-scp BB-DCAN1-00A0.dts debian@192.168.137.100:~/
-scp BB-GPIO-01-00A0.dts debian@192.168.137.100:~/
-scp BB-PRU-01-00A0.dts debian@192.168.137.100:~/
-scp BB-PWM1-00A0.dts debian@192.168.137.100:~/
-scp w1.dts debian@192.168.137.100:~/
-scp pru_encoder/Debug/pru_encoder.out debian@192.168.137.100:~/
-scp halt/Debug/halt.out debian@192.168.137.100:~/
-scp initPRU debian@192.168.137.100:~/
-scp setupOverlay debian@192.168.137.100:~/
+scp BB-ADC-00A0.dts debian@10.0.0.11:~/
+scp BB-DCAN1-00A0.dts debian@10.0.0.11:~/
+scp BB-GPIO-01-00A0.dts debian@10.0.0.11:~/
+scp BB-PRU-01-00A0.dts debian@10.0.0.11:~/
+scp BB-PWM1-00A0.dts debian@10.0.0.11:~/
+scp w1.dts debian@10.0.0.11:~/
+scp pru_encoder/Debug/pru_encoder.out debian@10.0.0.11:~/
+scp halt/Debug/halt.out debian@10.0.0.11:~/
+scp initPRU debian@10.0.0.11:~/
+scp setupOverlay debian@10.0.0.11:~/
