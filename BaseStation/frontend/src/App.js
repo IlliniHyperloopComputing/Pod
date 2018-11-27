@@ -1,5 +1,8 @@
 import React, { Component } from 'react';
 import './App.css';
+
+//https://medium.freecodecamp.org/force-refreshing-a-react-child-component-the-easy-way-6cdbb9e6d99c
+
 class App extends Component {
   state = {
     "body": "",
