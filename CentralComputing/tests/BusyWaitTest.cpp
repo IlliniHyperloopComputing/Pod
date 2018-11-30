@@ -7,9 +7,10 @@
 #include <sched.h>
 
 //Test to make sure the busy wait takes as long as it should, given a small margin of error
+//A test on the busy wait logic
 TEST(BusyWaitTest, testWaiting) {
 
-  int waitTime = 500;
+  int waitTime = 5000;
   double marginOfError = 1.2;
 
   auto start = microseconds();
@@ -28,13 +29,10 @@ TEST(BusyWaitTest, testWaiting) {
   EXPECT_GE(duration, waitTime);
 }
 
-//testing to make sure that busy wait behaves correctly by forcing non-parallelism (1 CPU and multipe threads)
-TEST(BusyWaitTest, testNonParallel){
-  int waitTime = 500;
+void testingBusyWait(int waitTime, unsigned num_threads){
   double marginOfError = 1.2;
   auto start = microseconds();
-  constexpr unsigned num_threads = 4;
-  int thread_count = 4;
+  int thread_count = int(num_threads);
   //saves our cpu affinity so that we can revert back after the test
   cpu_set_t original;
   sched_getaffinity(0, sizeof(original), &original);
@@ -53,8 +51,8 @@ TEST(BusyWaitTest, testNonParallel){
   EXPECT_EQ(status, 0);
 
   //create our threads, calling busy wait each time
-  std::thread t[num_threads];
-  for (unsigned int i = 0; i < num_threads; ++i) {
+  std::vector<std::thread> t;
+  for (unsigned i = 0; i < num_threads; ++i) {
       t[i] = std::thread(BusyWait, waitTime);
   }
 
@@ -77,4 +75,14 @@ TEST(BusyWaitTest, testNonParallel){
   //reverts scheduler affinity back to normal, expecting no error
   status = sched_setaffinity(0, sizeof(original), &original);
   EXPECT_EQ(status, 0);
+}
+
+//testing to make sure that busy wait behaves correctly by forcing non-parallelism (1 CPU and multipe threads)
+//A test on actually implementing busy wait
+TEST(BusyWaitTest, testNonParallel){
+  for (int tm = 5000; tm < 6000; tm += 500){
+    for (unsigned th = 4; th < 5; th++){
+      testingBusyWait(tm,th);
+    }
+  }
 }
