@@ -53,7 +53,7 @@ void testingBusyWait(int waitTime, unsigned num_threads){
   //create our threads, calling busy wait each time
   std::vector<std::thread> t;
   for (unsigned i = 0; i < num_threads; ++i) {
-      t[i] = std::thread(BusyWait, waitTime);
+      t.push_back(std::thread(BusyWait, waitTime));
   }
 
   for (auto& thread : t) {
