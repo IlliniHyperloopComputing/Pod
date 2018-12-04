@@ -41,7 +41,8 @@ disable_uboot_overlay_audio=1
 
 # BBB Overlay and PRU information:
 * CAN Bus device tree overlay and kernel module setup
-  * [Reference here](https://electronics.stackexchange.com/questions/195416/beaglebone-black-can-bus-setup)
+  * [Newest TI Reference](http://processors.wiki.ti.com/index.php/Linux_Core_ADC_Users_Guide)
+  * [Deprecated TI Reference here](https://electronics.stackexchange.com/questions/195416/beaglebone-black-can-bus-setup)
   * Device tree _and_ kernel modules will be needed. Likely additional can utils will need to be installed.
   * Run `ifconfig` to see if can0 shows up. The device will need to be connected before anything will show up.
 * ADC input device tree overlay setup
