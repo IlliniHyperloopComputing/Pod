@@ -49,6 +49,7 @@ disable_uboot_overlay_audio=1
   * [TI Refernce here](http://processors.wiki.ti.com/index.php/AM335x_ADC_Driver%27s_Guide)
   * More information within `adc_testing` subdirectory
   * [older reference here](https://www.teachmemicro.com/beaglebone-black-adc/). It has some source code for a test executable. More information in `adc_testing` subdirectory.
+  * [another technical reference](http://beaglebone.cameon.net/home/reading-the-analog-inputs-adc)
   * Look in the `/sys/bus/iio/devices/iio:device0` folder for ADC values
 * PWM output device tree overlay setup
   * [Reference here](https://www.teachmemicro.com/beaglebone-black-pwm-ubuntu-device-tree/)
