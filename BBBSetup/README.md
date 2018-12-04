@@ -45,7 +45,9 @@ disable_uboot_overlay_audio=1
   * Device tree _and_ kernel modules will be needed. Likely additional can utils will need to be installed.
   * Run `ifconfig` to see if can0 shows up. The device will need to be connected before anything will show up.
 * ADC input device tree overlay setup
-  * [Reference here](https://www.teachmemicro.com/beaglebone-black-adc/)
+  * [TI Refernce here](http://processors.wiki.ti.com/index.php/AM335x_ADC_Driver%27s_Guide)
+  * More information within `adc_testing` subdirectory
+  * [older reference here](https://www.teachmemicro.com/beaglebone-black-adc/). It has some source code for a test executable. More information in `adc_testing` subdirectory.
   * Look in the `/sys/bus/iio/devices/iio:device0` folder for ADC values
 * PWM output device tree overlay setup
   * [Reference here](https://www.teachmemicro.com/beaglebone-black-pwm-ubuntu-device-tree/)
