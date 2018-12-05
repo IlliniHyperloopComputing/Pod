@@ -35,9 +35,9 @@ disable_uboot_overlay_audio=1
 1. Do the above to make sure the following will work
 2. Run `copyAll` to move over all necessary files to BBB. Password is `temppwd`, which is the default for the user `debian`
 3. `ssh` into the BBB using `debian@192.168.137.100` with password `temppwd`
-4. Run `./setupOverlay`. Change the permissions of this file if necessary
+4. Run `sudo ./setupOverlay`. Change the permissions of this file if necessary
 5. Restart the BBB and check the `dmesg` for success/ errors of overlays
-6. Run `./initPRU`. This must be run every time the BBB is turned on.
+6. Run `sudo ./initPRU` to load the PRU firmware, and `sudo ./initCAN` to start the CAN interface (either ordering works). **This must be run every time the BBB is restarted**
 
 # BBB Overlay and PRU information:
 * CAN Bus device tree overlay and kernel module setup

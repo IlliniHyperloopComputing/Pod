@@ -14,4 +14,5 @@ scp w1.dts $bbb@$addr:~/
 scp pru_encoder/Debug/pru_encoder.out $bbb@$addr:~/
 scp halt/Debug/halt.out $bbb@$addr:~/
 scp initPRU $bbb@$addr:~/
+scp initCAN $bbb@$addr:~/
 scp setupOverlay $bbb@$addr:~/
