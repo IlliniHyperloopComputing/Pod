@@ -2,14 +2,25 @@
 using namespace Utils;
 
 Brakes::Brakes(){
-
+  enabled = false;
 }
 
 void Brakes::enable_brakes() {
+  #ifdef SIM
+  SimulatorManager::sim.sim_brake_enable();
+
+  #endif
+  enabled = true;
   print(LogLevel::LOG_DEBUG, "Brakes Enabled\n");
 }
 
 void Brakes::disable_brakes() {
+  #ifdef SIM
+  SimulatorManager::sim.sim_brake_disable();
+
+  #endif
+
+  enabled = false;
   print(LogLevel::LOG_DEBUG, "Brakes Disabled\n");
 }
 
@@ -20,10 +31,3 @@ bool Brakes::is_enabled(){
   return enabled;
 }
 
-int16_t Brakes::calculate_pressure(double dt, int16_t last_throttle){
-    return (int16_t) 0;
-}
-
-void Brakes::set_pressure(int16_t value) {
-      print(LogLevel::LOG_DEBUG, "Setting brake pressure: %d\n", value);
-}

@@ -13,7 +13,7 @@ double MAX_VELOCITY = 550;
 //Pod_State::Pod_State(Brake * brake, Motor * motor, Sensor * sensor)
 Pod_State::Pod_State()
   : StateMachine(ST_MAX_STATES),
-  motor()
+  motor(), brakes()
     
 {
   transition_map[NetworkManager::TRANS_SAFE_MODE] = &Pod_State::move_safe_mode;  
@@ -31,7 +31,6 @@ Pod_State::Pod_State()
   transition_map[NetworkManager::SET_MOTOR_SPEED] = &Pod_State::no_transition;
   transition_map[NetworkManager::ENABLE_BRAKE] = &Pod_State::no_transition;
   transition_map[NetworkManager::DISABLE_BRAKE] = &Pod_State::no_transition;
-  transition_map[NetworkManager::SET_BRAKE_PRESSURE] = &Pod_State::no_transition;
   steady_state_map[ST_SAFE_MODE] = &Pod_State::steady_safe_mode;
   steady_state_map[ST_FUNCTIONAL_TEST] = &Pod_State::steady_functional;
   steady_state_map[ST_LOADING] = &Pod_State::steady_loading;
@@ -193,14 +192,19 @@ void Pod_State::ST_Launch_Ready() {
 
 void Pod_State::ST_Flight_Accel() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  brakes.disable_brakes();
+  motor.enable_motors();
 }
 
 void Pod_State::ST_Flight_Coast() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  motor.disable_motors();
 }
 
 void Pod_State::ST_Flight_Brake() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  motor.disable_motors();
+  brakes.enable_brakes();
 }
 void Pod_State::ST_Error() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
@@ -229,11 +233,12 @@ void Pod_State::steady_functional(std::shared_ptr<NetworkManager::Network_Comman
 			break;
   	case NetworkManager::ENABLE_BRAKE:
       //activate brakes
+      brakes.enable_brakes();
 			break;
 		case NetworkManager::DISABLE_BRAKE:
       //deactivate brakes
+      brakes.disable_brakes();
 			break;
-		case NetworkManager::SET_BRAKE_PRESSURE:
     default:
       break;
 	}

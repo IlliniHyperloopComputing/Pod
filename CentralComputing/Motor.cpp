@@ -29,6 +29,7 @@ Motor::Motor(){
 
   in.close();
 
+  enabled = false;
 }
 
 void Motor::enable_motors() {
@@ -36,6 +37,10 @@ void Motor::enable_motors() {
   enabled = true;
   set_throttle(MOTOR_OFF);
   set_enable(true);
+
+  #ifdef SIM
+  SimulatorManager::sim.sim_motor_enable();
+  #endif
 
   print(LogLevel::LOG_DEBUG, "Motors Enabled\n");
 }
@@ -46,6 +51,10 @@ void Motor::disable_motors() {
   integral = 0;
   enabled = false;
 
+
+  #ifdef SIM
+  SimulatorManager::sim.sim_motor_disable();
+  #endif
   print(LogLevel::LOG_DEBUG, "Motors Disabled\n");
 }
 
@@ -69,6 +78,8 @@ bool Motor::is_enabled(){
 }
 
 int16_t Motor::calculate_throttle(double dt, int16_t last_throttle){
+
+
   // Get velocity
   // And current disk RPM
   std::shared_ptr<StateSpace> stateSpace = SourceManager::MM.Get();
@@ -109,6 +120,11 @@ void Motor::set_throttle(int16_t value) {
     }
     out.close();
 
+    #ifdef SIM
+    SimulatorManager::sim.sim_motor_set_throttle(value);
+
+    #endif
+    
     print(LogLevel::LOG_DEBUG, "Setting motor throttle: %d\n", value);
   }
 }

@@ -47,36 +47,72 @@ bool Simulator::sim_connect(const char * hostname, const char * port) {
 
 void Simulator::sim_motor_enable() {
   print(LogLevel::LOG_DEBUG, "Enabling motors\n");
+  motorsOn = true;
 }
 
 void Simulator::sim_motor_disable() {
   print(LogLevel::LOG_DEBUG, "Disabling motors\n");
+  motorsOn = false;
+
 }
 
 void Simulator::sim_motor_set_throttle(uint8_t value) {
   print(LogLevel::LOG_DEBUG, "Setting motor throttle: %d\n", value);
+  throttle = value;
 }
 
 void Simulator::sim_brake_enable() {
-  // TODO simulator brake hasn't been implemented yet
+  print(LogLevel::LOG_DEBUG, "Enabling brakes\n");
+  brakesOn = true;
 }
 
 void Simulator::sim_brake_disable() {
-  // TODO simulator brake hasn't been implemented yet
+  print(LogLevel::LOG_DEBUG, "Disabling brakes\n");
+  brakesOn = false;
 }
 
 void Simulator::sim_brake_set_pressure(uint8_t value) {
-  // TODO simulator brake hasn't been implemented yet
+  print(LogLevel::LOG_DEBUG, "Setting brake pressure: %d\n", value);
+  pressure = value;
 }
 
-uint8_t Simulator::sim_get_position() {
-  // TODO add something similar to the motion model except values will be calculated from
-  // time differentials on when certain commands are called within the simulation such as what
-  // time the motor is enabled and with what throttle and when the brakes get activated
-  return 0;
+std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
+  //FOR FIRST CALL
+  if (timeLast == -1) {
+    timeDelta = 0.000;
+  } else { //SUBSEQUENT CALLS
+    timeDelta = Utils::microseconds() - timeLast;
+  }
+
+  if (motorsOn) {
+    acceleration = MAX_ACCEL * throttle;
+  } else if (brakesOn) {
+    acceleration = MAX_DECEL * pressure;
+  } else {
+    acceleration = 0;
+  }
+
+  //KINEMATIC PHYSICS CALCULATIONS
+  velocity = lastVelocity + (acceleration * timeDelta);
+  position = lastPosition + ((lastVelocity + velocity)/2 * timeDelta) + (0.5 * acceleration * timeDelta * timeDelta);
+
+  //CREATING A STATESPACE OBJECT AND SETTING ITS ARRAY'S VALUES
+  std::shared_ptr<StateSpace> space = std::make_shared<StateSpace>();
+  space -> x[0] = position;
+  space -> x[1] = velocity;
+  space -> x[2] = acceleration;
+
+  //UPDATING VARIABLES
+  lastPosition = position;
+  lastVelocity = velocity;
+  timeLast = Utils::microseconds();
+
+  return space;
 }
 
-bool Simulator::send_command(shared_ptr<NetworkManager::Network_Command> command) {
+
+
+bool Simulator::send_command(std::shared_ptr<NetworkManager::Network_Command> command) {
   int bytes_written = write(socketfd, command.get(), sizeof(NetworkManager::Network_Command));
   //print(LogLevel::LOG_EDEBUG, "Bytes written : %d, ID : %d, Value : %d\n", bytes_written, command->id, command->value);
   int size = sizeof(NetworkManager::Network_Command);

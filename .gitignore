@@ -1,7 +1,6 @@
 #Specific ignores
 build
 builds/
-Debug/
 Release/
 build
 dbuild
@@ -10,9 +9,11 @@ cross
 dcross
 scross
 
-
-
-
+# Allowing .out files for PRU stuff
+BBBSetup/halt/Debug/*
+BBBSetup/pru_encoder/Debug/*
+!BBBSetup/halt/Debug/halt.out
+!BBBSetup/pru_encoder/Debug/pru_encoder.out
 
 
 # Byte-compiled / optimized / DLL files
@@ -112,7 +113,7 @@ target/
 
 # Executables
 *.exe
-*.out
+# *.out   #disable to allow for pru execuitables
 *.app
 build
 build-debug
