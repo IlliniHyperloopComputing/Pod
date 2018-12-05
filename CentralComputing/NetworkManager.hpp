@@ -38,6 +38,7 @@ enum Network_Command_ID {
   DISABLE_BRAKE = 10,
   TRANS_FLIGHT_COAST = 11,
   TRANS_FLIGHT_BRAKE = 12,
+  TRANS_ERROR_STATE=13,
 };
 
 //enum specifying what data is sent

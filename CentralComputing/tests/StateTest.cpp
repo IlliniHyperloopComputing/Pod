@@ -23,6 +23,11 @@ TEST_F(PodTest, ConnectDisconnect) {
 /* 
  * All tests for normal flow of the system
  */
+//Testing access to Error 
+ TEST_F(PodTest, Error){
+  	MoveState(NetworkManager::Network_Command_ID::TRANS_ERROR_STATE,Pod_State::E_States::ST_ERROR,true);
+ }
+
 
 // Testing access to Functional Test
 TEST_F(PodTest, FunctionalTest) {
@@ -122,6 +127,62 @@ TEST_F(PodTest, FlightBrakeBrake) {
   MoveState(NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST, Pod_State::E_States::ST_FLIGHT_COAST, true);
   MoveState(NetworkManager::Network_Command_ID::TRANS_FLIGHT_BRAKE, Pod_State::E_States::ST_FLIGHT_BRAKE, true);
   MoveState(NetworkManager::Network_Command_ID::EMERGENCY_BRAKE, Pod_State::E_States::ST_FLIGHT_BRAKE, true);
+}
+
+// Testing access from Safe Mode to Error
+TEST_F(PodTest, SafeModeError) {
+  MoveState(NetworkManager::Network_Command_ID:: TRANS_ERROR_STATE, Pod_State::E_States::ST_ERROR,true);
+}
+
+// Testing access from Functional Test to Error
+TEST_F(PodTest, FunctionalTestError) {
+  MoveState(NetworkManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(NetworkManager::Network_Command_ID:: TRANS_ERROR_STATE, Pod_State::E_States::ST_ERROR,true);
+}
+
+// Testing access from Loading Brake to Error
+TEST_F(PodTest, LoadingError) {
+  MoveState(NetworkManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(NetworkManager::Network_Command_ID::TRANS_LOADING, Pod_State::E_States::ST_LOADING, true);
+  MoveState(NetworkManager::Network_Command_ID:: TRANS_ERROR_STATE, Pod_State::E_States::ST_ERROR,true);
+}
+
+// Testing access from Launch Ready to Error
+TEST_F(PodTest, LaunchReadyError) {
+  MoveState(NetworkManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(NetworkManager::Network_Command_ID::TRANS_LOADING, Pod_State::E_States::ST_LOADING, true);
+  MoveState(NetworkManager::Network_Command_ID::TRANS_LAUNCH_READY, Pod_State::E_States::ST_LAUNCH_READY, true);
+  MoveState(NetworkManager::Network_Command_ID:: TRANS_ERROR_STATE, Pod_State::E_States::ST_ERROR,true);
+}
+
+// Testing access from Flight Accel to Error
+TEST_F(PodTest, FlightAccelError) {
+  MoveState(NetworkManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(NetworkManager::Network_Command_ID::TRANS_LOADING, Pod_State::E_States::ST_LOADING, true);
+  MoveState(NetworkManager::Network_Command_ID::TRANS_LAUNCH_READY, Pod_State::E_States::ST_LAUNCH_READY, true);
+  MoveState(NetworkManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, true);
+  MoveState(NetworkManager::Network_Command_ID:: TRANS_ERROR_STATE, Pod_State::E_States::ST_ERROR,true);
+}
+
+// Testing access from Flight Coast to Error
+TEST_F(PodTest, FlightCoastError) {
+  MoveState(NetworkManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(NetworkManager::Network_Command_ID::TRANS_LOADING, Pod_State::E_States::ST_LOADING, true);
+  MoveState(NetworkManager::Network_Command_ID::TRANS_LAUNCH_READY, Pod_State::E_States::ST_LAUNCH_READY, true);
+  MoveState(NetworkManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, true);
+  MoveState(NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST, Pod_State::E_States::ST_FLIGHT_COAST, true);
+  MoveState(NetworkManager::Network_Command_ID:: TRANS_ERROR_STATE, Pod_State::E_States::ST_ERROR,true);
+}
+
+// Testing access from Flight Brake to Error
+TEST_F(PodTest, FlightBrakeError) {
+  MoveState(NetworkManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(NetworkManager::Network_Command_ID::TRANS_LOADING, Pod_State::E_States::ST_LOADING, true);
+  MoveState(NetworkManager::Network_Command_ID::TRANS_LAUNCH_READY, Pod_State::E_States::ST_LAUNCH_READY, true);
+  MoveState(NetworkManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, true);
+  MoveState(NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST, Pod_State::E_States::ST_FLIGHT_COAST, true);
+  MoveState(NetworkManager::Network_Command_ID::TRANS_FLIGHT_BRAKE, Pod_State::E_States::ST_FLIGHT_BRAKE, true);
+  MoveState(NetworkManager::Network_Command_ID:: TRANS_ERROR_STATE, Pod_State::E_States::ST_ERROR,true);
 }
 
 /* 
@@ -249,4 +310,18 @@ TEST_F(PodTest, FlightBrakeFailures) {
   MoveState(NetworkManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, false);
   MoveState(NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST, Pod_State::E_States::ST_FLIGHT_COAST, false);
 }
+
+  //Testing all failed accesses from Error State
+  TEST_F(PodTest, ErrorFailures){
+  	MoveState(NetworkManager::Network_Command_ID:: TRANS_ERROR_STATE, Pod_State::E_States::ST_ERROR,true);
+
+  	MoveState(NetworkManager::Network_Command_ID::TRANS_SAFE_MODE, Pod_State::E_States::ST_SAFE_MODE, false);
+  	MoveState(NetworkManager::Network_Command_ID:: TRANS_ERROR_STATE, Pod_State::E_States::ST_ERROR,false);
+  	MoveState(NetworkManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, Pod_State::E_States::ST_FUNCTIONAL_TEST, false);
+  	MoveState(NetworkManager::Network_Command_ID::TRANS_LOADING, Pod_State::E_States::ST_LOADING, false);
+  	MoveState(NetworkManager::Network_Command_ID::TRANS_LAUNCH_READY, Pod_State::E_States::ST_LAUNCH_READY, false);
+  	MoveState(NetworkManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, false);
+  	MoveState(NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST, Pod_State::E_States::ST_FLIGHT_COAST, false);
+  	MoveState(NetworkManager::Network_Command_ID::TRANS_FLIGHT_BRAKE, Pod_State::E_States::ST_FLIGHT_BRAKE, false);
+  }
 

@@ -22,11 +22,12 @@ class Pod_State : public StateMachine {
 		{
 			ST_SAFE_MODE,
 			ST_FUNCTIONAL_TEST,
-      ST_LOADING,
+      		ST_LOADING,
 			ST_LAUNCH_READY,
 			ST_FLIGHT_ACCEL,
 			ST_FLIGHT_COAST,
 			ST_FLIGHT_BRAKE,
+			ST_ERROR,
 			ST_MAX_STATES
 		};
 
@@ -50,6 +51,7 @@ class Pod_State : public StateMachine {
 				"FLIGHT_ACCEL",
 				"FLIGHT_COAST",
 				"FLIGHT_BRAKE",
+				"ERROR_STATE",
 				"NOT A STATE"
 			};
 			return states[(int)get_current_state()];
@@ -73,6 +75,7 @@ class Pod_State : public StateMachine {
 		**/
 		void coast();
 		void brake();
+		void error();
 
     /**
     * Steady state functions
@@ -86,6 +89,7 @@ class Pod_State : public StateMachine {
     void steady_flight_accelerate(std::shared_ptr<NetworkManager::Network_Command> command);
     void steady_flight_coast(std::shared_ptr<NetworkManager::Network_Command> command);
     void steady_flight_brake(std::shared_ptr<NetworkManager::Network_Command> command);
+    void steady_error_state(std::shared_ptr<NetworkManager::Network_Command> command);
 
     /*
     * Gets the steady state function for the current state
@@ -112,12 +116,12 @@ class Pod_State : public StateMachine {
     std::map<E_States, steady_state_function> steady_state_map;
 		void ST_Safe_Mode();
 		void ST_Functional_Test();
-    void ST_Loading();
+    	void ST_Loading();
 		void ST_Launch_Ready();
 		void ST_Flight_Accel();
 		void ST_Flight_Coast();
 		void ST_Flight_Brake();
-
+		void ST_Error();
 		bool shouldBrake(double, double);
 
 
@@ -129,6 +133,7 @@ class Pod_State : public StateMachine {
 			STATE_MAP_ENTRY(&Pod_State::ST_Flight_Accel)
 			STATE_MAP_ENTRY(&Pod_State::ST_Flight_Coast)
 			STATE_MAP_ENTRY(&Pod_State::ST_Flight_Brake)
+			STATE_MAP_ENTRY(&Pod_State::ST_Error)
 		END_STATE_MAP
 
 };
