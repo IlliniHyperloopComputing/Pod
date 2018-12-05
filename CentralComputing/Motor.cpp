@@ -29,6 +29,7 @@ Motor::Motor(){
 
   in.close();
 
+  enabled = false;
 }
 
 void Motor::enable_motors() {
@@ -77,6 +78,8 @@ bool Motor::is_enabled(){
 }
 
 int16_t Motor::calculate_throttle(double dt, int16_t last_throttle){
+
+
   // Get velocity
   // And current disk RPM
   std::shared_ptr<StateSpace> stateSpace = SourceManager::MM.Get();

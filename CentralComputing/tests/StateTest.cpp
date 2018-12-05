@@ -54,6 +54,7 @@ TEST_F(PodTest, FlightAccel) {
   MoveState(NetworkManager::Network_Command_ID::TRANS_LOADING, Pod_State::E_States::ST_LOADING, true);
   MoveState(NetworkManager::Network_Command_ID::TRANS_LAUNCH_READY, Pod_State::E_States::ST_LAUNCH_READY, true);
   MoveState(NetworkManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, true);
+  EXPECT_TRUE(pod->state_machine->motor.is_enabled());
 }
 
 // Testing access to  Flight Coast
@@ -63,6 +64,7 @@ TEST_F(PodTest, FlightCoast) {
   MoveState(NetworkManager::Network_Command_ID::TRANS_LAUNCH_READY, Pod_State::E_States::ST_LAUNCH_READY, true);
   MoveState(NetworkManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, true);
   MoveState(NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST, Pod_State::E_States::ST_FLIGHT_COAST, true);
+  EXPECT_FALSE(pod->state_machine->motor.is_enabled());
 }
 
 // Testing access to  Flight Brake
@@ -73,6 +75,8 @@ TEST_F(PodTest, FlightBrake) {
   MoveState(NetworkManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, true);
   MoveState(NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST, Pod_State::E_States::ST_FLIGHT_COAST, true);
   MoveState(NetworkManager::Network_Command_ID::TRANS_FLIGHT_BRAKE, Pod_State::E_States::ST_FLIGHT_BRAKE, true);
+  EXPECT_FALSE(pod->state_machine->motor.is_enabled());
+  EXPECT_TRUE(pod->state_machine->brakes.is_enabled());
 }
 
 /* 
@@ -111,16 +115,6 @@ TEST_F(PodTest, FlightAccelBrake) {
   MoveState(NetworkManager::Network_Command_ID::TRANS_LOADING, Pod_State::E_States::ST_LOADING, true);
   MoveState(NetworkManager::Network_Command_ID::TRANS_LAUNCH_READY, Pod_State::E_States::ST_LAUNCH_READY, true);
   MoveState(NetworkManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, true);
-  MoveState(NetworkManager::Network_Command_ID::EMERGENCY_BRAKE, Pod_State::E_States::ST_FLIGHT_BRAKE, true);
-}
-
-// Testing access from Flight Coast to Emergency Brake
-TEST_F(PodTest, FlightCoastBake) {
-  MoveState(NetworkManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
-  MoveState(NetworkManager::Network_Command_ID::TRANS_LOADING, Pod_State::E_States::ST_LOADING, true);
-  MoveState(NetworkManager::Network_Command_ID::TRANS_LAUNCH_READY, Pod_State::E_States::ST_LAUNCH_READY, true);
-  MoveState(NetworkManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, true);
-  MoveState(NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST, Pod_State::E_States::ST_FLIGHT_COAST, true);
   MoveState(NetworkManager::Network_Command_ID::EMERGENCY_BRAKE, Pod_State::E_States::ST_FLIGHT_BRAKE, true);
 }
 

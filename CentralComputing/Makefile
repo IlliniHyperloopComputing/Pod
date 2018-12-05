@@ -34,27 +34,15 @@ POD_CROSS = cross
 POD_CROSS_D = dcross
 POD_CROSS_T = scross
 
-
 ARM_COMPILER_EXISTS := $(shell command -v $(CXX_BBB) 2> /dev/null)
 
+
 .PHONY: all
-all : msg mkdir_obj ${LIB_DIR}/gtest-all.o ${LIB_DIR}/gtest-all-arm.o msg_d $(POD_D) msg_s $(POD_T) msg_success
-
-# Compile libgtest
-${LIB_DIR}/gtest-all.o : ${GTEST_DIR}/src/gtest-all.cc 
-	g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all.o
-	ar -rv ${LIB_DIR}/libgtest.a ${LIB_DIR}/gtest-all.o
-
-ifdef ARM_COMPILER_EXISTS
-${LIB_DIR}/gtest-all-arm.o : ${GTEST_DIR}/src/gtest-all.cc 
-	arm-linux-gnueabihf-g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all-arm.o
-	ar -rv ${LIB_DIR}/libgtest-arm.a ${LIB_DIR}/gtest-all-arm.o
-endif
-
-ifndef ARM_COMPILER_EXISTS
-${LIB_DIR}/gtest-all-arm.o : ${GTEST_DIR}/src/gtest-all.cc 
-	$(info = Cant compile for ARM. install arm-linux-gnueabihf-g++)
-endif
+all : msg mkdir_obj ${LIB_DIR}/gtest-all.o ${LIB_DIR}/gtest-all-arm.o msg_d $(POD_D) msg_s $(POD_T)
+	$(info  =   ___ _   _  ___ ___ ___  ___ ___  )
+	$(info	=  / __| | | |/ __/ __/ _ \/ __/ __| )
+	${info	=  \__ \ |_| | (_| (_|  __/\__ \__ \ }
+	$(info	=  |___/\__,_|\___\___\___||___/___/ )	
 
 .PHONY: msg
 msg : 
@@ -83,12 +71,28 @@ msg :
 	$(info =             ___/  /___  /__/   /  / /__/   /  / /  /                    )
 	$(info =          __ __/______/ /______/__/ /______/__/ /__/                     )  
 
-.PHONY: msg_success
-msg_success :
-	$(info  =   ___ _   _  ___ ___ ___  ___ ___  )
-	$(info	=  / __| | | |/ __/ __/ _ \/ __/ __| )
-	${info	=  \__ \ |_| | (_| (_|  __/\__ \__ \ }
-	$(info	=  |___/\__,_|\___\___\___||___/___/ )	
+.PHONY: mkdir_obj
+mkdir_obj:
+	@mkdir -p $(OBJ_DIR)
+	@mkdir -p $(LIB_DIR)
+	@mkdir -p $(OBJ_DIR)/StateMachineCompact
+	@mkdir -p $(OBJ_DIR)/tests
+
+# Compile libgtest
+${LIB_DIR}/gtest-all.o : ${GTEST_DIR}/src/gtest-all.cc 
+	g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all.o
+	ar -rv ${LIB_DIR}/libgtest.a ${LIB_DIR}/gtest-all.o
+
+ifdef ARM_COMPILER_EXISTS
+${LIB_DIR}/gtest-all-arm.o : ${GTEST_DIR}/src/gtest-all.cc 
+	arm-linux-gnueabihf-g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all-arm.o
+	ar -rv ${LIB_DIR}/libgtest-arm.a ${LIB_DIR}/gtest-all-arm.o
+endif
+
+ifndef ARM_COMPILER_EXISTS
+${LIB_DIR}/gtest-all-arm.o : ${GTEST_DIR}/src/gtest-all.cc 
+	$(info = Cant compile for ARM. install arm-linux-gnueabihf-g++)
+endif
 
 .PHONY: msg_d
 msg_d : 
@@ -102,13 +106,11 @@ msg_s :
 	$(info  ===Compiling   Sim===)
 	$(info  =====================)
 
-.PHONY: mkdir_obj
-mkdir_obj:
-	@mkdir -p $(OBJ_DIR)
-	@mkdir -p $(LIB_DIR)
-	@mkdir -p $(OBJ_DIR)/StateMachineCompact
-	@mkdir -p $(OBJ_DIR)/tests
-
+.PHONY: msg_p
+msg_p : 
+	$(info  =====================)
+	$(info  ===Compiling  Prod===)
+	$(info  =====================)
 
  
 ####
@@ -150,6 +152,7 @@ $(POD_T) : CXX 		= $(CXX_NORM)
 $(POD_T) : CFLAGS  	= $(CFLAGS_SIM)
 $(POD_T) : LD  		= $(LD_NORM)
 $(POD_T) : mkdir_obj build-$(POD_T)
+
 build-$(POD_T) : $(OBJ:%.o=$(OBJ_DIR)/%-build-sim.o)
 	$(LD) $? $(LDFLAGS) $(LD_TEST_NORM) -o $(POD_T)
 
@@ -204,9 +207,32 @@ clean:
 clean_lib:
 	rm -f $(LIB_DIR)/*
 
+BBB := bbb1
+ADDR := 128.174.163.125
+
 .PHONY: push
-push: msg mkdir_obj $(POD_CROSS_T) #########$(POD_CROSS) $(POD_CROSS_D) 
-	# scp $(POD_CROSS)   debian@192.168.137.100:~/
-	# scp $(POD_CROSS_D) debian@192.168.137.100:~/
-	scp $(POD_CROSS_T) debian@192.168.137.100:~/
+push: 
+	$(info  ==============================================)
+	$(info  Ways to push to BBB:)
+	${info  (1) `make push_all`   for all of the following}
+	${info  (2) `make push_sim`   for sim build}
+	${info  (3) `make push_debug` for debug build}
+	${info  (4) `make push_prod`  for optimized build}
+	$(info  ==============================================)
+	
+
+.PHONY: push_all
+push_all: msg push_sim push_debug push_prod
+
+.PHONY: push_sim
+push_sim: msg_s mkdir_obj $(POD_CROSS_T) 
+	scp $(POD_CROSS_T) $(BBB)@$(ADDR):~/
+
+.PHONY: push_debug
+push_debug: msg_d mkdir_obj $(POD_CROSS_D) 
+	scp $(POD_CROSS_D) $(BBB)@$(ADDR):~/
+
+.PHONY: push_prod
+push_prod: msg_p mkdir_obj $(POD_CROSS)
+	scp $(POD_CROSS) $(BBB)@$(ADDR):~/
 
