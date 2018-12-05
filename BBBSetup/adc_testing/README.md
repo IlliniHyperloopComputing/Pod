@@ -23,6 +23,10 @@ And run with:
   * `echo 0 > /sys/bus/iio/devices/iio\:device0/buffer/enable` will disable the buffer. If this is set to `1` the following executable will not work. This is because it will try to modify `buffer/length` which fails if `enable` is set to `1`.
   * `sudo ./generic_buffer -n TI-am335x-adc -l 5 -c 3` where `l` specifies buffer size, and `c` specifies number of iterations
 
+## Development Progress
+  * `simplified_buffer.c` is a stripped down version of `generic_buffer.c`, or maybe you could call it a specific buffer. This was done to increase my understanding as to what was actually going on.
+  * Now development is shifting to the CentralComputing library
+
 
 ## NEW untested approach
 
