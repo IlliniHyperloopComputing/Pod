@@ -5,6 +5,7 @@
 #include <iostream>
 #include <cstdio>
 #include <sched.h>
+#include "BusyWaitTest.hpp"
 
 //Test to make sure the busy wait takes as long as it should, given a small margin of error
 //A test on the busy wait logic
@@ -80,9 +81,10 @@ void testingBusyWait(int waitTime, unsigned num_threads){
 //testing to make sure that busy wait behaves correctly by forcing non-parallelism (1 CPU and multipe threads)
 //A test on actually implementing busy wait
 TEST(BusyWaitTest, testNonParallel){
-  for (int tm = 5000; tm < 6000; tm += 500){
-    for (unsigned th = 4; th < 5; th++){
-      testingBusyWait(tm,th);
-    }
-  }
+  testingBusyWait(5000,4);
+  testingBusyWait(3000,10);
+  testingBusyWait(8000,4);
+  testingBusyWait(5000,7);
+  testingBusyWait(10000,2);
+
 }
