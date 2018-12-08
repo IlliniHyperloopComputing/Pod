@@ -67,12 +67,9 @@ TEST(UtilsTest, busyWaitIndivThreads) {
 	EXPECT_EQ(sched_setaffinity(0, sizeof(toRun), &toRun), 0);
 
 	std::thread t[threadCount];
-
-	for (int count = 0; count < threadCount; count++) {
-		t[count] = std::thread(Utils::busyWait, time);
-	}
 	for (int count = 0; count < threadCount; count++) {
 		std::clock_t start = std::clock();
+		t[count] = std::thread(Utils::busyWait, time);
 		t[count].join();
 		double elapsedTime = (double) (((std::clock() - start) / ((double) CLOCKS_PER_SEC)) * 1000000);
 		EXPECT_GE((long) elapsedTime, time - buffer);
