@@ -269,6 +269,7 @@ void Pod_State::steady_flight_accelerate(std::shared_ptr<NetworkManager::Network
 
 	if (vel > MAX_VELOCITY) {
 		// Switch to coast
+    print(LogLevel::LOG_INFO, "Pod reached max velocity, %f\n", vel);
 		auto newCommand = std::make_shared<NetworkManager::Network_Command>();
 		newCommand->id = NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST;
 		newCommand->value = 0;
@@ -297,6 +298,7 @@ void Pod_State::steady_flight_brake(std::shared_ptr<NetworkManager::Network_Comm
 bool Pod_State::shouldBrake(double vel, double pos) {
 
 	if (-.5*vel*vel/IDEAL_DECCEL+vel*vel/IDEAL_DECCEL >= LENGTH_OF_TRACK - BUFFER_LENGTH - pos) {
+    print(LogLevel::LOG_INFO, "Pod Should Brake, vel: %f pos: %f\n", vel, pos);
 		return true;
 	} else {
 		return false;

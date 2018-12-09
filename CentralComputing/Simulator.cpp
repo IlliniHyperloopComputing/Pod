@@ -4,12 +4,11 @@ using namespace Utils;
 
 Simulator SimulatorManager::sim;
 
-Simulator::Simulator() {
-  //TODO set up internal variables
-}
 
 bool Simulator::sim_connect(const char * hostname, const char * port) {
   //TODO connect to a Pod instance
+  //
+  reset_motion();
   struct addrinfo hints, *servinfo;
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_INET;
@@ -98,9 +97,9 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
 
   //CREATING A STATESPACE OBJECT AND SETTING ITS ARRAY'S VALUES
   std::shared_ptr<StateSpace> space = std::make_shared<StateSpace>();
-  space -> x[0] = position;
-  space -> x[1] = velocity;
-  space -> x[2] = acceleration;
+  space->x[0] = position;
+  space->x[1] = velocity;
+  space->x[2] = acceleration;
 
   //UPDATING VARIABLES
   lastPosition = position;
@@ -139,4 +138,24 @@ void Simulator::disconnect() {
   close(socketfd);
   closed.wait();
   read_thread.join();
+}
+
+void Simulator::reset_motion() {
+
+    timeLast = -1;
+    timeDelta = 0.0;
+    
+    motorsOn = false;
+    brakesOn = false;
+    
+    throttle = 0.0;
+    pressure = 0.0;
+    
+    position = 0.0;
+    lastPosition = 0.0;
+    velocity = 0.0;
+    lastVelocity = 0.0;
+    acceleration = 0.0;
+    timeLast = -1;
+
 }

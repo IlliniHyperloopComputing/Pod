@@ -75,5 +75,5 @@ std::shared_ptr<StateSpace> MotionModel::refresh(){
 
 //get StateSpace object
 std::shared_ptr<StateSpace> MotionModel::refresh_sim() {
-  return empty_data();
+  return SimulatorManager::sim.sim_get_motion();
 }

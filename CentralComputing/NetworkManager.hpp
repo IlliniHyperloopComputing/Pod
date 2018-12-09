@@ -3,7 +3,6 @@
 
 #include "Utils.h"
 #include "SafeQueue.hpp"
-#include "SourceManager.hpp"
 #include "Event.hpp"
 #include <sys/socket.h>
 #include <sys/types.h>

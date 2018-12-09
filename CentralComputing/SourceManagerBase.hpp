@@ -3,6 +3,7 @@
 
 #include "Utils.h"
 #include "Event.hpp"
+#include "Simulator.hpp"
 #include <memory>
 #include <thread>
 #include <mutex>
