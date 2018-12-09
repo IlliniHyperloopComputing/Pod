@@ -109,6 +109,9 @@ class Pod_State : public StateMachine {
 
     Motor motor;
     Brakes brakes;
+
+    Event auto_transition_coast;
+    Event auto_transition_brake;
 		
 	private:
     std::map<NetworkManager::Network_Command_ID, transition_function> transition_map; 
@@ -123,6 +126,7 @@ class Pod_State : public StateMachine {
 		void ST_Flight_Brake();
 		void ST_Error();
 		bool shouldBrake(double, double);
+   
 
 
 		BEGIN_STATE_MAP
