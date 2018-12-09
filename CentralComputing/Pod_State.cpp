@@ -282,13 +282,14 @@ void Pod_State::steady_flight_coast(std::shared_ptr<NetworkManager::Network_Comm
 	double pos = state->x[0];
 	double vel = state->x[1];
 	double acc = state->x[2];
+  /*
 	
 	if (shouldBrake(vel, pos)) {
 		auto newCommand = std::make_shared<NetworkManager::Network_Command>();
 		newCommand->id = NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST;
 		newCommand->value = 0;
 		NetworkManager::command_queue.enqueue(newCommand);
-	}
+	}*/
 }
 
 void Pod_State::steady_flight_brake(std::shared_ptr<NetworkManager::Network_Command> command) {
@@ -297,7 +298,7 @@ void Pod_State::steady_flight_brake(std::shared_ptr<NetworkManager::Network_Comm
 
 bool Pod_State::shouldBrake(double vel, double pos) {
 
-	if (-.5*vel*vel/IDEAL_DECCEL+vel*vel/IDEAL_DECCEL >= LENGTH_OF_TRACK - BUFFER_LENGTH - pos) {
+	if (-.5*vel*vel/IDEAL_DECCEL >= LENGTH_OF_TRACK - BUFFER_LENGTH - pos) {
     print(LogLevel::LOG_INFO, "Pod Should Brake, vel: %f pos: %f\n", vel, pos);
 		return true;
 	} else {

@@ -5,6 +5,11 @@ using namespace Utils;
 Simulator SimulatorManager::sim;
 
 
+Simulator::Simulator() {
+  reset_motion();
+}
+
+
 bool Simulator::sim_connect(const char * hostname, const char * port) {
   //TODO connect to a Pod instance
   //
@@ -91,9 +96,12 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
     acceleration = 0;
   }
 
+
+  double deltaSeconds = (double) timeDelta / 1000000.0;
+
   //KINEMATIC PHYSICS CALCULATIONS
-  velocity = lastVelocity + (acceleration * timeDelta);
-  position = lastPosition + ((lastVelocity + velocity)/2 * timeDelta) + (0.5 * acceleration * timeDelta * timeDelta);
+  velocity = lastVelocity + (acceleration * deltaSeconds);
+  position = lastPosition + ((lastVelocity + velocity)/2 * deltaSeconds) + (0.5 * acceleration * deltaSeconds * deltaSeconds);
 
   //CREATING A STATESPACE OBJECT AND SETTING ITS ARRAY'S VALUES
   std::shared_ptr<StateSpace> space = std::make_shared<StateSpace>();
@@ -101,10 +109,14 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
   space->x[1] = velocity;
   space->x[2] = acceleration;
 
+  print(LogLevel::LOG_DEBUG, "Motion: Position: %.2f, Velocity: %.2f, Accel = %.2f, lastPos = %.2f, lastVel = %.2f, delta = %d\n", 
+      position, velocity, acceleration, lastPosition, lastVelocity, timeDelta);
+
   //UPDATING VARIABLES
   lastPosition = position;
   lastVelocity = velocity;
   timeLast = Utils::microseconds();
+
 
   return space;
 }
