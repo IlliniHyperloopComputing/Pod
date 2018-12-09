@@ -97,8 +97,8 @@ class Simulator {
 
     int socketfd;
 
-    double timeLast = -1;
-    double timeDelta = 0.000;
+    long long timeLast = -1;
+    long long timeDelta = 0.000;
     
     bool motorsOn = false;
     bool brakesOn = false;

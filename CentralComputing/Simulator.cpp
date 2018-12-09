@@ -109,8 +109,8 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
   space->x[1] = velocity;
   space->x[2] = acceleration;
 
-  print(LogLevel::LOG_DEBUG, "Motion: Position: %.2f, Velocity: %.2f, Accel = %.2f, lastPos = %.2f, lastVel = %.2f, delta = %d\n", 
-      position, velocity, acceleration, lastPosition, lastVelocity, timeDelta);
+  print(LogLevel::LOG_DEBUG, "Motion: Position: %.2f, Velocity: %.2f, Accel = %.2f, lastPos = %.2f, lastVel = %.2f, delta = %d, timeLast=%ld, t = %ld\n",
+      position, velocity, acceleration, lastPosition, lastVelocity, timeDelta, timeLast, Utils::microseconds());
 
   //UPDATING VARIABLES
   lastPosition = position;
