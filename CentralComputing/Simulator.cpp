@@ -13,6 +13,7 @@ Simulator::Simulator() {
 bool Simulator::sim_connect(const char * hostname, const char * port) {
   //TODO connect to a Pod instance
   //
+  enable_logging = true;
   reset_motion();
   struct addrinfo hints, *servinfo;
   memset(&hints, 0, sizeof(hints));
@@ -109,8 +110,10 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
   space->x[1] = velocity;
   space->x[2] = acceleration;
 
-  print(LogLevel::LOG_DEBUG, "Motion: Position: %.2f, Velocity: %.2f, Accel = %.2f, lastPos = %.2f, lastVel = %.2f, delta = %d, timeLast=%ld, t = %ld\n",
+  if(enable_logging){
+    print(LogLevel::LOG_DEBUG, "Motion: Position: %.2f, Velocity: %.2f, Accel = %.2f, lastPos = %.2f, lastVel = %.2f, delta = %d, timeLast=%ld, t = %ld\n",
       position, velocity, acceleration, lastPosition, lastVelocity, timeDelta, timeLast, Utils::microseconds());
+  }
 
   //UPDATING VARIABLES
   lastPosition = position;
@@ -146,6 +149,7 @@ void Simulator::read_loop() {
 }
 
 void Simulator::disconnect() {
+  enable_logging = false;
   active_connection.store(false);
   close(socketfd);
   closed.wait();

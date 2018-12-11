@@ -23,10 +23,11 @@ class PodTest : public ::testing::Test
   }
 
   virtual void TearDown() {
-    print(LogLevel::LOG_INFO, "Test finished, tearing down\n");
+    print(LogLevel::LOG_INFO, "Test finished, begin teardown\n");
     SimulatorManager::sim.disconnect();
     pod->stop();
     pod_thread.join();
+    print(LogLevel::LOG_INFO, "Test teardown complete\n");
   }
 
   

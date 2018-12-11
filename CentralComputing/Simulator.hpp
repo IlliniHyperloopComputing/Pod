@@ -95,6 +95,8 @@ class Simulator {
     Event closed;
     std::thread read_thread;
 
+    bool enable_logging = true;
+
     int socketfd;
 
     long long timeLast = -1;
