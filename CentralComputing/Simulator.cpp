@@ -51,28 +51,28 @@ bool Simulator::sim_connect(const char * hostname, const char * port) {
 }
 
 void Simulator::sim_motor_enable() {
-  print(LogLevel::LOG_DEBUG, "Enabling motors\n");
+  print(LogLevel::LOG_DEBUG, "Sim - Motors Enabled\n");
   motorsOn = true;
 }
 
 void Simulator::sim_motor_disable() {
-  print(LogLevel::LOG_DEBUG, "Disabling motors\n");
+  print(LogLevel::LOG_DEBUG, "Sim - Motors Disabled\n");
   motorsOn = false;
 
 }
 
 void Simulator::sim_motor_set_throttle(uint8_t value) {
-  print(LogLevel::LOG_DEBUG, "Setting motor throttle: %d\n", value);
+  print(LogLevel::LOG_DEBUG, "Sim - Setting motor throttle: %d\n", value);
   throttle = value;
 }
 
 void Simulator::sim_brake_enable() {
-  print(LogLevel::LOG_DEBUG, "Enabling brakes\n");
+  print(LogLevel::LOG_DEBUG, "Sim - Brakes Enabled\n");
   brakesOn = true;
 }
 
 void Simulator::sim_brake_disable() {
-  print(LogLevel::LOG_DEBUG, "Disabling brakes\n");
+  print(LogLevel::LOG_DEBUG, "Sim - Brakes Disabled\n");
   brakesOn = false;
 }
 
