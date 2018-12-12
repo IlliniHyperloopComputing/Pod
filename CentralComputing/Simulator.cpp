@@ -4,12 +4,17 @@ using namespace Utils;
 
 Simulator SimulatorManager::sim;
 
+
 Simulator::Simulator() {
-  //TODO set up internal variables
+  reset_motion();
 }
+
 
 bool Simulator::sim_connect(const char * hostname, const char * port) {
   //TODO connect to a Pod instance
+  //
+  enable_logging = true;
+  reset_motion();
   struct addrinfo hints, *servinfo;
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_INET;
@@ -46,28 +51,28 @@ bool Simulator::sim_connect(const char * hostname, const char * port) {
 }
 
 void Simulator::sim_motor_enable() {
-  print(LogLevel::LOG_DEBUG, "Enabling motors\n");
+  print(LogLevel::LOG_DEBUG, "Sim - Motors Enabled\n");
   motorsOn = true;
 }
 
 void Simulator::sim_motor_disable() {
-  print(LogLevel::LOG_DEBUG, "Disabling motors\n");
+  print(LogLevel::LOG_DEBUG, "Sim - Motors Disabled\n");
   motorsOn = false;
 
 }
 
 void Simulator::sim_motor_set_throttle(uint8_t value) {
-  print(LogLevel::LOG_DEBUG, "Setting motor throttle: %d\n", value);
+  print(LogLevel::LOG_DEBUG, "Sim - Setting motor throttle: %d\n", value);
   throttle = value;
 }
 
 void Simulator::sim_brake_enable() {
-  print(LogLevel::LOG_DEBUG, "Enabling brakes\n");
+  print(LogLevel::LOG_DEBUG, "Sim - Brakes Enabled\n");
   brakesOn = true;
 }
 
 void Simulator::sim_brake_disable() {
-  print(LogLevel::LOG_DEBUG, "Disabling brakes\n");
+  print(LogLevel::LOG_DEBUG, "Sim - Brakes Disabled\n");
   brakesOn = false;
 }
 
@@ -92,20 +97,29 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
     acceleration = 0;
   }
 
+
+  double deltaSeconds = (double) timeDelta / 1000000.0;
+
   //KINEMATIC PHYSICS CALCULATIONS
-  velocity = lastVelocity + (acceleration * timeDelta);
-  position = lastPosition + ((lastVelocity + velocity)/2 * timeDelta) + (0.5 * acceleration * timeDelta * timeDelta);
+  velocity = lastVelocity + (acceleration * deltaSeconds);
+  position = lastPosition + ((lastVelocity + velocity)/2 * deltaSeconds) + (0.5 * acceleration * deltaSeconds * deltaSeconds);
 
   //CREATING A STATESPACE OBJECT AND SETTING ITS ARRAY'S VALUES
   std::shared_ptr<StateSpace> space = std::make_shared<StateSpace>();
-  space -> x[0] = position;
-  space -> x[1] = velocity;
-  space -> x[2] = acceleration;
+  space->x[0] = position;
+  space->x[1] = velocity;
+  space->x[2] = acceleration;
+
+  if(enable_logging){
+    print(LogLevel::LOG_DEBUG, "Motion: Position: %.2f, Velocity: %.2f, Accel = %.2f, lastPos = %.2f, lastVel = %.2f, delta = %d, timeLast=%ld, t = %ld\n",
+      position, velocity, acceleration, lastPosition, lastVelocity, timeDelta, timeLast, Utils::microseconds());
+  }
 
   //UPDATING VARIABLES
   lastPosition = position;
   lastVelocity = velocity;
   timeLast = Utils::microseconds();
+
 
   return space;
 }
@@ -135,8 +149,29 @@ void Simulator::read_loop() {
 }
 
 void Simulator::disconnect() {
+  enable_logging = false;
   active_connection.store(false);
   close(socketfd);
   closed.wait();
   read_thread.join();
+}
+
+void Simulator::reset_motion() {
+
+    timeLast = -1;
+    timeDelta = 0.0;
+    
+    motorsOn = false;
+    brakesOn = false;
+    
+    throttle = 0.0;
+    pressure = 0.0;
+    
+    position = 0.0;
+    lastPosition = 0.0;
+    velocity = 0.0;
+    lastVelocity = 0.0;
+    acceleration = 0.0;
+    timeLast = -1;
+
 }

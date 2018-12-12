@@ -4,8 +4,8 @@
 
 using namespace Utils;
 
-double MAX_DECCEL = 19.6;
-double IDEAL_DECCEL = 9.8;
+double MAX_DECCEL = -19.6;
+double IDEAL_DECCEL = -9.8;
 double LENGTH_OF_TRACK = 1000;
 double BUFFER_LENGTH = 20;
 double MAX_VELOCITY = 550;
@@ -100,6 +100,9 @@ void Pod_State::move_launch_ready() {
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight brake */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			//Error State
 	END_TRANSITION_MAP(NULL)
+
+  auto_transition_brake.reset();
+  auto_transition_coast.reset();
 }
 
 // it is important all states should move to braking when this function is called, this is for emergencies
@@ -131,6 +134,7 @@ void Pod_State::accelerate() {
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Flight brake */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			//Error State
 	END_TRANSITION_MAP(NULL)
+
 }
 void Pod_State::coast() {
 	BEGIN_TRANSITION_MAP							/* Current state */
@@ -259,21 +263,15 @@ void Pod_State::steady_flight_accelerate(std::shared_ptr<NetworkManager::Network
 	double vel = state->x[1];
 	double acc = state->x[2];
 	
-	if (shouldBrake(vel, pos)) {
+	if (shouldBrake(vel, pos) || vel > MAX_VELOCITY) {
 		
 		auto newCommand = std::make_shared<NetworkManager::Network_Command>();
 		newCommand->id = NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST;
 		newCommand->value = 0;
 		NetworkManager::command_queue.enqueue(newCommand);
+    auto_transition_coast.invoke();
 	}
 
-	if (vel > MAX_VELOCITY) {
-		// Switch to coast
-		auto newCommand = std::make_shared<NetworkManager::Network_Command>();
-		newCommand->id = NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST;
-		newCommand->value = 0;
-		NetworkManager::command_queue.enqueue(newCommand);
-	}
 }
 
 void Pod_State::steady_flight_coast(std::shared_ptr<NetworkManager::Network_Command> command) {
@@ -281,12 +279,14 @@ void Pod_State::steady_flight_coast(std::shared_ptr<NetworkManager::Network_Comm
 	double pos = state->x[0];
 	double vel = state->x[1];
 	double acc = state->x[2];
+  
 	
 	if (shouldBrake(vel, pos)) {
 		auto newCommand = std::make_shared<NetworkManager::Network_Command>();
-		newCommand->id = NetworkManager::Network_Command_ID::TRANS_FLIGHT_COAST;
+		newCommand->id = NetworkManager::Network_Command_ID::TRANS_FLIGHT_BRAKE;
 		newCommand->value = 0;
 		NetworkManager::command_queue.enqueue(newCommand);
+    auto_transition_brake.invoke();
 	}
 }
 
@@ -296,9 +296,15 @@ void Pod_State::steady_flight_brake(std::shared_ptr<NetworkManager::Network_Comm
 
 bool Pod_State::shouldBrake(double vel, double pos) {
 
-	if (-.5*vel*vel/IDEAL_DECCEL+vel*vel/IDEAL_DECCEL >= LENGTH_OF_TRACK - BUFFER_LENGTH - pos) {
+  long target_distance = LENGTH_OF_TRACK - BUFFER_LENGTH;
+  double stopping_distance = pos + -0.5*vel*vel/IDEAL_DECCEL;
+
+	if (stopping_distance > target_distance) {
+
+    print(LogLevel::LOG_INFO, "Pod Should Brake, vel: %.2f pos: %.2f\n", vel, pos);
 		return true;
 	} else {
+ //   print(LogLevel::LOG_INFO, "Pod NOT Brake, vel: %.2f pos: %.2f, target: %ld, stopping_distance %.2f\n", vel, pos, target_distance, stopping_distance);
 		return false;
 	}
 }

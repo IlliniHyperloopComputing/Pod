@@ -3,19 +3,15 @@
 
 
 #include "NetworkManager.hpp"
+#include "StateSpace.hpp"
 
 #define MAX_ACCEL 9.81
 #define MAX_DECEL -9.81
 
-
-struct StateSpace;
-
 class Simulator {
 
   public:
-    /**
-     * Creates a command simulator object
-     */
+
     Simulator();
 
 
@@ -90,17 +86,21 @@ class Simulator {
      */
     void disconnect();
 
-
-
+    /**
+     * Resets the motion variables
+     */
+    void reset_motion();
 
     std::atomic<bool> active_connection;
     Event closed;
     std::thread read_thread;
 
+    bool enable_logging = true;
+
     int socketfd;
 
-    double timeLast = -1;
-    double timeDelta = 0.000;
+    long long timeLast = -1;
+    long long timeDelta = 0.000;
     
     bool motorsOn = false;
     bool brakesOn = false;
