@@ -1,7 +1,7 @@
 This folder contains all of the setup information for the BBB. Device tree overlays, pinout information, kernel modules, and some setup scripts
 
 # BBB OS Setup
-  * Using this [Debian 9.4 image](http://debian.beagleboard.org/images/bone-debian-9.4-iot-armhf-2018-06-17-4gb.img.xz)
+  * Using this [Debian 9.4 image](http://debian.beagleboard.org/images/bone-debian-9.4-iot-armhf-2018-06-17-4gb.img.xz), follow the SD card installation steps at the bottom of this README.
     * This guide is specific to just this version of Debian, with the 4.14 kernel. There have been big, breaking changes from previous kernel versions. uEnv.txt is differnt. Device overlays are different.
   * Setup network by editing `/etc/network/interfaces` and adding:
 ```
@@ -96,4 +96,62 @@ disable_uboot_overlay_audio=1
 * I2C2
   * P9-19 and P9-20
 * [default BBB pinout](beaglebone-black-pinout.jpg)
+
+
+#BBB SD Card installation
+
+This guide covers how to setup a BeagleBone Black Rev.c with all necessary software 
+
+* Download the appropriate image as specified earlier in this document. Although it is dated, I have found [this](http://derekmolloy.ie/write-a-new-image-to-the-beaglebone-black/) to generally be a good guide, but is slightly outdated (as explained below)
+	* The old guide assumes that the image will automatically begin writing itself to the onboard storage. As described on the [beagleboard.org](https://beagleboard.org/latest-images) site, you will need to modify the `/boot/uEnv.txt` file
+	* The correct modifications are made later in this guide
+
+* Copy the `.img` file on to a microSD card
+	* Windows 
+		* Extract the `.img` using WinRAR
+		* Copy onto the uSD card using Win32 Disk imager
+	* Linux 
+		* Extract the `.img` using `xz -d bone-*.img.xz`  
+		* Use `lsblk` to find the name of the microSD card
+		* Make sure the microSD card is unmounted (not ejected)
+		* Copy onto the uSD card using `sudo dd if=./bone-*.img of=/dev/NAME`
+	* Mac 
+		* Extract the `.img` using `gunzip bone-*.img.xz` 
+		* Use `diskutil list` to find the name of the microSD card
+		* Make sure the microSD card is unmounted (not ejected) using `diskutil unmountDisk /dev/disk#`
+		* Copy onto the uSD card using `sudo dd bs=1m if=./bone-*.img of=/dev/rdisk# conv=sync`. If this fails, try `/dev/disk#` instead of `/dev/rdisk#`
+
+* Insert the microSD card into the BBB, with the power off
+
+* Hold down the boot button (near the SD card), and plug in power. 
+	* I used USB power from my computer, such that I can SSH into the BBB 
+
+* Hold the boot button until the LEDs flash
+
+* Wait for the BBB to turn on. It has now booted onto the image on the SD card. 
+
+* SSH into the BBB (I found the default username/password [here](http://elinux.org/BeagleBoardDebian))
+	* The BBB has default drivers that setup a network connection over USB at IPs `192.168.7.2` and `192.168.6.2`. 
+	* Windows
+		* Wait until the BBB file dialog opens, then you will be able to SSH in. 
+		* Use PuTTY or other appropriate terminal: `ssh debian@192.168.7.2` with the password `temppwd`. 
+	* Linux (Ubuntu)
+		* Check network connections with `ifconfig`
+		* Use `ssh debian@192.168.7.2` with the password `temppwd`
+
+* Once logged in
+	* Edit `/boot/uEnv.txt` use: `sudo vim /boot/uEnv.txt` or `sudo nano /boot/uEnv.txt` 
+	* Go to the bottom of the file, and remove the ‘#’ in front of `cmdline=init=/opt/scripts/tools/eMMC/init-eMMC-flasher-v3.sh` to uncomment it. 
+
+* Reboot the BBB with `sudo shutdown -r now`
+* Begin to hold the boot button
+* Hold the boot button until the BBB powercycles, and the LEDs turn back on (just as above)
+* After a few moments of booting up and LEDs flashing, the installation will start. The LEDs will flash in a Cyclon/ Knight Rider patter. 
+* Wait until the LEDs stop flashing,
+* The BBB should power off, but I have found that sometimes it finishes with all LEDs on. 
+* Unplug the SD card, otherwise the image will re-install!
+* Power back on the BBB! The newest image should be installed and ready to go
+* SSH as described above
+* Create a new user, named `abc`, with password `hyperloop`. Do this using: `sudo adduser abc`, and then using `sudo usermod -aG sudo abc`, which adds the new user to the sudoers group.
+
 

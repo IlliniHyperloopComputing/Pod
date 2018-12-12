@@ -5,12 +5,12 @@ echo "And before you ask why I didn't do it another way, like using 'expect' or 
 bbb=bbb1
 addr=128.174.163.125
 
-scp BB-ADC-00A0.dts $bbb@$addr:~/
-scp BB-DCAN1-00A0.dts $bbb@$addr:~/
-scp BB-GPIO-01-00A0.dts $bbb@$addr:~/
-scp BB-PRU-01-00A0.dts $bbb@$addr:~/
-scp BB-PWM1-00A0.dts $bbb@$addr:~/
-scp w1.dts $bbb@$addr:~/
+scp device_tree_overlays/BB-ADC-00A0.dts $bbb@$addr:~/
+scp device_tree_overlays/BB-DCAN1-00A0.dts $bbb@$addr:~/
+scp device_tree_overlays/BB-GPIO-01-00A0.dts $bbb@$addr:~/
+scp device_tree_overlays/BB-PRU-01-00A0.dts $bbb@$addr:~/
+scp device_tree_overlays/BB-PWM1-00A0.dts $bbb@$addr:~/
+scp device_tree_overlays/w1.dts $bbb@$addr:~/
 scp pru_encoder/Debug/pru_encoder.out $bbb@$addr:~/
 scp halt/Debug/halt.out $bbb@$addr:~/
 scp initPRU $bbb@$addr:~/
