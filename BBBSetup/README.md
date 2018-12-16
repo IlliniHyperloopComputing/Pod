@@ -102,7 +102,7 @@ disable_uboot_overlay_audio=1
 * [default BBB pinout](beaglebone-black-pinout.jpg)
 
 
-#BBB SD Card installation
+# BBB SD Card installation
 
 This guide covers how to setup a BeagleBone Black Rev.c with all necessary software 
 
@@ -156,6 +156,8 @@ This guide covers how to setup a BeagleBone Black Rev.c with all necessary softw
 * Unplug the SD card, otherwise the image will re-install!
 * Power back on the BBB! The newest image should be installed and ready to go
 * SSH as described above
-* Create a new user, named `abc`, with password `hyperloop`. Do this using: `sudo adduser abc`, and then using `sudo usermod -aG sudo abc`, which adds the new user to the sudoers group.
+* Create a new user, named `abc`, with password `hyperloop`. Use: `sudo adduser abc`.
+  * Add the new user to all of the groups that the user `debian` is a part of. This may not be strictly necessary, but I didn't want to spend the time to figure it out. List all the groups (while logged in as `debian`) with `groups`. 
+  * Add the new user to each group with: `sudo usermod -aG <group_name> <user_name>`. At a minimum, add the user to the `sudo` group.
 
 
