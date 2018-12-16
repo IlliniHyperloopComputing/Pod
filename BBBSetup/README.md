@@ -3,17 +3,21 @@ This folder contains all of the setup information for the BBB. Device tree overl
 # BBB OS Setup
   * Using this [Debian 9.4 image](http://debian.beagleboard.org/images/bone-debian-9.4-iot-armhf-2018-06-17-4gb.img.xz), follow the SD card installation steps at the bottom of this README.
     * This guide is specific to just this version of Debian, with the 4.14 kernel. There have been big, breaking changes from previous kernel versions. uEnv.txt is differnt. Device overlays are different.
-  * Setup network by editing `/etc/network/interfaces` and adding:
-```
-allow-hotplug eth0
-iface eth0 inet static
-  address 192.168.137.100
-  netmask 255.255.255.0
-  gateway 192.168.137.0
-  network 129.168.137.1
-```
-  * I like having a static ethernet port so it is easy to SSH into. SSHing over USB is slower and usually cuts out for some reason
-  * I also modified the config file for `connman`, the network service. I removed `wifi` from preferred devices list, and black listed it. I also black listed `can0`. the config file is `/etc/connman/main.conf`
+  * To connect when plugged directly into your personal computer, I like having a static ethernet port. SSHing over USB is slower, and sometimes drops
+    * Setup network by editing `/etc/network/interfaces` and adding:
+  ```
+  allow-hotplug eth0
+  iface eth0 inet static
+    address 192.168.137.100
+    netmask 255.255.255.0
+    gateway 192.168.137.0
+    network 129.168.137.1
+  ```
+  * I also modified the config file for `connman`, the network service. I removed `wifi` from preferred devices list, and black listed it. I also black listed `can0`. the config file is `/etc/connman/main.conf`. Connman is described more [here](https://www.systutorials.com/docs/linux/man/5-connman.conf/)
+  * To further disable 'extra' jobs from running in the background:
+    * Disabled the apache2 webserver from starting up: `sudo systemctl disable apache2.service`
+    * Remove NodeJs entirely: `sudo apt-get remove c9-core-installer` then `sudo apt-get purge nodejs`
+    * Stop `wpa_supplicant` since we only use ethernet: `sudo systemctl disable wpa_supplicant.service`
   * Changes made to `boot/uEnv.txt`: (To enable our overlays that we will setup later)
 ```
 #I uncommented, and then modified these lines to list the proper overlays
