@@ -118,12 +118,12 @@ This guide covers how to setup a BeagleBone Black Rev.c with all necessary softw
 		* Extract the `.img` using `xz -d bone-*.img.xz`  
 		* Use `lsblk` to find the name of the microSD card
 		* Make sure the microSD card is unmounted (not ejected)
-		* Copy onto the uSD card using `sudo dd if=./bone-*.img of=/dev/NAME`
+		* Copy onto the uSD card using `sudo dd if=./bone-*.img of=/dev/NAME status=progress`
 	* Mac 
 		* Extract the `.img` using `gunzip bone-*.img.xz` 
 		* Use `diskutil list` to find the name of the microSD card
 		* Make sure the microSD card is unmounted (not ejected) using `diskutil unmountDisk /dev/disk#`
-		* Copy onto the uSD card using `sudo dd bs=1m if=./bone-*.img of=/dev/rdisk# conv=sync`. If this fails, try `/dev/disk#` instead of `/dev/rdisk#`
+		* Copy onto the uSD card using `sudo dd bs=1m if=./bone-*.img of=/dev/rdisk# conv=sync status=progress`. If this fails, try `/dev/disk#` instead of `/dev/rdisk#`
 
 * Insert the microSD card into the BBB, with the power off
 
