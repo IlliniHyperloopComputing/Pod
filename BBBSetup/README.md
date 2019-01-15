@@ -41,7 +41,7 @@ disable_uboot_overlay_audio=1
 3. `ssh` into the BBB using `debian@192.168.137.100` with password `temppwd`
 4. Run `sudo ./setupOverlay`. Change the permissions of this file if necessary
 5. Restart the BBB and check the `dmesg` for success/ errors of overlays
-6. Run `sudo ./initPRU` to load the PRU firmware, and `sudo ./initCAN` to start the CAN interface (either ordering works). **This must be run every time the BBB is restarted**
+6. Run `sudo ./initPRU` to load the PRU firmware, and `sudo ./initCAN` to start the CAN interface, and `./initGPIO` to 'export' the gpio pins (any ordering works). **This must be run every time the BBB is restarted**
 
 # BBB Overlay and PRU information:
 * CAN Bus device tree overlay and kernel module setup
@@ -73,6 +73,7 @@ disable_uboot_overlay_audio=1
 * GPIO output device tree overlay setup
   * [Derek Molloy's site](http://derekmolloy.ie/gpios-on-the-beaglebone-black-using-device-tree-overlays/). Goes through how to install the device tree, and most importently how to initialize the GPIO once it has been setup in the device tree.
   * Check `/sys/class/gpio/` 
+  * 'export' a GPIO by: `echo <num> /sys/class/gpio/export`, where you replae `<num>` with the appropriate "GPIO No." fouund in the P8 and P9 HeaderTable.pdf 
   * [Device-Tree Overlay Generator](http://www.kilobaser.com/blog/2014-07-28-beaglebone-black-devicetreeoverlay-generator). 
 * One-Wire communication protocol for DS18B20 temperature sensor device tree overlay
   * [Reference here](http://www.bonebrews.com/temperature-monitoring-with-the-ds18b20-on-a-beaglebone-black/).
