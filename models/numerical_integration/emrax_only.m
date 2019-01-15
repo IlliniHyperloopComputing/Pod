@@ -8,25 +8,25 @@ EmraxRadius = 0.2032/2; %wheel Radius (meters)
 %%%%%%%%%
 %Emrax Specific
 %%%%%%%%%
-EmraxGear = [2.5];
-EmraxMaxMechPower    = [60]; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT go over this value
-EmraxMaxBatteryPower = [100]; % Max BATTERY OUTPUT in kw. THIS THROTTLES THE EMRAX. The BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
+EmraxGear = [2.79];
+EmraxMaxMechPower    = [50]; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT go over this value
+EmraxMaxBatteryPower = [96]; % Max BATTERY OUTPUT in kw. THIS THROTTLES THE EMRAX. The BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
 EmraxPeakTorque = 240; %Peak torque, in Nm
 EmraxMaxRPM = 4400; %Max RPM under load
 EmraxWeight = 12; %kg
 EmsisoWeight = 4.9;
 EmraxBatteryWeight = 20; %weight in kg
-EmraxBatteryVoltage = 125; %Starting voltage
-EmraxBatteryAH = 5.5*4; 
-EmraxBatteryResistance = [0.05]; % P = I^2 * R
+EmraxBatteryVoltage = 120; %Starting voltage
+EmraxBatteryAH = 22; 
+EmraxBatteryResistance = [0.04]; % P = I^2 * R
 EmraxControllerEfficiency = 0.95;
 
 
 %%%%%%%%%
 %Pod Mass (kg)
-mass = 105.0974; %mass = 60 + EmraxWeight + EmsisoWeight + EmraxBatteryWeight; 
+mass = 135; %105.0974; %mass = 60 + EmraxWeight + EmsisoWeight + EmraxBatteryWeight; 
 
-BrakingForce = 5000; % In N
+BrakingForce = 4500; % In N
 MaxBrakingGs = BrakingForce/mass/9.80665;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
