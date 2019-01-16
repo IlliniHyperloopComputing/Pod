@@ -74,6 +74,8 @@ disable_uboot_overlay_audio=1
   * [Derek Molloy's site](http://derekmolloy.ie/gpios-on-the-beaglebone-black-using-device-tree-overlays/). Goes through how to install the device tree, and most importently how to initialize the GPIO once it has been setup in the device tree.
   * Check `/sys/class/gpio/` 
   * 'export' a GPIO by: `echo <num> /sys/class/gpio/export`, where you replae `<num>` with the appropriate "GPIO No." fouund in the P8 and P9 HeaderTable.pdf 
+  * Change to output or input with `echo "out" > /sys/class/gpio/gpio<num>/output`
+  * Set pin value with `echo 1 > /sys/class/gpio/gpio<num>/value`, or read the file if an input
   * [Device-Tree Overlay Generator](http://www.kilobaser.com/blog/2014-07-28-beaglebone-black-devicetreeoverlay-generator). 
 * One-Wire communication protocol for DS18B20 temperature sensor device tree overlay
   * [Reference here](http://www.bonebrews.com/temperature-monitoring-with-the-ds18b20-on-a-beaglebone-black/).
