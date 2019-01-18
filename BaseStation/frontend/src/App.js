@@ -5,13 +5,13 @@ import './App.css';
 
 class App extends Component {
   state = {
-    "body": "",
+    "body": {},
   };
 
   componentDidMount() {
     this.intervalID = setInterval(
       () => this.tick(),
-      20
+      100
     );
   }
   componentWillUnmount() {
@@ -27,15 +27,20 @@ class App extends Component {
     const response = await fetch('/api/complete');
     const body = await response.json();
     if (response.status !== 200) throw Error(body.message);
-    return JSON.stringify(body);
+    return body;
   };
 
 render() {
-    return (
-      <div className="App">
-        <h1>{ this.state.body }</h1>
-      </div>
-    );
+  const {vals} = this.state.body;  // Essentially does: const vals = this.state.vals;
+  return (
+    <div>
+      {
+        Object.keys(vals).map((key, index) => ( 
+          <p key={index}> this is my key {key} and this is my value {vals[key]}</p> 
+        ))
+      }
+    </div>
+  )
   }
 }
 export default App;
