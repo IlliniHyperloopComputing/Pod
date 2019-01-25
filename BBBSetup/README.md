@@ -31,10 +31,10 @@ uboot_overlay_addr4=/lib/firmware/w1-00A0.dtbo
 disable_uboot_overlay_video=1
 disable_uboot_overlay_audio=1
 
-#For PRUSS options, make sure only the following line is uncommented:
+#For PRUSS options, make sure only the following is uncommented:
 ###pru_rproc (4.14.x-ti kernel)
 uboot_overlay_pru=/lib/firmware/AM335X-PRU-RPROC-4-14-TI-00A0.dtbo
-#If not setup correctly, PRU devices to not show up, ./initPRU will not work
+#If not setup correctly, PRU devices will not show up, ./initPRU will not work
 
 
 #I commented this out, to disable the default "universal" cape
