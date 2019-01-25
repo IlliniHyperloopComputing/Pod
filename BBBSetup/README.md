@@ -31,6 +31,12 @@ uboot_overlay_addr4=/lib/firmware/w1-00A0.dtbo
 disable_uboot_overlay_video=1
 disable_uboot_overlay_audio=1
 
+#For PRUSS options, make sure only the following line is uncommented:
+###pru_rproc (4.14.x-ti kernel)
+uboot_overlay_pru=/lib/firmware/AM335X-PRU-RPROC-4-14-TI-00A0.dtbo
+#If not setup correctly, PRU devices to not show up, ./initPRU will not work
+
+
 #I commented this out, to disable the default "universal" cape
 #enable_uboot_cape_universal=1
 ```
@@ -59,10 +65,10 @@ disable_uboot_overlay_audio=1
   * [Reference here](https://www.teachmemicro.com/beaglebone-black-pwm-ubuntu-device-tree/)
   * Look in the `/sys/class/pwm/pwmchip0/pwm0/` folder for the ability to write to PWM
   * The above was setup following instructions in the reference guide.
-* GPIO input for PRU, for Optical inputs, device tree overlay setup
+* PRU usage for Optical inputs, device tree overlay setup
   * The main challenge with the PRU is that many of the guides were written several years ago (when the BBB came out) and since there have been updates to the kernel. (now on 4.14)
-  * TI's [main page on the PRU-ICSS](http://processors.wiki.ti.com/index.php/PRU-ICSS).
   * Use this --> [TI's walk through guide](http://processors.wiki.ti.com/index.php/PRU_Training:_Hands-on_Labs). 
+  * TI's [main page on the PRU-ICSS](http://processors.wiki.ti.com/index.php/PRU-ICSS).
   * This is [pretty good guide too](http://processors.wiki.ti.com/index.php/RPMsg_Quick_Start_Guide#Booting_the_Board_and_Testing_RPMsg)
   * [elinux guide](https://elinux.org/EBC_Exercise_30_PRU_via_remoteproc_and_RPMsg) Look at the BeagleScope example for how someone else has done it.
   * [Best reference](https://elinux.org/images/d/da/Am335xPruReferenceGuide.pdf) I could find explaining all of the register level details of the PRU. 
