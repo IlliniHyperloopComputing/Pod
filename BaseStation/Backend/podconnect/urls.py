@@ -4,7 +4,8 @@ from . import tcpserver
 from . import views
 
 urlpatterns = [
-    path('', views.index, name='index'),
+    path('data', views.getAllData, name='allData'),
+    path('data/latest', views.getLatest, name='latest')
 ]
 
 tcpserver.start()
