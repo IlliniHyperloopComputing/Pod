@@ -26,6 +26,16 @@ void Pod::logic_loop() {
       command->value = 0;
     }
 
+    std::ofstream out("/sys/class/gpio/gpio37/direction"); //How often to toggle the GPIO?
+    out<<"out";
+    out.close();
+    out.open("/sys/class/gpio/gpio37/value");
+    out<<"1";
+    out.close();
+    out.open("/sys/class/gpio37/value");
+    out<<"0";
+    out.close;
+
     auto func = state_machine->get_steady_function();
     ((*state_machine).*(func))(command); //calls the steady state function for the current state
 
