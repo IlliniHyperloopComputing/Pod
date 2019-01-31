@@ -26,7 +26,6 @@ namespace ConfiguratorManager {
 int main() {
     //Configurator *test = new Configurator("test.txt");
     ConfiguratorManager::config = new Configurator("test.txt");
-    ConfiguratorManager::config->loadValues();
     cout << "Variable is " << ConfiguratorManager::config->getValue("Variable") << endl;
     cout << "Number is " << ConfiguratorManager::config->getValue("Number") << endl;
 }

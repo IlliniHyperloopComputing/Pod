@@ -6,6 +6,7 @@ Configurator* ConfiguratorManager::config;
 
 Configurator::Configurator(string fileName) {
     inFile.open(fileName);
+    loadValues();
 }
 
 void Configurator::loadValues() {
