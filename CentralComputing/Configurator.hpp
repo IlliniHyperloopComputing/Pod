@@ -7,7 +7,7 @@ using namespace std;
 
 class Configurator {
     public:
-	Configurator(string);
+	void openVarFile(string);
 
 	void loadValues();
 
@@ -20,14 +20,9 @@ class Configurator {
 };
 
 namespace ConfiguratorManager {
-    extern Configurator* config;
+    extern Configurator config;
 }
 
-int main() {
-    //Configurator *test = new Configurator("test.txt");
-    ConfiguratorManager::config = new Configurator("test.txt");
-    cout << "Variable is " << ConfiguratorManager::config->getValue("Variable") << endl;
-    cout << "Number is " << ConfiguratorManager::config->getValue("Number") << endl;
-}
+
 
 

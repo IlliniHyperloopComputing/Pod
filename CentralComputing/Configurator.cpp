@@ -2,9 +2,9 @@
 
 using namespace std;
 
-Configurator* ConfiguratorManager::config;
+Configurator ConfiguratorManager::config;
 
-Configurator::Configurator(string fileName) {
+void Configurator::openVarFile(string fileName) {
     inFile.open(fileName);
     loadValues();
 }
@@ -20,8 +20,11 @@ void Configurator::loadValues() {
     }
 }
 
-
 double Configurator::getValue(string varName) {
     return mapVals.find(varName)->second;
 }
 
+int main() {
+    ConfiguratorManager::config.openVarFile("test.txt");
+    cout << "Variable is " << ConfiguratorManager::config.getValue("Variable") << endl;
+}
