@@ -23,8 +23,3 @@ void Configurator::loadValues() {
 double Configurator::getValue(string varName) {
     return mapVals.find(varName)->second;
 }
-
-int main() {
-    ConfiguratorManager::config.openVarFile("test.txt");
-    cout << "Variable is " << ConfiguratorManager::config.getValue("Variable") << endl;
-}
