@@ -6,12 +6,13 @@ runlength = 1200; %Assume 1.25 km track, want to leave 50 meter buffer at the en
 %%%%%%%%%
 %Emrax Specific
 %%%%%%%%%
-EmraxGear = [2.79];
+EmraxGear = 2.79;%2.6:0.01:2.9;%[2.79];
 EmraxRadius = 0.2032/2; %wheel Radius (meters)
 EmraxMaxMechPower    = [50]; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT go over this value
 EmraxMaxBatteryPower = [96]; % Max BATTERY OUTPUT in kw. THIS THROTTLES THE EMRAX. The BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
 EmraxPeakTorque = 230; %Peak torque, in Nm. 
 EmraxMaxRPM = 4400; %Max possible RPM under load. Past this RPM we assume 0 output power
+EmraxKV = 34;
 EmraxBatteryVoltage = 120; %Starting voltage
 EmraxBatteryAH = 22; 
 EmraxBatteryResistance = [0.05]; % P = I^2 * R
@@ -25,7 +26,7 @@ mass = 135;
 
 %%%%%%%%%
 %Pod Braking parameters
-BrakingForce = 4000; % In N
+BrakingForce = 1265; % In N
 MaxBrakingGs = BrakingForce/mass/9.80665;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -90,9 +91,12 @@ for emraxGear = EmraxGear
         emraxWheelRPM = v * 60 /(2*pi*EmraxRadius); %calculate wheel RPM at point in time
         emraxRPM = emraxWheelRPM / emraxGear;
         
+        battery_voltage_including_sag = emraxBatteryVoltage - emraxCurrent *emraxBatteryResistance;
+        maxRPM_at_voltage = EmraxKV * battery_voltage_including_sag;
+        
         % Apply motor dynamics. This will throttle the power output
         [emraxTorque, emraxMechPower, emraxMotorInputPower, emraxControllerInputPower, emraxCurrent] = ...
-          Motor_Dynamics(emraxRPM, emraxMaxMechPower, EmraxPeakTorque, EmraxMaxRPM, EmraxControllerEfficiency...
+          Motor_Dynamics(emraxRPM, emraxMaxMechPower, EmraxPeakTorque, maxRPM_at_voltage, EmraxControllerEfficiency...
                           ,emraxBatteryVoltage, emraxBatteryResistance, emraxMaxBatteryPower, true);
       
         heatEmrax        = heatEmrax        + (emraxMotorInputPower - emraxMechPower) * dt;
