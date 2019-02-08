@@ -2,6 +2,7 @@
 #include <chrono>
 #include <unistd.h>
 #include <errno.h>
+#include <string>
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -37,13 +38,21 @@ void Utils::print(LogLevel level, const char * format, ...){
 }
 
 int Utils::toogleGPIOUp(int GPIONumber) {
-    std::ofstream out("/sys/class/gpio/gpio37/value");
+    std::string start = "/sys/class/gpio/gpio"
+    std::string integer = std::to_string(GPIONumber);
+    std::string end = "/value"
+    std::string path = start + integer + end;
+    std::ofstream out(path);
     out<<"1";
     out.close();
-    return 1;
+    return 1; //Have it return 1 if it works and zero otherwise
 }
 int Utils:toggleGPIODown(int GPIONumber) {
-    std::ofstream out("/sys/class/gpio/gpio37/value"); //How often to toggle the GPIO?
+    std::string start = "/sys/class/gpio/gpio"
+    std::string integer = std::to_string(GPIONumber);
+    std::string end = "/value"
+    std::string path = start + integer + end;
+    std::ofstream out(path);
     out<<"0";
     out.close();
     return 1; //Have it return 1 if it works and zero otherwise
