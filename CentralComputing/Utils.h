@@ -16,6 +16,7 @@ namespace Utils {
 long long microseconds();
 int toggleGPIOUp(int GPIONumber);
 int toggleGPIODown(int GPIONumber);
+void busyWait(long microseconds);
 enum LogLevel {
   LOG_EDEBUG = 0, //excesive debug
   LOG_DEBUG = 1, //debug

@@ -3,6 +3,9 @@
 #include <unistd.h>
 #include <errno.h>
 #include <string>
+#include <time.h>
+#include <pthread.h>
+#include <iostream>
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -67,6 +70,24 @@ long long Utils::microseconds() {
   } else {
     return std::chrono::duration_cast<std::chrono::microseconds>(duration).count() - start_time;
   }
+}
+
+void Utils::busyWait(long microseconds) {
+	struct timespec currTime;
+	clockid_t threadClockId;
+	pthread_getcpuclockid(pthread_self(), &threadClockId);
+	clock_gettime(threadClockId, &currTime);
+	time_t secs = (microseconds / 1000000) + currTime.tv_sec + (currTime.tv_nsec / 1000000000);
+	struct timespec toEnd;
+	toEnd.tv_sec = secs;
+	toEnd.tv_nsec = ((microseconds * 1000) + currTime.tv_nsec) % 1000000000;
+	while (currTime.tv_sec <= toEnd.tv_sec) {
+    if (currTime.tv_sec == toEnd.tv_sec && currTime.tv_nsec > toEnd.tv_nsec) {
+      break;
+    }
+		clock_gettime(threadClockId, &currTime);
+	}
+	return;
 }
 
 ssize_t Utils::write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
