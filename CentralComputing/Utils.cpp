@@ -6,6 +6,7 @@
 #include <time.h>
 #include <pthread.h>
 #include <iostream>
+#include <fstream>
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -14,7 +15,7 @@
 #define ANSI_COLOR_MAGENTA "\x1b[35m"
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
-using namespace std;
+
 Utils::LogLevel Utils::loglevel = LOG_ERROR;
 
 void Utils::print(LogLevel level, const char * format, ...){
@@ -40,20 +41,20 @@ void Utils::print(LogLevel level, const char * format, ...){
       }
 }
 
-int Utils::toogleGPIOUp(int GPIONumber) {
-    std::string start = "/sys/class/gpio/gpio"
+int Utils::set_GPIO_high(int GPIONumber) {
+    std::string start = "/sys/class/gpio/gpio";
     std::string integer = std::to_string(GPIONumber);
-    std::string end = "/value"
+    std::string end = "/value";
     std::string path = start + integer + end;
     std::ofstream out(path);
     out<<"1";
     out.close();
     return 1; //Have it return 1 if it works and zero otherwise
 }
-int Utils:toggleGPIODown(int GPIONumber) {
-    std::string start = "/sys/class/gpio/gpio"
+int Utils::set_GPIO_low(int GPIONumber) {
+    std::string start = "/sys/class/gpio/gpio";
     std::string integer = std::to_string(GPIONumber);
-    std::string end = "/value"
+    std::string end = "/value";
     std::string path = start + integer + end;
     std::ofstream out(path);
     out<<"0";

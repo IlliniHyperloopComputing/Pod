@@ -5,6 +5,7 @@ using namespace Utils;
 
 const int HEARTBEAT_GPIO = 37;
 int counter = 0;
+
 Pod::Pod() {
   running.store(false);
 }
@@ -28,10 +29,10 @@ void Pod::logic_loop() {
     }
 
     if (counter <= 0) {
-        toggleGPIOUP(HEARTBEAT_GPIO);
+        Utils::set_GPIO_high(HEARTBEAT_GPIO);
         counter++;
     } else {
-        toggleGPIODown(HEARTBEAT_GPIO);
+        Utils::set_GPIO_low(HEARTBEAT_GPIO);
         counter--;
     }
 
