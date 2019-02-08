@@ -3,7 +3,8 @@
 using namespace std;
 using namespace Utils;
 
-
+const int HEARTBEAT_GPIO = 37;
+int counter = 0;
 Pod::Pod() {
   running.store(false);
 }
@@ -26,15 +27,13 @@ void Pod::logic_loop() {
       command->value = 0;
     }
 
-    std::ofstream out("/sys/class/gpio/gpio37/value"); //How often to toggle the GPIO?
-    out<<"1";
-    out.close();
-    out.open("/sys/class/gpio37/value");
-    out<<"0";
-    out.close();
-
-    auto func = state_machine->get_steady_function();
-    ((*state_machine).*(func))(command); //calls the steady state function for the current state
+    if (counter <= 0) {
+        toggleGPIOUP(HEARTBEAT_GPIO);
+        counter++;
+    } else {
+        toggleGPIODown(HEARTBEAT_GPIO);
+        counter--;
+    }
 
     if(command_processed){
       processing_command.invoke(); 

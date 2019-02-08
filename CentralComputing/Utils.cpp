@@ -10,7 +10,7 @@
 #define ANSI_COLOR_MAGENTA "\x1b[35m"
 #define ANSI_COLOR_CYAN    "\x1b[36m"
 #define ANSI_COLOR_RESET   "\x1b[0m"
-
+using namespace std;
 Utils::LogLevel Utils::loglevel = LOG_ERROR;
 
 void Utils::print(LogLevel level, const char * format, ...){
@@ -36,6 +36,18 @@ void Utils::print(LogLevel level, const char * format, ...){
       }
 }
 
+int Utils::toogleGPIOUp(int GPIONumber) {
+    std::ofstream out("/sys/class/gpio/gpio37/value");
+    out<<"1";
+    out.close();
+    return 1;
+}
+int Utils:toggleGPIODown(int GPIONumber) {
+    std::ofstream out("/sys/class/gpio/gpio37/value"); //How often to toggle the GPIO?
+    out<<"0";
+    out.close();
+    return 1; //Have it return 1 if it works and zero otherwise
+}
 long long Utils::microseconds() {
   static long long start_time = -1;
   auto now = std::chrono::system_clock::now();
