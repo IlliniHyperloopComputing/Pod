@@ -15,7 +15,10 @@ EmraxMaxRPM = 4400; %Max possible RPM under load. Past this RPM we assume 0 outp
 EmraxKV = 34;
 EmraxBatteryVoltage = 120; %Starting voltage
 EmraxBatteryAH = 22; 
-EmraxBatteryResistance = [0.05]; % P = I^2 * R
+CellResistance = 0.002
+CellsInSeries = 30;
+CellsInParallel = 4.0;
+EmraxBatteryResistance = [CellsInSeries * CellResistance/CellsInParallel]; % P = I^2 * R
 EmraxControllerEfficiency = 0.95;
 
 
@@ -26,7 +29,7 @@ mass = 135;
 
 %%%%%%%%%
 %Pod Braking parameters
-BrakingForce = 1265; % In N
+BrakingForce = 1250; % In N
 MaxBrakingGs = BrakingForce/mass/9.80665;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -83,6 +86,8 @@ for emraxGear = EmraxGear
     heatEmsiso = 0;
     heatEmraxBattery = 0;
     
+    emraxCurrent = 0;
+    
     while d < runlength %track length in meters
         
         %%%%%%%%%%%%%%%%%%%%%%%%
@@ -93,7 +98,7 @@ for emraxGear = EmraxGear
         
         battery_voltage_including_sag = emraxBatteryVoltage - emraxCurrent *emraxBatteryResistance;
         maxRPM_at_voltage = EmraxKV * battery_voltage_including_sag;
-        
+          
         % Apply motor dynamics. This will throttle the power output
         [emraxTorque, emraxMechPower, emraxMotorInputPower, emraxControllerInputPower, emraxCurrent] = ...
           Motor_Dynamics(emraxRPM, emraxMaxMechPower, EmraxPeakTorque, maxRPM_at_voltage, EmraxControllerEfficiency...
