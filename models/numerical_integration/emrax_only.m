@@ -8,14 +8,14 @@ runlength = 1200; %Assume 1.25 km track, want to leave 50 meter buffer at the en
 %%%%%%%%%
 EmraxGear = 2.79;%2.6:0.01:2.9;%[2.79];
 EmraxRadius = 0.2032/2; %wheel Radius (meters)
-EmraxMaxMechPower    = [50]; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT go over this value
+EmraxMaxMechPower    = [60]; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT go over this value
 EmraxMaxBatteryPower = [96]; % Max BATTERY OUTPUT in kw. THIS THROTTLES THE EMRAX. The BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
 EmraxPeakTorque = 230; %Peak torque, in Nm. 
 EmraxMaxRPM = 4400; %Max possible RPM under load. Past this RPM we assume 0 output power
 EmraxKV = 34;
 EmraxBatteryVoltage = 120; %Starting voltage
 EmraxBatteryAH = 22; 
-CellResistance = 0.002
+CellResistance = 0.004
 CellsInSeries = 30;
 CellsInParallel = 4.0;
 EmraxBatteryResistance = [CellsInSeries * CellResistance/CellsInParallel]; % P = I^2 * R
@@ -29,7 +29,7 @@ mass = 135;
 
 %%%%%%%%%
 %Pod Braking parameters
-BrakingForce = 1250; % In N
+BrakingForce = 1500; % In N
 MaxBrakingGs = BrakingForce/mass/9.80665;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -179,8 +179,8 @@ for emraxGear = EmraxGear
         % Begin Plots
         
         % Kinematics Plots
-        %figure(1, 'position', [0,0, 1600, 1200]);
-        figure ;
+        figure(1, 'position', [0,0, 1600, 1200]);
+        %figure ;
         s1 = subplot (2, 2, 1);
         plot(time, distance);
         str = strcat("distance vs time");
@@ -196,7 +196,7 @@ for emraxGear = EmraxGear
         hold(s2,'on');
         plot(time, velocity, 'color', 'g');
         
-        s3 = subplot (2, 2, 3);
+        s3 = subplot (2, 2, 3); 
         str = strcat("acceleration vs time");
         title(str);
         xlabel("time (s)");
@@ -205,8 +205,8 @@ for emraxGear = EmraxGear
         plot(time, acceleration, 'color', 'r');
         
         % Emrax Specific Plots
-        % figure(2, 'position', [0,0, 1600, 1200]);
-        figure ;
+        figure(2, 'position', [0,0, 1600, 1200]);
+        %figure ;
         s1 = subplot (2, 2, 1);
         emrax_rpm = velocity * 60 /(2*pi*EmraxRadius) / emraxGear;
         emrax_torque = vec_emraxMechPower(1:i)./(emrax_rpm(1:i)/60 * 2 * pi);
