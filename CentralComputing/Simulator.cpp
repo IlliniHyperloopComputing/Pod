@@ -9,6 +9,42 @@ Simulator::Simulator() {
   reset_motion();
 }
 
+uint8_t Simulator::start_server(const char * hostname, const char * port) {
+  socketfd = socket(AF_INET, SOCK_STREAM, 0);
+  int enable = 1;
+  int blocking = 0;
+  ioctl(socketfd, FIONBIO, &blocking);
+  if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
+    perror("setsockopt(SO_REUSEADDR) failed");
+  }
+
+  struct addrinfo hints, *result;
+  memset(&hints, 0, sizeof(hints));
+  hints.ai_family = AF_INET;
+  hints.ai_socktype = SOCK_STREAM;
+  hints.ai_flags = AI_PASSIVE;
+
+  int s = getaddrinfo(hostname, port, &hints, &result);
+  if(s != 0){
+    print(LogLevel::LOG_ERROR, "getaddrinfo: %s\n", gai_strerror(s));
+    exit(1);
+  }
+  if(bind(socketfd, result->ai_addr, result->ai_addrlen) != 0){
+    perror("bind");
+    exit(1);
+  }
+  if(listen(socketfd, 1) != 0){
+    perror("listen");
+    exit(1);
+  }
+  print(LogLevel::LOG_INFO, "Server setup successfully\n");
+  free(result);
+
+  running.store(true);
+  return socketfd;
+
+}
+
 
 bool Simulator::sim_connect(const char * hostname, const char * port) {
   //TODO connect to a Pod instance
