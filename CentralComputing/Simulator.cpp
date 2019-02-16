@@ -4,7 +4,6 @@ using namespace Utils;
 
 Simulator SimulatorManager::sim;
 
-
 Simulator::Simulator() {
   reset_motion();
 }
@@ -26,7 +25,7 @@ uint8_t Simulator::start_server(const char * hostname, const char * port) {
 
   int s = getaddrinfo(hostname, port, &hints, &result);
   if(s != 0){
-    print(LogLevel::LOG_ERROR, "getaddrinfo: %s\n", gai_strerror(s));
+    print(LogLevel::LOG_ERROR, "Sim - getaddrinfo: %s\n", gai_strerror(s));
     exit(1);
   }
   if(bind(socketfd, result->ai_addr, result->ai_addrlen) != 0){
@@ -37,83 +36,74 @@ uint8_t Simulator::start_server(const char * hostname, const char * port) {
     perror("listen");
     exit(1);
   }
-  print(LogLevel::LOG_INFO, "Server setup successfully\n");
+  print(LogLevel::LOG_INFO, "Sim - Server setup successfully\n");
   free(result);
 
   return socketfd;
 }
-
 
 int Simulator::accept_client(){
   struct pollfd p;
   p.fd = socketfd;
   p.events = POLLIN;
   int ret = 0;
-  print(LogLevel::LOG_INFO, "Awaiting connection\n");
+  print(LogLevel::LOG_INFO, "Sim - Awaiting connection\n");
   while(1) {
     ret = poll(&p, 1, 200);
     if(ret == 1) {//there's something trying to connect, or we are exiting
       clientfd = accept(socketfd, NULL, NULL);
       if(clientfd != -1)
-        print(LogLevel::LOG_INFO, "Connected!\n"); 
+        print(LogLevel::LOG_INFO, "Sim - Connected! %d\n", clientfd); 
       return clientfd;
     }
   }
   return -1;
 }
 
-bool Simulator::sim_connect(const char * hostname, const char * port) {
-  //TODO connect to a Pod instance
-  //
-  enable_logging = true;
-  reset_motion();
-  
-  start_server(hostname, port);
-   
-  int fd = accept_client();
-  if(fd > 0){
-    print(LogLevel::LOG_INFO, "Sim - Starting network threads\n");
+void Simulator::sim_connect() {
+  closed.reset();
 
-    print(LogLevel::LOG_INFO, "Sim - Client exited, looking for next client\n");
+  // try to connect to a client
+  if(accept_client() > 0){
+    print(LogLevel::LOG_INFO, "Sim - Starting network read thread\n");
+    active_connection.store(true);
+    read_thread = std::thread([&]() { read_loop(); });
+    read_thread.join();
+    print(LogLevel::LOG_INFO, "Sim - Pod exited. Looking to connect again\n");
+  } 
+  print(LogLevel::LOG_INFO, "Sim - Exiting sim_connect()\n");
+  closed.invoke();
+}
 
-  } else {
-    return false;
+bool Simulator::send_command(std::shared_ptr<NetworkManager::Network_Command> command) {
+  int bytes_written = write(clientfd, command.get(), sizeof(NetworkManager::Network_Command));
+  print(LogLevel::LOG_EDEBUG, "Sim - Bytes written : %d, ID : %d, Value : %d  clientfd : %d\n", bytes_written, command->id, command->value, clientfd);
+  int size = sizeof(NetworkManager::Network_Command);
+  return bytes_written == size;
+}
+
+void Simulator::read_loop() {
+  while(active_connection.load()){
+    // dump the data because we don't need it or do anything with it.
+    // TODO if we want to we can keep the data and use it for error checking purposes
+    // but that seems redundant and like a lot of work
+
+    char buf[100];
+    read(clientfd, buf, 99);
+    buf[99]='\n';
+    print(LogLevel::LOG_EDEBUG, "Sim - Bytes read: %s\n", buf);
   }
+}
 
+void Simulator::disconnect() {
+  active_connection.store(false); // stop the read loop
+  close(clientfd); // close TCP connection
+  close(socketfd); // close TCP server
+  closed.wait();   // wait for sim_connect() to close, which was waiting on the read_loop
+}
 
-  struct addrinfo hints, *servinfo;
-  memset(&hints, 0, sizeof(hints));
-  hints.ai_family = AF_INET;
-  hints.ai_socktype = SOCK_STREAM;
-  int rv;
-  if((rv = getaddrinfo(hostname, port, &hints, &servinfo)) != 0) {
-    freeaddrinfo(servinfo);
-    print(LogLevel::LOG_ERROR, "Error get addrinfo\n");
-    return false;
-  }
-
-  if((socketfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol)) == -1) {
-    freeaddrinfo(servinfo);
-    print(LogLevel::LOG_ERROR, "Error getting socket\n");
-    return false;
-  }
-
-  if(connect(socketfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1) {
-    close(socketfd);
-    freeaddrinfo(servinfo);
-    print(LogLevel::LOG_ERROR, "Error connecting\n");
-    return false;
-  }
-
-
-  active_connection.store(true);
-
-  read_thread = std::thread([&]() {
-    read_loop();
-  });
-
-  freeaddrinfo(servinfo);
-  return true;
+void Simulator::logging(bool enable){
+  enable_logging = enable;
 }
 
 void Simulator::sim_motor_enable() {
@@ -191,36 +181,6 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
 }
 
 
-
-bool Simulator::send_command(std::shared_ptr<NetworkManager::Network_Command> command) {
-  int bytes_written = write(socketfd, command.get(), sizeof(NetworkManager::Network_Command));
-  //print(LogLevel::LOG_EDEBUG, "Bytes written : %d, ID : %d, Value : %d\n", bytes_written, command->id, command->value);
-  int size = sizeof(NetworkManager::Network_Command);
-  return bytes_written == size;
-
-}
-
-void Simulator::read_loop() {
-  while(active_connection.load()){
-    // dump the data because we don't need it or do anything with it.
-    // TODO if we want to we can keep the data and use it for error checking purposes
-    // but that seems redundant and like a lot of work
-
-    char buf[100];
-    read(socketfd, buf, 100);
-
-  }
-  closed.invoke();
-
-}
-
-void Simulator::disconnect() {
-  enable_logging = false;
-  active_connection.store(false);
-  close(socketfd);
-  closed.wait();
-  read_thread.join();
-}
 
 void Simulator::reset_motion() {
 

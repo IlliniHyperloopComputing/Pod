@@ -7,6 +7,18 @@ class PodTest : public ::testing::Test
 {
   protected:
   virtual void SetUp() {
+    // Reset simulator motion
+    SimulatorManager::sim.reset_motion();
+    
+    // Enable logging
+    SimulatorManager::sim.logging(true);
+
+    // Startup our server
+    EXPECT_TRUE(SimulatorManager::sim.start_server("127.0.0.1", "8800") > 0);
+
+    // Set the Simulator server running in its own thread
+    sim_thread = std::thread([&](){ SimulatorManager::sim.sim_connect();});
+
     // Create the Pod object
     pod = std::make_shared<Pod>();
 
@@ -17,14 +29,17 @@ class PodTest : public ::testing::Test
     pod->ready.wait();
    
     EXPECT_EQ(pod->state_machine->get_current_state(), Pod_State::E_States::ST_SAFE_MODE);
-    EXPECT_TRUE(SimulatorManager::sim.sim_connect("127.0.0.1", "8800"));//TODO make these variables somewhere
+
+    // We wait until the Pod has connected
     NetworkManager::connected.wait();
-    print(LogLevel::LOG_INFO, "Done setting up test, running test\n");
+    print(LogLevel::LOG_INFO, "Sim - Setup finished, running test\n");
   }
 
   virtual void TearDown() {
     print(LogLevel::LOG_INFO, "Test finished, begin teardown\n");
+    SimulatorManager::sim.logging(false);
     SimulatorManager::sim.disconnect();
+    sim_thread.join();
     pod->stop();
     pod_thread.join();
     print(LogLevel::LOG_INFO, "Test teardown complete\n");
@@ -42,9 +57,13 @@ class PodTest : public ::testing::Test
     command->id = id;
     command->value = value;
     pod->processing_command.reset();
+    print(LogLevel::LOG_EDEBUG, "Sim -about to send command\n");
     EXPECT_TRUE(SimulatorManager::sim.send_command(command));
+    print(LogLevel::LOG_EDEBUG, "Sim -going to wait to processcommand\n");
     pod->processing_command.wait();
+    print(LogLevel::LOG_EDEBUG, "Sim -finished waiting to process \n");
   }
+
   /*
    * Handy helper function for testing state transitions
    * @param id the command to run
@@ -66,6 +85,7 @@ class PodTest : public ::testing::Test
 
   std::shared_ptr<Pod> pod;
   std::thread pod_thread;
+  std::thread sim_thread;
 };
 
 

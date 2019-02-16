@@ -63,7 +63,6 @@ struct Network_Command {
 
 
 extern int socketfd;
-extern int clientfd;
 extern int udp_socket;
 extern std::string hostname;
 extern std::string port;
@@ -88,13 +87,6 @@ uint8_t start_tcp(const char * hostname, const char * port);
 * @return SETUP_SUCCESS or SETUP_FAILURE
 **/
 uint8_t start_udp(const char * hostname, const char * port);
-
-/**
-* Blocking call--waits for client to connect
-* Exits if socket is closed`
-* @return the clientfd or -1
-**/
-int accept_client();
 
 int connect_to_server();
 

@@ -20,12 +20,13 @@ class Simulator {
      * @param hostname the hostname to connect to
      * @param port the port to connect to
      */
-    bool sim_connect(const char * hostname, const char * port);
+    void sim_connect();
     
     uint8_t start_server(const char * hostname, const char * port);
 
     int accept_client();
 
+    void logging(bool enable);
 
     /*
      * Simulates arming the motor

@@ -4,7 +4,6 @@ using namespace std;
 using namespace Utils;
 
 int NetworkManager::socketfd = 0;
-int NetworkManager::clientfd = 0;
 int NetworkManager::udp_socket = 0;
 std::string NetworkManager::hostname;
 std::string NetworkManager::port;
@@ -18,13 +17,14 @@ SafeQueue<shared_ptr<NetworkManager::Network_Command>> NetworkManager::command_q
 uint8_t NetworkManager::start_tcp(const char * _hostname, const char * _port) {
   connected.reset();
   closing.reset();
+
   std::string h(_hostname);
   hostname = h;
   std::string p(_port);
   port = p;
 
   if(connect_to_server() > 0){
-    print(LogLevel::LOG_INFO, "Client connection successful\n");
+    print(LogLevel::LOG_INFO, "Pod connection successful\n");
   }
 
   running.store(true);
@@ -58,6 +58,7 @@ int NetworkManager::connect_to_server(){
     return false;
   }
 
+  freeaddrinfo(servinfo);
   return socketfd;
 }
 
@@ -65,28 +66,10 @@ uint8_t NetworkManager::start_udp(const char * hostname, const char * port) {
   return 0;
 }
 
-int NetworkManager::accept_client() {
-  struct pollfd p;
-  p.fd = socketfd;
-  p.events = POLLIN;
-  int ret = 0;
-  print(LogLevel::LOG_INFO, "Awaiting connection\n");
-  while(1) {
-    ret = poll(&p, 1, 200);
-    if(ret == 1) {//there's something trying to connect, or we are exiting
-      clientfd = accept(socketfd, NULL, NULL);
-      if(clientfd != -1)
-        print(LogLevel::LOG_INFO, "Connected!\n"); 
-      return clientfd;
-    }
-  }
-  return -1;
-}
-
 int NetworkManager::read_command(Network_Command * buffer) {
-  //int bytes_read = read(clientfd, buffer, sizeof(Network_Command));
   uint8_t bytes[2];
-  int bytes_read = read(clientfd, bytes, 2);
+  print(LogLevel::LOG_EDEBUG, "WaITING TO READ, socketfd: %d\n", socketfd);
+  int bytes_read = read(socketfd, bytes, 2);
   buffer->id = (Network_Command_ID) bytes[0];
   buffer->value = bytes[1];
  
@@ -96,11 +79,10 @@ int NetworkManager::read_command(Network_Command * buffer) {
 int NetworkManager::write_data() {
   // TODO write real data
   vector<uint8_t> bytes = { static_cast<uint8_t>(0xdeadbeef) };
-  return write(clientfd, bytes.data(), bytes.size());
+  return write(socketfd, bytes.data(), bytes.size());
 }
 
 void NetworkManager::close_server() {
-  close(clientfd);
   close(socketfd);
 }
 
@@ -116,10 +98,11 @@ void NetworkManager::network_loop() {
       thread read_thread(read_loop);
       thread write_thread(write_loop);
 
-      connected.invoke();
+      connected.invoke(); // Threads started, show simulator we are connected
+
       read_thread.join();
       write_thread.join();
-      print(LogLevel::LOG_INFO, "Client exited, looking for next client\n");
+      print(LogLevel::LOG_INFO, "Connection lost, trying again\n");
 
     } else {
       running.store(false);
@@ -133,11 +116,13 @@ void NetworkManager::read_loop() {
   bool active_connection = true;
   Network_Command buffer;
   while (running && active_connection){
+    print(LogLevel::LOG_EDEBUG, "Before bytes read\n");
     int bytes_read = read_command(&buffer);
     
+    print(LogLevel::LOG_EDEBUG, "after bytes read\n");
     active_connection = bytes_read > 0;
     if (bytes_read > 0) {
-      //print(LogLevel::LOG_INFO, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
+      print(LogLevel::LOG_INFO, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
       auto command = make_shared<Network_Command>();
       command->id = buffer.id;
       command->value = buffer.value;
@@ -151,9 +136,9 @@ void NetworkManager::read_loop() {
 void NetworkManager::write_loop() {
   bool active_connection = true;
   while(running && active_connection){
-    closing.wait_for(100000);
+    closing.wait_for(1000000);
     int written = write_data();
-    //print(LogLevel::LOG_EDEBUG, "Wrote %d bytes\n", written);
+    print(LogLevel::LOG_EDEBUG, "Wrote %d bytes\n", written);
     active_connection = written != -1;
   }
 
