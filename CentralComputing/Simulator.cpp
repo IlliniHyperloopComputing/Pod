@@ -40,17 +40,47 @@ uint8_t Simulator::start_server(const char * hostname, const char * port) {
   print(LogLevel::LOG_INFO, "Server setup successfully\n");
   free(result);
 
-  running.store(true);
   return socketfd;
-
 }
 
+
+int Simulator::accept_client(){
+  struct pollfd p;
+  p.fd = socketfd;
+  p.events = POLLIN;
+  int ret = 0;
+  print(LogLevel::LOG_INFO, "Awaiting connection\n");
+  while(1) {
+    ret = poll(&p, 1, 200);
+    if(ret == 1) {//there's something trying to connect, or we are exiting
+      clientfd = accept(socketfd, NULL, NULL);
+      if(clientfd != -1)
+        print(LogLevel::LOG_INFO, "Connected!\n"); 
+      return clientfd;
+    }
+  }
+  return -1;
+}
 
 bool Simulator::sim_connect(const char * hostname, const char * port) {
   //TODO connect to a Pod instance
   //
   enable_logging = true;
   reset_motion();
+  
+  start_server(hostname, port);
+   
+  int fd = accept_client();
+  if(fd > 0){
+    print(LogLevel::LOG_INFO, "Sim - Starting network threads\n");
+
+    print(LogLevel::LOG_INFO, "Sim - Client exited, looking for next client\n");
+
+  } else {
+    return false;
+  }
+
+
   struct addrinfo hints, *servinfo;
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_INET;

@@ -65,6 +65,8 @@ struct Network_Command {
 extern int socketfd;
 extern int clientfd;
 extern int udp_socket;
+extern std::string hostname;
+extern std::string port;
 
 extern std::atomic<bool> running;
 extern SafeQueue<std::shared_ptr<NetworkManager::Network_Command>> command_queue;
@@ -73,12 +75,12 @@ extern Event connected;
 extern Event closing;
 
 /**
-* Starts the TCP server
+* Starts up TCP networking
 * @param hostname the IP address to connect to
 * @param port the port to connect to
 * @return SETUP_SUCCESS  or SETUP_FAILURE
 **/
-uint8_t start_server(const char * hostname, const char * port);
+uint8_t start_tcp(const char * hostname, const char * port);
 /**
 * Starts UDP server
 * @param hostname the IP address
@@ -93,6 +95,8 @@ uint8_t start_udp(const char * hostname, const char * port);
 * @return the clientfd or -1
 **/
 int accept_client();
+
+int connect_to_server();
 
 /**
 * Reads from socketfd, parses read bytes into a Network_Command struct

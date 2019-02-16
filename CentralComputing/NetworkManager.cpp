@@ -6,6 +6,8 @@ using namespace Utils;
 int NetworkManager::socketfd = 0;
 int NetworkManager::clientfd = 0;
 int NetworkManager::udp_socket = 0;
+std::string NetworkManager::hostname;
+std::string NetworkManager::port;
 
 Event NetworkManager::connected;
 Event NetworkManager::closing;
@@ -13,40 +15,49 @@ Event NetworkManager::closing;
 std::atomic<bool> NetworkManager::running(false);
 SafeQueue<shared_ptr<NetworkManager::Network_Command>> NetworkManager::command_queue;
 
-uint8_t NetworkManager::start_server(const char * hostname, const char * port) {
+uint8_t NetworkManager::start_tcp(const char * _hostname, const char * _port) {
   connected.reset();
   closing.reset();
-  socketfd = socket(AF_INET, SOCK_STREAM, 0);
-  int enable = 1;
-  int blocking = 0;
-  ioctl(socketfd, FIONBIO, &blocking);
-  if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
-    perror("setsockopt(SO_REUSEADDR) failed");
+  std::string h(_hostname);
+  hostname = h;
+  std::string p(_port);
+  port = p;
+
+  if(connect_to_server() > 0){
+    print(LogLevel::LOG_INFO, "Client connection successful\n");
   }
 
-  struct addrinfo hints, *result;
+  running.store(true);
+  return socketfd;
+}
+
+
+int NetworkManager::connect_to_server(){
+
+  struct addrinfo hints, *servinfo;
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_INET;
   hints.ai_socktype = SOCK_STREAM;
-  hints.ai_flags = AI_PASSIVE;
+  int rv;
+  if((rv = getaddrinfo(hostname.c_str(), port.c_str(), &hints, &servinfo)) != 0) {
+    freeaddrinfo(servinfo);
+    print(LogLevel::LOG_ERROR, "Error get addrinfo\n");
+    return false;
+  }
 
-  int s = getaddrinfo(hostname, port, &hints, &result);
-  if(s != 0){
-    print(LogLevel::LOG_ERROR, "getaddrinfo: %s\n", gai_strerror(s));
-    exit(1);
+  if((socketfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol)) == -1) {
+    freeaddrinfo(servinfo);
+    print(LogLevel::LOG_ERROR, "Error getting socket\n");
+    return false;
   }
-  if(bind(socketfd, result->ai_addr, result->ai_addrlen) != 0){
-    perror("bind");
-    exit(1);
-  }
-  if(listen(socketfd, 1) != 0){
-    perror("listen");
-    exit(1);
-  }
-  print(LogLevel::LOG_INFO, "Server setup successfully\n");
-  free(result);
 
-  running.store(true);
+  if(connect(socketfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1) {
+    close(socketfd);
+    freeaddrinfo(servinfo);
+    print(LogLevel::LOG_ERROR, "Error connecting\n");
+    return false;
+  }
+
   return socketfd;
 }
 
@@ -99,10 +110,9 @@ void NetworkManager::send_packet() {
 
 void NetworkManager::network_loop() {
   while(running){
-    int fd = accept_client();
+    int fd = connect_to_server();
     if(fd > 0){
       print(LogLevel::LOG_INFO, "Starting network threads\n");
-      //print(LogLevel::LOG_INFO, "Client fd is: %d\n", clientfd);
       thread read_thread(read_loop);
       thread write_thread(write_loop);
 

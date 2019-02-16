@@ -21,6 +21,10 @@ class Simulator {
      * @param port the port to connect to
      */
     bool sim_connect(const char * hostname, const char * port);
+    
+    uint8_t start_server(const char * hostname, const char * port);
+
+    int accept_client();
 
 
     /*
@@ -98,6 +102,7 @@ class Simulator {
     bool enable_logging = true;
 
     int socketfd;
+    int clientfd;
 
     long long timeLast = -1;
     long long timeDelta = 0.000;

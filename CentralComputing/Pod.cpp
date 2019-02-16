@@ -79,7 +79,7 @@ void Pod::startup() {
   print(LogLevel::LOG_INFO, "Source Managers started\n");
 
   //Setup Network Server
-  NetworkManager::start_server("127.0.0.1", "8800");
+  NetworkManager::start_tcp("127.0.0.1", "8800");
 
   //Start Network and main loop thread.
   thread network_thread(NetworkManager::network_loop);
