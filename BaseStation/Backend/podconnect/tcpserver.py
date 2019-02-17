@@ -34,9 +34,9 @@ def serve():
                 mutex.acquire(1)
                 d.save()
                 mutex.release()
-                print("received data:", data)
+                print("TCP received data:", data)
             except:
-                print("Error in received message")
+                print("Error in TCP Received message")
 
 def start():
     t1 = Thread(target=serve)

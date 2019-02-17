@@ -19,9 +19,6 @@ def serve():
         except:
             UDP_PORT = UDP_PORT + 1
     print("UDP Port = {port}".format(port=UDP_PORT))
-    while(True):
-        data, addr = s.recvfrom(BUFFER_SIZE)
-        print(data)
     while (True):
         while (True):
             try:
@@ -35,9 +32,9 @@ def serve():
                 mutex.acquire(1)
                 d.save()
                 mutex.release()
-                print("received data:", data, "from:", addr)
+                print("UDP received data:", data, "From:", addr)
             except:
-                print("Error in received message")
+                print("Error in UDP received message")
 
 def start():
     t1 = Thread(target=serve)
