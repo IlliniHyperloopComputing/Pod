@@ -9,3 +9,6 @@ Right now you have to send packets in the form int1,int2,int3 (this is just for 
 # How to recieve the data
 Navigate to localhost:8000/podconnect/data to see all data in xml format (open the inspector in your web browser to see the xml field names).
 Navigate to localhost:8000/podconnect/data/latest too see the latest data in xml format.
+
+# ToDo
+UDP port is not detecting if it is in use. Needs to be fixed.
