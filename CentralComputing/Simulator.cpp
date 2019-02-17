@@ -8,7 +8,7 @@ Simulator::Simulator() {
   reset_motion();
 }
 
-uint8_t Simulator::start_server(const char * hostname, const char * port) {
+int Simulator::start_server(const char * hostname, const char * port) {
   socketfd = socket(AF_INET, SOCK_STREAM, 0);
   int enable = 1;
   int blocking = 0;
@@ -26,17 +26,17 @@ uint8_t Simulator::start_server(const char * hostname, const char * port) {
   int s = getaddrinfo(hostname, port, &hints, &result);
   if(s != 0){
     print(LogLevel::LOG_ERROR, "Sim - getaddrinfo: %s\n", gai_strerror(s));
-    exit(1);
+    return -1;
   }
   if(bind(socketfd, result->ai_addr, result->ai_addrlen) != 0){
     perror("bind");
-    exit(1);
+    return -1;
   }
   if(listen(socketfd, 1) != 0){
     perror("listen");
-    exit(1);
+    return -1;
   }
-  print(LogLevel::LOG_INFO, "Sim - Server setup successfully\n");
+  print(LogLevel::LOG_INFO, "Sim - Server setup successfully, socketfd : %d\n", socketfd);
   free(result);
 
   return socketfd;
@@ -69,15 +69,14 @@ void Simulator::sim_connect() {
     active_connection.store(true);
     read_thread = std::thread([&]() { read_loop(); });
     read_thread.join();
-    print(LogLevel::LOG_INFO, "Sim - Pod exited. Looking to connect again\n");
+    print(LogLevel::LOG_INFO, "Sim - Pod client exited. \n");
   } 
   print(LogLevel::LOG_INFO, "Sim - Exiting sim_connect()\n");
-  closed.invoke();
 }
 
 bool Simulator::send_command(std::shared_ptr<NetworkManager::Network_Command> command) {
   int bytes_written = write(clientfd, command.get(), sizeof(NetworkManager::Network_Command));
-  print(LogLevel::LOG_EDEBUG, "Sim - Bytes written : %d, ID : %d, Value : %d  clientfd : %d\n", bytes_written, command->id, command->value, clientfd);
+  //print(LogLevel::LOG_EDEBUG, "Sim - Bytes written : %d, ID : %d, Value : %d  clientfd : %d\n", bytes_written, command->id, command->value, clientfd);
   int size = sizeof(NetworkManager::Network_Command);
   return bytes_written == size;
 }
@@ -90,15 +89,15 @@ void Simulator::read_loop() {
 
     char buf[100];
     read(clientfd, buf, 99);
-    buf[99]='\n';
-    print(LogLevel::LOG_EDEBUG, "Sim - Bytes read: %s\n", buf);
   }
+  closed.invoke();
 }
 
 void Simulator::disconnect() {
   active_connection.store(false); // stop the read loop
   close(clientfd); // close TCP connection
   close(socketfd); // close TCP server
+  print(LogLevel::LOG_INFO, "sim - closed sockets\n");
   closed.wait();   // wait for sim_connect() to close, which was waiting on the read_loop
 }
 

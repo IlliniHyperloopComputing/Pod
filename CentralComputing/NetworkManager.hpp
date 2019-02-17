@@ -73,13 +73,8 @@ extern SafeQueue<std::shared_ptr<NetworkManager::Network_Command>> command_queue
 extern Event connected;
 extern Event closing;
 
-/**
-* Starts up TCP networking
-* @param hostname the IP address to connect to
-* @param port the port to connect to
-* @return SETUP_SUCCESS  or SETUP_FAILURE
-**/
-uint8_t start_tcp(const char * hostname, const char * port);
+int start_tcp(const char * hostname, const char * port);
+
 /**
 * Starts UDP server
 * @param hostname the IP address
@@ -88,7 +83,7 @@ uint8_t start_tcp(const char * hostname, const char * port);
 **/
 uint8_t start_udp(const char * hostname, const char * port);
 
-int connect_to_server();
+int connect_to_server( const char * hostname, const char * port);
 
 /**
 * Reads from socketfd, parses read bytes into a Network_Command struct
@@ -108,12 +103,7 @@ int write_data();
 * Closes the socket, ending all transmission with the LabView
 * Should be called from a signal handler
 **/
-void close_server();
-
-/**
-* Sends a UDP Datagram with sensor data
-**/
-void send_packet();
+void close_client();
 
 /**
  * Thread function, continually reads commands from the socket and pushes them onto the queue
@@ -125,10 +115,12 @@ void read_loop();
  */
 void write_loop();
 
-/*
- * Thread function, handles attaching new clients and starting read/write loop
- */
-void network_loop();
+/**
+ * Thread function, handles connecting to new clients and starting read/write loop
+* @param hostname the IP address to connect to
+* @param port the port to connect to
+**/
+void tcp_loop(const char * hostname, const char * port);
 
 /*
  * Stops threads and exits

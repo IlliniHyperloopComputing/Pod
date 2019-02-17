@@ -14,7 +14,7 @@ class PodTest : public ::testing::Test
     SimulatorManager::sim.logging(true);
 
     // Startup our server
-    EXPECT_TRUE(SimulatorManager::sim.start_server("127.0.0.1", "8800") > 0);
+    EXPECT_TRUE(SimulatorManager::sim.start_server("127.0.0.1", "8800") >= 0);
 
     // Set the Simulator server running in its own thread
     sim_thread = std::thread([&](){ SimulatorManager::sim.sim_connect();});
@@ -32,6 +32,7 @@ class PodTest : public ::testing::Test
 
     // We wait until the Pod has connected
     NetworkManager::connected.wait();
+
     print(LogLevel::LOG_INFO, "Sim - Setup finished, running test\n");
   }
 
@@ -39,9 +40,10 @@ class PodTest : public ::testing::Test
     print(LogLevel::LOG_INFO, "Test finished, begin teardown\n");
     SimulatorManager::sim.logging(false);
     SimulatorManager::sim.disconnect();
-    sim_thread.join();
     pod->stop();
     pod_thread.join();
+    sim_thread.join();
+    print(LogLevel::LOG_INFO, "sim- joined\n");
     print(LogLevel::LOG_INFO, "Test teardown complete\n");
   }
 
@@ -57,11 +59,8 @@ class PodTest : public ::testing::Test
     command->id = id;
     command->value = value;
     pod->processing_command.reset();
-    print(LogLevel::LOG_EDEBUG, "Sim -about to send command\n");
     EXPECT_TRUE(SimulatorManager::sim.send_command(command));
-    print(LogLevel::LOG_EDEBUG, "Sim -going to wait to processcommand\n");
     pod->processing_command.wait();
-    print(LogLevel::LOG_EDEBUG, "Sim -finished waiting to process \n");
   }
 
   /*
@@ -81,7 +80,6 @@ class PodTest : public ::testing::Test
       EXPECT_EQ(pod->state_machine->get_current_state(), start_state);
     }
   }
-
 
   std::shared_ptr<Pod> pod;
   std::thread pod_thread;

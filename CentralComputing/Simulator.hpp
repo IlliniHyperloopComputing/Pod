@@ -22,7 +22,7 @@ class Simulator {
      */
     void sim_connect();
     
-    uint8_t start_server(const char * hostname, const char * port);
+    int start_server(const char * hostname, const char * port);
 
     int accept_client();
 

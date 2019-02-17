@@ -14,32 +14,13 @@ Event NetworkManager::closing;
 std::atomic<bool> NetworkManager::running(false);
 SafeQueue<shared_ptr<NetworkManager::Network_Command>> NetworkManager::command_queue;
 
-uint8_t NetworkManager::start_tcp(const char * _hostname, const char * _port) {
-  connected.reset();
-  closing.reset();
-
-  std::string h(_hostname);
-  hostname = h;
-  std::string p(_port);
-  port = p;
-
-  if(connect_to_server() > 0){
-    print(LogLevel::LOG_INFO, "Pod connection successful\n");
-  }
-
-  running.store(true);
-  return socketfd;
-}
-
-
-int NetworkManager::connect_to_server(){
-
+int NetworkManager::connect_to_server( const char * hostname, const char * port){
   struct addrinfo hints, *servinfo;
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_INET;
   hints.ai_socktype = SOCK_STREAM;
   int rv;
-  if((rv = getaddrinfo(hostname.c_str(), port.c_str(), &hints, &servinfo)) != 0) {
+  if((rv = getaddrinfo(hostname, port, &hints, &servinfo)) != 0) {
     freeaddrinfo(servinfo);
     print(LogLevel::LOG_ERROR, "Error get addrinfo\n");
     return false;
@@ -68,7 +49,6 @@ uint8_t NetworkManager::start_udp(const char * hostname, const char * port) {
 
 int NetworkManager::read_command(Network_Command * buffer) {
   uint8_t bytes[2];
-  print(LogLevel::LOG_EDEBUG, "WaITING TO READ, socketfd: %d\n", socketfd);
   int bytes_read = read(socketfd, bytes, 2);
   buffer->id = (Network_Command_ID) bytes[0];
   buffer->value = bytes[1];
@@ -82,17 +62,18 @@ int NetworkManager::write_data() {
   return write(socketfd, bytes.data(), bytes.size());
 }
 
-void NetworkManager::close_server() {
+void NetworkManager::close_client() {
   close(socketfd);
+  connected.reset();
 }
 
-void NetworkManager::send_packet() {
+void NetworkManager::tcp_loop(const char * hostname, const char * port) {
+  connected.reset();
+  closing.reset();
+  running.store(true);
 
-}
-
-void NetworkManager::network_loop() {
   while(running){
-    int fd = connect_to_server();
+    int fd = connect_to_server(hostname, port);
     if(fd > 0){
       print(LogLevel::LOG_INFO, "Starting network threads\n");
       thread read_thread(read_loop);
@@ -102,13 +83,15 @@ void NetworkManager::network_loop() {
 
       read_thread.join();
       write_thread.join();
-      print(LogLevel::LOG_INFO, "Connection lost, trying again\n");
+      print(LogLevel::LOG_INFO, "Connection lost\n");
 
-    } else {
+    } 
+    else {
       running.store(false);
       break;
     }
   }   
+
   print(LogLevel::LOG_INFO, "Exiting Network loop\n");
 }
 
@@ -116,10 +99,7 @@ void NetworkManager::read_loop() {
   bool active_connection = true;
   Network_Command buffer;
   while (running && active_connection){
-    print(LogLevel::LOG_EDEBUG, "Before bytes read\n");
     int bytes_read = read_command(&buffer);
-    
-    print(LogLevel::LOG_EDEBUG, "after bytes read\n");
     active_connection = bytes_read > 0;
     if (bytes_read > 0) {
       print(LogLevel::LOG_INFO, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
@@ -138,7 +118,7 @@ void NetworkManager::write_loop() {
   while(running && active_connection){
     closing.wait_for(1000000);
     int written = write_data();
-    print(LogLevel::LOG_EDEBUG, "Wrote %d bytes\n", written);
+    //print(LogLevel::LOG_EDEBUG, "Wrote %d bytes\n", written);
     active_connection = written != -1;
   }
 
