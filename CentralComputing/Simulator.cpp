@@ -76,10 +76,10 @@ void Simulator::sim_connect() {
   } 
 }
 
-bool Simulator::send_command(std::shared_ptr<NetworkManager::Network_Command> command) {
-  int bytes_written = write(clientfd, command.get(), sizeof(NetworkManager::Network_Command));
+bool Simulator::send_command(std::shared_ptr<TCPManager::Network_Command> command) {
+  int bytes_written = write(clientfd, command.get(), sizeof(TCPManager::Network_Command));
   //print(LogLevel::LOG_EDEBUG, "Sim - Bytes written : %d, ID : %d, Value : %d  clientfd : %d\n", bytes_written, command->id, command->value, clientfd);
-  int size = sizeof(NetworkManager::Network_Command);
+  int size = sizeof(TCPManager::Network_Command);
   return bytes_written == size;
 }
 

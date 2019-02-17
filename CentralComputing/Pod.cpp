@@ -11,17 +11,17 @@ Pod::Pod() {
 void Pod::logic_loop() {
 	while(running.load()){
     // Start processing/pod logic
-		shared_ptr<NetworkManager::Network_Command> command = NetworkManager::command_queue.dequeue();
+		shared_ptr<TCPManager::Network_Command> command = TCPManager::command_queue.dequeue();
     bool command_processed = false;
     if(command.get() != nullptr){
       //print(LogLevel::LOG_INFO, "Command : %d %d\n", command->id, command->value);
-      NetworkManager::Network_Command_ID id = (NetworkManager::Network_Command_ID) command->id;
+      TCPManager::Network_Command_ID id = (TCPManager::Network_Command_ID) command->id;
       auto transition = state_machine->get_transition_function(id);
       ((*state_machine).*(transition))(); //transitions to requested state
       command_processed = true;
     } else {
      //print(LogLevel::LOG_INFO, "No Command\n");
-      command = make_shared<NetworkManager::Network_Command>();
+      command = make_shared<TCPManager::Network_Command>();
       command->id = 0;
       command->value = 0;
     }
@@ -79,10 +79,10 @@ void Pod::startup() {
   print(LogLevel::LOG_INFO, "Source Managers started\n");
 
   //Setup Network Server
-  //NetworkManager::start_tcp("127.0.0.1", "8800");
+  //TCPManager::start_tcp("127.0.0.1", "8800");
 
   //Start Network and main loop thread.
-  thread network_thread([&](){ NetworkManager::tcp_loop("127.0.0.1", "8800"); });
+  thread network_thread([&](){ TCPManager::tcp_loop("127.0.0.1", "8800"); });
   running.store(true);
   thread logic_thread([&](){ logic_loop(); }); // I don't know how to use member functions as a thread function, but lambdas work
 
@@ -112,8 +112,8 @@ void Pod::startup() {
 void Pod::stop() {
   running.store(false); 
   closing.invoke();
-  NetworkManager::close_client();
-  NetworkManager::stop_threads();
+  TCPManager::close_client();
+  TCPManager::stop_threads();
 }
 
 function<void(int)> shutdown_handler;

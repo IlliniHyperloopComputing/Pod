@@ -8,7 +8,7 @@ class PodTest : public ::testing::Test
   protected:
   virtual void SetUp() {
     // Reset the condition we use to determine when the Pod is connected
-    NetworkManager::connected.reset();
+    TCPManager::connected.reset();
 
     // Reset simulator motion
     SimulatorManager::sim.reset_motion();
@@ -35,9 +35,9 @@ class PodTest : public ::testing::Test
 
     // We wait until the Pod has connected, and we see connected on the Simulator side
     // Need both of these because otherwise there were occasionally problems -- 
-    // the simulation must have connected by it wasn't registered on this side. 
+    // the pod must have connected by it wasn't registered by the simulation. 
     // then when the simulation tried to send data it failed.
-    NetworkManager::connected.wait();
+    TCPManager::connected.wait();
     SimulatorManager::sim.connected.wait();
 
     print(LogLevel::LOG_DEBUG, "Sim - Setup finished, running test\n");
@@ -59,9 +59,9 @@ class PodTest : public ::testing::Test
    * @param id the id of the command to run
    * @param value the value for the command
    */
-  void SendCommand(NetworkManager::Network_Command_ID id, uint8_t value) {
+  void SendCommand(TCPManager::Network_Command_ID id, uint8_t value) {
 
-    auto command = std::make_shared<NetworkManager::Network_Command>();
+    auto command = std::make_shared<TCPManager::Network_Command>();
     command->id = id;
     command->value = value;
     pod->processing_command.reset();
@@ -75,7 +75,7 @@ class PodTest : public ::testing::Test
    * @param state the target state the command will bring you to
    * @param allow true if this transition should be allowed, false otherwises
    */
-  void MoveState(NetworkManager::Network_Command_ID id, Pod_State::E_States state, bool allow) {
+  void MoveState(TCPManager::Network_Command_ID id, Pod_State::E_States state, bool allow) {
 
     auto start_state = pod->state_machine->get_current_state();
     SendCommand(id, 0);

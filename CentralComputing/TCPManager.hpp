@@ -1,5 +1,5 @@
-#ifndef NETWORK_HPP
-#define NETWORK_HPP
+#ifndef TCPMANAGER_HPP 
+#define TCPMANAGER_HPP
 
 #include "Utils.h"
 #include "SafeQueue.hpp"
@@ -20,7 +20,7 @@
 
 #define WRITE_FAILURE -1
 
-namespace NetworkManager {
+namespace TCPManager {
 
 enum Network_Command_ID {
   //state transitions
@@ -63,64 +63,52 @@ struct Network_Command {
 
 
 extern int socketfd;
-extern int udp_socket;
-extern std::string hostname;
-extern std::string port;
 
 extern std::atomic<bool> running;
-extern SafeQueue<std::shared_ptr<NetworkManager::Network_Command>> command_queue;
+extern SafeQueue<std::shared_ptr<TCPManager::Network_Command>> command_queue;
 
 extern Event connected;
 extern Event closing;
 
-int start_tcp(const char * hostname, const char * port);
-
-/**
-* Starts UDP server
-* @param hostname the IP address
-* @param port the port
-* @return SETUP_SUCCESS or SETUP_FAILURE
-**/
-uint8_t start_udp(const char * hostname, const char * port);
-
 int connect_to_server( const char * hostname, const char * port);
 
 /**
-* Reads from socketfd, parses read bytes into a Network_Command struct
-* Note: blocking command, will wait on read until something is sent or FD is closed
-* @param buffer a pointer to the network command that was read
-* @return the number of bytes read
-**/
+ * Reads from socketfd, parses read bytes into a Network_Command struct
+ * Note: blocking command, will wait on read until something is sent or FD is closed
+ * @param buffer a pointer to the network command that was read
+ * @return the number of bytes read
+ **/
 int read_command(Network_Command * buffer);
 
 /** 
-* Collects data from sensor, writes to socket
-* @return bytes written or -1 if failed
-**/
+ * Collects data from sensor, writes to socket
+ * @return bytes written or -1 if failed
+ **/
 int write_data();
 
 /**
-* Closes the socket, ending all transmission with the LabView
-* Should be called from a signal handler
-**/
-void close_client();
-
-/**
- * Thread function, continually reads commands from the socket and pushes them onto the queue
+ * Thread function, continually reads commands from the socket and 
+ * pushes them onto the queue
  */
 void read_loop();
 
 /**
- * Thread function, continually gets most recent state/motor/brake/sensor data and sends a packet
+ * Thread function, continually gets most recent state/motor/brake/sensor 
+ * data and sends a packet
  */
 void write_loop();
 
 /**
  * Thread function, handles connecting to new clients and starting read/write loop
-* @param hostname the IP address to connect to
-* @param port the port to connect to
-**/
+ * @param hostname the IP address to connect to
+ * @param port the port to connect to
+ **/
 void tcp_loop(const char * hostname, const char * port);
+
+/**
+ * Closes the socket, ending all transmission
+ **/
+void close_client();
 
 /*
  * Stops threads and exits
@@ -130,4 +118,3 @@ void stop_threads();
 }
 
 #endif
-

@@ -2,7 +2,7 @@
 #define SIMULATOR_HPP
 
 
-#include "NetworkManager.hpp"
+#include "TCPManager.hpp"
 #include "StateSpace.hpp"
 
 #define MAX_ACCEL 9.81
@@ -77,7 +77,7 @@ class Simulator {
      * Sends the given command to the connected pod
      * @param command the command to send
      */
-    bool send_command(std::shared_ptr<NetworkManager::Network_Command> command);
+    bool send_command(std::shared_ptr<TCPManager::Network_Command> command);
 
 
     /**
