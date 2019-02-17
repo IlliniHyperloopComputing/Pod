@@ -1,5 +1,5 @@
 from django.urls import path
-from . import tcpserver
+from . import tcpserver, udpserver
 
 from . import views
 
@@ -9,3 +9,4 @@ urlpatterns = [
 ]
 
 tcpserver.start()
+udpserver.start()
