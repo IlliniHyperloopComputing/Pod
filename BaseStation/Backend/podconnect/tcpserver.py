@@ -4,29 +4,41 @@ import socket
 
 from podconnect.models import DataPacket
 
-TCP_IP = '127.0.0.1'
-TCP_PORT = 8001
-BUFFER_SIZE = 20
-
 def serve():
+    TCP_IP = '127.0.0.1'
+    TCP_PORT = 8001
+    BUFFER_SIZE = 20
+
     mutex = Lock()
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-    s.bind((TCP_IP, TCP_PORT))
+    bound = False
+    while (not bound):
+        try:
+            s.bind((TCP_IP, TCP_PORT))
+            bound = True
+        except:
+            TCP_PORT = TCP_PORT + 1
+    print("TCP Port = {port}".format(port=TCP_PORT))
     s.listen(1)
     while (True):
         conn, addr = s.accept()
         print('Connection address:', addr)
         while (True):
-            data = conn.recv(BUFFER_SIZE)
-            if not data or data == None:
+            try:
+                data = conn.recv(BUFFER_SIZE)
+                if not data or data == None:
+                    break
+                mutex.acquire(1)
+                data = data.decode()
+                dataSplit = data.split(',')
+                d = DataPacket(velocity=dataSplit[1],acceleration=dataSplit[2],position=dataSplit[3])
+                d.save()
+                print("received data:", data)
+                mutex.release()
+            except:
+                print("Error in received message")
+                conn.close()
                 break
-            mutex.acquire(1)
-            data = data.decode()
-            dataSplit = data.split(',')
-            d = DataPacket(velocity=dataSplit[1],acceleration=dataSplit[2],position=dataSplit[3])
-            d.save()
-            print("received data:", data)
-            mutex.release()
 
 def start():
     t1 = Thread(target=serve)
