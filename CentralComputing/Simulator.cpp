@@ -6,9 +6,11 @@ Simulator SimulatorManager::sim;
 
 Simulator::Simulator() {
   reset_motion();
+  connected.reset();
 }
 
 int Simulator::start_server(const char * hostname, const char * port) {
+  connected.reset();
   socketfd = socket(AF_INET, SOCK_STREAM, 0);
   int enable = 1;
   int blocking = 0;
@@ -36,7 +38,7 @@ int Simulator::start_server(const char * hostname, const char * port) {
     perror("listen");
     return -1;
   }
-  print(LogLevel::LOG_INFO, "Sim - Server setup successfully, socketfd : %d\n", socketfd);
+  print(LogLevel::LOG_DEBUG, "Sim - Server setup successfully, socketfd : %d\n", socketfd);
   free(result);
 
   return socketfd;
@@ -47,13 +49,13 @@ int Simulator::accept_client(){
   p.fd = socketfd;
   p.events = POLLIN;
   int ret = 0;
-  print(LogLevel::LOG_INFO, "Sim - Awaiting connection\n");
+  print(LogLevel::LOG_DEBUG, "Sim - Awaiting connection from Pod\n");
   while(1) {
     ret = poll(&p, 1, 200);
     if(ret == 1) {//there's something trying to connect, or we are exiting
       clientfd = accept(socketfd, NULL, NULL);
       if(clientfd != -1)
-        print(LogLevel::LOG_INFO, "Sim - Connected! %d\n", clientfd); 
+        print(LogLevel::LOG_DEBUG, "Sim - Connected! \n"); 
       return clientfd;
     }
   }
@@ -65,13 +67,13 @@ void Simulator::sim_connect() {
 
   // try to connect to a client
   if(accept_client() > 0){
-    print(LogLevel::LOG_INFO, "Sim - Starting network read thread\n");
+    print(LogLevel::LOG_DEBUG, "Sim - Starting network read thread\n");
     active_connection.store(true);
     read_thread = std::thread([&]() { read_loop(); });
+    connected.invoke();
     read_thread.join();
-    print(LogLevel::LOG_INFO, "Sim - Pod client exited. \n");
+    print(LogLevel::LOG_DEBUG, "Sim - Pod client exited. \n");
   } 
-  print(LogLevel::LOG_INFO, "Sim - Exiting sim_connect()\n");
 }
 
 bool Simulator::send_command(std::shared_ptr<NetworkManager::Network_Command> command) {
@@ -95,9 +97,11 @@ void Simulator::read_loop() {
 
 void Simulator::disconnect() {
   active_connection.store(false); // stop the read loop
+
+  shutdown(clientfd, SHUT_RDWR);
   close(clientfd); // close TCP connection
+  shutdown(socketfd, SHUT_RDWR);
   close(socketfd); // close TCP server
-  print(LogLevel::LOG_INFO, "sim - closed sockets\n");
   closed.wait();   // wait for sim_connect() to close, which was waiting on the read_loop
 }
 

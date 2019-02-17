@@ -7,6 +7,9 @@ class PodTest : public ::testing::Test
 {
   protected:
   virtual void SetUp() {
+    // Reset the condition we use to determine when the Pod is connected
+    NetworkManager::connected.reset();
+
     // Reset simulator motion
     SimulatorManager::sim.reset_motion();
     
@@ -30,21 +33,24 @@ class PodTest : public ::testing::Test
    
     EXPECT_EQ(pod->state_machine->get_current_state(), Pod_State::E_States::ST_SAFE_MODE);
 
-    // We wait until the Pod has connected
+    // We wait until the Pod has connected, and we see connected on the Simulator side
+    // Need both of these because otherwise there were occasionally problems -- 
+    // the simulation must have connected by it wasn't registered on this side. 
+    // then when the simulation tried to send data it failed.
     NetworkManager::connected.wait();
+    SimulatorManager::sim.connected.wait();
 
-    print(LogLevel::LOG_INFO, "Sim - Setup finished, running test\n");
+    print(LogLevel::LOG_DEBUG, "Sim - Setup finished, running test\n");
   }
 
   virtual void TearDown() {
-    print(LogLevel::LOG_INFO, "Test finished, begin teardown\n");
+    print(LogLevel::LOG_DEBUG, "Test finished, begin teardown\n");
     SimulatorManager::sim.logging(false);
     SimulatorManager::sim.disconnect();
+    sim_thread.join();
     pod->stop();
     pod_thread.join();
-    sim_thread.join();
-    print(LogLevel::LOG_INFO, "sim- joined\n");
-    print(LogLevel::LOG_INFO, "Test teardown complete\n");
+    print(LogLevel::LOG_DEBUG, "Test teardown complete\n");
   }
 
   

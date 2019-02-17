@@ -63,6 +63,7 @@ int NetworkManager::write_data() {
 }
 
 void NetworkManager::close_client() {
+  shutdown(socketfd, SHUT_RDWR);
   close(socketfd);
   connected.reset();
 }

@@ -98,6 +98,7 @@ class Simulator {
 
     std::atomic<bool> active_connection;
     Event closed;
+    Event connected;
     std::thread read_thread;
 
     bool enable_logging = true;
