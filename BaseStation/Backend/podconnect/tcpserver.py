@@ -28,16 +28,15 @@ def serve():
                 data = conn.recv(BUFFER_SIZE)
                 if not data or data == None:
                     break
-                mutex.acquire(1)
                 data = data.decode()
                 dataSplit = data.split(',')
                 d = DataPacket(velocity=dataSplit[1],acceleration=dataSplit[2],position=dataSplit[3])
+                mutex.acquire(1)
                 d.save()
-                print("received data:", data)
                 mutex.release()
+                print("received data:", data)
             except:
                 print("Error in received message")
-                mutex.release()
 
 def start():
     t1 = Thread(target=serve)

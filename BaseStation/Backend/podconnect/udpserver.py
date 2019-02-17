@@ -5,7 +5,7 @@ import socket
 from podconnect.models import DataPacket
 
 def serve():
-    UDP_IP = '127.0.0.1'
+    UDP_IP = ''
     UDP_PORT = 8002
     BUFFER_SIZE = 20
 
@@ -29,17 +29,15 @@ def serve():
                 print(data)
                 if not data or data == None:
                     break
-                mutex.acquire(1)
                 data = data.decode()
                 dataSplit = data.split(',')
                 d = DataPacket(velocity=dataSplit[1],acceleration=dataSplit[2],position=dataSplit[3])
+                mutex.acquire(1)
                 d.save()
-                print("received data:", data, "from:", addr)
                 mutex.release()
+                print("received data:", data, "from:", addr)
             except:
                 print("Error in received message")
-                mutex.release()
-                break
 
 def start():
     t1 = Thread(target=serve)
