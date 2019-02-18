@@ -1,7 +1,12 @@
 # How to start the backend
-In the backend folder run "python manage.py runserver"
+In the backend folder run `python manage.py runserver`
+* This requires python3, and Django to be installed
+* Follow this tutorial https://realpython.com/python-virtual-environments-a-primer/ to setup a python3 virtualenv
+* Once inside the virtualenv, run `pip install Django`
+* then run `python manage.py runserver`
 This will spawn both the TCP server and the HTTP server.
 By default the HTTP server will run on port 8000, the TCP server will print its port for now since on error the address may be in use.
+
 
 # How to send data
 Right now you have to send packets in the form int1,int2,int3 (this is just for test purposes and will be changed later).

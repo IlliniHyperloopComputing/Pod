@@ -17,7 +17,7 @@ class PodTest : public ::testing::Test
     SimulatorManager::sim.logging(true);
 
     // Startup our server
-    EXPECT_TRUE(SimulatorManager::sim.start_server("127.0.0.1", "8800") >= 0);
+    EXPECT_TRUE(SimulatorManager::sim.start_server("127.0.0.1", "8001") >= 0);
 
     // Set the Simulator server running in its own thread
     sim_thread = std::thread([&](){ SimulatorManager::sim.sim_connect();});

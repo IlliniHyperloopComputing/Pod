@@ -30,7 +30,7 @@ def serve():
                     break
                 data = data.decode()
                 dataSplit = data.split(',')
-                d = DataPacket(velocity=dataSplit[1],acceleration=dataSplit[2],position=dataSplit[3])
+                d = DataPacket(velocity=dataSplit[0],acceleration=dataSplit[1],position=dataSplit[2])
                 mutex.acquire(1)
                 d.save()
                 mutex.release()

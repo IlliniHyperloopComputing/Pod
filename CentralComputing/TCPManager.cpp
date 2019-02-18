@@ -50,7 +50,7 @@ int TCPManager::read_command(Network_Command * buffer) {
 
 int TCPManager::write_data() {
   // TODO write real data
-  vector<uint8_t> bytes = { static_cast<uint8_t>(0xdeadbeef) };
+  vector<char> bytes = { '9' , ',' , '8' , ',' , '7' };
   return write(socketfd, bytes.data(), bytes.size());
 }
 
@@ -76,7 +76,7 @@ void TCPManager::write_loop() {
   while(running && active_connection){
     closing.wait_for(1000000);
     int written = write_data();
-    //print(LogLevel::LOG_EDEBUG, "Wrote %d bytes\n", written);
+    print(LogLevel::LOG_DEBUG, "Wrote %d bytes\n", written);
     active_connection = written != -1;
   }
   print(LogLevel::LOG_INFO, "Write Loop exiting.\n");
