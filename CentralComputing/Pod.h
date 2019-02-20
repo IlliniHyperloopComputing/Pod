@@ -11,7 +11,8 @@
 #include "gtest/gtest.h"
 #pragma GCC diagnostic pop
 
-
+const int HEARTBEAT_GPIO = 37;
+bool switchVal = false;
 class Pod {
   public:
     Pod();

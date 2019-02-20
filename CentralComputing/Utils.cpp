@@ -41,23 +41,17 @@ void Utils::print(LogLevel level, const char * format, ...){
       }
 }
 
-int Utils::set_GPIO_high(int GPIONumber) {
+int Utils::toggle_GPIO(int GPIONumber, bool switchVal) {
     std::string start = "/sys/class/gpio/gpio";
     std::string integer = std::to_string(GPIONumber);
     std::string end = "/value";
     std::string path = start + integer + end;
-    std::ofstream out(path);
-    out<<"1";
-    out.close();
-    return 1; //Have it return 1 if it works and zero otherwise
-}
-int Utils::set_GPIO_low(int GPIONumber) {
-    std::string start = "/sys/class/gpio/gpio";
-    std::string integer = std::to_string(GPIONumber);
-    std::string end = "/value";
-    std::string path = start + integer + end;
-    std::ofstream out(path);
-    out<<"0";
+    std::ofstream out(path, std::ofstream::trunc);
+    if(switchVal == true) {
+        out<<"1";
+    } else {
+        out<<"0";
+    }
     out.close();
     return 1; //Have it return 1 if it works and zero otherwise
 }

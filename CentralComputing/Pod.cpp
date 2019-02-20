@@ -3,8 +3,6 @@
 using namespace std;
 using namespace Utils;
 
-const int HEARTBEAT_GPIO = 37;
-int counter = 0;
 
 Pod::Pod() {
   running.store(false);
@@ -28,13 +26,8 @@ void Pod::logic_loop() {
       command->value = 0;
     }
 
-    if (counter <= 0) {
-        Utils::set_GPIO_high(HEARTBEAT_GPIO);
-        counter++;
-    } else {
-        Utils::set_GPIO_low(HEARTBEAT_GPIO);
-        counter--;
-    }
+    Utils::toggle_GPIO_high(HEARTBEAT_GPIO, switchVal);
+    switchVal = !switchVal;
 
     if(command_processed){
       processing_command.invoke(); 
