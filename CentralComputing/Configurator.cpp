@@ -21,5 +21,8 @@ void Configurator::loadValues() {
 }
 
 double Configurator::getValue(string varName) {
+    if (mapVals.find(varName) == mapVals.end()) {
+	return 0.0;
+    }
     return mapVals.find(varName)->second;
 }
