@@ -8,14 +8,16 @@ int lastBeat = 0; //to check for changing vals
 //accidentally turn it on)
 //no idea what these should be
 int changeCounter = 0; //just looking for changes
-int waitPeriod = 260;
+int waitPeriod = 0;
 int startTime = 0;
 int currTime = 0;
-int goal = 5; 
+int goal = 0; 
 int state = 0;
   
   
 void setup() {
+  waitPeriod = 260;
+  goal = 5;
   pinMode(outPin, OUTPUT);
   pinMode(inPin, INPUT);
   //START LOW
