@@ -7,7 +7,7 @@ using namespace std;
 
 class Configurator {
     public:
-	void openVarFile(string);
+	int openVarFile(string);
 
 	void loadValues();
 
