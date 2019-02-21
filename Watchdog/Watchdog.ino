@@ -25,10 +25,8 @@ void setup() {
 }
 
 void loop() {
-  switch(state){
-    
-    //NOT STARTED YET
-    case 0:
+  //START STATE
+  if (state == 0){
       currTime = millis();
       //check for change in hearbeat
       heartBeat = digitalRead(inPin);
@@ -51,10 +49,10 @@ void loop() {
         startTime = millis();
         changeCounter = 0;
       }
-      break;
+  }
       
-    //HEALTHY STATE
-    case 1:
+  //HEALTHY STATE
+  if (state == 1){
       digitalWrite(outPin, 1);
       heartBeat = digitalRead(inPin);
       currTime = millis();
@@ -71,14 +69,15 @@ void loop() {
         startTime = millis();
         changeCounter = 0;
       }
-      break;
+  }
       
-    //DEAD STATE
-    case 2:
+  //DEAD STATE
+  if (state == 2){
         digitalWrite(outPin, 0);
         while (1){ 
           //DO NOTHING 
         }
   }
+    
 }
 
