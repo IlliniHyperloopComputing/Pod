@@ -24,50 +24,54 @@ void setup() {
   digitalWrite(outPin, 0);
 }
 
+void setupState1(){
+  changeCounter = 0;
+  waitPeriod = 52;
+  startTime = millis();
+  goal = 1; 
+  state = 1;
+}
+
+void reset(){
+  startTime = millis();
+  changeCounter = 0;
+}
+
+void checkHeartBeat(){
+  heartBeat = digitalRead(inPin);
+  currTime = millis();
+  //check for change in hearbeat
+
+  if (heartBeat != lastBeat){ changeCounter++; }
+
+  lastBeat = heartBeat;
+}
+
+
 void loop() {
   //START STATE
   if (state == 0){
-      currTime = millis();
-      //check for change in hearbeat
-      heartBeat = digitalRead(inPin);
-      if (heartBeat != lastBeat){ changeCounter++; }
-      
-      lastBeat = heartBeat;
-    
+      checkHeartBeat();
       //if we get 5 changes in a span of 260ms continue to healthy state
       if (changeCounter > goal){
-        //sets everything up for the next state
-        changeCounter = 0;
-        waitPeriod = 52;
-        startTime = millis();
-        goal = 1; 
-        state = 1;
+        setupState1();
       }
       
       //reset counters to continue waiting
       if (currTime - startTime > waitPeriod){
-        startTime = millis();
-        changeCounter = 0;
+        reset();
       }
   }
       
   //HEALTHY STATE
   if (state == 1){
       digitalWrite(outPin, 1);
-      heartBeat = digitalRead(inPin);
-      currTime = millis();
-      //check for change in hearbeat
-      
-      if (heartBeat != lastBeat){ changeCounter++; }
-      
-      lastBeat = heartBeat;
-      
+      checkHeartBeat();
       if (currTime - startTime >= waitPeriod){
         if (changeCounter < goal){
           state = 2;
         }
-        startTime = millis();
-        changeCounter = 0;
+        reset();
       }
   }
       
@@ -78,6 +82,5 @@ void loop() {
           //DO NOTHING 
         }
   }
-    
 }
 
