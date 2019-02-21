@@ -82,6 +82,8 @@ TEST(UtilsTest, busyWaitIndivThreads) {
 }
 TEST(UtilsTest, GPIOToggleTest) { //Test should work on BBB but not necessarily local systems
 	const int HEARTBEAT_GPIO = 37;
+	std::string zero = "0";
+	std::string one = "1";
 	std::string start = "/sys/class/gpio/gpio";
 	std::string integer = std::to_string(HEARTBEAT_GPIO);
 	std::string end = "/value";
@@ -92,13 +94,13 @@ TEST(UtilsTest, GPIOToggleTest) { //Test should work on BBB but not necessarily 
 	content.assign( (std::istreambuf_iterator<char>(ifs) ),
                 (std::istreambuf_iterator<char>()    ) );
 	ifs.close();
-	EXPECT_EQ(content, "0");
+	EXPECT_EQ(content, zero);
 	Utils::togle_GPIO(HEARTBEAT_GPIO, true);
 	ifs.open(path);
 	content.assign( (std::istreambuf_iterator<char>(ifs) ),
                 (std::istreambuf_iterator<char>()    ) );
 	ifs.close();
-	EXPECT_EQ(content, "1");
+	EXPECT_EQ(content, one);
 }
 
 
