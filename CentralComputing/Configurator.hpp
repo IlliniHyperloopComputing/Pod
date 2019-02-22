@@ -12,7 +12,7 @@ class Configurator {
 
   private:
     void loadValues();
-	  ifstream inFile;
+    ifstream inFile;
     map <string, double> mapVals;
 };
 
