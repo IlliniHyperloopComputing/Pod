@@ -80,8 +80,12 @@ TEST(UtilsTest, busyWaitIndivThreads) {
 
 	EXPECT_EQ(sched_setaffinity(0, sizeof(first), &first), 0);
 }
-TEST(UtilsTest, GPIOToggleTest) { //Test should work on BBB but not necessarily local systems
-	const int HEARTBEAT_GPIO = 37;
+
+
+//Test should work on BBB. Otherwise returns true
+TEST(UtilsTest, GPIOToggleTest) {   
+
+  #ifdef BBB
 	std::string zero = "0";
 	std::string one = "1";
 	std::string start = "/sys/class/gpio/gpio";
@@ -95,12 +99,18 @@ TEST(UtilsTest, GPIOToggleTest) { //Test should work on BBB but not necessarily 
                 (std::istreambuf_iterator<char>()    ) );
 	ifs.close();
 	EXPECT_EQ(content, zero);
-	Utils::togle_GPIO(HEARTBEAT_GPIO, true);
+	Utils::set_GPIO(HEARTBEAT_GPIO, true);
 	ifs.open(path);
 	content.assign( (std::istreambuf_iterator<char>(ifs) ),
                 (std::istreambuf_iterator<char>()    ) );
 	ifs.close();
 	EXPECT_EQ(content, one);
+
+  #else 
+  print(LOG_ERROR, "Test only works on BBB. Run on BBB");
+  EXPECT_EQ(true, true);
+  #endif
+
 }
 
 

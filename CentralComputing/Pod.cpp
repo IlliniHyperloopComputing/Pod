@@ -6,6 +6,7 @@ using namespace Utils;
 
 Pod::Pod() {
   running.store(false);
+  switchVal = false;
 }
 
 void Pod::logic_loop() {
@@ -26,7 +27,7 @@ void Pod::logic_loop() {
       command->value = 0;
     }
 
-    Utils::toggle_GPIO_high(HEARTBEAT_GPIO, switchVal);
+    Utils::set_GPIO(HEARTBEAT_GPIO, switchVal);
     switchVal = !switchVal;
 
     if(command_processed){
@@ -48,8 +49,7 @@ void Pod::startup() {
   print(LogLevel::LOG_INFO, "Running Startup\n");
 
   // If we are on the BBB, run specific setup
-  if(system("hostname | grep beaglebone > /dev/null") == 0){
-
+  #ifdef BBB
     // Start up PRU
     if(system("ls /dev | grep rpmsg > /dev/null") != 0){
       if(system("./initPRU > /dev/null") != 0){
@@ -62,7 +62,7 @@ void Pod::startup() {
     // Set maximum CPU frequency, gotta GO F A S T  
     system("cpufreq-set -f 1000MHz");
     print(LogLevel::LOG_INFO, "CPU freq set to 1GHz\n");    
-  }
+  #endif
 
   signal(SIGPIPE, SIG_IGN);
   state_machine = make_shared<Pod_State>();

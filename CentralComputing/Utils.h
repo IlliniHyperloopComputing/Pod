@@ -14,7 +14,7 @@ namespace Utils {
 * @return a long long representing the number of microseconds since startup
 **/
 long long microseconds();
-int toggle_GPIO_high(int GPIONumber, bool switchVal);
+int set_GPIO(int GPIONumber, bool switchVal);
 void busyWait(long microseconds);
 enum LogLevel {
   LOG_EDEBUG = 0, //excesive debug

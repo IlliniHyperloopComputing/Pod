@@ -41,7 +41,7 @@ void Utils::print(LogLevel level, const char * format, ...){
       }
 }
 
-int Utils::toggle_GPIO(int GPIONumber, bool switchVal) {
+int Utils::set_GPIO(int GPIONumber, bool switchVal) {
     std::string start = "/sys/class/gpio/gpio";
     std::string integer = std::to_string(GPIONumber);
     std::string end = "/value";

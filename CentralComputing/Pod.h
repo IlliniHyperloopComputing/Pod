@@ -12,7 +12,6 @@
 #pragma GCC diagnostic pop
 
 const int HEARTBEAT_GPIO = 37;
-bool switchVal = false;
 class Pod {
   public:
     Pod();
@@ -29,6 +28,7 @@ class Pod {
 
   private:
     void logic_loop();
+    bool switchVal;
 };
 
 void signal_handler(int signal);
