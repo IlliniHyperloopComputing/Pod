@@ -6,21 +6,21 @@
 using namespace std;
 
 class Configurator {
-    public:
-	int openVarFile(string);
+  public:
+    bool openConfigFile(const string&);
 
-	void loadValues();
+    void loadValues();
 
-	double getValue(string);
+    bool getValue(const string&, double&);
 
-	map <string, double> mapVals;
+    map <string, double> mapVals;
 
-    private:
-	ifstream inFile;
+  private:
+	  ifstream inFile;
 };
 
 namespace ConfiguratorManager {
-    extern Configurator config;
+  extern Configurator config;
 }
 
 

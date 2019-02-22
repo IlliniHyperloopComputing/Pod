@@ -1,5 +1,4 @@
 #include "Pod.h"
-#include "Event.hpp"
 #include "Simulator.hpp"
 
 using namespace Utils;
@@ -66,6 +65,3 @@ class PodTest : public ::testing::Test
   std::shared_ptr<Pod> pod;
   std::thread pod_thread;
 };
-
-
-
