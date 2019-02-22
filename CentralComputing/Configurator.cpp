@@ -15,8 +15,6 @@ bool Configurator::openConfigFile(const string& fileName) {
 }
 
 void Configurator::loadValues() {
-  inFile.clear();
-  inFile.seekg(0, ios::beg);
   string varName;
   double val;
   while(inFile >> varName){

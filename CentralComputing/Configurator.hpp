@@ -8,15 +8,12 @@ using namespace std;
 class Configurator {
   public:
     bool openConfigFile(const string&);
-
-    void loadValues();
-
     bool getValue(const string&, double&);
 
-    map <string, double> mapVals;
-
   private:
+    void loadValues();
 	  ifstream inFile;
+    map <string, double> mapVals;
 };
 
 namespace ConfiguratorManager {
