@@ -26,19 +26,24 @@ enum Connection_Status{
 extern int socketfd;
 extern std::atomic<bool> running;
 extern Connection_Status connection_status;
+extern struct addrinfo hints, *sendinfo, *recvinfo;
 
 /**
  * Starts UDP server
  * @param hostname the IP address
- * @param port the port
+ * @param what port are we sending to
+ * @param what port are we recieving on
  * @return socket that is created
  **/
-int start_udp(const char * hostname, const char * port);
+bool start_udp(const char * hostname, const char * send_port, const char * recv_port);
+
+void udp_recv();
+void udp_send();
 
 /**
  * Uses the UDP port setup by start_udp to monitor connection status
  **/
-void connection_monitor();
+void connection_monitor(const char * hostname, const char * send_port, const char * recv_port);
 
 /**
  * Closes the socket, ending all transmission
