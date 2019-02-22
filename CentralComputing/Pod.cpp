@@ -79,7 +79,8 @@ void Pod::startup() {
   print(LogLevel::LOG_INFO, "Source Managers started\n");
 
   //Start Network and main loop thread.
-  thread network_thread([&](){ TCPManager::tcp_loop("127.0.0.1", "8001"); });
+  thread tcp_thread([&](){ TCPManager::tcp_loop("127.0.0.1", "8001"); });
+  thread udp_thread([&](){ UDPManager::connection_monitor("127.0.0.1", "5004", "5005"); });
   running.store(true);
   thread logic_thread([&](){ logic_loop(); }); // I don't know how to use member functions as a thread function, but lambdas work
 
@@ -91,7 +92,8 @@ void Pod::startup() {
 
   //Join all threads
   logic_thread.join();
-  network_thread.join();
+  tcp_thread.join();
+  udp_thread.join();
   
   print(LogLevel::LOG_INFO, "Source Managers closing\n");
   //Stop all source managers
@@ -109,7 +111,9 @@ void Pod::stop() {
   running.store(false); 
   closing.invoke();
   TCPManager::close_client();
+  UDPManager::close_client();
   TCPManager::stop_threads();
+  UDPManager::stop_threads();
 }
 
 function<void(int)> shutdown_handler;

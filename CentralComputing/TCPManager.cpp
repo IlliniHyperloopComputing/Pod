@@ -18,20 +18,20 @@ int TCPManager::connect_to_server( const char * hostname, const char * port){
   int rv;
   if((rv = getaddrinfo(hostname, port, &hints, &servinfo)) != 0) {
     freeaddrinfo(servinfo);
-    print(LogLevel::LOG_ERROR, "Error get addrinfo\n");
+    print(LogLevel::LOG_ERROR, "TCP Error get addrinfo\n");
     return false;
   }
 
   if((socketfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol)) == -1) {
     freeaddrinfo(servinfo);
-    print(LogLevel::LOG_ERROR, "Error getting socket\n");
+    print(LogLevel::LOG_ERROR, "TCP Error getting socket\n");
     return false;
   }
 
   if(connect(socketfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1) {
     close(socketfd);
     freeaddrinfo(servinfo);
-    print(LogLevel::LOG_ERROR, "Error connecting\n");
+    print(LogLevel::LOG_ERROR, "TCP Error connecting\n");
     return false;
   }
 
@@ -68,7 +68,7 @@ void TCPManager::read_loop() {
       command_queue.enqueue(command);
     }
   }
-  print(LogLevel::LOG_INFO, "Read Loop exiting.\n");
+  print(LogLevel::LOG_INFO, "TCP read Loop exiting.\n");
 }
 
 void TCPManager::write_loop() {
@@ -79,7 +79,7 @@ void TCPManager::write_loop() {
     print(LogLevel::LOG_DEBUG, "Wrote %d bytes\n", written);
     active_connection = written != -1;
   }
-  print(LogLevel::LOG_INFO, "Write Loop exiting.\n");
+  print(LogLevel::LOG_INFO, "TCP write Loop exiting.\n");
 }
 
 void TCPManager::tcp_loop(const char * hostname, const char * port) {
@@ -90,7 +90,7 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
   while(running){
     int fd = connect_to_server(hostname, port);
     if(fd > 0){
-      print(LogLevel::LOG_INFO, "Starting network threads\n");
+      print(LogLevel::LOG_INFO, "TCP Starting network threads\n");
       thread read_thread(read_loop);
       thread write_thread(write_loop);
 
@@ -98,7 +98,7 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
 
       read_thread.join();
       write_thread.join();
-      print(LogLevel::LOG_INFO, "Connection lost\n");
+      print(LogLevel::LOG_INFO, "TCP Connection lost\n");
 
     } 
     else {
@@ -107,7 +107,7 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
     }
   }   
 
-  print(LogLevel::LOG_INFO, "Exiting Network loop\n");
+  print(LogLevel::LOG_INFO, "TCP Exiting loop\n");
 }
 
 

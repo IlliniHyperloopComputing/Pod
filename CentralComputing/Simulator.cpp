@@ -12,9 +12,9 @@ Simulator::Simulator() {
 int Simulator::start_server(const char * hostname, const char * port) {
   connected.reset();
   socketfd = socket(AF_INET, SOCK_STREAM, 0);
+  //int blocking = 0; // 0 is blocking, 1 is non-blocking
+  //ioctl(socketfd, FIONBIO, &blocking); 
   int enable = 1;
-  int blocking = 0;
-  ioctl(socketfd, FIONBIO, &blocking);
   if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
     perror("setsockopt(SO_REUSEADDR) failed");
   }
