@@ -123,7 +123,7 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
   struct pollfd fds[1];
   fds[0].fd = socketfd;
   fds[0].events = POLLIN;
-  int timeout = 5000; // 5 seconds TODO: set timeout
+  int timeout = 1000; // 5 seconds TODO: set timeout
 
 
   // Run in a loop
