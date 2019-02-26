@@ -79,23 +79,18 @@ RETURN_ERROR:
 
 int UDPManager::udp_recv(uint8_t* recv_buf, uint8_t len){
   
-  socklen_t fromlen; // needed for recvfrom
-  struct sockaddr_storage fromaddr;// needed for recvfrom
-  fromlen = sizeof fromaddr; // needed for recvfrom
+  socklen_t fromlen;                // needed for recvfrom
+  struct sockaddr_storage fromaddr; // needed for recvfrom
+  fromlen = sizeof fromaddr;        // needed for recvfrom
 
   int byte_count = recvfrom(socketfd, recv_buf, len, 0, 
       (struct sockaddr *)&fromaddr, &fromlen);
-  //int byte_count = recv(socketfd, recv_buf, sizeof recv_buf,0);
 
   recv_buf[byte_count] = '\0';
   print(LogLevel::LOG_DEBUG, "recv %d bytes, they are: %s \n", byte_count, recv_buf);
   
   udp_parse(recv_buf, len);
 
-  //TODO: Parse the recv_buf. 
-  //TODO: use byte_count to know how big the read was
-  //
-  //TODO: return _something_. Change the signature if necessary
   return byte_count;
 }
 
@@ -140,14 +135,9 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
     // More info about poll: 
     // http://beej.us/guide/bgnet/html/single/bgnet.html#indexId434909-276
     rv = poll(fds, 1, timeout);
-    if( rv == -1){
-      // ERROR occured in poll()
+    if( rv == -1){ // ERROR occured in poll()
       print(LogLevel::LOG_ERROR, "UDP poll() failed: %s\n", strerror(errno));
-      //TODO: Do error handling?
-      // 
-      //Could we shut down the udp and start it back up? Is connection lost?
-      //Would the above be too slow?
-      //
+      //TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
     }
     else if (rv == 0){
       // Timeout occured. No data after [timeout] ammount of time
@@ -168,19 +158,17 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
       print(LogLevel::LOG_DEBUG, "UDP timeout\n");
     }
     else{
-      if(fds[0].revents & POLLIN){
-	uint8_t buffer[] = {'A','C','K'};
-	uint8_t buffer2[16];
-        // There is data to be read from UDP. We read data, process it, and send
-        udp_recv(buffer2, sizeof(buffer2)); //TODO do something with this data we read
-        udp_send(buffer, sizeof(buffer)); //TODO what do we send??? 
+      if(fds[0].revents & POLLIN){ // There is data to be read from UDP
+        uint8_t buffer[] = {'A','C','K'};
+        uint8_t buffer2[16];
+        int byte_count = udp_recv(buffer2, sizeof(buffer2)); //TODO do something with this data we read
+        //TODO: Parse the recv_buf. 
+        byte_count = udp_send(buffer, sizeof(buffer)); //TODO what do we send??? 
         print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count);
       }
       else{
-	print(LogLevel::LOG_DEBUG, "We didn't Poll in\n");
-	// Not sure a case where this would happen
-        // ??? Should log warning.  
-        // This shouldn't happen
+        print(LogLevel::LOG_ERROR, "UDP poll event, but not on specified socket with specified event\n");
+        //TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
       }
     }
   }
