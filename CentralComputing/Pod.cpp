@@ -121,17 +121,35 @@ void signal_handler(int signal) {shutdown_handler(signal); }
 
 int main(int argc, char **argv) {
   #ifndef SIM
-
     Utils::loglevel = LOG_EDEBUG;
+
+    // Load the configuration file if specified, or use the default
+    string config_to_open;
+    if(argc > 1){
+      config_to_open = argv[1];
+    }
+    else{
+      config_to_open = "defaultConfig.txt";
+    }
+    if(!ConfiguratorManager::config.openConfigFile(config_to_open)){
+      print(LogLevel::LOG_ERROR, "Config missing. File: %s\n", config_to_open.c_str());
+      return 1;
+    }
+
+    // Create the pod object
     auto pod = make_shared<Pod>();
+
+    // Setup ctrl-c behavior 
     signal(SIGINT, signal_handler);
-    shutdown_handler = [&](int signal) {
-      pod->stop();
-    };
+    shutdown_handler = [&](int signal) { pod->stop(); };
+
+    // Start the pod running
     pod->startup();
+
   #else
     Utils::loglevel = LOG_EDEBUG;
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
+
   #endif
 }

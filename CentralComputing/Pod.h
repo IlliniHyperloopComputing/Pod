@@ -4,6 +4,7 @@
 #include "NetworkManager.hpp"
 #include "Event.hpp"
 #include "Pod_State.h"
+#include "Configurator.hpp"
 #include <functional>
 #include <semaphore.h>
 #pragma GCC diagnostic push
