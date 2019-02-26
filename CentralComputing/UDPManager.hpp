@@ -38,7 +38,7 @@ extern struct addrinfo hints, *sendinfo, *recvinfo;
 bool start_udp(const char * hostname, const char * send_port, const char * recv_port);
 
 void udp_recv();
-void udp_send();
+int udp_send(uint8_t* buf, uint8_t len);
 
 /**
  * Uses the UDP port setup by start_udp to monitor connection status
