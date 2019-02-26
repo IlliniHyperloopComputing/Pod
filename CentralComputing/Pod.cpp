@@ -21,14 +21,18 @@ void Pod::logic_loop() {
       ((*state_machine).*(transition))(); //transitions to requested state
       command_processed = true;
     } else {
-     //print(LogLevel::LOG_INFO, "No Command\n");
       command = make_shared<NetworkManager::Network_Command>();
       command->id = 0;
       command->value = 0;
     }
 
-    Utils::set_GPIO(HEARTBEAT_GPIO, switchVal);
-    switchVal = !switchVal;
+    #ifdef BBB
+      Utils::set_GPIO(HEARTBEAT_GPIO, switchVal);
+      switchVal = !switchVal;
+    #endif
+
+    auto func = state_machine->get_steady_function();
+    ((*state_machine).*(func))(command); //calls the steady state function for the current state
 
     if(command_processed){
       processing_command.invoke(); 

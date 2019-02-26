@@ -107,7 +107,7 @@ TEST(UtilsTest, GPIOToggleTest) {
 	EXPECT_EQ(content, one);
 
   #else 
-  print(LOG_ERROR, "Test only works on BBB. Run on BBB");
+  print(LOG_ERROR, "Test only works on BBB. Run on BBB\n");
   EXPECT_EQ(true, true);
   #endif
 
