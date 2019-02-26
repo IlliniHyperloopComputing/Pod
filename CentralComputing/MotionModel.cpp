@@ -77,3 +77,7 @@ std::shared_ptr<StateSpace> MotionModel::refresh(){
 std::shared_ptr<StateSpace> MotionModel::refresh_sim() {
   return SimulatorManager::sim.sim_get_motion();
 }
+
+long long MotionModel::refresh_timeout(){
+  return (long long) (0.005 * 1E6);
+}

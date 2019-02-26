@@ -109,3 +109,7 @@ double PRUManager::convert_to_velocity(uint32_t decay, uint32_t delta, double di
 std::shared_ptr<PRUData> PRUManager::refresh_sim() {
   return empty_data();
 }
+
+long long PRUManager::refresh_timeout(){
+  return (long long) (1.0 * 1E6);
+}

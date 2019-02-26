@@ -8,12 +8,13 @@ struct CANData {
   int dummy_data;
 };
 
-class CANManager : public SourceManagerBase<(long long) (1.0 * 1E6), CANData, false> {
+class CANManager : public SourceManagerBase<CANData, false> {
   private:
     bool initialize_source();
     void stop_source();
     std::shared_ptr<CANData> refresh();
     std::shared_ptr<CANData> refresh_sim();
+    long long refresh_timeout();
 
     std::string name(){
       return "can";

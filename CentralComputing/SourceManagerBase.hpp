@@ -19,7 +19,7 @@
 
 using namespace Utils;
 
-template <long long DelayInUsecs, class Data, bool DataEvent >
+template <class Data, bool DataEvent >
 class SourceManagerBase {
 
   public:
@@ -33,10 +33,6 @@ class SourceManagerBase {
     void initialize() {
 
       #ifdef SIM
-        // Get name of current test case 
-        const ::testing::TestInfo* const test_info = 
-          ::testing::UnitTest::GetInstance()->current_test_info();
-        // Create path to file // test_info->name() and test_info->test_case_name()
         initialized_correctly = true;
       #else
         // Initialize the source manager
@@ -74,7 +70,6 @@ class SourceManagerBase {
 
       }
     }
-
     
     void stop() {
       if(initialized_correctly){
@@ -121,7 +116,10 @@ class SourceManagerBase {
 
     virtual std::shared_ptr<Data> refresh_sim() = 0; //constructs a new Data object and fills it in with data from the simulator
 
+    virtual long long refresh_timeout() = 0; // returns how long this thread should sleep
+
     void refresh_loop() {
+      long long delayInUsecs = refresh_timeout();
       while(running.load()) {
         #ifndef SIM
           std::shared_ptr<Data> new_data = refresh();
@@ -136,7 +134,7 @@ class SourceManagerBase {
           data_event.invoke();
         }
 
-        closing.wait_for(DelayInUsecs);
+        closing.wait_for(delayInUsecs);
       }
     }
 

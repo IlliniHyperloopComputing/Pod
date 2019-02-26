@@ -21,3 +21,7 @@ std::shared_ptr<CANData> CANManager::refresh() {
 std::shared_ptr<CANData> CANManager::refresh_sim() {
   return empty_data();
 }
+
+long long CANManager::refresh_timeout(){
+  return (long long) (1.0 * 1E6);
+}

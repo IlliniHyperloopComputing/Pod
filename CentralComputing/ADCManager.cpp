@@ -24,3 +24,7 @@ std::shared_ptr<ADCData> ADCManager::refresh() {
 std::shared_ptr<ADCData> ADCManager::refresh_sim() {
   return empty_data();
 }
+
+long long ADCManager::refresh_timeout(){
+  return (long long) (1.0 * 1E6);
+}

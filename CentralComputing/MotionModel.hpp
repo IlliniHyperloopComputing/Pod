@@ -12,7 +12,7 @@ using namespace Utils;
 
 
 
-class MotionModel : public SourceManagerBase<(long long) (0.005 * 1E6), StateSpace, false> {
+class MotionModel : public SourceManagerBase<StateSpace, false> {
   public:
 
   private:
@@ -21,6 +21,7 @@ class MotionModel : public SourceManagerBase<(long long) (0.005 * 1E6), StateSpa
     void stop_source();
     std::shared_ptr<StateSpace> refresh();
     std::shared_ptr<StateSpace> refresh_sim();
+    long long refresh_timeout();
 
     std::string name(){
       return "mm";

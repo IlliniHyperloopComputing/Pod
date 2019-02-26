@@ -8,12 +8,13 @@ struct I2CData {
   int dummy_data;
 };
 
-class I2CManager : public SourceManagerBase<(long long) (1.0 * 1E6), I2CData, false> {
+class I2CManager : public SourceManagerBase<I2CData, false> {
   private:
     bool initialize_source();
     void stop_source();
     std::shared_ptr<I2CData> refresh();
     std::shared_ptr<I2CData> refresh_sim();
+    long long refresh_timeout();
 
     std::string name(){
       return "i2c";
