@@ -97,7 +97,7 @@ void UDPManager::udp_recv(){
 
 }
 
-void UDPManager::udp_send(){
+void UDPManager::udp_send(){//should udp_send take in a parameter of what we want to send? as in a state or command?
   uint8_t send_buf[16];
   send_buf[0] = 'c';
   send_buf[1] = 'o';
@@ -146,7 +146,7 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
       // ERROR occured in poll()
       print(LogLevel::LOG_ERROR, "UDP poll() failed: %s\n", strerror(errno));
       //TODO: Do error handling?
-      //
+      // 
       //Could we shut down the udp and start it back up? Is connection lost?
       //Would the above be too slow?
       //
@@ -154,6 +154,16 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
     else if (rv == 0){
       // Timeout occured. No data after [timeout] ammount of time
       //TODO: Should we have recieved a PING during this time??????????
+      // Option: Poll again in half the time then send a command to change to a safe state
+      // How long can we not know what the pod is doing?
+
+      //Something like this
+/*
+      int rvn = poll(fds, 1, timeout/2);
+      if(rvn == 0){
+	//Do something	
+      }
+*/
       //TODO: What do we do ?
       // Should we PING again with a slower timeout, then if we don't see anything we break?
       print(LogLevel::LOG_DEBUG, "UDP timeout\n");
@@ -162,9 +172,11 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
       if(fds[0].revents & POLLIN){
         // There is data to be read from UDP. We read data, process it, and send
         udp_recv(); //TODO do something with this data we read
-        udp_send(); //TODO what do we send???
+        udp_send(); //TODO what do we send??? 
       }
       else{
+	print(LogLevel::LOG_DEBUG, "We didn't Poll in\n");
+	// Not sure a case where this would happen
         // ??? Should log warning.  
         // This shouldn't happen
       }
