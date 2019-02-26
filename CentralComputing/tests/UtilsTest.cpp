@@ -27,7 +27,7 @@ TEST(UtilsTest, busyWaitThreads) {
 	constexpr int threadCount = 10;
 	long time = 100000;
 	//buffer based on how accurate busyWait needs to be while still passing the test
-	long buffer = 10000;
+	long buffer = 100000;
 	std::clock_t start = std::clock();
 	//need to save the first affinity and set it back to that at the end
 	cpu_set_t first;
@@ -86,8 +86,8 @@ TEST(UtilsTest, busyWaitIndivThreads) {
 TEST(UtilsTest, GPIOToggleTest) {   
 
   #ifdef BBB
-	std::string zero = "0";
-	std::string one = "1";
+	std::string zero = "0\n";
+	std::string one = "1\n";
 	std::string start = "/sys/class/gpio/gpio";
 	std::string integer = std::to_string(HEARTBEAT_GPIO);
 	std::string end = "/value";
