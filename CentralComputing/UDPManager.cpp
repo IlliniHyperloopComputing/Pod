@@ -113,9 +113,6 @@ void UDPManager::udp_parse(uint8_t* buf, uint8_t len){
 int UDPManager::udp_send(uint8_t* buf, uint8_t len){ 
   int byte_count = sendto(socketfd, buf, len, 0,
       sendinfo->ai_addr, sendinfo->ai_addrlen);
-
-  print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count);
-  //TODO: return success or failure?
   return byte_count;
 }
 
@@ -177,6 +174,7 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
         // There is data to be read from UDP. We read data, process it, and send
         udp_recv(buffer2, sizeof(buffer2)); //TODO do something with this data we read
         udp_send(buffer, sizeof(buffer)); //TODO what do we send??? 
+        print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count);
       }
       else{
 	print(LogLevel::LOG_DEBUG, "We didn't Poll in\n");
