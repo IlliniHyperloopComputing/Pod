@@ -97,7 +97,7 @@ void UDPManager::udp_recv(){
 
 }
 
-int UDPManager::udp_send(char* buf, uint8_t len){//should udp_send take in a parameter of what we want to send? as in a state or command?
+int UDPManager::udp_send(uint8_t* buf, uint8_t len){
   uint8_t send_buf[16];
   send_buf[0] = 'a';
   send_buf[1] = 'c';
@@ -108,7 +108,7 @@ int UDPManager::udp_send(char* buf, uint8_t len){//should udp_send take in a par
   print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count);
   //TODO: What do we send?
   //TODO: Modify signature for input?
-  //TODO: return success or failure? Make udp_send return a boolean?
+  //TODO: return success or failure?
   return byte_count;
 }
 
@@ -165,10 +165,10 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
     }
     else{
       if(fds[0].revents & POLLIN){
-	char buffer[] = {'A','C','K'};
+	uint8_t buffer[] = {'A','C','K'};
         // There is data to be read from UDP. We read data, process it, and send
         udp_recv(); //TODO do something with this data we read
-        udp_send(buffer, 3); //TODO what do we send??? 
+        udp_send(buffer, sizeof(buffer)); //TODO what do we send??? 
       }
       else{
 	print(LogLevel::LOG_DEBUG, "We didn't Poll in\n");
