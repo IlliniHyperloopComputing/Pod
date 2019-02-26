@@ -97,19 +97,12 @@ void UDPManager::udp_recv(){
 
 }
 
-void UDPManager::udp_send(){//should udp_send take in a parameter of what we want to send? as in a state or command?
+void UDPManager::udp_send(uint8_t * buf, int len){//should udp_send take in a parameter of what we want to send? as in a state or command?
   uint8_t send_buf[16];
-  send_buf[0] = 'c';
-  send_buf[1] = 'o';
-  send_buf[2] = 'n';
-  send_buf[3] = 'n';
-  send_buf[4] = 'e';
-  send_buf[5] = 'c';
-  send_buf[6] = 't';
-  send_buf[7] = 'i';
-  send_buf[8] = 'o';
-  send_buf[9] = 'n';
-  int byte_count = sendto(socketfd, send_buf, 10,0,
+  send_buf[0] = 'a';
+  send_buf[1] = 'c';
+  send_buf[2] = 'k';
+  int byte_count = sendto(socketfd, buf, len,0,
       sendinfo->ai_addr, sendinfo->ai_addrlen);
 
   print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count);
@@ -159,6 +152,7 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
 
       //Something like this
 /*
+      print(LogLevel::LOG_INFO, "Re-Ping\n");
       int rvn = poll(fds, 1, timeout/2);
       if(rvn == 0){
 	udp_send();//send something?	
