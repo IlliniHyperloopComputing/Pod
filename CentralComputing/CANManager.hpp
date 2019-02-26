@@ -14,7 +14,6 @@ class CANManager : public SourceManagerBase<CANData, false> {
     void stop_source();
     std::shared_ptr<CANData> refresh();
     std::shared_ptr<CANData> refresh_sim();
-    long long refresh_timeout();
 
     std::string name(){
       return "can";

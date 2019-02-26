@@ -14,7 +14,6 @@ class I2CManager : public SourceManagerBase<I2CData, false> {
     void stop_source();
     std::shared_ptr<I2CData> refresh();
     std::shared_ptr<I2CData> refresh_sim();
-    long long refresh_timeout();
 
     std::string name(){
       return "i2c";

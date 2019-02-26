@@ -21,7 +21,3 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
 std::shared_ptr<I2CData> I2CManager::refresh_sim() {
   return empty_data();
 }
-
-long long I2CManager::refresh_timeout(){
-  return (long long) (1.0 * 1E6);
-}

@@ -1,2 +1,7 @@
-example 1
-example2 2
+tmp_manager_timeout 1000000.0
+i2c_manager_timeout 1000000.0
+can_manager_timeout 1000000.0
+adc_manager_timeout 1000000.0
+pru_manager_timeout 1000000.0
+mm_manager_timeout  5000.0
+

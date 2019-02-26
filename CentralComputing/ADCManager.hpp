@@ -20,7 +20,6 @@ class ADCManager : public SourceManagerBase<ADCData, true> {
     void stop_source();
     std::shared_ptr<ADCData> refresh();
     std::shared_ptr<ADCData> refresh_sim();
-    long long refresh_timeout();
 
     std::string name(){
       return "adc";

@@ -55,7 +55,3 @@ std::shared_ptr<TMPData> TMPManager::refresh() {
 std::shared_ptr<TMPData> TMPManager::refresh_sim() {
   return empty_data();
 }
-
-long long TMPManager::refresh_timeout(){
-  return (long long) (1.0 * 1E6);
-}

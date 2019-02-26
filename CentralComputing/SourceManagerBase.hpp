@@ -4,6 +4,7 @@
 #include "Utils.h"
 #include "Event.hpp"
 #include "Simulator.hpp"
+#include "Configurator.hpp"
 #include <memory>
 #include <thread>
 #include <mutex>
@@ -96,6 +97,18 @@ class SourceManagerBase {
       return running.load();
     }
 
+    // returns how long this thread should sleep
+    long long refresh_timeout(){
+      double value = 0;
+      if(ConfiguratorManager::config.getValue(name()+"_manager_timeout", value)){
+        return (long long) (value);
+      }
+      else{
+        print(LogLevel::LOG_ERROR, "Failed to get timeout for: %s. Using default value of (1.0 * 1E6)\n", name().c_str());
+        return (long long) (1.0 * 1E6);
+      }
+    }
+
   protected:
 
     std::shared_ptr<Data> empty_data(){
@@ -116,7 +129,6 @@ class SourceManagerBase {
 
     virtual std::shared_ptr<Data> refresh_sim() = 0; //constructs a new Data object and fills it in with data from the simulator
 
-    virtual long long refresh_timeout() = 0; // returns how long this thread should sleep
 
     void refresh_loop() {
       long long delayInUsecs = refresh_timeout();
@@ -125,6 +137,7 @@ class SourceManagerBase {
           std::shared_ptr<Data> new_data = refresh();
         #else
           std::shared_ptr<Data> new_data = refresh_sim();
+          delayInUsecs = refresh_timeout(); // could be updated by SIM
         #endif
         mutex.lock();
         data = new_data;

@@ -1,3 +1,6 @@
+#ifndef CONFIGURATOR_H
+#define CONFIGURATOR_H 
+
 #include <fstream>
 #include <string>
 #include <iostream>
@@ -20,6 +23,4 @@ namespace ConfiguratorManager {
   extern Configurator config;
 }
 
-
-
-
+#endif
