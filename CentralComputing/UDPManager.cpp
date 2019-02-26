@@ -161,7 +161,7 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
 /*
       int rvn = poll(fds, 1, timeout/2);
       if(rvn == 0){
-	//Do something	
+	udp_send();//send something?	
       }
 */
       //TODO: What do we do ?
