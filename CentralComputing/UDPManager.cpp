@@ -99,15 +99,23 @@ void UDPManager::udp_recv(){
 
 void UDPManager::udp_send(){
   uint8_t send_buf[16];
-  send_buf[0] = 'h';
-  send_buf[1] = 'i';
-  int byte_count = sendto(socketfd, send_buf, 2,0,
+  send_buf[0] = 'c';
+  send_buf[1] = 'o';
+  send_buf[2] = 'n';
+  send_buf[3] = 'n';
+  send_buf[4] = 'e';
+  send_buf[5] = 'c';
+  send_buf[6] = 't';
+  send_buf[7] = 'i';
+  send_buf[8] = 'o';
+  send_buf[9] = 'n';
+  int byte_count = sendto(socketfd, send_buf, 10,0,
       sendinfo->ai_addr, sendinfo->ai_addrlen);
 
   print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count);
   //TODO: What do we send?
   //TODO: Modify signature for input?
-  //TODO: return success or failure?
+  //TODO: return success or failure? Make udp_send return a boolean?
 }
 
 void UDPManager::connection_monitor( const char * hostname, const char * send_port, const char * recv_port){
@@ -138,11 +146,16 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
       // ERROR occured in poll()
       print(LogLevel::LOG_ERROR, "UDP poll() failed: %s\n", strerror(errno));
       //TODO: Do error handling?
+      //
+      //Could we shut down the udp and start it back up? Is connection lost?
+      //Would the above be too slow?
+      //
     }
     else if (rv == 0){
       // Timeout occured. No data after [timeout] ammount of time
       //TODO: Should we have recieved a PING during this time??????????
       //TODO: What do we do ?
+      // Should we PING again with a slower timeout, then if we don't see anything we break?
       print(LogLevel::LOG_DEBUG, "UDP timeout\n");
     }
     else{
