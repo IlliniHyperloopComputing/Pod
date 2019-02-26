@@ -27,7 +27,7 @@ TEST(UtilsTest, busyWaitThreads) {
 	constexpr int threadCount = 10;
 	long time = 100000;
 	//buffer based on how accurate busyWait needs to be while still passing the test
-	long buffer = 100000;
+	long buffer = 20000;
 	std::clock_t start = std::clock();
 	//need to save the first affinity and set it back to that at the end
 	cpu_set_t first;
