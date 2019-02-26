@@ -6,6 +6,7 @@ using namespace Utils;
 
 Pod::Pod() {
   running.store(false);
+  switchVal = false;
 }
 
 void Pod::logic_loop() {
@@ -20,11 +21,19 @@ void Pod::logic_loop() {
       ((*state_machine).*(transition))(); //transitions to requested state
       command_processed = true;
     } else {
-     //print(LogLevel::LOG_INFO, "No Command\n");
       command = make_shared<NetworkManager::Network_Command>();
       command->id = 0;
       command->value = 0;
     }
+
+    #ifdef BBB
+      bool is_GPIO_set = Utils::set_GPIO(HEARTBEAT_GPIO, switchVal);
+      if (!is_GPIO_set) {
+          print(LOG_ERROR, "GPIO file not being accessed correctly\n");          
+          //TODO: Add command to command queue
+      }
+      switchVal = !switchVal;
+    #endif
 
     auto func = state_machine->get_steady_function();
     ((*state_machine).*(func))(command); //calls the steady state function for the current state
@@ -48,8 +57,7 @@ void Pod::startup() {
   print(LogLevel::LOG_INFO, "Running Startup\n");
 
   // If we are on the BBB, run specific setup
-  if(system("hostname | grep beaglebone > /dev/null") == 0){
-
+  #ifdef BBB
     // Start up PRU
     if(system("ls /dev | grep rpmsg > /dev/null") != 0){
       if(system("./initPRU > /dev/null") != 0){
@@ -62,7 +70,7 @@ void Pod::startup() {
     // Set maximum CPU frequency, gotta GO F A S T  
     system("cpufreq-set -f 1000MHz");
     print(LogLevel::LOG_INFO, "CPU freq set to 1GHz\n");    
-  }
+  #endif
 
   signal(SIGPIPE, SIG_IGN);
   state_machine = make_shared<Pod_State>();

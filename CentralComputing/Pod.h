@@ -29,6 +29,7 @@ class Pod {
 
   private:
     void logic_loop();
+    bool switchVal;
 };
 
 void signal_handler(int signal);
