@@ -77,13 +77,13 @@ RETURN_ERROR:
   return false;
 }
 
-void UDPManager::udp_recv(){
-  uint8_t recv_buf[16];
+int UDPManager::udp_recv(uint8_t* recv_buf, uint8_t len){
+  
   socklen_t fromlen; // needed for recvfrom
   struct sockaddr_storage fromaddr;// needed for recvfrom
   fromlen = sizeof fromaddr; // needed for recvfrom
 
-  int byte_count = recvfrom(socketfd, recv_buf, sizeof recv_buf, 0, 
+  int byte_count = recvfrom(socketfd, recv_buf, len, 0, 
       (struct sockaddr *)&fromaddr, &fromlen);
   //int byte_count = recv(socketfd, recv_buf, sizeof recv_buf,0);
 
@@ -94,19 +94,15 @@ void UDPManager::udp_recv(){
   //TODO: use byte_count to know how big the read was
   //
   //TODO: return _something_. Change the signature if necessary
+  return byte_count;
 
 }
 
 int UDPManager::udp_send(uint8_t* buf, uint8_t len){
-  uint8_t send_buf[16];
-  send_buf[0] = 'a';
-  send_buf[1] = 'c';
-  send_buf[2] = 'k';
   int byte_count = sendto(socketfd, buf, len, 0,
       sendinfo->ai_addr, sendinfo->ai_addrlen);
 
   print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count);
-  //TODO: What do we send?
   //TODO: Modify signature for input?
   //TODO: return success or failure?
   return byte_count;
@@ -166,8 +162,9 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
     else{
       if(fds[0].revents & POLLIN){
 	uint8_t buffer[] = {'A','C','K'};
+	uint8_t buffer2[16];
         // There is data to be read from UDP. We read data, process it, and send
-        udp_recv(); //TODO do something with this data we read
+        udp_recv(buffer2, sizeof(buffer2)); //TODO do something with this data we read
         udp_send(buffer, sizeof(buffer)); //TODO what do we send??? 
       }
       else{
