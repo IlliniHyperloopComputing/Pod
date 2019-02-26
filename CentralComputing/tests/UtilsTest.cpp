@@ -92,7 +92,7 @@ TEST(UtilsTest, GPIOToggleTest) {
 	std::string integer = std::to_string(HEARTBEAT_GPIO);
 	std::string end = "/value";
 	std::string path = start + integer + end;
-	Utils::toggle_GPIO(HEARTBEAT_GPIO, false);
+	Utils::set_GPIO(HEARTBEAT_GPIO, false);
 	std::ifstream ifs(path);
 	std::string content;
 	content.assign( (std::istreambuf_iterator<char>(ifs) ),
