@@ -89,6 +89,8 @@ int UDPManager::udp_recv(uint8_t* recv_buf, uint8_t len){
 
   recv_buf[byte_count] = '\0';
   print(LogLevel::LOG_DEBUG, "recv %d bytes, they are: %s \n", byte_count, recv_buf);
+  
+  udp_parse(recv_buf, len);
 
   //TODO: Parse the recv_buf. 
   //TODO: use byte_count to know how big the read was
@@ -97,17 +99,22 @@ int UDPManager::udp_recv(uint8_t* recv_buf, uint8_t len){
   return byte_count;
 }
 
-void UDPManager::udp_parse(){
-
+void UDPManager::udp_parse(uint8_t* buf, uint8_t len){
+  if(buf[0] == 'P'){//for an example, lets send the first byte to be P, for PING 
+    return;//if we get ping, we know it's a dummy
+  }
+  else{
+    print(LogLevel::LOG_INFO, "%s\n", buf);
+  }
+  return;
 
 }
 
-int UDPManager::udp_send(uint8_t* buf, uint8_t len){
+int UDPManager::udp_send(uint8_t* buf, uint8_t len){ 
   int byte_count = sendto(socketfd, buf, len, 0,
       sendinfo->ai_addr, sendinfo->ai_addrlen);
 
   print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count);
-  //TODO: Modify signature for input?
   //TODO: return success or failure?
   return byte_count;
 }

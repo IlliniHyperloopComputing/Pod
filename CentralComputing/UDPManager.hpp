@@ -39,7 +39,7 @@ bool start_udp(const char * hostname, const char * send_port, const char * recv_
 
 int udp_recv(uint8_t* recv_buf, uint8_t len);
 int udp_send(uint8_t* buf, uint8_t len);
-void udp_parse();
+void udp_parse(uint8_t* buf, uint8_t len);
 /**
  * Uses the UDP port setup by start_udp to monitor connection status
  **/
