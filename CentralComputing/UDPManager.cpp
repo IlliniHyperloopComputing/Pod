@@ -165,7 +165,7 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
     }
     else{
       if(fds[0].revents & POLLIN){
-	char buffer[] = {'a','k','k'};
+	char buffer[] = {'A','C','K'};
         // There is data to be read from UDP. We read data, process it, and send
         udp_recv(); //TODO do something with this data we read
         udp_send(buffer, 3); //TODO what do we send??? 
