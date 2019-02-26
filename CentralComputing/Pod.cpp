@@ -27,7 +27,11 @@ void Pod::logic_loop() {
     }
 
     #ifdef BBB
-      Utils::set_GPIO(HEARTBEAT_GPIO, switchVal);
+      bool is_GPIO_set = Utils::set_GPIO(HEARTBEAT_GPIO, switchVal);
+      if (!is_GPIO_set) {
+          print(LOG_ERROR, "GPIO file not being accessed correctly\n");          
+          //TODO: Add command to command queue
+      }
       switchVal = !switchVal;
     #endif
 
