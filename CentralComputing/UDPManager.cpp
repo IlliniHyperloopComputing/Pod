@@ -122,17 +122,22 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
   struct pollfd fds[1];
   fds[0].fd = socketfd;
   fds[0].events = POLLIN;
-  int timeout = 1000; // 5 seconds TODO: set timeout
-  
+  uint8_t send_buffer[] = {'A','C','K'};
+  uint8_t buffer2[16];
+
   /*
    * Timeout = -min(p) - min(D1) + T + max(D1) + max(p) 
    * p is processing time
    * D1 is delta 1: the time to receive the python's ping
    * T is the period at which this happens
    */
-
-
-
+  // TODO: Read in the following values from Config file, once that branch is merged into master
+  int T      = 1000;  // milliseconds. Period that Python sends pings 
+  int D1_max = 10;    // milliseconds. Max one way trip time, Python --to-> Pod
+  int D1_min = 2;     // milliseconds. Min one way trip time, Python --to-> Pod
+  int P_max  = 5;     // milliseconds. Max processing time on Pod
+  int P_min  = 1;     // milliseconds. Min processing time on Pod
+  int timeout = T + D1_max + P_max - P_min - D1_min; 
 
   // Run in a loop
   print(LogLevel::LOG_INFO, "UDP Setup complete\n");
@@ -148,30 +153,18 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
     }
     else if (rv == 0){
       // Timeout occured. No data after [timeout] ammount of time
-      //TODO: Should we have recieved a PING during this time??????????
-      // Option: Poll again in half the time then send a command to change to a safe state
-      // How long can we not know what the pod is doing?
-
-      //Something like this
-/*
-      print(LogLevel::LOG_INFO, "Re-Ping\n");
-      int rvn = poll(fds, 1, timeout/2);
-      if(rvn == 0){
-	udp_send();//send something?	
-      }
-*/
-      //TODO: What do we do ?
-      // Should we PING again with a slower timeout, then if we don't see anything we break?
       print(LogLevel::LOG_DEBUG, "UDP timeout\n");
+      // TODO: Check if there is a timing issue.
     }
     else{
       if(fds[0].revents & POLLIN){ // There is data to be read from UDP
-        uint8_t buffer[] = {'A','C','K'};
-        uint8_t buffer2[16];
-        int byte_count = udp_recv(buffer2, sizeof(buffer2)); //TODO do something with this data we read
-        bool ping = udp_parse(buffer2, byte_count);          //would we need connection_monitor to know what was parsed?
-        byte_count = udp_send(buffer, sizeof(buffer));       //TODO what do we send??? 
-        print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count);
+        int byte_count = udp_recv(buffer2, sizeof(buffer2));
+        if(udp_parse(buffer2, byte_count)){
+          //TODO: update/set any variables used to keep track of timing
+          //TODO: Set what our send value
+          byte_count = udp_send(send_buffer, sizeof(send_buffer));
+          print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count);
+        }
       }
       else{
         print(LogLevel::LOG_ERROR, "UDP poll event, but not on specified socket with specified event\n");
