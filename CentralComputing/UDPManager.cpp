@@ -89,19 +89,17 @@ int UDPManager::udp_recv(uint8_t* recv_buf, uint8_t len){
   recv_buf[byte_count] = '\0';
   print(LogLevel::LOG_DEBUG, "recv %d bytes, they are: %s \n", byte_count, recv_buf);
   
-  udp_parse(recv_buf, len);
-
   return byte_count;
 }
 
-void UDPManager::udp_parse(uint8_t* buf, uint8_t len){
-  if(buf[0] == 'P'){//for an example, lets send the first byte to be P, for PING 
-    return;//if we get ping, we know it's a dummy
+bool UDPManager::udp_parse(uint8_t* buf, uint8_t len){
+  if(buf[0] == 'P'){    //for an example, lets send the first byte to be P, for PING 
+    return true;             //if we get ping, we know it's a dummy
   }
   else{
-    print(LogLevel::LOG_INFO, "%s\n", buf);
+    print(LogLevel::LOG_INFO, "%s\n", buf);   //Print whatever we got because it wasn't PING
   }
-  return;
+  return false;
 
 }
 
@@ -125,6 +123,15 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
   fds[0].fd = socketfd;
   fds[0].events = POLLIN;
   int timeout = 1000; // 5 seconds TODO: set timeout
+  
+  /*
+   * Timeout = -min(p) - min(D1) + T + max(D1) + max(p) 
+   * p is processing time
+   * D1 is delta 1: the time to receive the python's ping
+   * T is the period at which this happens
+   */
+
+
 
 
   // Run in a loop
