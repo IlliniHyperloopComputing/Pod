@@ -18,6 +18,7 @@ INCLUDE_DIRS	:= -IStateMachineCompact -I${GTEST_DIR}/include -I.
 CFLAGS_RELEASE 	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG
 CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG 
 CFLAGS_SIM 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG -DSIM
+CFLAGS_BBB      := -DBBB
 
 #Set up linker
 LDFLAGS := -pthread -lm -static-libgcc -static-libstdc++ 
@@ -163,7 +164,7 @@ $(OBJ_DIR)/%-build-sim.o : %.cpp
 # cross
 #####
 $(POD_CROSS) : CXX 	= $(CXX_BBB)
-$(POD_CROSS) : CFLAGS  	= $(CFLAGS_RELEASE)
+$(POD_CROSS) : CFLAGS  	= $(CFLAGS_RELEASE) $(CFLAGS_BBB)
 $(POD_CROSS) : LD  	= $(LD_BBB)
 $(POD_CROSS) : mkdir_obj build-$(POD_CROSS)
 build-$(POD_CROSS) : $(OBJ:%.o=$(OBJ_DIR)/%-cross.o)
@@ -176,7 +177,7 @@ $(OBJ_DIR)/%-cross.o : %.cpp
 # cross-debug
 #####
 $(POD_CROSS_D) : CXX 	= $(CXX_BBB)
-$(POD_CROSS_D) : CFLAGS = $(CFLAGS_DEBUG)
+$(POD_CROSS_D) : CFLAGS = $(CFLAGS_DEBUG) $(CFLAGS_BBB)
 $(POD_CROSS_D) : LD     = $(LD_BBB)
 $(POD_CROSS_D) : mkdir_obj build-$(POD_CROSS_D)
 build-$(POD_CROSS_D) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-debug.o)
@@ -189,7 +190,7 @@ $(OBJ_DIR)/%-cross-debug.o : %.cpp
 # cross-test
 #####
 $(POD_CROSS_T) : CXX 	= $(CXX_BBB)
-$(POD_CROSS_T) : CFLAGS = $(CFLAGS_SIM)
+$(POD_CROSS_T) : CFLAGS = $(CFLAGS_SIM) $(CFLAGS_BBB)
 $(POD_CROSS_T) : LD  	= $(LD_BBB)
 $(POD_CROSS_T) : mkdir_obj build-$(POD_CROSS_T)
 build-$(POD_CROSS_T) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-sim.o)
