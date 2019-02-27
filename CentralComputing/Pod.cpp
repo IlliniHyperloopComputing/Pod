@@ -87,7 +87,9 @@ void Pod::startup() {
   print(LogLevel::LOG_INFO, "Source Managers started\n");
 
   //Setup Network Server
-  NetworkManager::start_server("127.0.0.1", "8800");
+  double port = 0;
+  ConfiguratorManager::config.getValue("tcp_port", port);
+  NetworkManager::start_server("127.0.0.1", std::to_string((int)port).c_str());
 
   //Start Network and main loop thread.
   thread network_thread(NetworkManager::network_loop);
@@ -128,7 +130,6 @@ function<void(int)> shutdown_handler;
 void signal_handler(int signal) {shutdown_handler(signal); }
 
 int main(int argc, char **argv) {
-
   // Load the configuration file if specified, or use the default
   string config_to_open;
   if(argc > 1){
