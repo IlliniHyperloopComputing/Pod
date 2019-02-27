@@ -29,13 +29,14 @@ void Pod::logic_loop() {
     if(command.get() != nullptr){
       // Parse the command and call the appropriate state machine function
       auto id = (NetworkManager::Network_Command_ID) command->id;
+      NetworkManager::Network_Command_ID id = (NetworkManager::Network_Command_ID) command->id;
       auto transition = state_machine->get_transition_function(id);
       ((*state_machine).*(transition))(); 
 
       #ifdef SIM // Used to indicate to the Simulator that we have processed a command
       command_processed = true;
       #endif
-      //print(LogLevel::LOG_INFO, "Command : %d %d\n", command->id, command->value);
+      print(LogLevel::LOG_INFO, "Command : %d %d\n", command->id, command->value);
     } 
     else { // Create a "do nothing" command. This will be passed into the steady state caller below
       command = make_shared<NetworkManager::Network_Command>();

@@ -7,17 +7,13 @@
 #include "Filter.h"
 #include <cmath>
 
-
-#define KP 1.0
-#define KD 0.0
-#define KI 1.0
+#define MOTOR_OFF 0
 
 class Motor {
   public:
 
     /*
      * Constructor
-     * Setup the PWM pins
      */
     Motor();
 
@@ -36,10 +32,7 @@ class Motor {
      */
     bool is_enabled();
 
-    /*
-     * Uses a PI loop to calculate the appropriate motor throttle
-     */
-    int16_t calculate_throttle(double dt, int16_t last_throttle);
+    int16_t get_throttle();
 
     /*
      * Sets the motor throttle to a specific value
@@ -52,12 +45,9 @@ class Motor {
 
     void set_enable(bool enable);
 
-    static std::string pwm_chip;
-    static std::string pwm_pin;
-
-    double integral;
-
     bool enabled;
+
+    int16_t throttle;
 
 };
 
