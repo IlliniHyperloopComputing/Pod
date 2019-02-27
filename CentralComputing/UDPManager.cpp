@@ -97,7 +97,7 @@ bool UDPManager::udp_parse(uint8_t* buf, uint8_t len){
     return true;             //if we get ping, we know it's a dummy
   }
   else{
-    print(LogLevel::LOG_INFO, "%s\n", buf);   //Print whatever we got because it wasn't PING
+    print(LogLevel::LOG_INFO, "Parsed %d bytes, they are: %s\n", buf);   //Print whatever we got because it wasn't PING
   }
   return false;
 
@@ -169,8 +169,8 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
         uint8_t buffer[] = {'A','C','K'};
         uint8_t buffer2[16];
         int byte_count = udp_recv(buffer2, sizeof(buffer2)); //TODO do something with this data we read
-        //TODO: Parse the recv_buf. 
-        byte_count = udp_send(buffer, sizeof(buffer)); //TODO what do we send??? 
+        bool ping = udp_parse(buffer2, sizeof(buffer2));     //would we need connection_monitor to know what was parsed?
+        byte_count = udp_send(buffer, sizeof(buffer));       //TODO what do we send??? 
         print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count);
       }
       else{
