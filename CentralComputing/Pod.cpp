@@ -10,40 +10,64 @@ Pod::Pod() {
 }
 
 void Pod::logic_loop() {
+
+  double val; // Get the loop sleep (timeout) value
+  if(!ConfiguratorManager::config.getValue("logic_loop_timeout", val)){
+    print(LogLevel::LOG_ERROR, "Unable to find logic_loop timeout config, exiting logic_loop\n");
+    return;
+  }
+  long long logic_loop_timeout = (long long) val;
+
+  #ifdef SIM // Used to indicate to the Simulator we have processed a command
+  bool command_processed = false;
+  #endif
+
+  // Start processing/pod logic
 	while(running.load()){
-    // Start processing/pod logic
-		shared_ptr<NetworkManager::Network_Command> command = NetworkManager::command_queue.dequeue();
-    bool command_processed = false;
+		auto command = NetworkManager::command_queue.dequeue();
+
     if(command.get() != nullptr){
-      //print(LogLevel::LOG_INFO, "Command : %d %d\n", command->id, command->value);
-      NetworkManager::Network_Command_ID id = (NetworkManager::Network_Command_ID) command->id;
+      // Parse the command and call the appropriate state machine function
+      auto id = (NetworkManager::Network_Command_ID) command->id;
       auto transition = state_machine->get_transition_function(id);
-      ((*state_machine).*(transition))(); //transitions to requested state
+      ((*state_machine).*(transition))(); 
+
+      #ifdef SIM // Used to indicate to the Simulator that we have processed a command
       command_processed = true;
-    } else {
+      #endif
+      //print(LogLevel::LOG_INFO, "Command : %d %d\n", command->id, command->value);
+    } 
+    else { // Create a "do nothing" command. This will be passed into the steady state caller below
       command = make_shared<NetworkManager::Network_Command>();
       command->id = 0;
       command->value = 0;
     }
 
+    // Calls the steady state function for the current state
+    auto func = state_machine->get_steady_function();
+    ((*state_machine).*(func))(command); 
+
     #ifdef BBB
-      bool is_GPIO_set = Utils::set_GPIO(HEARTBEAT_GPIO, switchVal);
-      if (!is_GPIO_set) {
-          print(LOG_ERROR, "GPIO file not being accessed correctly\n");          
-          //TODO: Add command to command queue
-      }
-      switchVal = !switchVal;
+    // Send the heartbeat signal to the watchdog.
+    bool is_GPIO_set = Utils::set_GPIO(HEARTBEAT_GPIO, switchVal);
+    if (!is_GPIO_set) {
+        print(LOG_ERROR, "GPIO file not being accessed correctly\n");
+        //TODO: Add command to command queue
+    }
+    switchVal = !switchVal;
     #endif
 
-    auto func = state_machine->get_steady_function();
-    ((*state_machine).*(func))(command); //calls the steady state function for the current state
-
+    #ifdef SIM
+    // Let the simulator know we processed a command.
     if(command_processed){
       processing_command.invoke(); 
     }
-    closing.wait_for(1000);
+    command_processed = false;
+    #endif 
+
+    // Sleep for the given timeout
+    closing.wait_for(logic_loop_timeout);
   } 
-  //process all commands before closing
    
   print(LogLevel::LOG_INFO, "Exiting Pod Logic Loop\n");
 }
@@ -58,18 +82,18 @@ void Pod::startup() {
 
   // If we are on the BBB, run specific setup
   #ifdef BBB
-    // Start up PRU
-    if(system("ls /dev | grep rpmsg > /dev/null") != 0){
-      if(system("./initPRU > /dev/null") != 0){
-        print(LogLevel::LOG_ERROR, "PRU not responding\n");
-        exit(1);
-      }
+  // Start up PRU
+  if(system("ls /dev | grep rpmsg > /dev/null") != 0){
+    if(system("./initPRU > /dev/null") != 0){
+      print(LogLevel::LOG_ERROR, "PRU not responding\n");
+      exit(1);
     }
-    print(LogLevel::LOG_INFO, "PRU is on\n");    
+  }
+  print(LogLevel::LOG_INFO, "PRU is on\n");    
 
-    // Set maximum CPU frequency, gotta GO F A S T  
-    system("cpufreq-set -f 1000MHz");
-    print(LogLevel::LOG_INFO, "CPU freq set to 1GHz\n");    
+  // Set maximum CPU frequency, gotta GO F A S T  
+  system("cpufreq-set -f 1000MHz");
+  print(LogLevel::LOG_INFO, "CPU freq set to 1GHz\n");    
   #endif
 
   signal(SIGPIPE, SIG_IGN);
