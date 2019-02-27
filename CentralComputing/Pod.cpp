@@ -51,8 +51,8 @@ void Pod::logic_loop() {
     // Send the heartbeat signal to the watchdog.
     bool is_GPIO_set = Utils::set_GPIO(HEARTBEAT_GPIO, switchVal);
     if (!is_GPIO_set) {
-        print(LOG_ERROR, "GPIO file not being accessed correctly\n");
-        //TODO: Add command to command queue
+      print(LOG_ERROR, "GPIO file not being accessed correctly\n");
+      //TODO: Add command to command queue
     }
     switchVal = !switchVal;
     #endif
