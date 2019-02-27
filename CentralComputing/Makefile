@@ -215,15 +215,15 @@ ADDR := 128.174.163.125
 push: 
 	$(info  ==============================================)
 	$(info  Ways to push to BBB:)
-	${info  (1) `make push_all`   for all of the following}
-	${info  (2) `make push_sim`   for sim build}
-	${info  (3) `make push_debug` for debug build}
-	${info  (4) `make push_prod`  for optimized build}
+	${info  (1) `make push_all`    for all of the following}
+	${info  (2) `make push_sim`    for sim build}
+	${info  (3) `make push_debug`  for debug build}
+	${info  (4) `make push_prod`   for optimized build}
+	${info  (5) `make push_config` for config file}
 	$(info  ==============================================)
-	
 
 .PHONY: push_all
-push_all: msg push_sim push_debug push_prod
+push_all: msg push_sim push_debug push_prod 
 
 .PHONY: push_sim
 push_sim: msg_s mkdir_obj $(POD_CROSS_T) 
@@ -236,4 +236,8 @@ push_debug: msg_d mkdir_obj $(POD_CROSS_D)
 .PHONY: push_prod
 push_prod: msg_p mkdir_obj $(POD_CROSS)
 	scp $(POD_CROSS) $(BBB)@$(ADDR):~/
+
+.PHONY: push_config
+push_config: 
+	scp defaultConfig.txt $(BBB)@$(ADDR):~/
 
