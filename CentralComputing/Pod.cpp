@@ -15,7 +15,7 @@ void Pod::logic_loop() {
 		shared_ptr<NetworkManager::Network_Command> command = NetworkManager::command_queue.dequeue();
     bool command_processed = false;
     if(command.get() != nullptr){
-      //print(LogLevel::LOG_INFO, "Command : %d %d\n", command->id, command->value);
+      print(LogLevel::LOG_INFO, "Command : %d %d\n", command->id, command->value);
       NetworkManager::Network_Command_ID id = (NetworkManager::Network_Command_ID) command->id;
       auto transition = state_machine->get_transition_function(id);
       ((*state_machine).*(transition))(); //transitions to requested state
