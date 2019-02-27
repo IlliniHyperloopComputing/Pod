@@ -29,7 +29,6 @@ void Pod::logic_loop() {
     if(command.get() != nullptr){
       // Parse the command and call the appropriate state machine function
       auto id = (NetworkManager::Network_Command_ID) command->id;
-      NetworkManager::Network_Command_ID id = (NetworkManager::Network_Command_ID) command->id;
       auto transition = state_machine->get_transition_function(id);
       ((*state_machine).*(transition))(); 
 
