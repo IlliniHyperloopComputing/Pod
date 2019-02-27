@@ -119,6 +119,7 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
 
   // Setup variables for UDP loop
   int rv;
+  int byte_count;
   struct pollfd fds[1];
   fds[0].fd = socketfd;
   fds[0].events = POLLIN;
@@ -138,11 +139,20 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
   int P_max  = 5;     // milliseconds. Max processing time on Pod
   int P_min  = 1;     // milliseconds. Min processing time on Pod
   int timeout = T + D1_max + P_max - P_min - D1_min; 
-
+  bool connection = false; //Not sure about this line
+  
   // Run in a loop
   print(LogLevel::LOG_INFO, "UDP Setup complete\n");
   running.store(true);
+		    //Poll indefinitely until a ping is received, then go into ping-ack loop.
+  poll(fds, 1, -1);
+  byte_count = udp_recv(buffer2, sizeof(buffer2));
+  udp_send(send_buffer, sizeof(send_buffer));
+  connection = true;
+
   while (running){
+    
+    if(connection){} //See if connected, poll normally, else...
 
     // More info about poll: 
     // http://beej.us/guide/bgnet/html/single/bgnet.html#indexId434909-276
@@ -154,11 +164,12 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
     else if (rv == 0){
       // Timeout occured. No data after [timeout] ammount of time
       print(LogLevel::LOG_DEBUG, "UDP timeout\n");
+      connection = false;
       // TODO: Check if there is a timing issue.
     }
     else{
       if(fds[0].revents & POLLIN){ // There is data to be read from UDP
-        int byte_count = udp_recv(buffer2, sizeof(buffer2));
+        byte_count = udp_recv(buffer2, sizeof(buffer2));
         if(udp_parse(buffer2, byte_count)){
           //TODO: update/set any variables used to keep track of timing
           //TODO: Set what our send value
