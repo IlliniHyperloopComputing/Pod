@@ -169,7 +169,7 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
         uint8_t buffer[] = {'A','C','K'};
         uint8_t buffer2[16];
         int byte_count = udp_recv(buffer2, sizeof(buffer2)); //TODO do something with this data we read
-        bool ping = udp_parse(buffer2, byte_count);     //would we need connection_monitor to know what was parsed?
+        bool ping = udp_parse(buffer2, byte_count);          //would we need connection_monitor to know what was parsed?
         byte_count = udp_send(buffer, sizeof(buffer));       //TODO what do we send??? 
         print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count);
       }
