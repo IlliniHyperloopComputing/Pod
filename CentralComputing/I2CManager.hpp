@@ -21,6 +21,9 @@ class I2CManager : public SourceManagerBase<(long long) (1.0 * 1E6), I2CData, fa
 
     //iterator for testing purposes, remove
     int i = 5;
+    int i2c_fd;
+    int length;
+    unsigned char buffer[16];
 };
 
 #endif
