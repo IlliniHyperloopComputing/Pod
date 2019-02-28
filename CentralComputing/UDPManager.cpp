@@ -138,37 +138,35 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
   int D1_min = 2;     // milliseconds. Min one way trip time, Python --to-> Pod
   int P_max  = 5;     // milliseconds. Max processing time on Pod
   int P_min  = 1;     // milliseconds. Min processing time on Pod
-  int timeout = T + D1_max + P_max - P_min - D1_min; 
-  bool connection = false; //Not sure about this line
+  int connected_timeout = T + D1_max + P_max - P_min - D1_min;
+  int used_timeout = -1; 
   
   // Run in a loop
   print(LogLevel::LOG_INFO, "UDP Setup complete\n");
   running.store(true);
 		    //Poll indefinitely until a ping is received, then go into ping-ack loop.
-  poll(fds, 1, -1);
-  byte_count = udp_recv(buffer2, sizeof(buffer2));
-  udp_send(send_buffer, sizeof(send_buffer));
-  connection = true;
-
+  
   while (running){
     
-    if(connection){} //See if connected, poll normally, else...
-
+    rv = poll(fds, 1, used_timeout);
     // More info about poll: 
     // http://beej.us/guide/bgnet/html/single/bgnet.html#indexId434909-276
-    rv = poll(fds, 1, timeout);
+    //rv = poll(fds, 1, timeout);
     if( rv == -1){ // ERROR occured in poll()
       print(LogLevel::LOG_ERROR, "UDP poll() failed: %s\n", strerror(errno));
       //TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
     }
     else if (rv == 0){
       // Timeout occured. No data after [timeout] ammount of time
+      if(used_timeout != -1){
       print(LogLevel::LOG_DEBUG, "UDP timeout\n");
-      connection = false;
+      
+      }
       // TODO: Check if there is a timing issue.
     }
     else{
       if(fds[0].revents & POLLIN){ // There is data to be read from UDP
+        used_timeout = connected_timeout;
         byte_count = udp_recv(buffer2, sizeof(buffer2));
         if(udp_parse(buffer2, byte_count)){
           //TODO: update/set any variables used to keep track of timing
