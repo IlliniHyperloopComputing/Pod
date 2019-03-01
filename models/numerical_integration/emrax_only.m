@@ -6,7 +6,7 @@ runlength = 1200; %Assume 1.25 km track, want to leave 50 meter buffer at the en
 %%%%%%%%%
 %Emrax Specific
 %%%%%%%%%
-EmraxGear = 2.79;%2.6:0.01:2.9;%[2.79];
+EmraxGear = 2.7:0.1:2.8;%2.79;%2.6:0.01:2.9;%[2.79];
 EmraxRadius = 0.2032/2; %wheel Radius (meters)
 EmraxMaxMechPower    = [60]; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT go over this value
 EmraxMaxBatteryPower = [96]; % Max BATTERY OUTPUT in kw. THIS THROTTLES THE EMRAX. The BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
@@ -15,7 +15,7 @@ EmraxMaxRPM = 4400; %Max possible RPM under load. Past this RPM we assume 0 outp
 EmraxKV = 34;
 EmraxBatteryVoltage = 120; %Starting voltage
 EmraxBatteryAH = 22; 
-CellResistance = 0.004
+CellResistance = 0.004; %From 0.002 to 0.006
 CellsInSeries = 30;
 CellsInParallel = 4.0;
 EmraxBatteryResistance = [CellsInSeries * CellResistance/CellsInParallel]; % P = I^2 * R
@@ -35,7 +35,7 @@ MaxBrakingGs = BrakingForce/mass/9.80665;
 
 %%%%%%
 %Numerical integration delta time
-dt = 0.1; %delta time
+dt = 0.05; %delta time
 %%%%%%
 
 % Key variables to keep track of
