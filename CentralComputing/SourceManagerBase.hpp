@@ -9,6 +9,7 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
+#include <string>
 
 #ifdef SIM
 #include <fstream>
@@ -19,6 +20,7 @@
 #endif
 
 using namespace Utils;
+using namespace std;
 
 template <class Data, bool DataEvent >
 class SourceManagerBase {
@@ -99,9 +101,9 @@ class SourceManagerBase {
 
     // returns how long this thread should sleep
     long long refresh_timeout(){
-      double value = 0;
+      string value = "";
       if(ConfiguratorManager::config.getValue(name()+"_manager_timeout", value)){
-        return (long long) (value);
+        return std::stoll(value);
       }
       else{
         print(LogLevel::LOG_ERROR, "Failed to get timeout for: %s. Using default value of (1.0 * 1E6)\n", name().c_str());

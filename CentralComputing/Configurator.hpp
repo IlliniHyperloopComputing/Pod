@@ -11,12 +11,12 @@ using namespace std;
 class Configurator {
   public:
     bool openConfigFile(const string&);
-    bool getValue(const string&, double&);
+    bool getValue(const string&, string&);
 
   private:
     void loadValues();
     ifstream inFile;
-    map <string, double> mapVals;
+    map <string, string> mapVals;
 };
 
 namespace ConfiguratorManager {
