@@ -81,6 +81,7 @@ bool CANManager::recv_frame(){
 
   if(byte_count == -1){
     r_frame.len = 0;
+    r_frame.can_id = 0;
     if(errno == EAGAIN || errno == EWOULDBLOCK){
       print(LogLevel::LOG_DEBUG, "CAN eagain ewouldblock. %s\n", strerror(errno));
       return true;
@@ -110,18 +111,24 @@ std::shared_ptr<CANData> CANManager::refresh() {
   std::shared_ptr<CANData> new_data = std::make_shared<CANData>();
   new_data->dummy_data = 2;
 
+  long long a = Utils::microseconds();
   //Send test frame 
   if(!send_frame(100, "wow", 3)){
     print(LogLevel::LOG_ERROR, "CAN send_frame failed. \n");
     //TODO: put error on unified command queue
   }
+  long long b = Utils::microseconds();
+  print(LogLevel::LOG_INFO, "CAN send_frame takes %lu microseconds\n", b-a);
 
   //Recieve frame(s). Populates variable r_frame
   do{
+    a = Utils::microseconds();
     if(!recv_frame()){
       print(LogLevel::LOG_ERROR, "CAN recv_frame failed. \n");
       //TODO: put error on unified command queu
     }
+    b = Utils::microseconds();
+    print(LogLevel::LOG_INFO, "CAN recv_frame takes %lu microseconds\n", b-a);
 
     //Print the contents of r_frame (assumes len <= 8)
     char buff[16];
