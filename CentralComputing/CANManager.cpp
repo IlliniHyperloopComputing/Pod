@@ -7,6 +7,7 @@ bool CANManager::initialize_source(){
   return false;
   #endif
 
+  // Setup structs that will be used below
   memset(&ifr,   0, sizeof(ifr));
   memset(&addr,  0, sizeof(addr));
 
@@ -79,6 +80,7 @@ bool CANManager::recv_frame(){
   int byte_count = recvmsg(can_fd, &msg, MSG_DONTWAIT); 
 
   if(byte_count == -1){
+    r_frame.len = 0;
     if(errno == EAGAIN || errno == EWOULDBLOCK){
       print(LogLevel::LOG_DEBUG, "CAN eagain ewouldblock. %s\n", strerror(errno));
       return true;
@@ -101,8 +103,6 @@ bool CANManager::recv_frame(){
     print(LogLevel::LOG_ERROR, "CAN recvmsg failed, incomplete CAN frame. \n");
     return false;
   }
-
-
   return true;
 }
 
@@ -116,20 +116,23 @@ std::shared_ptr<CANData> CANManager::refresh() {
     //TODO: put error on unified command queue
   }
 
-  //Recieve frame. Populates variable r_frame
-  if(!recv_frame()){
-    print(LogLevel::LOG_ERROR, "CAN recv_frame failed. \n");
-    //TODO: put error on unified command queu
-  }
+  //Recieve frame(s). Populates variable r_frame
+  do{
+    if(!recv_frame()){
+      print(LogLevel::LOG_ERROR, "CAN recv_frame failed. \n");
+      //TODO: put error on unified command queu
+    }
 
-  //Print the contents of r_frame (assumes len <= 8)
-  char buff[16];
-  for(int j = 0; j < r_frame.len*2; j+=2){
-    put_hex_byte(buff+j, r_frame.data[j/2]);
-  }
-  buff[r_frame.len*2] = '\0';//include null terminator
+    //Print the contents of r_frame (assumes len <= 8)
+    char buff[16];
+    for(int j = 0; j < r_frame.len*2; j+=2){
+      put_hex_byte(buff+j, r_frame.data[j/2]);
+    }
+    buff[r_frame.len*2] = '\0';//include null terminator
 
-  print(LogLevel::LOG_INFO, "CAN msg: id: %d, len: %d, data: %s\n", r_frame.can_id, r_frame.len, buff);
+    print(LogLevel::LOG_INFO, "CAN msg: id: %d, len: %d, data: %s\n", r_frame.can_id, r_frame.len, buff);
+  }
+  while(r_frame.len != 0);
 
   return new_data;
 }

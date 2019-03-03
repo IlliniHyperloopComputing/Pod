@@ -30,7 +30,11 @@ class CANManager : public SourceManagerBase<(long long) (1.0 * 1E6), CANData, fa
     void stop_source();
     std::shared_ptr<CANData> refresh();
     std::shared_ptr<CANData> refresh_sim();
+
+    // Send data over CAN bus. len <= 8. Returns false if critical failure
     bool send_frame(uint32_t can_id, const char* buf, int len);
+
+    // Non-blocking read of CAN bus. Reads one frame at a time, populates r_frame member variable. Returns false if critical failure
     bool recv_frame();
 
     // Heavily inspired by: https://github.com/linux-can/can-utils/blob/master/candump.c
