@@ -5,6 +5,7 @@
 #include "Event.hpp"
 #include "Pod_State.h"
 #include "Configurator.hpp"
+#include <string>
 #include <functional>
 #include <semaphore.h>
 #pragma GCC diagnostic push

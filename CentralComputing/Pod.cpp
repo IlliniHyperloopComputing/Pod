@@ -1,5 +1,4 @@
 #include "Pod.h"
-#include <string>
 using namespace std;
 using namespace Utils;
 
@@ -11,12 +10,11 @@ Pod::Pod() {
 
 void Pod::logic_loop() {
 
-  string val = string(); // Get the loop sleep (timeout) value
-  if(!ConfiguratorManager::config.getValue("logic_loop_timeout", val)){
+  long long logic_loop_timeout; // Get the loop sleep (timeout) value
+  if(!ConfiguratorManager::config.getValue("logic_loop_timeout", logic_loop_timeout)){
     print(LogLevel::LOG_ERROR, "Unable to find logic_loop timeout config, exiting logic_loop\n");
     return;
   }
-  long long logic_loop_timeout = std::stoll(val);
 
   #ifdef SIM // Used to indicate to the Simulator we have processed a command
   bool command_processed = false;
@@ -111,10 +109,12 @@ void Pod::startup() {
   print(LogLevel::LOG_INFO, "Source Managers started\n");
 
   //Setup Network Server
-  string port = "";
-  string local_ip = "";
-  ConfiguratorManager::config.getValue("tcp_port", port);
-  ConfiguratorManager::config.getValue("local_ip", local_ip);
+  string port;
+  string local_ip;
+  if(!(ConfiguratorManager::config.getValue("tcp_port", port) && 
+      ConfiguratorManager::config.getValue("local_ip", local_ip))){
+    print(LogLevel::LOG_ERROR, "Missing tcp_port or local_ip\n");
+  }
   NetworkManager::start_server(local_ip.c_str(), port.c_str());
 
   //Start Network and main loop thread.

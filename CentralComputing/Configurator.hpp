@@ -12,6 +12,8 @@ class Configurator {
   public:
     bool openConfigFile(const string&);
     bool getValue(const string&, string&);
+    bool getValue(const string&, long long&);
+    bool getValue(const string&, double& ); 
 
   private:
     void loadValues();

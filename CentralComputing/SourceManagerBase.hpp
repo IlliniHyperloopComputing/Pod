@@ -9,7 +9,6 @@
 #include <thread>
 #include <mutex>
 #include <atomic>
-#include <string>
 
 #ifdef SIM
 #include <fstream>
@@ -101,9 +100,9 @@ class SourceManagerBase {
 
     // returns how long this thread should sleep
     long long refresh_timeout(){
-      string value = "";
+      long long value;
       if(ConfiguratorManager::config.getValue(name()+"_manager_timeout", value)){
-        return std::stoll(value);
+        return value;
       }
       else{
         print(LogLevel::LOG_ERROR, "Failed to get timeout for: %s. Using default value of (1.0 * 1E6)\n", name().c_str());

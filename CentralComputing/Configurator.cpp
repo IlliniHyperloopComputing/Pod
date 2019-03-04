@@ -17,7 +17,7 @@ bool Configurator::openConfigFile(const string& fileName) {
 
 void Configurator::loadValues() {
   string varName;
-  string val = "";
+  string val;
   while(inFile >> varName){
     inFile >> val;
     mapVals.insert(pair<string, string> (varName, val));
@@ -29,6 +29,22 @@ bool Configurator::getValue(const string& varName, string& value) {
     return false;
   }
   value = mapVals.find(varName)->second;
+  return true;
+}
+
+bool Configurator::getValue(const string& varName, long long& value) {
+  if (mapVals.find(varName) == mapVals.end()) {
+    return false;
+  }
+  value = std::stoll(mapVals.find(varName)->second);
+  return true;
+}
+
+bool Configurator::getValue(const string& varName, double& value) {
+  if (mapVals.find(varName) == mapVals.end()) {
+    return false;
+  }
+  value = std::stod(mapVals.find(varName)->second);
   return true;
 }
 
