@@ -24,7 +24,7 @@ static inline void put_hex_byte(char *buf, __u8 byte)
   buf[1] = hex_asc_upper_lo(byte);
 }
 
-class CANManager : public SourceManagerBase<(long long) (1.0 * 1E6), CANData, false> {
+class CANManager : public SourceManagerBase<CANData, false> {
   private:
     bool initialize_source();
     void stop_source();
