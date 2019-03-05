@@ -4,6 +4,7 @@
 #include "Utils.h"
 #include "Event.hpp"
 #include "Simulator.hpp"
+#include "Configurator.hpp"
 #include <memory>
 #include <thread>
 #include <mutex>
@@ -18,8 +19,9 @@
 #endif
 
 using namespace Utils;
+using namespace std;
 
-template <long long DelayInUsecs, class Data, bool DataEvent >
+template <class Data, bool DataEvent >
 class SourceManagerBase {
 
   public:
@@ -33,10 +35,6 @@ class SourceManagerBase {
     void initialize() {
 
       #ifdef SIM
-        // Get name of current test case 
-        const ::testing::TestInfo* const test_info = 
-          ::testing::UnitTest::GetInstance()->current_test_info();
-        // Create path to file // test_info->name() and test_info->test_case_name()
         initialized_correctly = true;
       #else
         // Initialize the source manager
@@ -74,7 +72,6 @@ class SourceManagerBase {
 
       }
     }
-
     
     void stop() {
       if(initialized_correctly){
@@ -101,6 +98,18 @@ class SourceManagerBase {
       return running.load();
     }
 
+    // returns how long this thread should sleep
+    long long refresh_timeout(){
+      long long value;
+      if(ConfiguratorManager::config.getValue(name()+"_manager_timeout", value)){
+        return value;
+      }
+      else{
+        print(LogLevel::LOG_ERROR, "Failed to get timeout for: %s. Using default value of (1.0 * 1E6)\n", name().c_str());
+        return (long long) (1.0 * 1E6);
+      }
+    }
+
   protected:
 
     std::shared_ptr<Data> empty_data(){
@@ -121,12 +130,15 @@ class SourceManagerBase {
 
     virtual std::shared_ptr<Data> refresh_sim() = 0; //constructs a new Data object and fills it in with data from the simulator
 
+
     void refresh_loop() {
+      long long delayInUsecs = refresh_timeout();
       while(running.load()) {
         #ifndef SIM
           std::shared_ptr<Data> new_data = refresh();
         #else
           std::shared_ptr<Data> new_data = refresh_sim();
+          delayInUsecs = refresh_timeout(); // could be updated by SIM
         #endif
         mutex.lock();
         data = new_data;
@@ -136,7 +148,7 @@ class SourceManagerBase {
           data_event.invoke();
         }
 
-        closing.wait_for(DelayInUsecs);
+        closing.wait_for(delayInUsecs);
       }
     }
 
