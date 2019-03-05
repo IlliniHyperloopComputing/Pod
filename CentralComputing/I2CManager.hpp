@@ -16,7 +16,7 @@ struct I2CData {
 #define ANC2 0x6 //0b110
 #define ANC3 0x7 //0b111
 
-class I2CManager : public SourceManagerBase<(long long) (1.0 * 1E6), I2CData, false> {
+class I2CManager : public SourceManagerBase<I2CData, false> {
   private:
     bool initialize_source();
     void stop_source();

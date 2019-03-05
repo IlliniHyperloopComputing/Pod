@@ -125,6 +125,7 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
   //myfloat = val * VPS; // convert to voltage
   return new_data;
 }
+
 std::shared_ptr<I2CData> I2CManager::refresh_sim() {
   return empty_data();
 }
