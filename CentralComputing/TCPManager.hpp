@@ -67,8 +67,8 @@ extern int socketfd;
 extern std::atomic<bool> running;
 extern SafeQueue<std::shared_ptr<TCPManager::Network_Command>> command_queue;
 
-extern Event connected;
-extern Event closing;
+extern Event connected; // Used within Simulator to check when TCP is connected
+extern Event closing;   // Used to wait between writes in the write_loop()
 
 int connect_to_server( const char * hostname, const char * port);
 

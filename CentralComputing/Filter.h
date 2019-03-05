@@ -15,7 +15,6 @@
 #define RPM_TO_USEC (25.0/400.0) // Usec/RRPM
 #define MASS 1.0
 
-#define MOTOR_OFF -50.0
 
 namespace Filter{
 

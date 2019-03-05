@@ -198,6 +198,7 @@ void Pod_State::ST_Flight_Accel() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
   brakes.disable_brakes();
   motor.enable_motors();
+  motor.set_throttle(100);
 }
 
 void Pod_State::ST_Flight_Coast() {
@@ -233,7 +234,7 @@ void Pod_State::steady_functional(std::shared_ptr<TCPManager::Network_Command> c
       motor.disable_motors();
 			break;
 		case TCPManager::SET_MOTOR_SPEED:
-      motor.set_throttle(command->value * 4); //value is 0-250, set_throttle expects 0-1000
+      motor.set_throttle(command->value); 
 			break;
   	case TCPManager::ENABLE_BRAKE:
       //activate brakes

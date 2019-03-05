@@ -9,7 +9,7 @@ UDPManager::Connection_Status UDPManager::connection_status = UDPManager::Connec
 struct addrinfo UDPManager::hints;
 struct addrinfo * UDPManager::sendinfo = NULL;
 struct addrinfo * UDPManager::recvinfo = NULL;
-
+Event UDPManager::setup;
 
 bool UDPManager::start_udp(const char * hostname, const char * send_port, const char * recv_port){
   int rv;
@@ -85,9 +85,13 @@ int UDPManager::udp_recv(uint8_t* recv_buf, uint8_t len){
 
   int byte_count = recvfrom(socketfd, recv_buf, len, 0, 
       (struct sockaddr *)&fromaddr, &fromlen);
-
+  if(byte_count == -1){
+    print(LogLevel::LOG_ERROR, "UDP recv failed: %s\n", strerror(errno));
+    // TODO Determine if this is an error worth reporting
+    return 0;
+  }
   recv_buf[byte_count] = '\0';
-  print(LogLevel::LOG_DEBUG, "recv %d bytes, they are: %s \n", byte_count, recv_buf);
+  print(LogLevel::LOG_DEBUG, "UDP recv %d bytes, they are: %s \n", byte_count, recv_buf);
   
   return byte_count;
 }
@@ -100,16 +104,21 @@ bool UDPManager::udp_parse(uint8_t* buf, uint8_t len){
     print(LogLevel::LOG_INFO, "Parsed %d bytes, they are: %s\n",len, buf);   //Print whatever we got because it wasn't PING
   }
   return false;
-
 }
 
 int UDPManager::udp_send(uint8_t* buf, uint8_t len){ 
   int byte_count = sendto(socketfd, buf, len, 0,
       sendinfo->ai_addr, sendinfo->ai_addrlen);
+  if(byte_count == -1){
+    print(LogLevel::LOG_ERROR, "UDP recv failed: %s\n", strerror(errno));
+    // TODO Determine if this is an error worth reporting
+    return 0;
+  }
   return byte_count;
 }
 
 void UDPManager::connection_monitor( const char * hostname, const char * send_port, const char * recv_port){
+  setup.reset();
 
   // Create UDP socket
   if(!start_udp(hostname, send_port, recv_port)){
@@ -124,7 +133,7 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
   fds[0].fd = socketfd;
   fds[0].events = POLLIN;
   uint8_t send_buffer[] = {'A','C','K'};
-  uint8_t buffer2[16];
+  uint8_t read_buffer[8];
 
   /*
    * Timeout = -min(p) - min(D1) + T + max(D1) + max(p) 
@@ -139,19 +148,26 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
   int P_max  = 5;     // milliseconds. Max processing time on Pod
   int P_min  = 1;     // milliseconds. Min processing time on Pod
   int connected_timeout = T + D1_max + P_max - P_min - D1_min;
-  int used_timeout = -1; 
+  int timeout = -1; 
   
-  // Run in a loop
-  print(LogLevel::LOG_INFO, "UDP Setup complete\n");
   running.store(true);
+<<<<<<< HEAD
   while (running){
     // More info about poll: 
     // http://beej.us/guide/bgnet/html/single/bgnet.html#indexId434909-276
     rv = poll(fds, 1, used_timeout);
+=======
+  print(LogLevel::LOG_INFO, "UDP Setup complete\n");
+  setup.invoke();
+	//Poll indefinitely until a ping is received, then go into ping-ack loop.
+  while (running){
+    rv = poll(fds, 1, timeout); // http://beej.us/guide/bgnet/html/single/bgnet.html#indexId434909-276
+>>>>>>> 309316a0a43bdfaf91baf1c19afe6ddecb986414
     if( rv == -1){ // ERROR occured in poll()
       print(LogLevel::LOG_ERROR, "UDP poll() failed: %s\n", strerror(errno));
       //TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
     }
+<<<<<<< HEAD
     else if (rv == 0){
       // Timeout occured. No data after [timeout] ammount of time
       if(used_timeout == connected_timeout){
@@ -159,20 +175,23 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
 	//we lost connection? now what?
       }
       // TODO: Check if there is a timing issue.
+=======
+    else if (rv == 0){ // Timeout occured 
+      print(LogLevel::LOG_ERROR, "UDP timeout\n");
+      //TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
+>>>>>>> 309316a0a43bdfaf91baf1c19afe6ddecb986414
     }
     else{
       if(fds[0].revents & POLLIN){ // There is data to be read from UDP
-        used_timeout = connected_timeout;
-        byte_count = udp_recv(buffer2, sizeof(buffer2));
-        if(udp_parse(buffer2, byte_count)){
-          //TODO: update/set any variables used to keep track of timing
-          //TODO: Set what our send value
-          byte_count = udp_send(send_buffer, sizeof(send_buffer));
-          print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count);
+        timeout = connected_timeout; // Set timeout to appropriate value
+        byte_count = udp_recv(read_buffer, sizeof(read_buffer)); // Read message
+        if(byte_count > 0 && udp_parse(read_buffer, byte_count)){ // Check if PING. Returns true if message was PING
+          byte_count = udp_send(send_buffer, sizeof(send_buffer)); // Respond with ACK
+          print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count); 
         }
       }
       else{
-        print(LogLevel::LOG_ERROR, "UDP poll event, but not on specified socket with specified event\n");
+        //print(LogLevel::LOG_ERROR, "UDP poll event, but not on specified socket with specified event\n");
         //TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
       }
     }
@@ -189,4 +208,5 @@ void UDPManager::close_client() {
 
 void UDPManager::stop_threads() {
   running.store(false);
+  setup.reset();
 }

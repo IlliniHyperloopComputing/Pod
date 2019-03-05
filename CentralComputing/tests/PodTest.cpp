@@ -1,5 +1,4 @@
 #include "Pod.h"
-#include "Event.hpp"
 #include "Simulator.hpp"
 
 using namespace Utils;
@@ -9,6 +8,7 @@ class PodTest : public ::testing::Test
   virtual void SetUp() {
     // Reset the condition we use to determine when the Pod is connected
     TCPManager::connected.reset();
+    UDPManager::setup.reset();
 
     // Reset simulator motion
     SimulatorManager::sim.reset_motion();
@@ -37,6 +37,7 @@ class PodTest : public ::testing::Test
     // Need both of these because otherwise there were occasionally problems -- 
     // the pod must have connected by it wasn't registered by the simulation. 
     // then when the simulation tried to send data it failed.
+    UDPManager::setup.wait();
     TCPManager::connected.wait();
     SimulatorManager::sim.connected.wait();
 
@@ -91,6 +92,3 @@ class PodTest : public ::testing::Test
   std::thread pod_thread;
   std::thread sim_thread;
 };
-
-
-

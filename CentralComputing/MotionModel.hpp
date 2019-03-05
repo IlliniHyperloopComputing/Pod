@@ -12,7 +12,7 @@ using namespace Utils;
 
 
 
-class MotionModel : public SourceManagerBase<(long long) (0.005 * 1E6), StateSpace, false> {
+class MotionModel : public SourceManagerBase<StateSpace, false> {
   public:
 
   private:
