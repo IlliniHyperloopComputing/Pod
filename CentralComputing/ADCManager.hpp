@@ -14,7 +14,7 @@ struct RawADCData {
   int dummy_data;
 };
 
-class ADCManager : public SourceManagerBase<(long long) (1.0 * 1E6), ADCData, true> {
+class ADCManager : public SourceManagerBase<ADCData, true> {
   private:
     bool initialize_source();
     void stop_source();
