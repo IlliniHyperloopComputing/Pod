@@ -144,23 +144,19 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
   // Run in a loop
   print(LogLevel::LOG_INFO, "UDP Setup complete\n");
   running.store(true);
-		    //Poll indefinitely until a ping is received, then go into ping-ack loop.
-  
   while (running){
-    
-    rv = poll(fds, 1, used_timeout);
     // More info about poll: 
     // http://beej.us/guide/bgnet/html/single/bgnet.html#indexId434909-276
-    //rv = poll(fds, 1, timeout);
+    rv = poll(fds, 1, used_timeout);
     if( rv == -1){ // ERROR occured in poll()
       print(LogLevel::LOG_ERROR, "UDP poll() failed: %s\n", strerror(errno));
       //TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
     }
     else if (rv == 0){
       // Timeout occured. No data after [timeout] ammount of time
-      if(used_timeout != -1){
-      print(LogLevel::LOG_DEBUG, "UDP timeout\n");
-      
+      if(used_timeout == connected_timeout){
+        print(LogLevel::LOG_DEBUG, "UDP timeout\n");
+	//we lost connection? now what?
       }
       // TODO: Check if there is a timing issue.
     }
