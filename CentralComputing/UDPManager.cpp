@@ -85,9 +85,13 @@ int UDPManager::udp_recv(uint8_t* recv_buf, uint8_t len){
 
   int byte_count = recvfrom(socketfd, recv_buf, len, 0, 
       (struct sockaddr *)&fromaddr, &fromlen);
-
+  if(byte_count == -1){
+    print(LogLevel::LOG_ERROR, "UDP recv failed: %s\n", strerror(errno));
+    // TODO Determine if this is an error worth reporting
+    return 0;
+  }
   recv_buf[byte_count] = '\0';
-  print(LogLevel::LOG_DEBUG, "recv %d bytes, they are: %s \n", byte_count, recv_buf);
+  print(LogLevel::LOG_DEBUG, "UDP recv %d bytes, they are: %s \n", byte_count, recv_buf);
   
   return byte_count;
 }
@@ -100,12 +104,16 @@ bool UDPManager::udp_parse(uint8_t* buf, uint8_t len){
     print(LogLevel::LOG_INFO, "Parsed %d bytes, they are: %s\n",len, buf);   //Print whatever we got because it wasn't PING
   }
   return false;
-
 }
 
 int UDPManager::udp_send(uint8_t* buf, uint8_t len){ 
   int byte_count = sendto(socketfd, buf, len, 0,
       sendinfo->ai_addr, sendinfo->ai_addrlen);
+  if(byte_count == -1){
+    print(LogLevel::LOG_ERROR, "UDP recv failed: %s\n", strerror(errno));
+    // TODO Determine if this is an error worth reporting
+    return 0;
+  }
   return byte_count;
 }
 
@@ -160,7 +168,7 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
       if(fds[0].revents & POLLIN){ // There is data to be read from UDP
         timeout = connected_timeout; // Set timeout to appropriate value
         byte_count = udp_recv(read_buffer, sizeof(read_buffer)); // Read message
-        if(udp_parse(read_buffer, byte_count)){ // Check if PING. Returns true if message was PING
+        if(byte_count > 0 && udp_parse(read_buffer, byte_count)){ // Check if PING. Returns true if message was PING
           byte_count = udp_send(send_buffer, sizeof(send_buffer)); // Respond with ACK
           print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count); 
         }

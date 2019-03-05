@@ -187,7 +187,7 @@ int main(int argc, char **argv) {
     pod->startup();
     return 0;
   #else
-    Utils::loglevel = LOG_INFO;
+    Utils::loglevel = LOG_EDEBUG;
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
   #endif
