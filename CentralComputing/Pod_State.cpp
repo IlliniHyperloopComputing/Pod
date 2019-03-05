@@ -233,7 +233,7 @@ void Pod_State::steady_functional(std::shared_ptr<TCPManager::Network_Command> c
 		case TCPManager::DISABLE_MOTOR:
       motor.disable_motors();
 			break;
-		case NetworkManager::SET_MOTOR_SPEED:
+		case TCPManager::SET_MOTOR_SPEED:
       motor.set_throttle(command->value); 
 			break;
   	case TCPManager::ENABLE_BRAKE:

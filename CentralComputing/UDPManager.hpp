@@ -28,6 +28,8 @@ extern std::atomic<bool> running;
 extern Connection_Status connection_status;
 extern struct addrinfo hints, *sendinfo, *recvinfo;
 
+extern Event setup;
+
 /**
  * Starts UDP server
  * @param hostname the IP address

@@ -36,13 +36,13 @@ TEST_F(PodTest, MotorTest) {
 
 
   //Try setting motor values
-  SendCommand(NetworkManager::Network_Command_ID::SET_MOTOR_SPEED, 0);
+  SendCommand(TCPManager::Network_Command_ID::SET_MOTOR_SPEED, 0);
   EXPECT_EQ(pod->state_machine->motor.get_throttle(), 0);
 
-  SendCommand(NetworkManager::Network_Command_ID::SET_MOTOR_SPEED, 125);
+  SendCommand(TCPManager::Network_Command_ID::SET_MOTOR_SPEED, 125);
   EXPECT_EQ(pod->state_machine->motor.get_throttle(), 125);
 
-  SendCommand(NetworkManager::Network_Command_ID::SET_MOTOR_SPEED, 250);
+  SendCommand(TCPManager::Network_Command_ID::SET_MOTOR_SPEED, 250);
   EXPECT_EQ(pod->state_machine->motor.get_throttle(), 250);
 
   //Disable again

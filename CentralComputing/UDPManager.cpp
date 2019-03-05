@@ -9,7 +9,7 @@ UDPManager::Connection_Status UDPManager::connection_status = UDPManager::Connec
 struct addrinfo UDPManager::hints;
 struct addrinfo * UDPManager::sendinfo = NULL;
 struct addrinfo * UDPManager::recvinfo = NULL;
-
+Event UDPManager::setup;
 
 bool UDPManager::start_udp(const char * hostname, const char * send_port, const char * recv_port){
   int rv;
@@ -110,6 +110,7 @@ int UDPManager::udp_send(uint8_t* buf, uint8_t len){
 }
 
 void UDPManager::connection_monitor( const char * hostname, const char * send_port, const char * recv_port){
+  setup.reset();
 
   // Create UDP socket
   if(!start_udp(hostname, send_port, recv_port)){
@@ -141,8 +142,9 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
   int connected_timeout = T + D1_max + P_max - P_min - D1_min;
   int timeout = -1; 
   
-  print(LogLevel::LOG_INFO, "UDP Setup complete\n");
   running.store(true);
+  print(LogLevel::LOG_INFO, "UDP Setup complete\n");
+  setup.invoke();
 	//Poll indefinitely until a ping is received, then go into ping-ack loop.
   while (running){
     rv = poll(fds, 1, timeout); // http://beej.us/guide/bgnet/html/single/bgnet.html#indexId434909-276
@@ -164,7 +166,7 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
         }
       }
       else{
-        print(LogLevel::LOG_ERROR, "UDP poll event, but not on specified socket with specified event\n");
+        //print(LogLevel::LOG_ERROR, "UDP poll event, but not on specified socket with specified event\n");
         //TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
       }
     }
@@ -181,4 +183,5 @@ void UDPManager::close_client() {
 
 void UDPManager::stop_threads() {
   running.store(false);
+  setup.reset();
 }
