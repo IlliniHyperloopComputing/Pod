@@ -21,7 +21,9 @@ CFLAGS_SIM 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_
 CFLAGS_BBB      := -DBBB
 
 #Set up linker
-LDFLAGS := -pthread -lm -static-libgcc -static-libstdc++ 
+LDFLAGS := -pthread -lm #-static-libgcc -static-libstdc++ 
+# The 'static' flags might be necessary if the cross compiler and BBB have different versions of the libgcc and libstdc++ libraries. 
+# This is why these flags were intially included, but now the BBBs are running newer software such that these are no longer needed.
 LD_TEST_NORM := ${LIB_DIR}/libgtest.a
 LD_TEST_ARM  := ${LIB_DIR}/libgtest-arm.a
 LD_NORM := $(CXX_NORM)
