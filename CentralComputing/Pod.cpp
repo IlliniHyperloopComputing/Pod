@@ -102,7 +102,6 @@ void Pod::startup() {
   //Start all SourceManager threads
   SourceManager::PRU.initialize();
   SourceManager::CAN.initialize();
-  SourceManager::TMP.initialize();
   SourceManager::ADC.initialize();
   SourceManager::I2C.initialize();
   SourceManager::MM.initialize();
@@ -138,7 +137,6 @@ void Pod::startup() {
   SourceManager::MM.stop(); // Must be called first
   SourceManager::PRU.stop();
   SourceManager::CAN.stop();
-  SourceManager::TMP.stop();
   SourceManager::ADC.stop();
   SourceManager::I2C.stop();
   print(LogLevel::LOG_INFO, "Source Managers closed, Pod shutting down\n");
