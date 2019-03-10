@@ -1,3 +1,4 @@
+#ifdef SIM // Only compile if building test executable
 #include "Pod.h"
 #include "Simulator.hpp"
 
@@ -66,3 +67,4 @@ class PodTest : public ::testing::Test
   std::shared_ptr<Pod> pod;
   std::thread pod_thread;
 };
+#endif
