@@ -31,9 +31,6 @@ TEST_F(PodTest, ConfigManagerTimeouts) {
   ConfiguratorManager::config.getValue("can_manager_timeout", val);
   EXPECT_EQ(std::stoll(val), SourceManager::CAN.refresh_timeout());
 
-  ConfiguratorManager::config.getValue("tmp_manager_timeout", val);
-  EXPECT_EQ(std::stoll(val), SourceManager::TMP.refresh_timeout());
-
   ConfiguratorManager::config.getValue("i2c_manager_timeout", val);
   EXPECT_EQ(std::stoll(val), SourceManager::I2C.refresh_timeout());
 
