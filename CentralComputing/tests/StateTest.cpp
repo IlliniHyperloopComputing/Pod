@@ -1,3 +1,4 @@
+#ifdef SIM // Only compile if building test executable
 #include "PodTest.cpp"
 
 
@@ -325,3 +326,4 @@ TEST_F(PodTest, FlightBrakeFailures) {
   	MoveState(NetworkManager::Network_Command_ID::TRANS_FLIGHT_BRAKE, Pod_State::E_States::ST_FLIGHT_BRAKE, false);
   }
 
+#endif
