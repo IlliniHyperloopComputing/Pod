@@ -1,7 +1,7 @@
 # Overview of code structure 
 The code is designed to run on a Linux platform, specifically on the BeagleBone Black (BBB). More detail on BBB setup can be found in the `BBBSetup/` folder in this repository.
 
-The Pod software runs several threads to handle multiple different IO streams. Although the BBB is a single-core computer, multiple threads make scheduling simpler. Sleeping, blocking IO, waiting on data, are all very to do with multiple threads. Infact, most threads have very little computational overhead, and are bottlenecked by access to external IO resources. 
+The Pod software runs several threads to handle multiple different IO streams. Although the BBB is a single-core computer, multiple threads make scheduling simpler. Sleeping, blocking IO, waiting on data, are all very to do with multiple threads. In fact, most threads have very little computational overhead, and are bottlenecked by access to external IO resources. 
 
 ### The following resources are accessed:
   * ADC Built-in to the BBB 
@@ -22,13 +22,24 @@ It is a small library with powerful Macros to easily define the State Machine. P
   * One thread per `SourceManager`
 
 A `SourceManager` is a sensor, such as ADC, I2C, CANBus, or PRU. `SourceManagerBase.hpp` is a parent class for all of the SourceManagers, since they all share most of the same functionality: `initialize_source()` open device; `refresh()` get new data; `stop_source()` close device. These are all threads, with a configurable sleep time between each `refresh()`.
-`SourceManager.cpp` and `SourceManager.hpp` are used to create global singleton classes of each SourceManager, such that pointers or refernces did not need to be passed around. 
+
+`SourceManager.cpp` and `SourceManager.hpp` are used to create global singleton classes of each SourceManager, such that pointers or references did not need to be passed around. 
 
 `Configurator.cpp` is a simple dictionary that stores configurable values, which will load by default from `defaultConfig.txt`.
 
 `Brakes.cpp` and `Motor.cpp` serve to be wrappers for the underlying brake/ motor interface. 
 
 # Overview of testing structure
+Google Test is used to facilitate testing. Testing is enabled by a compile-time flag, which will run the tests defined in the `tests/` folder. 
+
+`PodTest.cpp` defines the setup and teardown code for many of the tests. 
+
+`Simulator.cpp` defines a basestation that send commands to the Pod via TCP, and has several hooks to appropriatly test motor/ brake control. 
+
+The test environment can easily access all of the global pod structures to verify proper operation.
+
+`Events.cpp` are used as a sychronization primative to prevent race conditions. For example, when the Simulator sends a TCP command, the event must fire before the test checks a condition. 
+
 
 # Building the project using the Makefile
 
