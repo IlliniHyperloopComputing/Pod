@@ -21,8 +21,8 @@ void Pod::logic_loop() {
   #endif
 
   // Start processing/pod logic
-	while(running.load()){
-		auto command = NetworkManager::command_queue.dequeue();
+  while(running.load()){
+    auto command = NetworkManager::command_queue.dequeue();
 
     if(command.get() != nullptr){
       // Parse the command and call the appropriate state machine function
@@ -72,8 +72,8 @@ void Pod::logic_loop() {
 
 void Pod::startup() {
   microseconds();
- 	print(LogLevel::LOG_INFO, "\n");
- 	print(LogLevel::LOG_INFO, "==================\n");
+  print(LogLevel::LOG_INFO, "\n");
+  print(LogLevel::LOG_INFO, "==================\n");
   print(LogLevel::LOG_INFO, "ILLINI  HYPERLOOP \n");
   print(LogLevel::LOG_INFO, "==================\n");
   print(LogLevel::LOG_INFO, "Running Startup\n");
