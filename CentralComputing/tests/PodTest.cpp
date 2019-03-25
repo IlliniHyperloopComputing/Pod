@@ -1,5 +1,5 @@
+#ifdef SIM // Only compile if building test executable
 #include "Pod.h"
-#include "Event.hpp"
 #include "Simulator.hpp"
 
 using namespace Utils;
@@ -91,6 +91,4 @@ class PodTest : public ::testing::Test
   std::thread pod_thread;
   std::thread sim_thread;
 };
-
-
-
+#endif

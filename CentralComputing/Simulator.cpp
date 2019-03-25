@@ -1,3 +1,4 @@
+#ifdef SIM // Only compile if building test executable
 #include "Simulator.hpp"
 
 using namespace Utils;
@@ -204,3 +205,4 @@ void Simulator::reset_motion() {
     timeLast = -1;
 
 }
+#endif

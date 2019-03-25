@@ -1,3 +1,4 @@
+#ifdef SIM // Only compile if building test executable
 #include "PodTest.cpp"
 
 TEST_F(PodTest, AutomaticTransitionBasic) {
@@ -19,4 +20,4 @@ TEST_F(PodTest, AutomaticTransitionBasic) {
   EXPECT_EQ(pod->state_machine->get_current_state(), Pod_State::E_States::ST_FLIGHT_BRAKE);
 
 }
-
+#endif

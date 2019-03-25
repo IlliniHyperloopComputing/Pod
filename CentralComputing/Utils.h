@@ -13,7 +13,9 @@ namespace Utils {
 * Gets the current time since program startup
 * @return a long long representing the number of microseconds since startup
 **/
+const int HEARTBEAT_GPIO = 37;
 long long microseconds();
+bool set_GPIO(int GPIONumber, bool switchVal);
 void busyWait(long microseconds);
 enum LogLevel {
   LOG_EDEBUG = 0, //excesive debug

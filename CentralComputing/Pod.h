@@ -4,6 +4,8 @@
 #include "TCPManager.hpp"
 #include "Event.hpp"
 #include "Pod_State.h"
+#include "Configurator.hpp"
+#include <string>
 #include <functional>
 #include <semaphore.h>
 #pragma GCC diagnostic push
@@ -28,6 +30,7 @@ class Pod {
 
   private:
     void logic_loop();
+    bool switchVal;
 };
 
 void signal_handler(int signal);
