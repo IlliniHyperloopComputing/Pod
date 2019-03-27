@@ -20,3 +20,13 @@ def getLatest(request):
     mutex.release()
     xmlE = serialize("xml",[e])
     return HttpResponse(xmlE)
+
+def stopPressed(request):
+    if request.method == "POST":
+        print("STOPPING")
+        return HttpResponse()
+
+def readyPressed(request):
+    if request.method == "POST":
+        print("Ready!")
+        return HttpResponse()

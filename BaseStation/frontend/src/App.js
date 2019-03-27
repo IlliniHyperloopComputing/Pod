@@ -17,6 +17,7 @@ class App extends Component {
       connectionText: "",
     };
     this.getColorFor = this.getColorFor.bind(this);
+    this.stopPressed = this.stopPressed.bind(this);
   }
 
   componentDidMount() {
@@ -86,8 +87,27 @@ class App extends Component {
     return col;
   }
 
+  stopPressed() {
+    axios.post(`http://localhost:8000/podconnect/commands/stop`,)
+      .then(res => {
+        console.log(res);
+        console.log(res.data);
+      }).catch(function (error) {
+        console.log("Stop failed!!")
+      })
+  }
+
+  readyPressed() {
+    axios.post(`http://localhost:8000/podconnect/commands/ready`,)
+      .then(res => {
+        console.log(res);
+        console.log(res.data);
+      }).catch(function (error) {
+        console.log("Ready failed!!")
+      })
+  }
+
   render() {
-    console.log("here");
     const { speedPercent, speedColor, posPercent, posColor, accelColor, accelPercent, connectionText } = this.state;
     return (
       <div className="App">
@@ -100,8 +120,8 @@ class App extends Component {
           <p className="Speed-Text">Velocity</p>
           <p className="Accel-Text">Acceleration</p>
           <p className="Connection-Text">{ connectionText }</p>
-          <button className="Stop-Button">STOP</button>
-          <button className="Ready-Button">Ready</button>
+          <button className="Stop-Button"  onClick={() => this.stopPressed()}>STOP</button>
+          <button className="Ready-Button" onClick={() => this.readyPressed()}>Ready</button>
         </header>
       </div>
     );
