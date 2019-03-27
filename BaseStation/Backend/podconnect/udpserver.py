@@ -27,11 +27,6 @@ def serve():
                 if not data or data == None:
                     break
                 data = data.decode()
-                dataSplit = data.split(',')
-                d = DataPacket(velocity=dataSplit[1],acceleration=dataSplit[2],position=dataSplit[3])
-                mutex.acquire(1)
-                d.save()
-                mutex.release()
                 print("UDP received data:", data, "From:", addr)
             except:
                 print("Error in UDP received message")

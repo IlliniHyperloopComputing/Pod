@@ -8,10 +8,13 @@ class App extends Component {
   constructor() {
     super();
     this.state = {
-      speedPercent: 30,
+      speedPercent: "0",
       speedColor: '#3FC7FA',
-      posPercent: 30,
+      posPercent: "0",
       posColor: '#3FC7FA',
+      accelPercent: "0",
+      accelColor: '#3FC7FA',
+      connectionText: "",
     };
     this.getColorFor = this.getColorFor.bind(this);
   }
@@ -44,7 +47,22 @@ class App extends Component {
                 speedColor: col,
               });
             }
+            else if (name === "acceleration") {
+              let col = _this.getColorFor(element.value);
+              _this.setState({
+                accelPercent: element.value,
+                accelColor: col,
+              });
+            }
+            _this.setState({
+              connectionText: "",
+            });
           });
+        }).catch(function (error) {
+          _this.setState({
+            connectionText: "BACKEND CONNECTION LOST",
+          });
+          console.log("caught")
         })
   }
 
@@ -70,17 +88,20 @@ class App extends Component {
 
   render() {
     console.log("here");
-    const { speedPercent, speedColor, posPercent, posColor } = this.state;
-    var speedPercentStr = speedPercent + "";
-    var posPercentStr = posPercent + "";
+    const { speedPercent, speedColor, posPercent, posColor, accelColor, accelPercent, connectionText } = this.state;
     return (
       <div className="App">
         <header className="App-header">
           <img src={midwest} className="App-logo" alt="logo" />
-          <Circle percent={speedPercentStr} className="Speed-Circle" strokeWidth="4" strokeColor={speedColor}></Circle>
-          <Line percent={posPercentStr} strokeColor={posColor} className="Pos-Line"></Line>
+          <Circle percent={speedPercent} className="Speed-Circle" strokeWidth="4" strokeColor={speedColor}></Circle>
+          <Circle percent={accelPercent} className="Accel-Circle" strokeWidth="4" strokeColor={accelColor}></Circle>
+          <Line percent={posPercent} strokeColor={posColor} className="Pos-Line"></Line>
           <p className="Pos-Text">Position</p>
           <p className="Speed-Text">Velocity</p>
+          <p className="Accel-Text">Acceleration</p>
+          <p className="Connection-Text">{ connectionText }</p>
+          <button className="Stop-Button">STOP</button>
+          <button className="Ready-Button">Ready</button>
         </header>
       </div>
     );
