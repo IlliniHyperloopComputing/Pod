@@ -1,6 +1,6 @@
 # How to start the backend
 In the backend folder run `python manage.py runserver`
-* This requires python3, and Django to be installed
+* This requires python3, Django, and django-cors-headers to be installed
 * Follow this tutorial https://realpython.com/python-virtual-environments-a-primer/ to setup a python3 virtualenv
 * Once inside the virtualenv, run `pip install Django`
 * then run `python manage.py runserver`

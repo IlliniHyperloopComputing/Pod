@@ -4,7 +4,7 @@
 
 .App-logo {
   position: absolute;
-  top: 10px;
+  bottom: 10px;
   height: 100px;
 }
 
@@ -23,12 +23,6 @@
   color: #61dafb;
 }
 
-.Speed-Circle {
-  position: absolute;
-  height: 100px;
-  left: 100px;
-}
-
 .Accel-Circle {
   position: absolute;
   height: 100px;
@@ -36,5 +30,23 @@
 
 .Pos-Line {
   position: absolute;
-  top: 150px;
+  bottom: 150px;
+}
+
+.Pos-Text {
+  position: absolute;
+  bottom: 150px;
+}
+
+.Speed-Circle {
+  position: absolute;
+  height: 200px;
+  bottom: 400px;
+  left: 100px;
+}
+
+.Speed-Text {
+  position: absolute;
+  bottom: 340px;
+  left: 155px;
 }
