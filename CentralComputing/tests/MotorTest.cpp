@@ -1,3 +1,4 @@
+#ifdef SIM // Only compile if building test executable
 #include "PodTest.cpp"
 
 void check_test_eq(std::string file, std::string val);
@@ -51,3 +52,4 @@ TEST_F(PodTest, MotorTest) {
   EXPECT_EQ(pod->state_machine->motor.get_throttle(), 0);
 
 }
+#endif
