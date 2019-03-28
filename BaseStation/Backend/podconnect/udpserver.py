@@ -1,30 +1,39 @@
-from threading import Thread, Lock
+from threading import Thread, Lock, Event
 from podconnect.models import DataPacket
 import socket
-
-from podconnect.models import DataPacket
 
 def serve():
     UDP_IP = "127.0.0.1"
     UDP_PORT = 5005
-    MESSAGE = "PING"
+    MSG_TO_SEND = "PING"
+    MSG_TO_RECV = "ACK"
 
-    sock2 = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-    sock2.bind(UDP_IP, 5004)
+    e = Event() # Used instead of time.sleep()
 
-    sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+    recv_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+    recv_sock.bind((UDP_IP, 5004))
+    recv_sock.settimeout(0.2) # Set timeout of recvfrom
 
-    sock2.settimeout(0.2) # Set timeout of recvfrom
+    send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
+
 
     while (True):
-        sock.sendto(MESSAGE, (UDP_IP, 5005))
+        send_sock.sendto(MSG_TO_SEND.encode(), (UDP_IP, 5005))
         try:
-	    data, addr = sock2.recvfrom(1024) # buffer size is 1024 bytes
-	    print ("SENDERE: received message: ", data)
-	    time.sleep(.9)
-	except:
-	    print ("Never received message")
+            data, addr = recv_sock.recvfrom(1024) # buffer size is 1024 bytes
+            if data.decode() == MSG_TO_RECV:
+                print ("UDP: received correct message: ", data.decode())
+            else:
+                print ("UDP: received incorrect message: ", data.decode())
+                # TODO: Determine what to do in this case! 
+                # TODO: Does it mean the network is bad?
+                # TODO: Should we throw an error??
+        except:
+            # TODO: This means we are not connected!
+            # TODO: Do something about this!
+            print ("UDP: Never received message")
 
+        e.wait(timeout=0.3);
                 
 def start():
     t1 = Thread(target=serve)
