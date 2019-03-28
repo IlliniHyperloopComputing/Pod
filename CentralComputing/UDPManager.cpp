@@ -151,35 +151,18 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
   int timeout = -1; 
   
   running.store(true);
-<<<<<<< HEAD
-  while (running){
-    // More info about poll: 
-    // http://beej.us/guide/bgnet/html/single/bgnet.html#indexId434909-276
-    rv = poll(fds, 1, used_timeout);
-=======
   print(LogLevel::LOG_INFO, "UDP Setup complete\n");
   setup.invoke();
 	//Poll indefinitely until a ping is received, then go into ping-ack loop.
   while (running){
     rv = poll(fds, 1, timeout); // http://beej.us/guide/bgnet/html/single/bgnet.html#indexId434909-276
->>>>>>> 309316a0a43bdfaf91baf1c19afe6ddecb986414
     if( rv == -1){ // ERROR occured in poll()
       print(LogLevel::LOG_ERROR, "UDP poll() failed: %s\n", strerror(errno));
       //TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
     }
-<<<<<<< HEAD
-    else if (rv == 0){
-      // Timeout occured. No data after [timeout] ammount of time
-      if(used_timeout == connected_timeout){
-        print(LogLevel::LOG_DEBUG, "UDP timeout\n");
-	//we lost connection? now what?
-      }
-      // TODO: Check if there is a timing issue.
-=======
     else if (rv == 0){ // Timeout occured 
       print(LogLevel::LOG_ERROR, "UDP timeout\n");
       //TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
->>>>>>> 309316a0a43bdfaf91baf1c19afe6ddecb986414
     }
     else{
       if(fds[0].revents & POLLIN){ // There is data to be read from UDP
