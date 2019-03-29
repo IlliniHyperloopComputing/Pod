@@ -40,6 +40,12 @@ The test environment can easily access all of the global pod structures to verif
 
 `Events.cpp` are used as a sychronization primative to prevent race conditions. For example, when the Simulator sends a TCP command, the event must fire before the test checks a condition. 
 
+# StyleGuide
+Using [Google's C++ style guide](https://google.github.io/styleguide/cppguide.html). 
+Specifically we use `cpplint.py` for easy linting of the most obvious errors. We include Google's repository containting `cpplint.py` as a git submodule.
+* To run the linter, run `make lint`
+
+
 
 # Building the project using the Makefile
 
