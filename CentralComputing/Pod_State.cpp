@@ -309,5 +309,5 @@ bool Pod_State::shouldBrake(double vel, double pos) {
   }
 }
 
-void Pod_State::steady_error_state(std::shared_ptr<TCPManager::Network_Command> command){
-	}
+void Pod_State::steady_error_state(std::shared_ptr<TCPManager::Network_Command> command) {
+}

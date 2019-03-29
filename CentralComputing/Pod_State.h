@@ -4,12 +4,10 @@
 #include "StateMachineCompact/StateMachine.h"
 #include "Motor.h"
 #include "Brakes.h"
-#include "TCPManager.hpp"
+#include "TCPManager.h"
 #include <iostream>
 #include <string>
 #include <map>
-
-
 
 class Pod_State;
 typedef void (Pod_State::*steady_state_function) (std::shared_ptr<TCPManager::Network_Command> command);

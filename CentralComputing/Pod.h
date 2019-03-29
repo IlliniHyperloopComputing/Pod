@@ -1,8 +1,8 @@
 #ifndef POD_H_
 #define POD_H_
 
-#include "TCPManager.hpp"
-#include "UDPManager.hpp"
+#include "TCPManager.h"
+#include "UDPManager.h"
 #include "Event.h"
 #include "Pod_State.h"
 #include "Configurator.h"

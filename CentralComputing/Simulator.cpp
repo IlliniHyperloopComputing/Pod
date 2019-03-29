@@ -14,10 +14,10 @@ Simulator::Simulator() {
 int Simulator::start_server(const char * hostname, const char * port) {
   connected.reset();
   socketfd = socket(AF_INET, SOCK_STREAM, 0);
-  //int blocking = 0; // 0 is blocking, 1 is non-blocking
-  //ioctl(socketfd, FIONBIO, &blocking); 
+  // int blocking = 0; // 0 is blocking, 1 is non-blocking
+  // ioctl(socketfd, FIONBIO, &blocking); 
   int enable = 1;
-  if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
+  if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
     perror("setsockopt(SO_REUSEADDR) failed");
   }
 
@@ -28,15 +28,15 @@ int Simulator::start_server(const char * hostname, const char * port) {
   hints.ai_flags = AI_PASSIVE;
 
   int s = getaddrinfo(hostname, port, &hints, &result);
-  if(s != 0){
+  if (s != 0) {
     print(LogLevel::LOG_ERROR, "Sim - getaddrinfo: %s\n", gai_strerror(s));
     return -1;
   }
-  if(bind(socketfd, result->ai_addr, result->ai_addrlen) != 0){
+  if (bind(socketfd, result->ai_addr, result->ai_addrlen) != 0) {
     perror("bind");
     return -1;
   }
-  if(listen(socketfd, 1) != 0){
+  if (listen(socketfd, 1) != 0) {
     perror("listen");
     return -1;
   }
@@ -46,18 +46,19 @@ int Simulator::start_server(const char * hostname, const char * port) {
   return socketfd;
 }
 
-int Simulator::accept_client(){
+int Simulator::accept_client() {
   struct pollfd p;
   p.fd = socketfd;
   p.events = POLLIN;
   int ret = 0;
   print(LogLevel::LOG_DEBUG, "Sim - Awaiting connection from Pod\n");
-  while(1) {
+  while (1) {
     ret = poll(&p, 1, 200);
-    if(ret == 1) {//there's something trying to connect, or we are exiting
+    if (ret == 1) { // there's something trying to connect, or we are exiting
       clientfd = accept(socketfd, NULL, NULL);
-      if(clientfd != -1)
+      if (clientfd != -1) {
         print(LogLevel::LOG_DEBUG, "Sim - Connected! \n"); 
+      }
       return clientfd;
     }
   }
@@ -68,7 +69,7 @@ void Simulator::sim_connect() {
   closed.reset();
 
   // try to connect to a client
-  if(accept_client() > 0){
+  if (accept_client() > 0) {
     print(LogLevel::LOG_DEBUG, "Sim - Starting network read thread\n");
     active_connection.store(true);
     read_thread = std::thread([&]() { read_loop(); });
@@ -80,13 +81,13 @@ void Simulator::sim_connect() {
 
 bool Simulator::send_command(std::shared_ptr<TCPManager::Network_Command> command) {
   int bytes_written = write(clientfd, command.get(), sizeof(TCPManager::Network_Command));
-  //print(LogLevel::LOG_EDEBUG, "Sim - Bytes written : %d, ID : %d, Value : %d  clientfd : %d\n", bytes_written, command->id, command->value, clientfd);
+  // print(LogLevel::LOG_EDEBUG, "Sim - Bytes written : %d, ID : %d, Value : %d  clientfd : %d\n", bytes_written, command->id, command->value, clientfd);
   int size = sizeof(TCPManager::Network_Command);
   return bytes_written == size;
 }
 
 void Simulator::read_loop() {
-  while(active_connection.load()){
+  while (active_connection.load()) {
     // dump the data because we don't need it or do anything with it.
     // TODO if we want to we can keep the data and use it for error checking purposes
     // but that seems redundant and like a lot of work
@@ -107,7 +108,7 @@ void Simulator::disconnect() {
   closed.wait();   // wait for sim_connect() to close, which was waiting on the read_loop
 }
 
-void Simulator::logging(bool enable){
+void Simulator::logging(bool enable) {
   enable_logging = enable;
 }
 

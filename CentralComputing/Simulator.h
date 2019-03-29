@@ -1,7 +1,7 @@
 #ifndef SIMULATOR_H_
 #define SIMULATOR_H_
 
-#include "TCPManager.hpp"
+#include "TCPManager.h"
 #include "StateSpace.hpp"
 
 #define MAX_ACCEL 9.81

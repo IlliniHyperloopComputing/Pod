@@ -1,7 +1,7 @@
-#include "UDPManager.hpp"
+#include "UDPManager.h"
 
-using namespace std;
-using namespace Utils;
+using Utils::print;
+using Utils::LogLevel;
 
 int UDPManager::socketfd = 0;
 std::atomic<bool> UDPManager::running(false);
@@ -11,7 +11,7 @@ struct addrinfo * UDPManager::sendinfo = NULL;
 struct addrinfo * UDPManager::recvinfo = NULL;
 Event UDPManager::setup;
 
-bool UDPManager::start_udp(const char * hostname, const char * send_port, const char * recv_port){
+bool UDPManager::start_udp(const char * hostname, const char * send_port, const char * recv_port) {
   int rv;
   int enable = 1;
 
@@ -22,13 +22,13 @@ bool UDPManager::start_udp(const char * hostname, const char * send_port, const 
   hints.ai_socktype = SOCK_DGRAM;
   
   // Get destination address
-  if((rv = getaddrinfo(hostname, send_port, &hints, &sendinfo)) != 0) {
+  if ((rv = getaddrinfo(hostname, send_port, &hints, &sendinfo)) != 0) {
     print(LogLevel::LOG_ERROR, "UDP send Error get addrinfo: %s\n", gai_strerror(rv));
     goto RETURN_ERROR;
   }
 
   // Create socket
-  if((socketfd = socket(sendinfo->ai_family, sendinfo->ai_socktype, sendinfo->ai_protocol)) == -1) {
+  if ((socketfd = socket(sendinfo->ai_family, sendinfo->ai_socktype, sendinfo->ai_protocol)) == -1) {
     print(LogLevel::LOG_ERROR, "UDP send Error getting socket\n");
     goto RETURN_ERROR;
   }
@@ -41,31 +41,31 @@ bool UDPManager::start_udp(const char * hostname, const char * send_port, const 
   hints.ai_flags = AI_PASSIVE;
   
   // For recv address
-  if((rv = getaddrinfo(hostname, recv_port, &hints, &recvinfo)) != 0) {
+  if ((rv = getaddrinfo(hostname, recv_port, &hints, &recvinfo)) != 0) {
     print(LogLevel::LOG_ERROR, "UDP Error getting addrinfo: %s\n", gai_strerror(rv));
     goto RETURN_ERROR;
   }
 
   // Allow port reuse
-  if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
+  if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
     print(LogLevel::LOG_ERROR, "UDP setsockopt(SO_REUSEADDR) failed: %s\n", strerror(errno));
     goto RETURN_ERROR;
   }
 
   // Bind to port (tells the OS the default incoming address)
-  if(bind(socketfd, recvinfo->ai_addr, recvinfo->ai_addrlen) != 0){
+  if (bind(socketfd, recvinfo->ai_addr, recvinfo->ai_addrlen) != 0) {
     print(LogLevel::LOG_ERROR, "UDP bind failed: %s\n", strerror(errno));
     goto RETURN_ERROR;
   }
 
   // Connect (tells the OS the default destination)
   // Connect to the send address
-  //if(connect(socketfd, sendinfo->ai_addr, sendinfo->ai_addrlen) == -1) {
-  //  print(LogLevel::LOG_ERROR, "UDP connecting failed: %s\n", strerror(errno));
-  //  goto RETURN_ERROR;
-  //}
+  // if(connect(socketfd, sendinfo->ai_addr, sendinfo->ai_addrlen) == -1) {
+  //   print(LogLevel::LOG_ERROR, "UDP connecting failed: %s\n", strerror(errno));
+  //   goto RETURN_ERROR;
+  // }
 
-  //freeaddrinfo(sendinfo);
+  // freeaddrinfo(sendinfo);
   freeaddrinfo(recvinfo);
   return true;
 
@@ -77,7 +77,7 @@ RETURN_ERROR:
   return false;
 }
 
-int UDPManager::udp_recv(uint8_t* recv_buf, uint8_t len){
+int UDPManager::udp_recv(uint8_t* recv_buf, uint8_t len) {
   
   socklen_t fromlen;                // needed for recvfrom
   struct sockaddr_storage fromaddr; // needed for recvfrom
@@ -85,7 +85,7 @@ int UDPManager::udp_recv(uint8_t* recv_buf, uint8_t len){
 
   int byte_count = recvfrom(socketfd, recv_buf, len, 0, 
       (struct sockaddr *)&fromaddr, &fromlen);
-  if(byte_count == -1){
+  if (byte_count == -1) {
     print(LogLevel::LOG_ERROR, "UDP recv failed: %s\n", strerror(errno));
     // TODO Determine if this is an error worth reporting
     return 0;
@@ -96,20 +96,19 @@ int UDPManager::udp_recv(uint8_t* recv_buf, uint8_t len){
   return byte_count;
 }
 
-bool UDPManager::udp_parse(uint8_t* buf, uint8_t len){
-  if(buf[0] == 'P'){    //for an example, lets send the first byte to be P, for PING 
-    return true;             //if we get ping, we know it's a dummy
-  }
-  else{
-    print(LogLevel::LOG_INFO, "Parsed %d bytes, they are: %s\n",len, buf);   //Print whatever we got because it wasn't PING
-  }
+bool UDPManager::udp_parse(uint8_t* buf, uint8_t len) {
+  if (buf[0] == 'P') {    // for an example, lets send the first byte to be P, for PING 
+    return true;          // if we get ping, we know it's a dummy
+  } else {
+    // Print whatever we got because it wasn't PING
+    print(LogLevel::LOG_INFO, "Parsed %d bytes, they are: %s\n",len, buf);   }
   return false;
 }
 
-int UDPManager::udp_send(uint8_t* buf, uint8_t len){ 
+int UDPManager::udp_send(uint8_t* buf, uint8_t len) { 
   int byte_count = sendto(socketfd, buf, len, 0,
       sendinfo->ai_addr, sendinfo->ai_addrlen);
-  if(byte_count == -1){
+  if (byte_count == -1) {
     print(LogLevel::LOG_ERROR, "UDP recv failed: %s\n", strerror(errno));
     // TODO Determine if this is an error worth reporting
     return 0;
@@ -117,11 +116,11 @@ int UDPManager::udp_send(uint8_t* buf, uint8_t len){
   return byte_count;
 }
 
-void UDPManager::connection_monitor( const char * hostname, const char * send_port, const char * recv_port){
+void UDPManager::connection_monitor(const char * hostname, const char * send_port, const char * recv_port) {
   setup.reset();
 
   // Create UDP socket
-  if(!start_udp(hostname, send_port, recv_port)){
+  if (!start_udp(hostname, send_port, recv_port)) {
     print(LogLevel::LOG_ERROR, "Error setting up UDP\n");
     return; 
   }
@@ -153,29 +152,26 @@ void UDPManager::connection_monitor( const char * hostname, const char * send_po
   running.store(true);
   print(LogLevel::LOG_INFO, "UDP Setup complete\n");
   setup.invoke();
-	//Poll indefinitely until a ping is received, then go into ping-ack loop.
-  while (running){
+	// Poll indefinitely until a ping is received, then go into ping-ack loop.
+  while (running) {
     rv = poll(fds, 1, timeout); // http://beej.us/guide/bgnet/html/single/bgnet.html#indexId434909-276
-    if( rv == -1){ // ERROR occured in poll()
+    if (rv == -1) { // ERROR occured in poll()
       print(LogLevel::LOG_ERROR, "UDP poll() failed: %s\n", strerror(errno));
-      //TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
-    }
-    else if (rv == 0){ // Timeout occured 
+      // TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
+    } else if (rv == 0) { // Timeout occured 
       print(LogLevel::LOG_ERROR, "UDP timeout\n");
-      //TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
-    }
-    else{
-      if(fds[0].revents & POLLIN){ // There is data to be read from UDP
+      // TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
+    } else {
+      if (fds[0].revents & POLLIN) { // There is data to be read from UDP
         timeout = connected_timeout; // Set timeout to appropriate value
         byte_count = udp_recv(read_buffer, sizeof(read_buffer)); // Read message
-        if(byte_count > 0 && udp_parse(read_buffer, byte_count)){ // Check if PING. Returns true if message was PING
+        if (byte_count > 0 && udp_parse(read_buffer, byte_count)) { // Check if PING. Returns true if message was PING
           byte_count = udp_send(send_buffer, sizeof(send_buffer)); // Respond with ACK
           print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count); 
         }
-      }
-      else{
-        //print(LogLevel::LOG_ERROR, "UDP poll event, but not on specified socket with specified event\n");
-        //TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
+      } else {
+        // print(LogLevel::LOG_ERROR, "UDP poll event, but not on specified socket with specified event\n");
+        // TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
       }
     }
   }

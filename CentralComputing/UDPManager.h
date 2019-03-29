@@ -1,5 +1,5 @@
-#ifndef UDPMANAGER_HPP 
-#define UDPMANAGER_HPP
+#ifndef UDPMANAGER_H_
+#define UDPMANAGER_H_
 
 #include "Utils.h"
 #include "SafeQueue.hpp"
@@ -11,7 +11,7 @@
 #include <netdb.h>
 #include <poll.h>
 #include <atomic>
-#include <thread>
+#include <thread> // NOLINT
 #include <memory>
 #include <sys/ioctl.h>
 
@@ -39,9 +39,9 @@ extern Event setup;
  **/
 bool start_udp(const char * hostname, const char * send_port, const char * recv_port);
 
-int udp_recv(uint8_t* recv_buf, uint8_t len); //receives data and is put into a buffer
-int udp_send(uint8_t* buf, uint8_t len);      //send data from the buffer passed in
-bool udp_parse(uint8_t* buf, uint8_t len);    //parse the data in the buffer
+int udp_recv(uint8_t* recv_buf, uint8_t len); // receives data and is put into a buffer
+int udp_send(uint8_t* buf, uint8_t len);      // send data from the buffer passed in
+bool udp_parse(uint8_t* buf, uint8_t len);    // parse the data in the buffer
 /**
  * Uses the UDP port setup by start_udp to monitor connection status
  **/
@@ -57,6 +57,6 @@ void close_client();
  */
 void stop_threads();
 
-}
+} // namespace UDPManager
 
-#endif
+#endif // UDPMANAGER_H_

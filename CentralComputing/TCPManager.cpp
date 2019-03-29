@@ -1,7 +1,11 @@
-#include "TCPManager.hpp"
+#include "TCPManager.h"
 
-using namespace std;
-using namespace Utils;
+using std::vector;
+using std::make_shared;
+using std::shared_ptr;
+using std::thread;
+using Utils::print;
+using Utils::LogLevel;
 
 int TCPManager::socketfd = 0;
 Event TCPManager::connected;
@@ -10,25 +14,25 @@ Event TCPManager::closing;
 std::atomic<bool> TCPManager::running(false);
 SafeQueue<shared_ptr<TCPManager::Network_Command>> TCPManager::command_queue;
 
-int TCPManager::connect_to_server( const char * hostname, const char * port){
+int TCPManager::connect_to_server(const char * hostname, const char * port) {
   struct addrinfo hints, *servinfo;
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_INET;
   hints.ai_socktype = SOCK_STREAM;
   int rv;
-  if((rv = getaddrinfo(hostname, port, &hints, &servinfo)) != 0) {
+  if ((rv = getaddrinfo(hostname, port, &hints, &servinfo)) != 0) {
     freeaddrinfo(servinfo);
     print(LogLevel::LOG_ERROR, "TCP Error get addrinfo\n");
     return false;
   }
 
-  if((socketfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol)) == -1) {
+  if ((socketfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol)) == -1) {
     freeaddrinfo(servinfo);
     print(LogLevel::LOG_ERROR, "TCP Error getting socket\n");
     return false;
   }
 
-  if(connect(socketfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1) {
+  if (connect(socketfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1) {
     close(socketfd);
     freeaddrinfo(servinfo);
     print(LogLevel::LOG_ERROR, "TCP Error connecting\n");
@@ -57,11 +61,11 @@ int TCPManager::write_data() {
 void TCPManager::read_loop() {
   bool active_connection = true;
   Network_Command buffer;
-  while (running && active_connection){
+  while (running && active_connection) {
     int bytes_read = read_command(&buffer);
     active_connection = bytes_read > 0;
     if (bytes_read > 0) {
-      //print(LogLevel::LOG_EDEBUG, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
+      // print(LogLevel::LOG_EDEBUG, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
       auto command = make_shared<Network_Command>();
       command->id = buffer.id;
       command->value = buffer.value;
@@ -73,7 +77,7 @@ void TCPManager::read_loop() {
 
 void TCPManager::write_loop() {
   bool active_connection = true;
-  while(running && active_connection){
+  while (running && active_connection) {
     closing.wait_for(1000000);
     int written = write_data();
     print(LogLevel::LOG_DEBUG, "Wrote %d bytes\n", written);
@@ -87,9 +91,9 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
   closing.reset();
   running.store(true);
 
-  while(running){
+  while (running) {
     int fd = connect_to_server(hostname, port);
-    if(fd > 0){
+    if (fd > 0) {
       print(LogLevel::LOG_INFO, "TCP Starting network threads\n");
       thread read_thread(read_loop);
       thread write_thread(write_loop);
@@ -100,8 +104,7 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
       write_thread.join();
       print(LogLevel::LOG_INFO, "TCP Connection lost\n");
 
-    } 
-    else {
+    } else {
       running.store(false);
       break;
     }
