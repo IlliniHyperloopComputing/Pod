@@ -73,6 +73,9 @@ msg :
 	$(info =                 /  /     /  /   /  / /  /   /  / /  /                   ) 
 	$(info =             ___/  /___  /__/   /  / /__/   /  / /  /                    )
 	$(info =          __ __/______/ /______/__/ /______/__/ /__/                     )  
+.PHONY: lint
+lint:
+	python cpplint/cpplint/cpplint.py --verbose=5 --filter=-legal/copyright --extensions=cpp,h,hpp --root=. *
 
 .PHONY: mkdir_obj
 mkdir_obj:
