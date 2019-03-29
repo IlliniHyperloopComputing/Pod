@@ -35,4 +35,4 @@ class Event {
   std::condition_variable cond;
   bool condition = false;
 };
-#endif // EVENT_H_
+#endif  // EVENT_H_

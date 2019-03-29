@@ -57,7 +57,7 @@ enum Network_Data_ID {
 **/
 struct Network_Command {
   // state transtitions
-  uint8_t id; // id is just a network command
+  uint8_t id;  // id is just a network command
   uint8_t value;
 };
 
@@ -67,8 +67,8 @@ extern int socketfd;
 extern std::atomic<bool> running;
 extern SafeQueue<std::shared_ptr<TCPManager::Network_Command>> command_queue;
 
-extern Event connected; // Used within Simulator to check when TCP is connected
-extern Event closing;   // Used to wait between writes in the write_loop()
+extern Event connected;  // Used within Simulator to check when TCP is connected
+extern Event closing;    // Used to wait between writes in the write_loop()
 
 int connect_to_server(const char * hostname, const char * port);
 
@@ -115,6 +115,6 @@ void close_client();
  */
 void stop_threads();
 
-} // namespace TCPManager
+}  // namespace TCPManager
 
-#endif // TCPMANAGER_H_
+#endif  // TCPMANAGER_H_

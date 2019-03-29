@@ -13,14 +13,13 @@ Pod::Pod() {
 }
 
 void Pod::logic_loop() {
-
-  int64_t logic_loop_timeout; // Get the loop sleep (timeout) value
+  int64_t logic_loop_timeout;  // Get the loop sleep (timeout) value
   if (!ConfiguratorManager::config.getValue("logic_loop_timeout", logic_loop_timeout)) {
     print(LogLevel::LOG_ERROR, "Unable to find logic_loop timeout config, exiting logic_loop\n");
     return;
   }
 
-  #ifdef SIM // Used to indicate to the Simulator we have processed a command
+  #ifdef SIM  // Used to indicate to the Simulator we have processed a command
   bool command_processed = false;
   #endif
 
@@ -33,11 +32,11 @@ void Pod::logic_loop() {
       auto transition = state_machine->get_transition_function(id);
       ((*state_machine).*(transition))(); 
 
-      #ifdef SIM // Used to indicate to the Simulator that we have processed a command
+      #ifdef SIM  // Used to indicate to the Simulator that we have processed a command
       command_processed = true;
       #endif
       print(LogLevel::LOG_INFO, "Command : %d %d\n", command->id, command->value);
-    } else { // Create a "do nothing" command. This will be passed into the steady state caller below
+    } else {  // Create a "do nothing" command. This will be passed into the steady state caller below
       command = make_shared<TCPManager::Network_Command>();
       command->id = 0;
       command->value = 0;
@@ -112,8 +111,8 @@ void Pod::startup() {
   // Setup Network Server
   string tcp_port;
   string tcp_addr;
-  string udp_send; // port we send packets to
-  string udp_recv; // port we recv packets from
+  string udp_send;  // port we send packets to
+  string udp_recv;  // port we recv packets from
   string udp_addr; 
   if (!(ConfiguratorManager::config.getValue("tcp_port", tcp_port) && 
       ConfiguratorManager::config.getValue("tcp_addr", tcp_addr) &&
@@ -123,11 +122,11 @@ void Pod::startup() {
     print(LogLevel::LOG_ERROR, "Missing port or addr configuration\n");
   }
   // Start Network and main loop thread.
+  // I don't know how to use member functions as a thread function, but lambdas work
   thread tcp_thread([&](){ TCPManager::tcp_loop(tcp_addr.c_str(), tcp_port.c_str()); });
   thread udp_thread([&](){ UDPManager::connection_monitor(udp_addr.c_str(), udp_send.c_str(), udp_recv.c_str()); });
   running.store(true);
-  thread logic_thread([&](){ logic_loop(); }); // I don't know how to use member functions as a thread function, but lambdas work
-
+  thread logic_thread([&](){ logic_loop(); });  
   print(LogLevel::LOG_INFO, "Finished Startup\n");
   print(LogLevel::LOG_INFO, "================\n\n");
   
@@ -141,7 +140,7 @@ void Pod::startup() {
   
   print(LogLevel::LOG_INFO, "Source Managers closing\n");
   // Stop all source managers
-  SourceManager::MM.stop(); // Must be called first
+  SourceManager::MM.stop();  // Must be called first
   SourceManager::PRU.stop();
   SourceManager::CAN.stop();
   SourceManager::TMP.stop();
@@ -165,7 +164,7 @@ void signal_handler(int signal) {shutdown_handler(signal); }
 int main(int argc, char **argv) {
   // Load the configuration file if specified, or use the default
   string config_to_open = "defaultConfig.txt";
-  if (argc > 1) { // If the first argument is a file, use it as the config file
+  if (argc > 1) {  // If the first argument is a file, use it as the config file
     ifstream test_if_file(argv[1]);
     if (test_if_file.is_open()) {
       test_if_file.close();

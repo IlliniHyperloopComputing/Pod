@@ -45,4 +45,4 @@ class SafeQueue {
   std::mutex m_mutex;
 };
 
-#endif // SAFEQUEUE_H_
+#endif  // SAFEQUEUE_H_

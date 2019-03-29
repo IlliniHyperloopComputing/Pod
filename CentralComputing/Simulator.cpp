@@ -1,4 +1,4 @@
-#ifdef SIM // Only compile if building test executable
+#ifdef SIM  // Only compile if building test executable
 #include "Simulator.h"
 
 using Utils::print;
@@ -54,7 +54,7 @@ int Simulator::accept_client() {
   print(LogLevel::LOG_DEBUG, "Sim - Awaiting connection from Pod\n");
   while (1) {
     ret = poll(&p, 1, 200);
-    if (ret == 1) { // there's something trying to connect, or we are exiting
+    if (ret == 1) {  // there's something trying to connect, or we are exiting
       clientfd = accept(socketfd, NULL, NULL);
       if (clientfd != -1) {
         print(LogLevel::LOG_DEBUG, "Sim - Connected! \n"); 
@@ -81,7 +81,8 @@ void Simulator::sim_connect() {
 
 bool Simulator::send_command(std::shared_ptr<TCPManager::Network_Command> command) {
   int bytes_written = write(clientfd, command.get(), sizeof(TCPManager::Network_Command));
-  // print(LogLevel::LOG_EDEBUG, "Sim - Bytes written : %d, ID : %d, Value : %d  clientfd : %d\n", bytes_written, command->id, command->value, clientfd);
+  // print(LogLevel::LOG_EDEBUG, "Sim - Bytes written : %d, ID : %d, Value : %d  
+  //        clientfd : %d\n", bytes_written, command->id, command->value, clientfd);
   int size = sizeof(TCPManager::Network_Command);
   return bytes_written == size;
 }
@@ -99,13 +100,13 @@ void Simulator::read_loop() {
 }
 
 void Simulator::disconnect() {
-  active_connection.store(false); // stop the read loop
+  active_connection.store(false);  // stop the read loop
 
   shutdown(clientfd, SHUT_RDWR);
-  close(clientfd); // close TCP connection
+  close(clientfd);  // close TCP connection
   shutdown(socketfd, SHUT_RDWR);
-  close(socketfd); // close TCP server
-  closed.wait();   // wait for sim_connect() to close, which was waiting on the read_loop
+  close(socketfd);  // close TCP server
+  closed.wait();    // wait for sim_connect() to close, which was waiting on the read_loop
 }
 
 void Simulator::logging(bool enable) {
@@ -146,7 +147,7 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
   // FOR FIRST CALL
   if (timeLast == -1) {
     timeDelta = 0.000;
-  } else { // SUBSEQUENT CALLS
+  } else {  // SUBSEQUENT CALLS
     timeDelta = Utils::microseconds() - timeLast;
   }
 
@@ -163,7 +164,8 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
 
   // KINEMATIC PHYSICS CALCULATIONS
   velocity = lastVelocity + (acceleration * deltaSeconds);
-  position = lastPosition + ((lastVelocity + velocity)/2 * deltaSeconds) + (0.5 * acceleration * deltaSeconds * deltaSeconds);
+  position = lastPosition + ((lastVelocity + velocity)/2 * deltaSeconds) 
+              + (0.5 * acceleration * deltaSeconds * deltaSeconds);
 
   // CREATING A STATESPACE OBJECT AND SETTING ITS ARRAY'S VALUES
   std::shared_ptr<StateSpace> space = std::make_shared<StateSpace>();
@@ -172,7 +174,8 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
   space->x[2] = acceleration;
 
   if (enable_logging) {
-    print(LogLevel::LOG_DEBUG, "Motion: Position: %.2f, Velocity: %.2f, Accel = %.2f, lastPos = %.2f, lastVel = %.2f, delta = %d, timeLast=%ld, t = %ld\n",
+    print(LogLevel::LOG_DEBUG, 
+      "Motion: Pos: %.2f, Vel: %.2f, Acl= %.2f, lastPos= %.2f, lastVel = %.2f, delta = %d, timeLast=%ld, t = %ld\n",
       position, velocity, acceleration, lastPosition, lastVelocity, timeDelta, timeLast, Utils::microseconds());
   }
 

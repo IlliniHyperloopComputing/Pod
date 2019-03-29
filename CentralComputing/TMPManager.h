@@ -35,4 +35,4 @@ class TMPManager : public SourceManagerBase<TMPData, false> {
     TMPData old_data;
 };
 
-#endif // TMPMANAGER_H_
+#endif  // TMPMANAGER_H_

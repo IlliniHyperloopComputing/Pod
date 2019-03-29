@@ -23,4 +23,4 @@ class I2CManager : public SourceManagerBase<I2CData, false> {
   int i = 5;
 };
 
-#endif // I2CMANAGER_H_
+#endif  // I2CMANAGER_H_

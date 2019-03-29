@@ -1,7 +1,6 @@
 #include "ADCManager.h"
 
 bool ADCManager::initialize_source() {
-
   print(LogLevel::LOG_DEBUG, "ADC Manger setup successful\n");
   return true;
 }
@@ -11,7 +10,6 @@ void ADCManager::stop_source() {
 }
 
 std::shared_ptr<ADCData> ADCManager::refresh() {
-
   // this is where you would query the ADC and get new data
   
   std::shared_ptr<ADCData> new_data = std::make_shared<ADCData>();

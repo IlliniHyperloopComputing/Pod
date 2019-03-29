@@ -49,4 +49,4 @@ class PRUManager : public SourceManagerBase<PRUData, true> {
     const double disk_map[NUM_MOTOR_INPUTS] = {1, 1, 1, 1};
 };
 
-#endif // PRUMANAGER_H_
+#endif  // PRUMANAGER_H_

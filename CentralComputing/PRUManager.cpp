@@ -8,7 +8,6 @@ std::string PRUManager::name() {
 }
 
 bool PRUManager::initialize_source() {
-  
   /* Open the rpmsg_pru character device file */
   pollfds[0].fd = open(DEVICE_NAME, O_RDWR);
 
@@ -40,7 +39,6 @@ void PRUManager::stop_source() {
 }
 
 std::shared_ptr<PRUData> PRUManager::refresh() {
-
   int result = write(pollfds[0].fd, "1", 2);
   if (result == 0) {
     print(LogLevel::LOG_ERROR, "Unable to write during operation %s\n", DEVICE_NAME);
@@ -92,11 +90,10 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
 
 inline
 double PRUManager::convert_to_velocity(uint32_t decay, uint32_t delta, double distance) {
-
     // Pick the one that gives us the slower velocity
     uint32_t slower = std::max(decay, delta);
 
-    if (slower == UINT32_MAX) { // register this as 0 velocity
+    if (slower == UINT32_MAX) {  // register this as 0 velocity
       return 0;
     } else {
       // Do the proper conversion into m/s

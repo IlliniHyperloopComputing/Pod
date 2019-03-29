@@ -262,7 +262,6 @@ void Pod_State::steady_flight_accelerate(std::shared_ptr<TCPManager::Network_Com
 	double acc = state->x[2];
 	
 	if (shouldBrake(vel, pos) || vel > MAX_VELOCITY) {
-		
 		auto newCommand = std::make_shared<TCPManager::Network_Command>();
 		newCommand->id = TCPManager::Network_Command_ID::TRANS_FLIGHT_COAST;
 		newCommand->value = 0;
@@ -292,16 +291,13 @@ void Pod_State::steady_flight_brake(std::shared_ptr<TCPManager::Network_Command>
 }
 
 bool Pod_State::shouldBrake(double vel, double pos) {
-
   int32_t target_distance = LENGTH_OF_TRACK - BUFFER_LENGTH;
   double stopping_distance = pos + -0.5*vel*vel/IDEAL_DECCEL;
 
   if (stopping_distance > target_distance) {
-
     print(LogLevel::LOG_INFO, "Pod Should Brake, vel: %.2f pos: %.2f\n", vel, pos);
     return true;
   } else {
-    // print(LogLevel::LOG_INFO, "Pod NOT Brake, vel: %.2f pos: %.2f, target: %ld, stopping_distance %.2f\n", vel, pos, target_distance, stopping_distance);
     return false;
   }
 }

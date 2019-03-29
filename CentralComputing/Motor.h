@@ -38,8 +38,6 @@ class Motor {
      */
     void set_throttle(int16_t value);
 
-    void debug_set_pwm_pin(std::string & path);
-
  private:
     void set_enable(bool enable);
 
@@ -48,4 +46,4 @@ class Motor {
     int16_t throttle;
 };
 
-#endif // MOTOR_H_ 
+#endif  // MOTOR_H_ 

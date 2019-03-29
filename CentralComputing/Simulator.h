@@ -8,115 +8,114 @@
 #define MAX_DECEL -9.81
 
 class Simulator {
-
  public:
-    Simulator();
+  Simulator();
 
-    /**
-     * Connects to the pod server at hostname/port
-     * @param hostname the hostname to connect to
-     * @param port the port to connect to
-     */
-    void sim_connect();
-    
-    int start_server(const char * hostname, const char * port);
+  /**
+   * Connects to the pod server at hostname/port
+   * @param hostname the hostname to connect to
+   * @param port the port to connect to
+   */
+  void sim_connect();
+  
+  int start_server(const char * hostname, const char * port);
 
-    int accept_client();
+  int accept_client();
 
-    void logging(bool enable);
+  void logging(bool enable);
 
-    /*
-     * Simulates arming the motor
-     */
-    void sim_motor_enable();
-
-
-    /*
-     * Simulates disarming the motor
-     */
-    void sim_motor_disable();
+  /*
+    * Simulates arming the motor
+    */
+  void sim_motor_enable();
 
 
-    /*
-     * Simulates setting the motor throttle to a specific value
-     * param value the new throttle value
-     */
-    void sim_motor_set_throttle(uint8_t value);
+  /*
+    * Simulates disarming the motor
+    */
+  void sim_motor_disable();
 
 
-    /*
-     * Simulates enabling the brakes
-     */
-    void sim_brake_enable();
+  /*
+    * Simulates setting the motor throttle to a specific value
+    * param value the new throttle value
+    */
+  void sim_motor_set_throttle(uint8_t value);
 
 
-    /*
-     * Simulates disabling the brakes
-     */
-    void sim_brake_disable();
+  /*
+    * Simulates enabling the brakes
+    */
+  void sim_brake_enable();
 
 
-    /*
-     * Simulates setting the brake pressure to a specific Value
-     * param value the new brake pressure
-     */
-    void sim_brake_set_pressure(uint8_t value);
+  /*
+    * Simulates disabling the brakes
+    */
+  void sim_brake_disable();
 
 
-    /*
-     * Uses the current state of the brakes/motors to simulate the new position, velocity, 
-     * and acceleration and returns them as a StateSpace object
-     */
-    std::shared_ptr<StateSpace> sim_get_motion();
+  /*
+    * Simulates setting the brake pressure to a specific Value
+    * param value the new brake pressure
+    */
+  void sim_brake_set_pressure(uint8_t value);
 
 
-    /**
-     * Sends the given command to the connected pod
-     * @param command the command to send
-     */
-    bool send_command(std::shared_ptr<TCPManager::Network_Command> command);
+  /*
+    * Uses the current state of the brakes/motors to simulate the new position, velocity, 
+    * and acceleration and returns them as a StateSpace object
+    */
+  std::shared_ptr<StateSpace> sim_get_motion();
 
 
-    /**
-     * Thread function, reads continually and updates the internal simulate state variables
-     */
-    void read_loop();
+  /**
+   * Sends the given command to the connected pod
+   * @param command the command to send
+   */
+  bool send_command(std::shared_ptr<TCPManager::Network_Command> command);
 
 
-    /**
-     * Close the active connection and free any owned variables
-     */
-    void disconnect();
+  /**
+   * Thread function, reads continually and updates the internal simulate state variables
+   */
+  void read_loop();
 
-    /**
-     * Resets the motion variables
-     */
-    void reset_motion();
 
-    std::atomic<bool> active_connection;
-    Event closed;
-    Event connected;
-    std::thread read_thread;
+  /**
+   * Close the active connection and free any owned variables
+   */
+  void disconnect();
 
-    bool enable_logging = true;
+  /**
+   * Resets the motion variables
+   */
+  void reset_motion();
 
-    int socketfd;
-    int clientfd;
+  std::atomic<bool> active_connection;
+  Event closed;
+  Event connected;
+  std::thread read_thread;
 
-    int64_t timeLast = -1;
-    int64_t timeDelta = 0.000;
-    bool motorsOn = false;
-    bool brakesOn = false;
-    uint8_t throttle = 0.000;
-    uint8_t pressure = 0.000;
-    double position = 0.000;
-    double lastPosition = 0.000;
-    double velocity = 0.000;
-    double lastVelocity = 0.000;
-    double acceleration = 0.000;
+  bool enable_logging = true;
+
+  int socketfd;
+  int clientfd;
+
+  int64_t timeLast = -1;
+  int64_t timeDelta = 0.000;
+  bool motorsOn = false;
+  bool brakesOn = false;
+  uint8_t throttle = 0.000;
+  uint8_t pressure = 0.000;
+  double position = 0.000;
+  double lastPosition = 0.000;
+  double velocity = 0.000;
+  double lastVelocity = 0.000;
+  double acceleration = 0.000;
 };
 namespace SimulatorManager {
   extern Simulator sim;
 }
 
-#endif // SIMULATOR_H_
+#endif  // SIMULATOR_H_

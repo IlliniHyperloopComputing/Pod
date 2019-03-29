@@ -1,13 +1,11 @@
 #include "I2CManager.h"
 
 bool I2CManager::initialize_source() {
-
   print(LogLevel::LOG_DEBUG, "I2C Manger setup successful\n");
   return true;
 }
 
 void I2CManager::stop_source() {
-
   print(LogLevel::LOG_DEBUG, "I2C Manger stopped\n");
 }
 

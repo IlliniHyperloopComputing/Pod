@@ -31,8 +31,6 @@ class Brakes {
    */
   bool is_enabled();
 
-  void debug_set_pwm_pin(std::string & path);
-
  private:
   void set_enable(bool enable);
 
@@ -41,4 +39,4 @@ class Brakes {
   bool enabled;
 };
 
-#endif // BRAKES_H_
+#endif  // BRAKES_H_

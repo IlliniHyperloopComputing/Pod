@@ -32,7 +32,6 @@ class SourceManagerBase {
   }
 
   void initialize() {
-
     #ifdef SIM
       initialized_correctly = true;
     #else
@@ -53,9 +52,8 @@ class SourceManagerBase {
       running.store(true);
 
       // I don't know how to start a thread using a member function, but I know how to use lambdas so suck it C++
-      worker = std::thread([&] { refresh_loop(); } );
+      worker = std::thread([&] { refresh_loop(); });
     } else {
-
       // Did not setup correctly. Print error and set garbage data
       #ifdef SIM
         print(LogLevel::LOG_ERROR, "Failed to initialize: %s.\n", name().c_str());
@@ -121,11 +119,12 @@ class SourceManagerBase {
   virtual void stop_source() = 0;
 
   virtual std::string name() = 0;
-  
-  virtual std::shared_ptr<Data> refresh() = 0; // constructs a new Data object and fills it in
 
-  virtual std::shared_ptr<Data> refresh_sim() = 0; // constructs a new Data object and fills it in with data from the simulator
+  // constructs a new Data object and fills it in
+  virtual std::shared_ptr<Data> refresh() = 0;  
 
+  // constructs a new Data object and fills it in with data from the simulator
+  virtual std::shared_ptr<Data> refresh_sim() = 0;  
 
   void refresh_loop() {
     int64_t delayInUsecs = refresh_timeout();
@@ -134,7 +133,7 @@ class SourceManagerBase {
         std::shared_ptr<Data> new_data = refresh();
       #else
         std::shared_ptr<Data> new_data = refresh_sim();
-        delayInUsecs = refresh_timeout(); // could be updated by SIM
+        delayInUsecs = refresh_timeout();  // could be updated by SIM
       #endif
       mutex.lock();
       data = new_data;

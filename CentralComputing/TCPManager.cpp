@@ -97,7 +97,7 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
       thread read_thread(read_loop);
       thread write_thread(write_loop);
 
-      connected.invoke(); // Threads started, show simulator we are connected
+      connected.invoke();  // Threads started, show simulator we are connected
 
       read_thread.join();
       write_thread.join();

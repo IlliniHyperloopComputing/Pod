@@ -29,4 +29,4 @@ class ADCManager : public SourceManagerBase<ADCData, true> {
   int i = 5;
 };
 
-#endif // ADCMANAGER_H_
+#endif  // ADCMANAGER_H_

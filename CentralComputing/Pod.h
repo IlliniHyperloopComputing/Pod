@@ -14,7 +14,6 @@
 #include "gtest/gtest.h"
 #pragma GCC diagnostic pop
 
-
 class Pod {
  public:
     Pod();
@@ -36,4 +35,4 @@ class Pod {
 
 void signal_handler(int signal);
 
-#endif // POD_H_
+#endif  // POD_H_

@@ -57,7 +57,7 @@ enum Network_Data_ID {
 **/
 struct Network_Command {
   // state transtitions
-  uint8_t id; // id is just a network command
+  uint8_t id;  // id is just a network command
   uint8_t value;
 };
 
@@ -139,7 +139,7 @@ void network_loop();
  */
 void stop_threads();
 
-} // namespace NetworkManager
+}  // namespace NetworkManager
 
-#endif // NETWORKMANAGER_H_
+#endif  // NETWORKMANAGER_H_
 

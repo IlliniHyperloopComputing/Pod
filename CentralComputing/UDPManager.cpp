@@ -78,10 +78,9 @@ RETURN_ERROR:
 }
 
 int UDPManager::udp_recv(uint8_t* recv_buf, uint8_t len) {
-  
-  socklen_t fromlen;                // needed for recvfrom
-  struct sockaddr_storage fromaddr; // needed for recvfrom
-  fromlen = sizeof fromaddr;        // needed for recvfrom
+  socklen_t fromlen;                 // needed for recvfrom
+  struct sockaddr_storage fromaddr;  // needed for recvfrom
+  fromlen = sizeof fromaddr;         // needed for recvfrom
 
   int byte_count = recvfrom(socketfd, recv_buf, len, 0, 
       (struct sockaddr *)&fromaddr, &fromlen);
@@ -154,19 +153,19 @@ void UDPManager::connection_monitor(const char * hostname, const char * send_por
   setup.invoke();
 	// Poll indefinitely until a ping is received, then go into ping-ack loop.
   while (running) {
-    rv = poll(fds, 1, timeout); // http://beej.us/guide/bgnet/html/single/bgnet.html#indexId434909-276
-    if (rv == -1) { // ERROR occured in poll()
+    rv = poll(fds, 1, timeout);  // http://beej.us/guide/bgnet/html/single/bgnet.html#indexId434909-276
+    if (rv == -1) {  // ERROR occured in poll()
       print(LogLevel::LOG_ERROR, "UDP poll() failed: %s\n", strerror(errno));
       // TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
-    } else if (rv == 0) { // Timeout occured 
+    } else if (rv == 0) {  // Timeout occured 
       print(LogLevel::LOG_ERROR, "UDP timeout\n");
       // TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
     } else {
-      if (fds[0].revents & POLLIN) { // There is data to be read from UDP
-        timeout = connected_timeout; // Set timeout to appropriate value
-        byte_count = udp_recv(read_buffer, sizeof(read_buffer)); // Read message
-        if (byte_count > 0 && udp_parse(read_buffer, byte_count)) { // Check if PING. Returns true if message was PING
-          byte_count = udp_send(send_buffer, sizeof(send_buffer)); // Respond with ACK
+      if (fds[0].revents & POLLIN) {  // There is data to be read from UDP
+        timeout = connected_timeout;  // Set timeout to appropriate value
+        byte_count = udp_recv(read_buffer, sizeof(read_buffer));  // Read message
+        if (byte_count > 0 && udp_parse(read_buffer, byte_count)) {  // Check if PING. Returns true if message was PING
+          byte_count = udp_send(send_buffer, sizeof(send_buffer));  // Respond with ACK
           print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count); 
         }
       } else {

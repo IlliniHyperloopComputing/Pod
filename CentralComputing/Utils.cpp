@@ -45,7 +45,7 @@ bool Utils::set_GPIO(int GPIONumber, bool switchVal) {
         out << "0";
     }
     out.close();
-    return true; // Have it return 1 if it works and zero otherwise
+    return true;  // Have it return 1 if it works and zero otherwise
 }
 
 int64_t Utils::microseconds() {

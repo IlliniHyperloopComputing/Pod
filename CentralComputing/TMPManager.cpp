@@ -28,8 +28,8 @@ std::shared_ptr<TMPData> TMPManager::refresh() {
   if (in) {
     // File will have two lines. we want the second line
     std::string line;
-    std::getline(in, line);// ignore this line
-    std::getline(in, line);// we want this line
+    std::getline(in, line);  // ignore this line
+    std::getline(in, line);  // we want this line
 
     // parse the temperature value
     int rawTmp = std::stoi(line.substr(line.find('t')+2));

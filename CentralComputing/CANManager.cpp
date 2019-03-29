@@ -1,7 +1,6 @@
 #include "CANManager.h"
 
 bool CANManager::initialize_source() {
-
   print(LogLevel::LOG_DEBUG, "CAN Manger setup successful\n");
   return true;
 }

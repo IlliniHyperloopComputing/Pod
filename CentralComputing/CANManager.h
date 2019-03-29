@@ -23,4 +23,4 @@ class CANManager : public SourceManagerBase<CANData, false> {
   int i = 5;
 };
 
-#endif // CANMANAGER_H_
+#endif  // CANMANAGER_H_

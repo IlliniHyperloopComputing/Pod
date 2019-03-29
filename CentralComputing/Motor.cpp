@@ -46,7 +46,6 @@ int16_t Motor::get_throttle() {
 
 void Motor::set_throttle(int16_t value) {
   if (enabled) {
-
     throttle = value;
 
     // TODO: Something over CAN

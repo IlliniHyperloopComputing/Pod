@@ -26,4 +26,4 @@ namespace SourceManager {
   extern MotionModel MM;
 }
 
-#endif // SOURCEMANAGER_H_
+#endif  // SOURCEMANAGER_H_

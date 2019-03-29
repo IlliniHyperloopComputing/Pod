@@ -26,8 +26,8 @@ int64_t microseconds();
 bool set_GPIO(int GPIONumber, bool switchVal);
 void busyWait(int64_t microseconds);
 enum LogLevel {
-  LOG_EDEBUG = 0, // excesive debug
-  LOG_DEBUG = 1,  // debug
+  LOG_EDEBUG = 0,  // excesive debug
+  LOG_DEBUG = 1,   // debug
   LOG_INFO = 2,
   LOG_ERROR = 3
 };
@@ -62,6 +62,6 @@ T clamp(T v, T l, T h) {
 
 ssize_t write_all_to_socket(int socket, uint8_t * buffer, size_t count);
 
-} // namespace Utils
+}  // namespace Utils
 
-#endif // UTILS_H_
+#endif  // UTILS_H_

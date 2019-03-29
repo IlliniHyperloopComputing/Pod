@@ -24,7 +24,6 @@ bool MotionModel::initialize_source() {
 }
 
 void MotionModel::stop_source() {
-
   SourceManager::ADC.data_event_reset();
   SourceManager::PRU.data_event_reset();
   print(LogLevel::LOG_DEBUG, "Motion Model stopped\n");
@@ -67,7 +66,7 @@ std::shared_ptr<StateSpace> MotionModel::refresh() {
   gain.fD = 1;
 
   // Apply Constant Gain Filter
-  Filter::ConstantGainFilter(state, meas, gain, dt);
+  Filter::ConstantGainFilter(&state, meas, gain, dt);
 
   // Return state
   std::shared_ptr<StateSpace> new_data = std::make_shared<StateSpace>();

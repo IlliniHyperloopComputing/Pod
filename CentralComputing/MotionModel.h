@@ -26,5 +26,5 @@ class MotionModel : public SourceManagerBase<StateSpace, false> {
     int64_t last_time;
 };
 
-#endif // MOTIONMODEL_H_
+#endif  // MOTIONMODEL_H_
 

@@ -16,7 +16,7 @@ class Configurator {
   bool openConfigFile(const string&);
   bool getValue(const string&, string&);
   bool getValue(const string&, int64_t&);
-  bool getValue(const string&, double& ); 
+  bool getValue(const string&, double&); 
 
  private:
   void loadValues();
@@ -26,6 +26,6 @@ class Configurator {
 
 namespace ConfiguratorManager {
   extern Configurator config;
-} // namespace ConfiguratorManager
+}  // namespace ConfiguratorManager
 
-#endif // CONFIGURATOR_H_
+#endif  // CONFIGURATOR_H_
