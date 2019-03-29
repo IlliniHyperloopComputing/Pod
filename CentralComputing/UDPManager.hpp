@@ -3,7 +3,7 @@
 
 #include "Utils.h"
 #include "SafeQueue.hpp"
-#include "Event.hpp"
+#include "Event.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <stdlib.h>
