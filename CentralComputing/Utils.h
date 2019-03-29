@@ -22,12 +22,12 @@ namespace Utils {
 * @return a long long representing the number of microseconds since startup
 **/
 const int HEARTBEAT_GPIO = 37;
-long long microseconds();
+int64_t microseconds();
 bool set_GPIO(int GPIONumber, bool switchVal);
-void busyWait(long microseconds);
+void busyWait(int64_t microseconds);
 enum LogLevel {
-  LOG_EDEBUG = 0, //excesive debug
-  LOG_DEBUG = 1, //debug
+  LOG_EDEBUG = 0, // excesive debug
+  LOG_DEBUG = 1,  // debug
   LOG_INFO = 2,
   LOG_ERROR = 3
 };
@@ -50,11 +50,14 @@ void print(LogLevel level, const char * format, ...);
 * Define utility clamp function
 **/ 
 template <class T>
-T clamp(T v, T l, T h) 
-{
-  if (v < l) return l;
-  else if (v > h) return h; 
-  else return v; 
+T clamp(T v, T l, T h) {
+  if (v < l) {
+    return l;
+  } else if (v > h) {
+    return h;
+  } else {
+    return v;
+  }
 }
 
 ssize_t write_all_to_socket(int socket, uint8_t * buffer, size_t count);

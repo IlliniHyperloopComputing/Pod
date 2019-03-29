@@ -23,7 +23,7 @@
 namespace NetworkManager {
 
 enum Network_Command_ID {
-  //state transitions
+  // State transitions
   TRANS_SAFE_MODE = 0,
   TRANS_FUNCTIONAL_TEST = 1,
   TRANS_LOADING = 2,
@@ -37,11 +37,11 @@ enum Network_Command_ID {
   DISABLE_BRAKE = 10,
   TRANS_FLIGHT_COAST = 11,
   TRANS_FLIGHT_BRAKE = 12,
-  TRANS_ERROR_STATE=13,
+  TRANS_ERROR_STATE = 13,
 };
 
-//enum specifying what data is sent
-//[1 byte Data ID][4 byte size][size byte chunk]
+// enum specifying what data is sent
+// [1 byte Data ID][4 byte size][size byte chunk]
 enum Network_Data_ID {
   POD_STATE,
   BRAKE_STATUS,
@@ -56,8 +56,8 @@ enum Network_Data_ID {
 * A network command is returned by read and parsed within Pod.cpp
 **/
 struct Network_Command {
-  //state transtitions
-  uint8_t id; //id is just a network command
+  // state transtitions
+  uint8_t id; // id is just a network command
   uint8_t value;
 };
 

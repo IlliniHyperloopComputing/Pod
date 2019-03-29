@@ -8,7 +8,7 @@
 #include "I2CManager.h"
 #include "MotionModel.h"
 
-// Include stubbs to allow Managers to 
+// Include stubbs to allow Managers to
 // include this .hpp in their files
 class PRUManager;
 class CANManager;

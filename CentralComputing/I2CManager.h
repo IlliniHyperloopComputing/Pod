@@ -4,7 +4,7 @@
 #include "SourceManagerBase.hpp"
 
 struct I2CData {
-  //replace with actual data structure
+  // replace with actual data structure
   int dummy_data;
 };
 
@@ -19,7 +19,7 @@ class I2CManager : public SourceManagerBase<I2CData, false> {
       return "i2c";
     }
 
-    //iterator for testing purposes, remove
+    // iterator for testing purposes, remove
     int i = 5;
 };
 

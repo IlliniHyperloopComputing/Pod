@@ -2,6 +2,10 @@
 
 using Utils::print;
 using Utils::LogLevel;
+using Utils::microseconds;
+using std::make_shared;
+using std::thread;
+using std::function;
 
 Pod::Pod() {
   running.store(false);
@@ -10,7 +14,7 @@ Pod::Pod() {
 
 void Pod::logic_loop() {
 
-  long long logic_loop_timeout; // Get the loop sleep (timeout) value
+  long logic_loop_timeout; // Get the loop sleep (timeout) value
   if (!ConfiguratorManager::config.getValue("logic_loop_timeout", logic_loop_timeout)) {
     print(LogLevel::LOG_ERROR, "Unable to find logic_loop timeout config, exiting logic_loop\n");
     return;
@@ -168,7 +172,7 @@ int main(int argc, char **argv) {
   }
 
   #ifndef SIM
-    Utils::loglevel = LOG_EDEBUG;
+    Utils::loglevel = LogLevel::LOG_EDEBUG;
     // Create the pod object
     auto pod = make_shared<Pod>();
     // Setup ctrl-c behavior 
@@ -178,7 +182,7 @@ int main(int argc, char **argv) {
     pod->startup();
     return 0;
   #else
-    Utils::loglevel = LOG_EDEBUG;
+    Utils::loglevel = LogLevel::LOG_EDEBUG;
     testing::InitGoogleTest(&argc, argv);
     return RUN_ALL_TESTS();
   #endif

@@ -25,7 +25,7 @@ class MotionModel : public SourceManagerBase<StateSpace, false> {
 
     // Store our state
     StateSpace state;
-    long long last_time;
+    int64_t last_time;
 
 };
 

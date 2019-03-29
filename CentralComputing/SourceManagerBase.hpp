@@ -100,13 +100,13 @@ class SourceManagerBase {
     }
 
     // returns how long this thread should sleep
-    long long refresh_timeout() {
-      long long value;
+    int64_t refresh_timeout() {
+      int64_t value;
       if (ConfiguratorManager::config.getValue(name()+"_manager_timeout", value)) {
         return value;
       } else {
         print(LogLevel::LOG_ERROR, "Failed to get timeout for: %s. Using default value of (1.0 * 1E6)\n", name().c_str());
-        return (long long) (1.0 * 1E6);
+        return (int64_t) (1.0 * 1E6);
       }
     }
 

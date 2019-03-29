@@ -6,12 +6,12 @@
 
 #define LOWPASS_PERCENT 0.9
 
-//TODO: Better define these constants
-#define RPM_PDR 600.0  //point of diminishing returns
-#define DISK_CIRCUMFRENCE 10.0 //In Meters
+// TODO: Better define these constants
+#define RPM_PDR 600.0  // point of diminishing returns
+#define DISK_CIRCUMFRENCE 10.0 // In Meters
 #define RPM_TO_MS (DISK_CIRCUMFRENCE/60.0) // RPM to Meters per second
 #define MS_TO_RPM (60.0/DISK_CIRCUMFRENCE) // Meters per second to RPM
-//TODO: Better define this constant
+// TODO: Better define this constant
 #define RPM_TO_USEC (25.0/400.0) // Usec/RRPM
 #define MASS 1.0
 
@@ -39,8 +39,8 @@ namespace Filter {
                           StateSpace & gain,
                           double delta);
 
-  double drag_profile( double velocity);
-  double motor_profile( double velocity, double RPM);
+  double drag_profile(double velocity);
+  double motor_profile(double velocity, double RPM);
 
 } // namespace Filter
 

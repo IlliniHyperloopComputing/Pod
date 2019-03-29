@@ -39,9 +39,6 @@ class Brakes {
 
     void set_enable(bool enable);
 
-    //static std::string pwm_chip;
-    //static std::string pwm_pin;
-
     double integral;
 
     bool enabled;

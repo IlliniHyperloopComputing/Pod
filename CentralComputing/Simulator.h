@@ -98,15 +98,12 @@ class Simulator {
 
     int socketfd;
 
-    long long timeLast = -1;
-    long long timeDelta = 0.000;
-    
+    int64_t timeLast = -1;
+    int64_t timeDelta = 0.000;
     bool motorsOn = false;
     bool brakesOn = false;
-    
     uint8_t throttle = 0.000;
     uint8_t pressure = 0.000;
-    
     double position = 0.000;
     double lastPosition = 0.000;
     double velocity = 0.000;

@@ -10,6 +10,9 @@
 #include <fstream>
 #include <string>
 
+using Utils::print;
+using Utils::LogLevel;
+
 TEST(UtilsTest, busyWaitTest) {
 	//buffer based on how accurate busyWait needs to be while still passing the test
 	long buffer = 100000;
@@ -108,7 +111,7 @@ TEST(UtilsTest, GPIOToggleTest) {
 	EXPECT_EQ(content, one);
 
   #else 
-  print(LOG_ERROR, "Test only works on BBB. Run on BBB\n");
+  print(LogLevel::LOG_ERROR, "Test only works on BBB. Run on BBB\n");
   EXPECT_EQ(true, true);
   #endif
 

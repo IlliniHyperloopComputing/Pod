@@ -2,6 +2,7 @@
 
 using Utils::print;
 using Utils::LogLevel;
+using Utils::microseconds;
 
 bool MotionModel::initialize_source() {
   state.x[0] = 0;

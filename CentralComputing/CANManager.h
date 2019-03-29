@@ -4,7 +4,7 @@
 #include "SourceManagerBase.hpp"
 
 struct CANData {
-  //replace with actual data structure
+  // replace with actual data structure
   int dummy_data;
 };
 
@@ -19,7 +19,7 @@ class CANManager : public SourceManagerBase<CANData, false> {
       return "can";
     }
 
-    //iterator for testing purposes, remove
+    // iterator for testing purposes, remove
     int i = 5;
 };
 

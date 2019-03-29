@@ -25,7 +25,7 @@ class ADCManager : public SourceManagerBase<ADCData, true> {
       return "adc";
     }
 
-    //iterator for testing purposes, remove
+    // iterator for testing purposes, remove
     int i = 5;
 };
 

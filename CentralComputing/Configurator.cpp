@@ -1,8 +1,6 @@
 #include "Configurator.h"
 #include <string>
 
-using std::string;
-
 Configurator ConfiguratorManager::config;
 
 bool Configurator::openConfigFile(const string& fileName) {
@@ -32,7 +30,7 @@ bool Configurator::getValue(const string& varName, string& value) {
   return true;
 }
 
-bool Configurator::getValue(const string& varName, long long& value) {
+bool Configurator::getValue(const string& varName, int64_t& value) {
   if (mapVals.find(varName) == mapVals.end()) {
     return false;
   }

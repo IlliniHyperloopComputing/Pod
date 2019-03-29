@@ -47,8 +47,9 @@ bool Utils::set_GPIO(int GPIONumber, bool switchVal) {
     out.close();
     return true; //Have it return 1 if it works and zero otherwise
 }
-long long Utils::microseconds() {
-  static long long start_time = -1;
+
+int64_t Utils::microseconds() {
+  static int64_t start_time = -1;
   auto now = std::chrono::system_clock::now();
   auto duration = now.time_since_epoch();
   if (start_time == -1) {

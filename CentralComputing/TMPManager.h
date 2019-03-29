@@ -21,9 +21,9 @@ class TMPManager : public SourceManagerBase<TMPData, false> {
 
     std::string prefix = "/sys/bus/w1/devices/";
     std::string suffix = "/w1_slave";
-    std::string devices[NUM_TMP] = {"28-0417028e39ff", 
-                                    "28-0417029885ff", 
-                                    "28-0417029a0dff", 
+    std::string devices[NUM_TMP] = {"28-0417028e39ff",
+                                    "28-0417029885ff",
+                                    "28-0417029a0dff",
                                     "28-051701e603ff"};
 
     std::string name() {

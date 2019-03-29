@@ -7,12 +7,15 @@
 #include <map>
 
 using std::string;
+using std::ifstream;
+using std::map;
+using std::pair;
 
 class Configurator {
   public:
     bool openConfigFile(const string&);
     bool getValue(const string&, string&);
-    bool getValue(const string&, long long&);
+    bool getValue(const string&, int64_t&);
     bool getValue(const string&, double& ); 
 
   private:

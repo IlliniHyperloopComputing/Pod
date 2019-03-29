@@ -16,66 +16,63 @@ typedef void (Pod_State::*steady_state_function) (std::shared_ptr<NetworkManager
 typedef void (Pod_State::*transition_function) ();
 
 class Pod_State : public StateMachine {
-	public:
+  public:
 
-		enum E_States
-		{
-			ST_SAFE_MODE,
-			ST_FUNCTIONAL_TEST,
-      		ST_LOADING,
-			ST_LAUNCH_READY,
-			ST_FLIGHT_ACCEL,
-			ST_FLIGHT_COAST,
-			ST_FLIGHT_BRAKE,
-			ST_ERROR,
-			ST_MAX_STATES
-		};
+    enum E_States {
+      ST_SAFE_MODE,
+      ST_FUNCTIONAL_TEST,
+      ST_LOADING,
+      ST_LAUNCH_READY,
+      ST_FLIGHT_ACCEL,
+      ST_FLIGHT_COAST,
+      ST_FLIGHT_BRAKE,
+      ST_ERROR,
+      ST_MAX_STATES
+    };
 
-		/** 
-		* Constructs a pod state machine
-		**/
-		//Pod_State(Brake * brake, Motor * motor, Sensor * sensor);
+    /** 
+    * Constructs a pod state machine
+    **/
     Pod_State();
-   
-		// returns the current state as an enum
-		E_States get_current_state();
-		
-		// returns the string name for current state
-		std::string get_current_state_string() {
-			std::string states[] =
-			{
-				"SAFE_MODE",
-				"FUNCTIONAL_TESTS",
+  
+    // returns the current state as an enum
+    E_States get_current_state();
+    
+    // returns the string name for current state
+    std::string get_current_state_string() {
+      std::string states[] = {
+        "SAFE_MODE",
+        "FUNCTIONAL_TESTS",
         "LOADING",
-				"LAUNCH_READY",
-				"FLIGHT_ACCEL",
-				"FLIGHT_COAST",
-				"FLIGHT_BRAKE",
-				"ERROR_STATE",
-				"NOT A STATE"
-			};
-			return states[(int)get_current_state()];
-		}
-		
-		/**
-		* User controlled movement events
-		**/
-		void move_safe_mode();
-		void move_functional_tests();
+        "LAUNCH_READY",
+        "FLIGHT_ACCEL",
+        "FLIGHT_COAST",
+        "FLIGHT_BRAKE",
+        "ERROR_STATE",
+        "NOT A STATE"
+      };
+      return states[static_cast<int>(get_current_state())];
+    }
+    
+    /**
+    * User controlled movement events
+    **/
+    void move_safe_mode();
+    void move_functional_tests();
     void move_loading();
-		void move_launch_ready();
-		void accelerate();
-		void move_flight_coast();
-		void move_flight_brake();
-		void emergency_brake();
-    void no_transition(); //used in map to make things nice
+    void move_launch_ready();
+    void accelerate();
+    void move_flight_coast();
+    void move_flight_brake();
+    void emergency_brake();
+    void no_transition(); // used in map to make things nice
 
-		/**
-		* Software controlled events
-		**/
-		void coast();
-		void brake();
-		void error();
+    /**
+    * Software controlled events
+    **/
+    void coast();
+    void brake();
+    void error();
 
     /**
     * Steady state functions
@@ -109,36 +106,35 @@ class Pod_State : public StateMachine {
 
     Motor motor;
     Brakes brakes;
-
     Event auto_transition_coast;
     Event auto_transition_brake;
-		
-	private:
-    std::map<NetworkManager::Network_Command_ID, transition_function> transition_map; 
-    
+
+  private:
+    std::map<NetworkManager::Network_Command_ID, transition_function> transition_map;
+
     std::map<E_States, steady_state_function> steady_state_map;
-		void ST_Safe_Mode();
-		void ST_Functional_Test();
-    	void ST_Loading();
-		void ST_Launch_Ready();
-		void ST_Flight_Accel();
-		void ST_Flight_Coast();
-		void ST_Flight_Brake();
-		void ST_Error();
-		bool shouldBrake(double, double);
-   
+    void ST_Safe_Mode();
+    void ST_Functional_Test();
+      void ST_Loading();
+    void ST_Launch_Ready();
+    void ST_Flight_Accel();
+    void ST_Flight_Coast();
+    void ST_Flight_Brake();
+    void ST_Error();
+    bool shouldBrake(double, double);
 
 
-		BEGIN_STATE_MAP
-			STATE_MAP_ENTRY(&Pod_State::ST_Safe_Mode)
-			STATE_MAP_ENTRY(&Pod_State::ST_Functional_Test)
-			STATE_MAP_ENTRY(&Pod_State::ST_Loading)
-			STATE_MAP_ENTRY(&Pod_State::ST_Launch_Ready)
-			STATE_MAP_ENTRY(&Pod_State::ST_Flight_Accel)
-			STATE_MAP_ENTRY(&Pod_State::ST_Flight_Coast)
-			STATE_MAP_ENTRY(&Pod_State::ST_Flight_Brake)
-			STATE_MAP_ENTRY(&Pod_State::ST_Error)
-		END_STATE_MAP
+
+    BEGIN_STATE_MAP
+      STATE_MAP_ENTRY(&Pod_State::ST_Safe_Mode)
+      STATE_MAP_ENTRY(&Pod_State::ST_Functional_Test)
+      STATE_MAP_ENTRY(&Pod_State::ST_Loading)
+      STATE_MAP_ENTRY(&Pod_State::ST_Launch_Ready)
+      STATE_MAP_ENTRY(&Pod_State::ST_Flight_Accel)
+      STATE_MAP_ENTRY(&Pod_State::ST_Flight_Coast)
+      STATE_MAP_ENTRY(&Pod_State::ST_Flight_Brake)
+      STATE_MAP_ENTRY(&Pod_State::ST_Error)
+    END_STATE_MAP
 
 };
 
