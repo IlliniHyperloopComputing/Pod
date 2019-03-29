@@ -151,7 +151,7 @@ void UDPManager::connection_monitor(const char * hostname, const char * send_por
   running.store(true);
   print(LogLevel::LOG_INFO, "UDP Setup complete\n");
   setup.invoke();
-	// Poll indefinitely until a ping is received, then go into ping-ack loop.
+  // Poll indefinitely until a ping is received, then go into ping-ack loop.
   while (running) {
     rv = poll(fds, 1, timeout);  // http://beej.us/guide/bgnet/html/single/bgnet.html#indexId434909-276
     if (rv == -1) {  // ERROR occured in poll()

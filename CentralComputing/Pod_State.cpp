@@ -225,21 +225,21 @@ void Pod_State::steady_safe_mode(std::shared_ptr<TCPManager::Network_Command> co
 
 void Pod_State::steady_functional(std::shared_ptr<TCPManager::Network_Command> command) {
   // process command, let manual commands go through
-	switch (command->id) {
-		case TCPManager::ENABLE_MOTOR: 
+  switch (command->id) {
+    case TCPManager::ENABLE_MOTOR: 
       motor.enable_motors();
-			break;
-		case TCPManager::DISABLE_MOTOR:
+      break;
+    case TCPManager::DISABLE_MOTOR:
       motor.disable_motors();
-			break;
-		case TCPManager::SET_MOTOR_SPEED:
+      break;
+    case TCPManager::SET_MOTOR_SPEED:
       motor.set_throttle(command->value); 
-			break;
-  	case TCPManager::ENABLE_BRAKE:
+      break;
+    case TCPManager::ENABLE_BRAKE:
       // activate brakes
       brakes.enable_brakes();
-			break;
-		case TCPManager::DISABLE_BRAKE:
+      break;
+    case TCPManager::DISABLE_BRAKE:
       // deactivate brakes
       brakes.disable_brakes();
       break;
@@ -255,39 +255,39 @@ void Pod_State::steady_launch_ready(std::shared_ptr<TCPManager::Network_Command>
 }
 
 void Pod_State::steady_flight_accelerate(std::shared_ptr<TCPManager::Network_Command> command) {
-	// Access Pos, Vel, and Accel from Motion Model
-	std::shared_ptr<StateSpace> state = SourceManager::MM.Get();
-	double pos = state->x[0];
-	double vel = state->x[1];
-	double acc = state->x[2];
-	
-	if (shouldBrake(vel, pos) || vel > MAX_VELOCITY) {
-		auto newCommand = std::make_shared<TCPManager::Network_Command>();
-		newCommand->id = TCPManager::Network_Command_ID::TRANS_FLIGHT_COAST;
-		newCommand->value = 0;
-		TCPManager::command_queue.enqueue(newCommand);
+  // Access Pos, Vel, and Accel from Motion Model
+  std::shared_ptr<StateSpace> state = SourceManager::MM.Get();
+  double pos = state->x[0];
+  double vel = state->x[1];
+  double acc = state->x[2];
+  
+  if (shouldBrake(vel, pos) || vel > MAX_VELOCITY) {
+    auto newCommand = std::make_shared<TCPManager::Network_Command>();
+    newCommand->id = TCPManager::Network_Command_ID::TRANS_FLIGHT_COAST;
+    newCommand->value = 0;
+    TCPManager::command_queue.enqueue(newCommand);
     auto_transition_coast.invoke();
   }
 }
 
 void Pod_State::steady_flight_coast(std::shared_ptr<TCPManager::Network_Command> command) {
-	std::shared_ptr<StateSpace> state = SourceManager::MM.Get();
-	double pos = state->x[0];
-	double vel = state->x[1];
-	double acc = state->x[2];
+  std::shared_ptr<StateSpace> state = SourceManager::MM.Get();
+  double pos = state->x[0];
+  double vel = state->x[1];
+  double acc = state->x[2];
   
-	
-	if (shouldBrake(vel, pos)) {
-		auto newCommand = std::make_shared<TCPManager::Network_Command>();
-		newCommand->id = TCPManager::Network_Command_ID::TRANS_FLIGHT_BRAKE;
-		newCommand->value = 0;
-		TCPManager::command_queue.enqueue(newCommand);
+  
+  if (shouldBrake(vel, pos)) {
+    auto newCommand = std::make_shared<TCPManager::Network_Command>();
+    newCommand->id = TCPManager::Network_Command_ID::TRANS_FLIGHT_BRAKE;
+    newCommand->value = 0;
+    TCPManager::command_queue.enqueue(newCommand);
     auto_transition_brake.invoke();
   }
 }
 
 void Pod_State::steady_flight_brake(std::shared_ptr<TCPManager::Network_Command> command) {
-	// Brakes are applied
+  // Brakes are applied
 }
 
 bool Pod_State::shouldBrake(double vel, double pos) {

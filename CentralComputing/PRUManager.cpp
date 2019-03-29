@@ -34,7 +34,7 @@ bool PRUManager::initialize_source() {
 }
 
 void PRUManager::stop_source() {
-	close(pollfds[0].fd);
+  close(pollfds[0].fd);
   print(LogLevel::LOG_DEBUG, "PRU Manager stopped\n");
 }
 
@@ -49,7 +49,7 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
     return new_data;
   }
 
-	result = read(pollfds[0].fd, readBuf, MAX_BUFFER_SIZE);
+  result = read(pollfds[0].fd, readBuf, MAX_BUFFER_SIZE);
   if (result == 0) {
     print(LogLevel::LOG_ERROR, "Unable to read during operation %s\n", DEVICE_NAME);
 

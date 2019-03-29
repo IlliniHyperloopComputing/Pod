@@ -8,8 +8,8 @@
 #include <stdio.h>
 #include <unistd.h>
 
-#define DEVICE_NAME		"/dev/rpmsg_pru31"
-#define MAX_BUFFER_SIZE		512
+#define DEVICE_NAME   "/dev/rpmsg_pru31"
+#define MAX_BUFFER_SIZE   512
 
 #define CLOCK_TO_SEC (21.474836475/4294967295.0)
 
@@ -17,15 +17,15 @@
 #define NUM_MOTOR_INPUTS 4
 
 struct PRUData {
-	double encoder_distance[NUM_ENC_INPUTS];
-	double encoder_velocity[NUM_ENC_INPUTS];
+  double encoder_distance[NUM_ENC_INPUTS];
+  double encoder_velocity[NUM_ENC_INPUTS];
   double disk_RPM[NUM_MOTOR_INPUTS];
 };
 
 struct RawPRUData {
-	uint32_t counts[11];
-	uint32_t decays[11];
-	uint32_t deltas[11];
+  uint32_t counts[11];
+  uint32_t decays[11];
+  uint32_t deltas[11];
 };
 
 class PRUManager : public SourceManagerBase<PRUData, true> {
@@ -40,7 +40,7 @@ class PRUManager : public SourceManagerBase<PRUData, true> {
     std::string name();
 
     uint8_t readBuf[MAX_BUFFER_SIZE];
-	  struct pollfd pollfds[1];
+    struct pollfd pollfds[1];
 
     // Variables used for pru processing
     const int enc_idx[NUM_ENC_INPUTS] = {1, 2, 3, 4}; 
