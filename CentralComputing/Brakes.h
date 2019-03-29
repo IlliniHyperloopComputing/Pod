@@ -2,9 +2,9 @@
 #define BRAKES_HPP
 
 #include "Utils.h"
-#include "SourceManager.hpp"
-#include "MotionModel.hpp"
-#include "Simulator.hpp"
+#include "SourceManager.h"
+#include "MotionModel.h"
+#include "Simulator.h"
 #include <cmath>
 
 

@@ -1,7 +1,15 @@
-#ifndef UTILS_H
-#define UTILS_H
+#ifndef UTILS_H_
+#define UTILS_H_
 #include <cmath>
 #include <algorithm>
+#include <chrono> // NOLINT
+#include <unistd.h>
+#include <errno.h>
+#include <string>
+#include <time.h>
+#include <pthread.h>
+#include <iostream>
+#include <fstream>
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -44,13 +52,13 @@ void print(LogLevel level, const char * format, ...);
 template <class T>
 T clamp(T v, T l, T h) 
 {
-  if(v < l) return l;
-  else if(v > h) return h; 
+  if (v < l) return l;
+  else if (v > h) return h; 
   else return v; 
 }
 
 ssize_t write_all_to_socket(int socket, uint8_t * buffer, size_t count);
 
-}
-#endif // UTILS_H
+} // namespace Utils
 
+#endif // UTILS_H_

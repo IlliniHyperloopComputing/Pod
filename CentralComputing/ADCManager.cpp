@@ -1,12 +1,12 @@
-#include "ADCManager.hpp"
+#include "ADCManager.h"
 
-bool ADCManager::initialize_source(){
+bool ADCManager::initialize_source() {
 
   print(LogLevel::LOG_DEBUG, "ADC Manger setup successful\n");
   return true;
 }
 
-void ADCManager::stop_source(){
+void ADCManager::stop_source() {
   print(LogLevel::LOG_DEBUG, "ADC Manger stopped\n");
 }
 

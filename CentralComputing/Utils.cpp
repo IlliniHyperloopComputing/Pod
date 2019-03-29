@@ -1,12 +1,4 @@
 #include "Utils.h"
-#include <chrono>
-#include <unistd.h>
-#include <errno.h>
-#include <string>
-#include <time.h>
-#include <pthread.h>
-#include <iostream>
-#include <fstream>
 
 #define ANSI_COLOR_RED     "\x1b[31m"
 #define ANSI_COLOR_GREEN   "\x1b[32m"
@@ -18,19 +10,16 @@
 
 Utils::LogLevel Utils::loglevel = LOG_ERROR;
 
-void Utils::print(LogLevel level, const char * format, ...){
-      if(loglevel <= level){
+void Utils::print(LogLevel level, const char * format, ...) {
+      if (loglevel <= level) {
         char buffer[256];
-        if(level == LOG_ERROR){
+        if (level == LOG_ERROR) {
           snprintf(buffer, 256, "%s[ERROR]:%s %s", ANSI_COLOR_RED, ANSI_COLOR_RESET, format);
-        }
-        else if(level == LOG_INFO){
+        } else if (level == LOG_INFO) {
           snprintf(buffer, 256, "%s[INFO ]:%s %s", ANSI_COLOR_GREEN, ANSI_COLOR_RESET, format);
-        }
-        else if(level == LOG_DEBUG){
+        } else if (level == LOG_DEBUG) {
           snprintf(buffer, 256, "%s[DEBUG]:%s %s", ANSI_COLOR_YELLOW, ANSI_COLOR_RESET, format);
-        }
-        else if(level == LOG_EDEBUG){
+        } else if (level == LOG_EDEBUG) {
           snprintf(buffer, 256, "%s", format);
         }
 
@@ -47,10 +36,10 @@ bool Utils::set_GPIO(int GPIONumber, bool switchVal) {
     std::string end = "/value";
     std::string path = start + integer + end;
     std::ofstream out(path, std::ofstream::trunc);
-    if(!out.is_open()) {
+    if (!out.is_open()) {
         return false;
     }
-    if(switchVal == true) {
+    if (switchVal == true) {
         out<<"1";
     } else {
         out<<"0";
@@ -62,7 +51,7 @@ long long Utils::microseconds() {
   static long long start_time = -1;
   auto now = std::chrono::system_clock::now();
   auto duration = now.time_since_epoch();
-  if(start_time == -1){
+  if (start_time == -1) {
     start_time = std::chrono::duration_cast<std::chrono::microseconds>(duration).count();
     return 0;
   } else {
@@ -90,15 +79,15 @@ void Utils::busyWait(long microseconds) {
 
 ssize_t Utils::write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
   size_t bytes_written = 0;
-  while(bytes_written != count){
+  while (bytes_written != count) {
     //fprintf(stderr,"Writing to socket\n");
     int bytes = write(socket, buffer + bytes_written, count - bytes_written);
-    if(bytes > 0)
+    if (bytes > 0) {
       bytes_written += (size_t)bytes;
-    else if(bytes == 0){
+    } else if (bytes == 0) {
       fprintf(stderr, "Disconnected\n");
       return 0;
-    } else if(bytes == -1 && errno != EINTR){
+    } else if (bytes == -1 && errno != EINTR) {
       fprintf(stderr, "Write failure!\n");
       return -1;
     }

@@ -2,7 +2,7 @@
 #define PRU_MANAGER_HPP
 
 #include "SourceManagerBase.hpp"
-#include "SourceManager.hpp"
+#include "SourceManager.h"
 #include <sys/poll.h>
 #include <fcntl.h>
 #include <stdio.h>

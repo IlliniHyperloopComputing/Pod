@@ -1,13 +1,13 @@
 #include "Filter.h"
 
-double Filter::LowPass(double t_old, double t_new){
+double Filter::LowPass(double t_old, double t_new) {
   return t_old * LOWPASS_PERCENT + t_new * (1.0 - LOWPASS_PERCENT);
 }
 
 void Filter::ConstantGainFilter(  StateSpace & state, 
                                   StateSpace & meas, 
                                   StateSpace & gain,
-                                  double delta){
+                                  double delta) {
   
   // Propagate state forward
   StateSpace estimate;
@@ -46,13 +46,13 @@ void Filter::ConstantGainFilter(  StateSpace & state,
 
 }
 
-double Filter::drag_profile( double velocity){
+double Filter::drag_profile( double velocity) {
   //Apply estimated drag from aero/ friction/ wheel sources
   //Should be based on velocity
   return 0;
 }
 
-double Filter::motor_profile( double velocity, double RPM){
+double Filter::motor_profile( double velocity, double RPM) {
   //Based on profiling curve, calculate velocity.
   //Maybe we just have a lookup table?
   return 0;

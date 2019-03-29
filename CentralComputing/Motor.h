@@ -2,8 +2,8 @@
 #define MOTOR_HPP
 
 #include "Utils.h"
-#include "SourceManager.hpp"
-#include "Simulator.hpp"
+#include "SourceManager.h"
+#include "Simulator.h"
 #include "Filter.h"
 #include <cmath>
 

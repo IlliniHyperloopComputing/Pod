@@ -1,12 +1,12 @@
 #ifndef SOURCE_MANAGER_HPP
 #define SOURCE_MANAGER_HPP
 
-#include "PRUManager.hpp"
-#include "CANManager.hpp"
-#include "TMPManager.hpp"
-#include "ADCManager.hpp"
-#include "I2CManager.hpp"
-#include "MotionModel.hpp"
+#include "PRUManager.h"
+#include "CANManager.h"
+#include "TMPManager.h"
+#include "ADCManager.h"
+#include "I2CManager.h"
+#include "MotionModel.h"
 
 // Include stubbs to allow Managers to 
 // include this .hpp in their files

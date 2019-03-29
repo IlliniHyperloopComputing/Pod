@@ -1,6 +1,6 @@
 #ifdef SIM // Only compile if building test executable
 #include "Pod.h"
-#include "Simulator.hpp"
+#include "Simulator.h"
 
 using namespace Utils;
 class PodTest : public ::testing::Test

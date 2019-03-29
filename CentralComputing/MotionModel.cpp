@@ -1,6 +1,6 @@
-#include "MotionModel.hpp"
+#include "MotionModel.h"
 
-bool MotionModel::initialize_source(){
+bool MotionModel::initialize_source() {
   state.x[0] = 0;
   state.x[1] = 0;
   state.x[2] = 0;
@@ -10,7 +10,7 @@ bool MotionModel::initialize_source(){
   
   last_time = microseconds();
 
-  if(!SourceManager::PRU.is_running() || !SourceManager::ADC.is_running()){
+  if (!SourceManager::PRU.is_running() || !SourceManager::ADC.is_running()) {
     print(LogLevel::LOG_ERROR, "Motion Model setup Failed. PRU or ADC is not up\n");
     return false;
   }
@@ -19,7 +19,7 @@ bool MotionModel::initialize_source(){
   return true;
 }
 
-void MotionModel::stop_source(){
+void MotionModel::stop_source() {
 
   SourceManager::ADC.data_event_reset();
   SourceManager::PRU.data_event_reset();
@@ -27,7 +27,7 @@ void MotionModel::stop_source(){
 
 }
 
-std::shared_ptr<StateSpace> MotionModel::refresh(){
+std::shared_ptr<StateSpace> MotionModel::refresh() {
   SourceManager::PRU.data_event_wait();
   SourceManager::ADC.data_event_wait();
   SourceManager::ADC.data_event_reset();

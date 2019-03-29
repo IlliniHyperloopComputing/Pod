@@ -1,7 +1,8 @@
 #ifdef SIM // Only compile if building test executable
-#include "Simulator.hpp"
+#include "Simulator.h"
 
-using namespace Utils;
+using Utils::print;
+using Utils::LogLevel;
 
 Simulator SimulatorManager::sim;
 
@@ -21,19 +22,19 @@ bool Simulator::sim_connect(const char * hostname, const char * port) {
   hints.ai_family = AF_INET;
   hints.ai_socktype = SOCK_STREAM;
   int rv;
-  if((rv = getaddrinfo(hostname, port, &hints, &servinfo)) != 0) {
+  if ((rv = getaddrinfo(hostname, port, &hints, &servinfo)) != 0) {
     freeaddrinfo(servinfo);
     print(LogLevel::LOG_ERROR, "Error get addrinfo\n");
     return false;
   }
 
-  if((socketfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol)) == -1) {
+  if ((socketfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol)) == -1) {
     freeaddrinfo(servinfo);
     print(LogLevel::LOG_ERROR, "Error getting socket\n");
     return false;
   }
 
-  if(connect(socketfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1) {
+  if (connect(socketfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1) {
     close(socketfd);
     freeaddrinfo(servinfo);
     print(LogLevel::LOG_ERROR, "Error connecting\n");
@@ -111,7 +112,7 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
   space->x[1] = velocity;
   space->x[2] = acceleration;
 
-  if(enable_logging){
+  if (enable_logging) {
     print(LogLevel::LOG_DEBUG, "Motion: Position: %.2f, Velocity: %.2f, Accel = %.2f, lastPos = %.2f, lastVel = %.2f, delta = %d, timeLast=%ld, t = %ld\n",
       position, velocity, acceleration, lastPosition, lastVelocity, timeDelta, timeLast, Utils::microseconds());
   }
@@ -136,7 +137,7 @@ bool Simulator::send_command(std::shared_ptr<NetworkManager::Network_Command> co
 }
 
 void Simulator::read_loop() {
-  while(active_connection.load()){
+  while (active_connection.load()) {
     // dump the data because we don't need it or do anything with it.
     // TODO if we want to we can keep the data and use it for error checking purposes
     // but that seems redundant and like a lot of work

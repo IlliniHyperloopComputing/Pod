@@ -1,8 +1,8 @@
 #ifdef SIM // Only compile if building test executable
 #include "Utils.h"
 #include "Pod.h"
-#include "Event.hpp"
-#include "Simulator.hpp"
+#include "Event.h"
+#include "Simulator.h"
 #include <ctime>
 #include <iostream>
 #include <cstdio>

@@ -1,8 +1,9 @@
 #include "Pod_State.h" 
 #include "Pod.h"
-#include "SourceManager.hpp"
+#include "SourceManager.h"
 
-using namespace Utils;
+using Utils::print;
+using Utils::LogLevel;
 
 double MAX_DECCEL = -19.6;
 double IDEAL_DECCEL = -9.8;
@@ -51,7 +52,7 @@ Pod_State::E_States Pod_State::get_current_state() {
 **/
 
 
-void Pod_State::move_functional_tests(){
+void Pod_State::move_functional_tests() {
 	BEGIN_TRANSITION_MAP							/* Current state */
 		TRANSITION_MAP_ENTRY(ST_FUNCTIONAL_TEST)			/* Safe Mode */
 		TRANSITION_MAP_ENTRY(EVENT_IGNORED)			/* Functional test */
@@ -162,7 +163,7 @@ void Pod_State::brake() {
 	END_TRANSITION_MAP(NULL)
 }
 
-void Pod_State::error(){
+void Pod_State::error() {
 	BEGIN_TRANSITION_MAP							/* Current state */
 		TRANSITION_MAP_ENTRY(ST_ERROR)			/* Safe Mode */
 		TRANSITION_MAP_ENTRY(ST_ERROR)			/* Functional test */
@@ -310,5 +311,5 @@ bool Pod_State::shouldBrake(double vel, double pos) {
 	}
 }
 
-void Pod_State::steady_error_state(std::shared_ptr<NetworkManager::Network_Command> command){
+void Pod_State::steady_error_state(std::shared_ptr<NetworkManager::Network_Command> command) {
 	}

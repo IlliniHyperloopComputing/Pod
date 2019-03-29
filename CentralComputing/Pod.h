@@ -1,10 +1,10 @@
-#ifndef POD_H
-#define POD_H
+#ifndef POD_H_
+#define POD_H_
 
-#include "NetworkManager.hpp"
-#include "Event.hpp"
+#include "NetworkManager.h"
+#include "Event.h"
 #include "Pod_State.h"
-#include "Configurator.hpp"
+#include "Configurator.h"
 #include <string>
 #include <functional>
 #include <semaphore.h>
@@ -35,5 +35,4 @@ class Pod {
 
 void signal_handler(int signal);
 
-
-#endif
+#endif // POD_H_

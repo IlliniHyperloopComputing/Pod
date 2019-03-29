@@ -2,9 +2,9 @@
 #define SOURCE_MANAGER_BASE_HPP
 
 #include "Utils.h"
-#include "Event.hpp"
-#include "Simulator.hpp"
-#include "Configurator.hpp"
+#include "Event.h"
+#include "Simulator.h"
+#include "Configurator.h"
 #include <memory>
 #include <thread>
 #include <mutex>

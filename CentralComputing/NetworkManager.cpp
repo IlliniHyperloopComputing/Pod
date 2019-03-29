@@ -1,7 +1,8 @@
-#include "NetworkManager.hpp"
+#include "NetworkManager.h"
 
 using namespace std;
-using namespace Utils;
+using Utils::print;
+using Utils::LogLevel;
 
 int NetworkManager::socketfd = 0;
 int NetworkManager::clientfd = 0;
@@ -20,7 +21,7 @@ uint8_t NetworkManager::start_server(const char * hostname, const char * port) {
   int enable = 1;
   int blocking = 0;
   ioctl(socketfd, FIONBIO, &blocking);
-  if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0){
+  if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
     perror("setsockopt(SO_REUSEADDR) failed");
   }
 
@@ -31,15 +32,15 @@ uint8_t NetworkManager::start_server(const char * hostname, const char * port) {
   hints.ai_flags = AI_PASSIVE;
 
   int s = getaddrinfo(hostname, port, &hints, &result);
-  if(s != 0){
+  if (s != 0) {
     print(LogLevel::LOG_ERROR, "getaddrinfo: %s\n", gai_strerror(s));
     exit(1);
   }
-  if(bind(socketfd, result->ai_addr, result->ai_addrlen) != 0){
+  if (bind(socketfd, result->ai_addr, result->ai_addrlen) != 0) {
     perror("bind");
     exit(1);
   }
-  if(listen(socketfd, 1) != 0){
+  if (listen(socketfd, 1) != 0) {
     perror("listen");
     exit(1);
   }
@@ -60,11 +61,11 @@ int NetworkManager::accept_client() {
   p.events = POLLIN;
   int ret = 0;
   print(LogLevel::LOG_INFO, "Awaiting connection\n");
-  while(1) {
+  while (1) {
     ret = poll(&p, 1, 200);
-    if(ret == 1) {//there's something trying to connect, or we are exiting
+    if (ret == 1) {//there's something trying to connect, or we are exiting
       clientfd = accept(socketfd, NULL, NULL);
-      if(clientfd != -1)
+      if (clientfd != -1)
         print(LogLevel::LOG_INFO, "Connected!\n"); 
       return clientfd;
     }
@@ -98,9 +99,9 @@ void NetworkManager::send_packet() {
 }
 
 void NetworkManager::network_loop() {
-  while(running){
+  while (running) {
     int fd = accept_client();
-    if(fd > 0){
+    if (fd > 0) {
       print(LogLevel::LOG_INFO, "Starting network threads\n");
       //print(LogLevel::LOG_INFO, "Client fd is: %d\n", clientfd);
       thread read_thread(read_loop);
@@ -122,7 +123,7 @@ void NetworkManager::network_loop() {
 void NetworkManager::read_loop() {
   bool active_connection = true;
   Network_Command buffer;
-  while (running && active_connection){
+  while (running && active_connection) {
     int bytes_read = read_command(&buffer);
     
     active_connection = bytes_read > 0;
@@ -140,7 +141,7 @@ void NetworkManager::read_loop() {
 
 void NetworkManager::write_loop() {
   bool active_connection = true;
-  while(running && active_connection){
+  while (running && active_connection) {
     closing.wait_for(100000);
     int written = write_data();
     //print(LogLevel::LOG_EDEBUG, "Wrote %d bytes\n", written);

@@ -2,9 +2,9 @@
 #define MOTION_MODEL_HPP
 
 #include "SourceManagerBase.hpp"
-#include "SourceManager.hpp"
-#include "PRUManager.hpp"
-#include "ADCManager.hpp"
+#include "SourceManager.h"
+#include "PRUManager.h"
+#include "ADCManager.h"
 #include "StateSpace.hpp"
 #include "Filter.h"
 

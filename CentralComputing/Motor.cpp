@@ -1,7 +1,8 @@
-#include "Motor.hpp"
-using namespace Utils;
+#include "Motor.h"
+using Utils::print;
+using Utils::LogLevel;
 
-Motor::Motor(){
+Motor::Motor() {
   //TODO: Setup CAN connection here
   throttle = 0;
   set_enable(false);
@@ -30,21 +31,21 @@ void Motor::disable_motors() {
   print(LogLevel::LOG_DEBUG, "Motors Disabled\n");
 }
 
-void Motor::set_enable(bool enable){
+void Motor::set_enable(bool enable) {
   //TODO: Something over CAN
   enabled = enable;
 }
 
-bool Motor::is_enabled(){
+bool Motor::is_enabled() {
   return enabled;
 }
 
-int16_t Motor::get_throttle(){
+int16_t Motor::get_throttle() {
   return throttle;
 }
 
 void Motor::set_throttle(int16_t value) {
-  if(enabled){
+  if (enabled) {
 
     throttle = value;
 

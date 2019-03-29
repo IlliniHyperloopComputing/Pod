@@ -1,21 +1,20 @@
-#include "TMPManager.hpp"
+#include "TMPManager.h"
 
-bool TMPManager::initialize_source(){
+bool TMPManager::initialize_source() {
   // Try to open a file
   std::ifstream in(prefix + devices[idx] + suffix);
 
-  if(in){
+  if (in) {
     print(LogLevel::LOG_DEBUG, "TMP Manger setup successful\n");
     return true;
-  }
-  else{
+  } else {
     print(LogLevel::LOG_ERROR, "TMP Manger setup failed\n");
     return false;
   }
 
 }
 
-void TMPManager::stop_source(){
+void TMPManager::stop_source() {
   print(LogLevel::LOG_DEBUG, "TMP Manger stopped\n");
 }
 
@@ -27,7 +26,7 @@ std::shared_ptr<TMPData> TMPManager::refresh() {
   std::ifstream in(prefix + devices[idx] + suffix);
 
   //If valid input
-  if (in){
+  if (in) {
     //File will have two lines. we want the second line
     std::string line;
     std::getline(in, line);//ignore this line
@@ -38,8 +37,7 @@ std::shared_ptr<TMPData> TMPManager::refresh() {
 
     //Set the new value
     old_data.tmp_data[idx] = rawTmp/1000.0;
-  }
-  else{
+  } else {
     print(LogLevel::LOG_ERROR, "TMP Manager: File[%d], device: %s not opened correctly\n", idx, devices[idx].c_str());
   }
   

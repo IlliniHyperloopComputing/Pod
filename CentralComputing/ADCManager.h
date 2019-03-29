@@ -2,7 +2,7 @@
 #define ADC_MANAGER_HPP
 
 #include "SourceManagerBase.hpp"
-#include "SourceManager.hpp"
+#include "SourceManager.h"
 
 #define NUM_ACCEL 3
 

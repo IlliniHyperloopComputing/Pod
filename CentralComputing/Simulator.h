@@ -1,8 +1,7 @@
 #ifndef SIMULATOR_HPP
 #define SIMULATOR_HPP
 
-
-#include "NetworkManager.hpp"
+#include "NetworkManager.h"
 #include "StateSpace.hpp"
 
 #define MAX_ACCEL 9.81

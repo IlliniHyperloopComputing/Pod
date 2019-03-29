@@ -1,10 +1,10 @@
-#ifndef POD_STATE_H
-#define POD_STATE_H
+#ifndef POD_STATE_H_
+#define POD_STATE_H_
 
 #include "StateMachineCompact/StateMachine.h"
-#include "Motor.hpp"
-#include "Brakes.hpp"
-#include "NetworkManager.hpp"
+#include "Motor.h"
+#include "Brakes.h"
+#include "NetworkManager.h"
 #include <iostream>
 #include <string>
 #include <map>
@@ -143,4 +143,4 @@ class Pod_State : public StateMachine {
 };
 
 
-#endif
+#endif // POD_STATE_H_

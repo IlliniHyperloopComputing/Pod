@@ -1,4 +1,4 @@
-#include "Event.hpp"
+#include "Event.h"
 
 void Event::wait() {
   std::unique_lock<std::mutex> lk(mutex);
