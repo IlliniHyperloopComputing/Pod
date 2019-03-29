@@ -22,11 +22,10 @@ void Pod::logic_loop() {
 
   // Start processing/pod logic
   while(running.load()){
-    auto command = NetworkManager::command_queue.dequeue();
-
+    auto command = TCPManager::command_queue.dequeue();
     if(command.get() != nullptr){
       // Parse the command and call the appropriate state machine function
-      auto id = (NetworkManager::Network_Command_ID) command->id;
+      auto id = (TCPManager::Network_Command_ID) command->id;
       auto transition = state_machine->get_transition_function(id);
       ((*state_machine).*(transition))(); 
 
@@ -36,7 +35,7 @@ void Pod::logic_loop() {
       print(LogLevel::LOG_INFO, "Command : %d %d\n", command->id, command->value);
     } 
     else { // Create a "do nothing" command. This will be passed into the steady state caller below
-      command = make_shared<NetworkManager::Network_Command>();
+      command = make_shared<TCPManager::Network_Command>();
       command->id = 0;
       command->value = 0;
     }
@@ -109,16 +108,21 @@ void Pod::startup() {
   print(LogLevel::LOG_INFO, "Source Managers started\n");
 
   //Setup Network Server
-  string port;
-  string local_ip;
-  if(!(ConfiguratorManager::config.getValue("tcp_port", port) && 
-      ConfiguratorManager::config.getValue("local_ip", local_ip))){
-    print(LogLevel::LOG_ERROR, "Missing tcp_port or local_ip\n");
+  string tcp_port;
+  string tcp_addr;
+  string udp_send; // port we send packets to
+  string udp_recv; // port we recv packets from
+  string udp_addr; 
+  if(!(ConfiguratorManager::config.getValue("tcp_port", tcp_port) && 
+      ConfiguratorManager::config.getValue("tcp_addr", tcp_addr) &&
+      ConfiguratorManager::config.getValue("udp_send_port", udp_send) &&
+      ConfiguratorManager::config.getValue("udp_recv_port", udp_recv) &&
+      ConfiguratorManager::config.getValue("udp_addr", udp_addr))){
+    print(LogLevel::LOG_ERROR, "Missing port or addr configuration\n");
   }
-  NetworkManager::start_server(local_ip.c_str(), port.c_str());
-
   //Start Network and main loop thread.
-  thread network_thread(NetworkManager::network_loop);
+  thread tcp_thread([&](){ TCPManager::tcp_loop(tcp_addr.c_str(), tcp_port.c_str()); });
+  thread udp_thread([&](){ UDPManager::connection_monitor(udp_addr.c_str(), udp_send.c_str(), udp_recv.c_str()); });
   running.store(true);
   thread logic_thread([&](){ logic_loop(); }); // I don't know how to use member functions as a thread function, but lambdas work
 
@@ -129,9 +133,9 @@ void Pod::startup() {
   ready.invoke();
 
   //Join all threads
- 
   logic_thread.join();
-  network_thread.join();
+  tcp_thread.join();
+  udp_thread.join();
   
   print(LogLevel::LOG_INFO, "Source Managers closing\n");
   //Stop all source managers
@@ -148,8 +152,10 @@ void Pod::startup() {
 void Pod::stop() {
   running.store(false); 
   closing.invoke();
-  NetworkManager::stop_threads();
-  NetworkManager::close_server();
+  TCPManager::close_client();
+  UDPManager::close_client();
+  TCPManager::stop_threads();
+  UDPManager::stop_threads();
 }
 
 function<void(int)> shutdown_handler;
@@ -157,12 +163,13 @@ void signal_handler(int signal) {shutdown_handler(signal); }
 
 int main(int argc, char **argv) {
   // Load the configuration file if specified, or use the default
-  string config_to_open;
-  if(argc > 1){
-    config_to_open = argv[1];
-  }
-  else{
-    config_to_open = "defaultConfig.txt";
+  string config_to_open = "defaultConfig.txt";
+  if(argc > 1){ // If the first argument is a file, use it as the config file
+    ifstream test_if_file(argv[1]);
+    if(test_if_file.is_open()){
+      test_if_file.close();
+      config_to_open = argv[1];
+    }
   }
   if(!ConfiguratorManager::config.openConfigFile(config_to_open)){
     print(LogLevel::LOG_ERROR, "Config missing. File: %s\n", config_to_open.c_str());

@@ -1,7 +1,8 @@
 #ifndef POD_H
 #define POD_H
 
-#include "NetworkManager.hpp"
+#include "TCPManager.hpp"
+#include "UDPManager.hpp"
 #include "Event.hpp"
 #include "Pod_State.h"
 #include "Configurator.hpp"
