@@ -11,8 +11,11 @@
   * Network Communication 
   * State machine 
   * Communication to peripheral devices and sensors
-2. LabVIEW GUI
-  * Display of all sensor information
-  * Full Pod control
-3. BeagleBone Black setup
-  * Setup for device trees
+2. BeagleBone Black setup
+  * General device setup and configuration guide
+  * Setup for device tree overlays
+  * PRU code
+3. Watchdog 
+  * Arduino based code for a simple watchdog controller
+4. BaseStation
+  * GUI basestation for display and control of the Pod

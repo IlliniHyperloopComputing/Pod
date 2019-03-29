@@ -4,7 +4,7 @@
 #include "StateMachineCompact/StateMachine.h"
 #include "Motor.hpp"
 #include "Brakes.hpp"
-#include "NetworkManager.hpp"
+#include "TCPManager.hpp"
 #include <iostream>
 #include <string>
 #include <map>
@@ -12,7 +12,7 @@
 
 
 class Pod_State;
-typedef void (Pod_State::*steady_state_function) (std::shared_ptr<NetworkManager::Network_Command> command);
+typedef void (Pod_State::*steady_state_function) (std::shared_ptr<TCPManager::Network_Command> command);
 typedef void (Pod_State::*transition_function) ();
 
 class Pod_State : public StateMachine {
@@ -82,14 +82,14 @@ class Pod_State : public StateMachine {
     * Each function call acts as a "frame"
     * Each frame, the function will proces the command, 
     **/
-    void steady_safe_mode(std::shared_ptr<NetworkManager::Network_Command> command);
-    void steady_functional(std::shared_ptr<NetworkManager::Network_Command> command);
-    void steady_loading(std::shared_ptr<NetworkManager::Network_Command> command);
-    void steady_launch_ready(std::shared_ptr<NetworkManager::Network_Command> command);
-    void steady_flight_accelerate(std::shared_ptr<NetworkManager::Network_Command> command);
-    void steady_flight_coast(std::shared_ptr<NetworkManager::Network_Command> command);
-    void steady_flight_brake(std::shared_ptr<NetworkManager::Network_Command> command);
-    void steady_error_state(std::shared_ptr<NetworkManager::Network_Command> command);
+    void steady_safe_mode(std::shared_ptr<TCPManager::Network_Command> command);
+    void steady_functional(std::shared_ptr<TCPManager::Network_Command> command);
+    void steady_loading(std::shared_ptr<TCPManager::Network_Command> command);
+    void steady_launch_ready(std::shared_ptr<TCPManager::Network_Command> command);
+    void steady_flight_accelerate(std::shared_ptr<TCPManager::Network_Command> command);
+    void steady_flight_coast(std::shared_ptr<TCPManager::Network_Command> command);
+    void steady_flight_brake(std::shared_ptr<TCPManager::Network_Command> command);
+    void steady_error_state(std::shared_ptr<TCPManager::Network_Command> command);
 
     /*
     * Gets the steady state function for the current state
@@ -103,7 +103,7 @@ class Pod_State : public StateMachine {
     * Gets the transition function for the given network command
     * @return a member function pointer
     */
-    transition_function get_transition_function(NetworkManager::Network_Command_ID id) {
+    transition_function get_transition_function(TCPManager::Network_Command_ID id) {
       return transition_map[id];
     }
 
@@ -114,7 +114,7 @@ class Pod_State : public StateMachine {
     Event auto_transition_brake;
 		
 	private:
-    std::map<NetworkManager::Network_Command_ID, transition_function> transition_map; 
+    std::map<TCPManager::Network_Command_ID, transition_function> transition_map; 
     
     std::map<E_States, steady_state_function> steady_state_map;
 		void ST_Safe_Mode();

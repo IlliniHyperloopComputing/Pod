@@ -5,5 +5,9 @@ pru_manager_timeout 1000000.0
 mm_manager_timeout  5000.0
 logic_loop_timeout  1000.0
 
-tcp_port 8800
-local_ip 127.0.0.1
+tcp_port 8001
+tcp_addr 127.0.0.1
+
+udp_send_port 5004
+udp_recv_port 5005
+udp_addr 127.0.0.1

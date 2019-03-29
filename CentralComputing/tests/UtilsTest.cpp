@@ -1,3 +1,4 @@
+#ifdef SIM // Only compile if building test executable
 #include "Utils.h"
 #include "Pod.h"
 #include "Event.hpp"
@@ -113,4 +114,4 @@ TEST(UtilsTest, GPIOToggleTest) {
 
 }
 
-
+#endif

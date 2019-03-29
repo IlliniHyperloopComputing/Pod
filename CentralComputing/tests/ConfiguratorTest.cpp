@@ -1,3 +1,4 @@
+#ifdef SIM // Only compile if building test executable
 #include "PodTest.cpp"
 #include <string>
 using namespace std;
@@ -44,3 +45,4 @@ TEST_F(PodTest, ConfigManagerTimeouts) {
   EXPECT_EQ(std::stoll(val), SourceManager::MM.refresh_timeout());
 
 }
+#endif
