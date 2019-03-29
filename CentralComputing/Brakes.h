@@ -9,40 +9,36 @@
 
 
 class Brakes {
-  public:
+ public:
+  /**
+   * Constructor
+   * Setup the PWM pins
+   */
+  Brakes();
 
-    /*
-     * Constructor
-     * Setup the PWM pins
-     */
-    Brakes();
+  /**
+   * Arms the motors
+   */
+  void enable_brakes();
 
-    /*
-     * Arms the motors
-     */
-    void enable_brakes();
+  /**
+   * Disarms the motors
+   */
+  void disable_brakes();
 
-    /*
-     * Disarms the motors
-     */
-    void disable_brakes();
+  /**
+   * is_enabled returns enabled variable
+   */
+  bool is_enabled();
 
-    /*
-     * is_enabled returns enabled variable
-     */
-    bool is_enabled();
+  void debug_set_pwm_pin(std::string & path);
 
+ private:
+  void set_enable(bool enable);
 
-    void debug_set_pwm_pin(std::string & path);
+  double integral;
 
-  private:
-
-    void set_enable(bool enable);
-
-    double integral;
-
-    bool enabled;
-
+  bool enabled;
 };
 
 #endif // BRAKES_H_

@@ -11,7 +11,6 @@ bool TMPManager::initialize_source() {
     print(LogLevel::LOG_ERROR, "TMP Manger setup failed\n");
     return false;
   }
-
 }
 
 void TMPManager::stop_source() {

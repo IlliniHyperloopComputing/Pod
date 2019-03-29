@@ -13,7 +13,7 @@ struct TMPData {
 };
 
 class TMPManager : public SourceManagerBase<TMPData, false> {
-  private:
+ private:
     bool initialize_source();
     void stop_source();
     std::shared_ptr<TMPData> refresh();
@@ -33,7 +33,6 @@ class TMPManager : public SourceManagerBase<TMPData, false> {
     int idx = 0;
 
     TMPData old_data;
-
 };
 
 #endif // TMPMANAGER_H_

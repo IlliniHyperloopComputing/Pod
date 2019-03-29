@@ -43,7 +43,7 @@ void print(LogLevel level, const char * format, ...);
   {\
     char err_buf[500];\
     char* err_str = strerror_r(errno, err_buf, (size_t)500);\
-    print(LogLevel::LOG_ERROR, "%s errno: %s\n",S, err_str);\
+    print(LogLevel::LOG_ERROR, "%s errno: %s\n", S, err_str);\
   }
 
 /**

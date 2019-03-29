@@ -15,18 +15,18 @@ struct RawADCData {
 };
 
 class ADCManager : public SourceManagerBase<ADCData, true> {
-  private:
-    bool initialize_source();
-    void stop_source();
-    std::shared_ptr<ADCData> refresh();
-    std::shared_ptr<ADCData> refresh_sim();
+ private:
+  bool initialize_source();
+  void stop_source();
+  std::shared_ptr<ADCData> refresh();
+  std::shared_ptr<ADCData> refresh_sim();
 
-    std::string name() {
-      return "adc";
-    }
+  std::string name() {
+    return "adc";
+  }
 
-    // iterator for testing purposes, remove
-    int i = 5;
+  // iterator for testing purposes, remove
+  int i = 5;
 };
 
 #endif // ADCMANAGER_H_

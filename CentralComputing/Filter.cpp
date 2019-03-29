@@ -43,7 +43,6 @@ void Filter::ConstantGainFilter(StateSpace & state,
   state.fM   = estimate.fM   + gain.fM   * residual.fM;
   state.fD   = estimate.fD   + gain.fD   * residual.fD;
   state.rpm  = estimate.rpm  + gain.rpm  * residual.rpm;
-
 }
 
 double Filter::drag_profile(double velocity) {

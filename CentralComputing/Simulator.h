@@ -9,10 +9,8 @@
 
 class Simulator {
 
-  public:
-
+ public:
     Simulator();
-
 
     /**
      * Connects to the pod server at hostname/port

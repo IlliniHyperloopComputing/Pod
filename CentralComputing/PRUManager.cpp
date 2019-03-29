@@ -103,7 +103,6 @@ double PRUManager::convert_to_velocity(uint32_t decay, uint32_t delta, double di
       double time_diff = slower * CLOCK_TO_SEC;
       return distance / time_diff;
     }
-
 }
 
 std::shared_ptr<PRUData> PRUManager::refresh_sim() {

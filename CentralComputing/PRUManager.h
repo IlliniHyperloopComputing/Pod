@@ -29,7 +29,7 @@ struct RawPRUData {
 };
 
 class PRUManager : public SourceManagerBase<PRUData, true> {
-  private:
+ private:
     bool initialize_source();
     void stop_source();
     std::shared_ptr<PRUData> refresh();
@@ -47,7 +47,6 @@ class PRUManager : public SourceManagerBase<PRUData, true> {
     const double enc_map[NUM_ENC_INPUTS] = {1, 1, 1, 1};
     const int disk_idx[NUM_MOTOR_INPUTS] = {5, 6, 7, 8}; 
     const double disk_map[NUM_MOTOR_INPUTS] = {1, 1, 1, 1};
-      
 };
 
 #endif // PRUMANAGER_H_

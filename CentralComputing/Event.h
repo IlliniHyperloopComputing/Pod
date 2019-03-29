@@ -9,8 +9,7 @@
 // It's a pretty basic wrapper on a mutex/condition variable
 // You can reuse an event by calling reset()
 class Event {
-
-  public:
+ public:
   /*
    * Causes this thread to wait for another thread to invoke the event
    */
@@ -31,11 +30,9 @@ class Event {
    */
   void reset();
 
-  private:
-
+ private:
   std::mutex mutex;
   std::condition_variable cond;
   bool condition = false;
-
 };
 #endif // EVENT_H_

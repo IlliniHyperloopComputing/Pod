@@ -101,7 +101,7 @@ bool UDPManager::udp_parse(uint8_t* buf, uint8_t len) {
     return true;          // if we get ping, we know it's a dummy
   } else {
     // Print whatever we got because it wasn't PING
-    print(LogLevel::LOG_INFO, "Parsed %d bytes, they are: %s\n",len, buf);   }
+    print(LogLevel::LOG_INFO, "Parsed %d bytes, they are: %s\n", len, buf);   }
   return false;
 }
 
@@ -131,7 +131,7 @@ void UDPManager::connection_monitor(const char * hostname, const char * send_por
   struct pollfd fds[1];
   fds[0].fd = socketfd;
   fds[0].events = POLLIN;
-  uint8_t send_buffer[] = {'A','C','K'};
+  uint8_t send_buffer[] = {'A', 'C', 'K'};
   uint8_t read_buffer[8];
 
   /*

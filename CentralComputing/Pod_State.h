@@ -14,8 +14,7 @@ typedef void (Pod_State::*steady_state_function) (std::shared_ptr<TCPManager::Ne
 typedef void (Pod_State::*transition_function) ();
 
 class Pod_State : public StateMachine {
-  public:
-
+ public:
     enum E_States {
       ST_SAFE_MODE,
       ST_FUNCTIONAL_TEST,
@@ -107,7 +106,7 @@ class Pod_State : public StateMachine {
     Event auto_transition_coast;
     Event auto_transition_brake;
     
-  private:
+ private:
     std::map<TCPManager::Network_Command_ID, transition_function> transition_map; 
     
     std::map<E_States, steady_state_function> steady_state_map;
@@ -133,7 +132,6 @@ class Pod_State : public StateMachine {
       STATE_MAP_ENTRY(&Pod_State::ST_Flight_Brake)
       STATE_MAP_ENTRY(&Pod_State::ST_Error)
     END_STATE_MAP
-
 };
 
 

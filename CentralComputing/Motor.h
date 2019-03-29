@@ -10,8 +10,7 @@
 #define MOTOR_OFF 0
 
 class Motor {
-  public:
-
+ public:
     /*
      * Constructor
      */
@@ -41,14 +40,12 @@ class Motor {
 
     void debug_set_pwm_pin(std::string & path);
 
-  private:
-
+ private:
     void set_enable(bool enable);
 
     bool enabled;
 
     int16_t throttle;
-
 };
 
 #endif // MOTOR_H_ 

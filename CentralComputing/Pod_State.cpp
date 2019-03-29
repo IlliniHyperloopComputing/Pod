@@ -133,8 +133,8 @@ void Pod_State::accelerate() {
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight brake */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     // Error State
   END_TRANSITION_MAP(NULL)
-
 }
+
 void Pod_State::coast() {
   BEGIN_TRANSITION_MAP              /* Current state */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safe Mode */
@@ -172,7 +172,6 @@ void Pod_State::error() {
     TRANSITION_MAP_ENTRY(ST_ERROR)        /* Flight brake */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // Error State
   END_TRANSITION_MAP(NULL)  
-
 }
 
 void Pod_State::no_transition() {
@@ -210,6 +209,7 @@ void Pod_State::ST_Flight_Brake() {
   motor.disable_motors();
   brakes.enable_brakes();
 }
+
 void Pod_State::ST_Error() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
   motor.disable_motors();
@@ -249,11 +249,9 @@ void Pod_State::steady_functional(std::shared_ptr<TCPManager::Network_Command> c
 }
 
 void Pod_State::steady_loading(std::shared_ptr<TCPManager::Network_Command> command) {
-
 }
 
 void Pod_State::steady_launch_ready(std::shared_ptr<TCPManager::Network_Command> command) {
-
 }
 
 void Pod_State::steady_flight_accelerate(std::shared_ptr<TCPManager::Network_Command> command) {
@@ -271,7 +269,6 @@ void Pod_State::steady_flight_accelerate(std::shared_ptr<TCPManager::Network_Com
 		TCPManager::command_queue.enqueue(newCommand);
     auto_transition_coast.invoke();
   }
-
 }
 
 void Pod_State::steady_flight_coast(std::shared_ptr<TCPManager::Network_Command> command) {
@@ -304,7 +301,7 @@ bool Pod_State::shouldBrake(double vel, double pos) {
     print(LogLevel::LOG_INFO, "Pod Should Brake, vel: %.2f pos: %.2f\n", vel, pos);
     return true;
   } else {
- //   print(LogLevel::LOG_INFO, "Pod NOT Brake, vel: %.2f pos: %.2f, target: %ld, stopping_distance %.2f\n", vel, pos, target_distance, stopping_distance);
+    // print(LogLevel::LOG_INFO, "Pod NOT Brake, vel: %.2f pos: %.2f, target: %ld, stopping_distance %.2f\n", vel, pos, target_distance, stopping_distance);
     return false;
   }
 }

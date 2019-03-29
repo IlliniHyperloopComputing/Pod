@@ -12,20 +12,20 @@ using std::map;
 using std::pair;
 
 class Configurator {
-  public:
-    bool openConfigFile(const string&);
-    bool getValue(const string&, string&);
-    bool getValue(const string&, int64_t&);
-    bool getValue(const string&, double& ); 
+ public:
+  bool openConfigFile(const string&);
+  bool getValue(const string&, string&);
+  bool getValue(const string&, int64_t&);
+  bool getValue(const string&, double& ); 
 
-  private:
-    void loadValues();
-    ifstream inFile;
-    map <string, string> mapVals;
+ private:
+  void loadValues();
+  ifstream inFile;
+  map <string, string> mapVals;
 };
 
 namespace ConfiguratorManager {
   extern Configurator config;
-}
+} // namespace ConfiguratorManager
 
 #endif // CONFIGURATOR_H_

@@ -8,7 +8,6 @@ bool CANManager::initialize_source() {
 
 void CANManager::stop_source() {
   print(LogLevel::LOG_DEBUG, "CAN Manger stopped\n");
-
 }
 
 std::shared_ptr<CANData> CANManager::refresh() {

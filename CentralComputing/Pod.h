@@ -16,7 +16,7 @@
 
 
 class Pod {
-  public:
+ public:
     Pod();
 
     void startup();
@@ -29,7 +29,7 @@ class Pod {
     Event processing_command;
     Event closing;
 
-  private:
+ private:
     void logic_loop();
     bool switchVal;
 };

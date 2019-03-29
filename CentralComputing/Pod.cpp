@@ -68,7 +68,6 @@ void Pod::logic_loop() {
     // Sleep for the given timeout
     closing.wait_for(logic_loop_timeout);
   } 
-   
   print(LogLevel::LOG_INFO, "Exiting Pod Logic Loop\n");
 }
 
@@ -149,7 +148,6 @@ void Pod::startup() {
   SourceManager::ADC.stop();
   SourceManager::I2C.stop();
   print(LogLevel::LOG_INFO, "Source Managers closed, Pod shutting down\n");
-
 }
 
 void Pod::stop() {

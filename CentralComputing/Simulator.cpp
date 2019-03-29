@@ -120,7 +120,6 @@ void Simulator::sim_motor_enable() {
 void Simulator::sim_motor_disable() {
   print(LogLevel::LOG_DEBUG, "Sim - Motors Disabled\n");
   motorsOn = false;
-
 }
 
 void Simulator::sim_motor_set_throttle(uint8_t value) {
@@ -189,7 +188,6 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
 
 
 void Simulator::reset_motion() {
-
     timeLast = -1;
     timeDelta = 0.0;
     
@@ -205,6 +203,6 @@ void Simulator::reset_motion() {
     lastVelocity = 0.0;
     acceleration = 0.0;
     timeLast = -1;
-
 }
+
 #endif

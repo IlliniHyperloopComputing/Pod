@@ -10,9 +10,7 @@
 
 
 class MotionModel : public SourceManagerBase<StateSpace, false> {
-  public:
-
-  private:
+ private:
     // Source Manager methods
     bool initialize_source();
     void stop_source();
@@ -26,7 +24,6 @@ class MotionModel : public SourceManagerBase<StateSpace, false> {
     // Store our state
     StateSpace state;
     int64_t last_time;
-
 };
 
 #endif // MOTIONMODEL_H_

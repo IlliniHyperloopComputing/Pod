@@ -48,7 +48,6 @@ int TCPManager::read_command(Network_Command * buffer) {
   int bytes_read = read(socketfd, bytes, 2);
   buffer->id = (Network_Command_ID) bytes[0];
   buffer->value = bytes[1];
- 
   return bytes_read;
 }
 

@@ -14,13 +14,13 @@ void Utils::print(LogLevel level, const char * format, ...) {
       if (loglevel <= level) {
         char buffer[256];
         if (level == LOG_ERROR) {
-          snprintf(buffer, 256, "%s[ERROR]:%s %s", ANSI_COLOR_RED, ANSI_COLOR_RESET, format);
+          snprintf(buffer, sizeof(buffer), "%s[ERROR]:%s %s", ANSI_COLOR_RED, ANSI_COLOR_RESET, format);
         } else if (level == LOG_INFO) {
-          snprintf(buffer, 256, "%s[INFO ]:%s %s", ANSI_COLOR_GREEN, ANSI_COLOR_RESET, format);
+          snprintf(buffer, sizeof(buffer), "%s[INFO ]:%s %s", ANSI_COLOR_GREEN, ANSI_COLOR_RESET, format);
         } else if (level == LOG_DEBUG) {
-          snprintf(buffer, 256, "%s[DEBUG]:%s %s", ANSI_COLOR_YELLOW, ANSI_COLOR_RESET, format);
+          snprintf(buffer, sizeof(buffer), "%s[DEBUG]:%s %s", ANSI_COLOR_YELLOW, ANSI_COLOR_RESET, format);
         } else if (level == LOG_EDEBUG) {
-          snprintf(buffer, 256, "%s", format);
+          snprintf(buffer, sizeof(buffer), "%s", format);
         }
 
         va_list args;
@@ -40,9 +40,9 @@ bool Utils::set_GPIO(int GPIONumber, bool switchVal) {
         return false;
     }
     if (switchVal == true) {
-        out<<"1";
+        out << "1";
     } else {
-        out<<"0";
+        out << "0";
     }
     out.close();
     return true; // Have it return 1 if it works and zero otherwise
