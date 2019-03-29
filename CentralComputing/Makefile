@@ -75,7 +75,7 @@ msg :
 	$(info =          __ __/______/ /______/__/ /______/__/ /__/                     )  
 .PHONY: lint
 lint:
-	python cpplint/cpplint/cpplint.py --verbose=5 --filter=-legal/copyright --extensions=cpp,h,hpp --root=. *
+	python cpplint/cpplint/cpplint.py --verbose=5 --filter=-legal/copyright,-build/include --quiet --extensions=cpp,h,hpp --root=. *
 
 .PHONY: mkdir_obj
 mkdir_obj:
