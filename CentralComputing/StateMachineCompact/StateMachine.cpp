@@ -1,4 +1,3 @@
-#include <assert.h>
 #include "StateMachine.h"
  
 StateMachine::StateMachine(unsigned char maxStates) :
@@ -58,7 +57,11 @@ void StateMachine::StateEngine(void)
         _pEventData = NULL;       // event data used up, reset ptr
         _eventGenerated = false;  // event used up, reset flag
  
-        assert(currentState < _maxStates);
+        // assert(currentState < _maxStates);
+        // We should avoid assert because it will casue a crash
+        if (currentState < _maxStates) {
+            // GO TO ERROR STATE MUST BE IMPLEMENTED
+        }
 
 		// get state map
         const StateStruct* pStateMap = GetStateMap();

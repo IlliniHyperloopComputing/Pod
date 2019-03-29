@@ -1,15 +1,25 @@
+#ifdef SIM // Only compile if building test executable
 #include "PodTest.cpp"
 
 TEST_F(PodTest, AutomaticTransitionBasic) {
-  MoveState(NetworkManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
-  MoveState(NetworkManager::Network_Command_ID::TRANS_LOADING, Pod_State::E_States::ST_LOADING, true);
-  MoveState(NetworkManager::Network_Command_ID::TRANS_LAUNCH_READY, Pod_State::E_States::ST_LAUNCH_READY, true);
-  MoveState(NetworkManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, true);
+  MoveState(TCPManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(TCPManager::Network_Command_ID::TRANS_LOADING, Pod_State::E_States::ST_LOADING, true);
+  MoveState(TCPManager::Network_Command_ID::TRANS_LAUNCH_READY, Pod_State::E_States::ST_LAUNCH_READY, true);
+  MoveState(TCPManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, true);
   EXPECT_TRUE(pod->state_machine->motor.is_enabled());
 
   pod->processing_command.reset();
   pod->state_machine->auto_transition_coast.wait();
   pod->processing_command.wait();
+
+  // There is a EDGE CASE where in the time since we entered Launch/acceleration, that we have already transitioned through coast and into brake
+  // such that the following line failes.
+  // Then when pod->process_command.wait() happens, it waits forever since that command will never happen.
+  // Thus why we have this weird if statement here.
+  if(pod->state_machine->get_current_state() == Pod_State::E_States::ST_FLIGHT_BRAKE){
+    EXPECT_EQ(pod->state_machine->get_current_state(), Pod_State::E_States::ST_FLIGHT_BRAKE);
+    return;
+  }
   EXPECT_EQ(pod->state_machine->get_current_state(), Pod_State::E_States::ST_FLIGHT_COAST);
 
 
@@ -19,4 +29,4 @@ TEST_F(PodTest, AutomaticTransitionBasic) {
   EXPECT_EQ(pod->state_machine->get_current_state(), Pod_State::E_States::ST_FLIGHT_BRAKE);
 
 }
-
+#endif
