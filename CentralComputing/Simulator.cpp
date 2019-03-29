@@ -13,7 +13,7 @@ Simulator::Simulator() {
 
 
 bool Simulator::sim_connect(const char * hostname, const char * port) {
-  //TODO connect to a Pod instance
+  // TODO connect to a Pod instance
   //
   enable_logging = true;
   reset_motion();
@@ -84,10 +84,10 @@ void Simulator::sim_brake_set_pressure(uint8_t value) {
 }
 
 std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
-  //FOR FIRST CALL
+  // FOR FIRST CALL
   if (timeLast == -1) {
     timeDelta = 0.000;
-  } else { //SUBSEQUENT CALLS
+  } else { // SUBSEQUENT CALLS
     timeDelta = Utils::microseconds() - timeLast;
   }
 
@@ -100,13 +100,13 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
   }
 
 
-  double deltaSeconds = (double) timeDelta / 1000000.0;
+  double deltaSeconds = static_cast<double>(timeDelta) / 1000000.0;
 
-  //KINEMATIC PHYSICS CALCULATIONS
+  // KINEMATIC PHYSICS CALCULATIONS
   velocity = lastVelocity + (acceleration * deltaSeconds);
   position = lastPosition + ((lastVelocity + velocity)/2 * deltaSeconds) + (0.5 * acceleration * deltaSeconds * deltaSeconds);
 
-  //CREATING A STATESPACE OBJECT AND SETTING ITS ARRAY'S VALUES
+  // CREATING A STATESPACE OBJECT AND SETTING ITS ARRAY'S VALUES
   std::shared_ptr<StateSpace> space = std::make_shared<StateSpace>();
   space->x[0] = position;
   space->x[1] = velocity;
@@ -117,7 +117,7 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
       position, velocity, acceleration, lastPosition, lastVelocity, timeDelta, timeLast, Utils::microseconds());
   }
 
-  //UPDATING VARIABLES
+  // UPDATING VARIABLES
   lastPosition = position;
   lastVelocity = velocity;
   timeLast = Utils::microseconds();
@@ -130,7 +130,7 @@ std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
 
 bool Simulator::send_command(std::shared_ptr<NetworkManager::Network_Command> command) {
   int bytes_written = write(socketfd, command.get(), sizeof(NetworkManager::Network_Command));
-  //print(LogLevel::LOG_EDEBUG, "Bytes written : %d, ID : %d, Value : %d\n", bytes_written, command->id, command->value);
+  // print(LogLevel::LOG_EDEBUG, "Bytes written : %d, ID : %d, Value : %d\n", bytes_written, command->id, command->value);
   int size = sizeof(NetworkManager::Network_Command);
   return bytes_written == size;
 

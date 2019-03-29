@@ -71,14 +71,14 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
   // Convert encoder data
   for (int i = 0; i < NUM_ENC_INPUTS; i++) {
     new_data.encoder_distance[i] = raw_data.counts[enc_idx[i]] * enc_map[i];
-    new_data.encoder_velocity[i] = convert_to_velocity( raw_data.decays[enc_idx[i]], 
+    new_data.encoder_velocity[i] = convert_to_velocity(raw_data.decays[enc_idx[i]], 
                                                         raw_data.deltas[enc_idx[i]],
                                                         enc_map[i]);
   }
 
   // Convert disk RPM data
   for (int i = 0; i < NUM_MOTOR_INPUTS; i++) {
-    new_data.disk_RPM[i] = convert_to_velocity( raw_data.decays[enc_idx[i]], 
+    new_data.disk_RPM[i] = convert_to_velocity(raw_data.decays[enc_idx[i]], 
                                                 raw_data.deltas[enc_idx[i]],
                                                 enc_map[i]);
   }

@@ -14,7 +14,7 @@ Pod::Pod() {
 
 void Pod::logic_loop() {
 
-  long logic_loop_timeout; // Get the loop sleep (timeout) value
+  int64_t logic_loop_timeout; // Get the loop sleep (timeout) value
   if (!ConfiguratorManager::config.getValue("logic_loop_timeout", logic_loop_timeout)) {
     print(LogLevel::LOG_ERROR, "Unable to find logic_loop timeout config, exiting logic_loop\n");
     return;
@@ -53,7 +53,7 @@ void Pod::logic_loop() {
     bool is_GPIO_set = Utils::set_GPIO(HEARTBEAT_GPIO, switchVal);
     if (!is_GPIO_set) {
       print(LOG_ERROR, "GPIO file not being accessed correctly\n");
-      //TODO: Add command to command queue
+      // TODO: Add command to command queue
     }
     switchVal = !switchVal;
     #endif
@@ -102,7 +102,7 @@ void Pod::startup() {
 
   print(LogLevel::LOG_INFO, "Pod State: %s\n", state_machine->get_current_state_string().c_str());
 
-  //Start all SourceManager threads
+  // Start all SourceManager threads
   SourceManager::PRU.initialize();
   SourceManager::CAN.initialize();
   SourceManager::TMP.initialize();
@@ -111,7 +111,7 @@ void Pod::startup() {
   SourceManager::MM.initialize();
   print(LogLevel::LOG_INFO, "Source Managers started\n");
 
-  //Setup Network Server
+  // Setup Network Server
   string port;
   string local_ip;
   if (!(ConfiguratorManager::config.getValue("tcp_port", port) && 
@@ -120,7 +120,7 @@ void Pod::startup() {
   }
   NetworkManager::start_server(local_ip.c_str(), port.c_str());
 
-  //Start Network and main loop thread.
+  // Start Network and main loop thread.
   thread network_thread(NetworkManager::network_loop);
   running.store(true);
   thread logic_thread([&](){ logic_loop(); }); // I don't know how to use member functions as a thread function, but lambdas work
@@ -128,16 +128,16 @@ void Pod::startup() {
   print(LogLevel::LOG_INFO, "Finished Startup\n");
   print(LogLevel::LOG_INFO, "================\n\n");
   
-  //ready to begin testing
+  // ready to begin testing
   ready.invoke();
 
-  //Join all threads
+  // Join all threads
  
   logic_thread.join();
   network_thread.join();
   
   print(LogLevel::LOG_INFO, "Source Managers closing\n");
-  //Stop all source managers
+  // Stop all source managers
   SourceManager::MM.stop(); // Must be called first
   SourceManager::PRU.stop();
   SourceManager::CAN.stop();

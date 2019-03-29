@@ -20,7 +20,6 @@
 
 using Utils::print;
 using Utils::LogLevel;
-//using namespace std;
 
 template <class Data, bool DataEvent >
 class SourceManagerBase {
@@ -55,7 +54,7 @@ class SourceManagerBase {
         running.store(true);
 
         // I don't know how to start a thread using a member function, but I know how to use lambdas so suck it C++
-        worker = std::thread( [&] { refresh_loop(); } );
+        worker = std::thread([&] { refresh_loop(); } );
       } else {
 
         // Did not setup correctly. Print error and set garbage data
@@ -126,13 +125,13 @@ class SourceManagerBase {
 
     virtual std::string name() = 0;
     
-    virtual std::shared_ptr<Data> refresh() = 0; //constructs a new Data object and fills it in
+    virtual std::shared_ptr<Data> refresh() = 0; // constructs a new Data object and fills it in
 
-    virtual std::shared_ptr<Data> refresh_sim() = 0; //constructs a new Data object and fills it in with data from the simulator
+    virtual std::shared_ptr<Data> refresh_sim() = 0; // constructs a new Data object and fills it in with data from the simulator
 
 
     void refresh_loop() {
-      long long delayInUsecs = refresh_timeout();
+      int64_t delayInUsecs = refresh_timeout();
       while (running.load()) {
         #ifndef SIM
           std::shared_ptr<Data> new_data = refresh();

@@ -3,7 +3,7 @@ using Utils::print;
 using Utils::LogLevel;
 
 Motor::Motor() {
-  //TODO: Setup CAN connection here
+  // TODO: Setup CAN connection here
   throttle = 0;
   set_enable(false);
 }
@@ -32,7 +32,7 @@ void Motor::disable_motors() {
 }
 
 void Motor::set_enable(bool enable) {
-  //TODO: Something over CAN
+  // TODO: Something over CAN
   enabled = enable;
 }
 
@@ -49,7 +49,7 @@ void Motor::set_throttle(int16_t value) {
 
     throttle = value;
 
-    //TODO: Something over CAN
+    // TODO: Something over CAN
 
     #ifdef SIM
     SimulatorManager::sim.sim_motor_set_throttle(value);

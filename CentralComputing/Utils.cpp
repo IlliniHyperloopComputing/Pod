@@ -45,7 +45,7 @@ bool Utils::set_GPIO(int GPIONumber, bool switchVal) {
         out<<"0";
     }
     out.close();
-    return true; //Have it return 1 if it works and zero otherwise
+    return true; // Have it return 1 if it works and zero otherwise
 }
 
 int64_t Utils::microseconds() {
@@ -60,7 +60,7 @@ int64_t Utils::microseconds() {
   }
 }
 
-void Utils::busyWait(long microseconds) {
+void Utils::busyWait(int64_t microseconds) {
 	struct timespec currTime;
 	clockid_t threadClockId;
 	pthread_getcpuclockid(pthread_self(), &threadClockId);
@@ -81,7 +81,6 @@ void Utils::busyWait(long microseconds) {
 ssize_t Utils::write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
   size_t bytes_written = 0;
   while (bytes_written != count) {
-    //fprintf(stderr,"Writing to socket\n");
     int bytes = write(socket, buffer + bytes_written, count - bytes_written);
     if (bytes > 0) {
       bytes_written += (size_t)bytes;

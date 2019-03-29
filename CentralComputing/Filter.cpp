@@ -4,15 +4,15 @@ double Filter::LowPass(double t_old, double t_new) {
   return t_old * LOWPASS_PERCENT + t_new * (1.0 - LOWPASS_PERCENT);
 }
 
-void Filter::ConstantGainFilter(  StateSpace & state, 
-                                  StateSpace & meas, 
-                                  StateSpace & gain,
-                                  double delta) {
+void Filter::ConstantGainFilter(StateSpace & state, 
+                                StateSpace & meas, 
+                                StateSpace & gain,
+                                double delta) {
   
   // Propagate state forward
   StateSpace estimate;
-  estimate.x[0] = state.x[0] + state.x[1] * delta; //propagate distance 
-  estimate.x[1] = state.x[1] + state.x[2] * delta; //propagate velocity
+  estimate.x[0] = state.x[0] + state.x[1] * delta; // propagate distance 
+  estimate.x[1] = state.x[1] + state.x[2] * delta; // propagate velocity
 
   // RPM should track velocity
   // Take velocity slope (acceleration) and propagate forward
@@ -20,7 +20,7 @@ void Filter::ConstantGainFilter(  StateSpace & state,
 
   // Calculate estimated Acceleration
   estimate.fM = motor_profile(estimate.x[1], estimate.rpm); // Motor force
-  estimate.fD = drag_profile( estimate.x[1]); // Drag force
+  estimate.fD = drag_profile(estimate.x[1]); // Drag force
 
   // Estimate acceleration based on input forces
   estimate.x[2] = (state.fM + state.fD) / MASS;
@@ -46,14 +46,14 @@ void Filter::ConstantGainFilter(  StateSpace & state,
 
 }
 
-double Filter::drag_profile( double velocity) {
-  //Apply estimated drag from aero/ friction/ wheel sources
-  //Should be based on velocity
+double Filter::drag_profile(double velocity) {
+  // Apply estimated drag from aero/ friction/ wheel sources
+  // Should be based on velocity
   return 0;
 }
 
-double Filter::motor_profile( double velocity, double RPM) {
-  //Based on profiling curve, calculate velocity.
-  //Maybe we just have a lookup table?
+double Filter::motor_profile(double velocity, double RPM) {
+  // Based on profiling curve, calculate velocity.
+  // Maybe we just have a lookup table?
   return 0;
 }

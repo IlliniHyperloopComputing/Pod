@@ -1,6 +1,5 @@
 #include "NetworkManager.h"
 
-//using namespace std;
 using Utils::print;
 using Utils::LogLevel;
 using std::make_shared;
@@ -67,7 +66,7 @@ int NetworkManager::accept_client() {
   print(LogLevel::LOG_INFO, "Awaiting connection\n");
   while (1) {
     ret = poll(&p, 1, 200);
-    if (ret == 1) {//there's something trying to connect, or we are exiting
+    if (ret == 1) { // there's something trying to connect, or we are exiting
       clientfd = accept(socketfd, NULL, NULL);
       if (clientfd != -1)
         print(LogLevel::LOG_INFO, "Connected!\n"); 
@@ -78,7 +77,7 @@ int NetworkManager::accept_client() {
 }
 
 int NetworkManager::read_command(Network_Command * buffer) {
-  //int bytes_read = read(clientfd, buffer, sizeof(Network_Command));
+  // int bytes_read = read(clientfd, buffer, sizeof(Network_Command));
   uint8_t bytes[2];
   int bytes_read = read(clientfd, bytes, 2);
   buffer->id = (Network_Command_ID) bytes[0];
@@ -107,7 +106,7 @@ void NetworkManager::network_loop() {
     int fd = accept_client();
     if (fd > 0) {
       print(LogLevel::LOG_INFO, "Starting network threads\n");
-      //print(LogLevel::LOG_INFO, "Client fd is: %d\n", clientfd);
+      // print(LogLevel::LOG_INFO, "Client fd is: %d\n", clientfd);
       thread read_thread(read_loop);
       thread write_thread(write_loop);
 
@@ -132,7 +131,7 @@ void NetworkManager::read_loop() {
     
     active_connection = bytes_read > 0;
     if (bytes_read > 0) {
-      //print(LogLevel::LOG_INFO, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
+      // print(LogLevel::LOG_INFO, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
       auto command = make_shared<Network_Command>();
       command->id = buffer.id;
       command->value = buffer.value;
@@ -148,7 +147,7 @@ void NetworkManager::write_loop() {
   while (running && active_connection) {
     closing.wait_for(100000);
     int written = write_data();
-    //print(LogLevel::LOG_EDEBUG, "Wrote %d bytes\n", written);
+    // print(LogLevel::LOG_EDEBUG, "Wrote %d bytes\n", written);
     active_connection = written != -1;
   }
 

@@ -1,5 +1,5 @@
-#ifndef SAFEQUEUE_H
-#define SAFEQUEUE_H
+#ifndef SAFEQUEUE_H_
+#define SAFEQUEUE_H_
 
 #include "Utils.h"
 #include <queue>
@@ -45,4 +45,4 @@ class SafeQueue {
     std::mutex m_mutex;
 };
 
-#endif //SAFEQUEUE_H
+#endif // SAFEQUEUE_H_

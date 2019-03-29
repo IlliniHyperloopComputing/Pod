@@ -38,7 +38,7 @@ std::shared_ptr<StateSpace> MotionModel::refresh() {
   SourceManager::PRU.data_event_reset();
 
   // Grab current time
-  long long cur_time = microseconds();
+  int64_t cur_time = microseconds();
 
   // Grab data
   std::shared_ptr<PRUData> pru = SourceManager::PRU.Get();
@@ -51,11 +51,11 @@ std::shared_ptr<StateSpace> MotionModel::refresh() {
   meas.x[2] = Filter::Median(adc.get()->accel, NUM_ACCEL); 
   meas.rpm  = Filter::Median(pru.get()->disk_RPM, NUM_MOTOR_INPUTS);
   meas.fM = Filter::motor_profile(meas.x[1], meas.rpm);
-  meas.fD = Filter::drag_profile( meas.x[1]);
+  meas.fD = Filter::drag_profile(meas.x[1]);
   
 
   // Calculate time delta
-  long long dt = cur_time - last_time;
+  int64_t dt = cur_time - last_time;
   // Set last time
   last_time = cur_time;
 
@@ -77,7 +77,7 @@ std::shared_ptr<StateSpace> MotionModel::refresh() {
   return new_data;
 }
 
-//get StateSpace object
+// get StateSpace object
 std::shared_ptr<StateSpace> MotionModel::refresh_sim() {
   #ifdef SIM
   return SimulatorManager::sim.sim_get_motion();
