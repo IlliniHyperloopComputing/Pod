@@ -19,6 +19,9 @@ BBBSetup/pru_encoder/Debug/*
 !BBBSetup/pru_encoder/Debug/pru_encoder.out
 
 
+.vscode
+
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]

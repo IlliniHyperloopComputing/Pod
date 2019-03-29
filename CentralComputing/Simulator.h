@@ -1,7 +1,7 @@
 #ifndef SIMULATOR_H_
 #define SIMULATOR_H_
 
-#include "NetworkManager.h"
+#include "TCPManager.hpp"
 #include "StateSpace.hpp"
 
 #define MAX_ACCEL 9.81
@@ -19,8 +19,13 @@ class Simulator {
      * @param hostname the hostname to connect to
      * @param port the port to connect to
      */
-    bool sim_connect(const char * hostname, const char * port);
+    void sim_connect();
+    
+    int start_server(const char * hostname, const char * port);
 
+    int accept_client();
+
+    void logging(bool enable);
 
     /*
      * Simulates arming the motor
@@ -71,7 +76,7 @@ class Simulator {
      * Sends the given command to the connected pod
      * @param command the command to send
      */
-    bool send_command(std::shared_ptr<NetworkManager::Network_Command> command);
+    bool send_command(std::shared_ptr<TCPManager::Network_Command> command);
 
 
     /**
@@ -92,11 +97,13 @@ class Simulator {
 
     std::atomic<bool> active_connection;
     Event closed;
+    Event connected;
     std::thread read_thread;
 
     bool enable_logging = true;
 
     int socketfd;
+    int clientfd;
 
     int64_t timeLast = -1;
     int64_t timeDelta = 0.000;
