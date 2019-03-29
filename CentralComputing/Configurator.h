@@ -1,12 +1,12 @@
-#ifndef CONFIGURATOR_H
-#define CONFIGURATOR_H 
+#ifndef CONFIGURATOR_H_
+#define CONFIGURATOR_H_
 
 #include <fstream>
 #include <string>
 #include <iostream>
 #include <map>
 
-using namespace std;
+using std::string;
 
 class Configurator {
   public:
@@ -25,4 +25,4 @@ namespace ConfiguratorManager {
   extern Configurator config;
 }
 
-#endif
+#endif // CONFIGURATOR_H_

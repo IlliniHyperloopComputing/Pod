@@ -1,5 +1,5 @@
-#ifndef CAN_MANAGER_HPP
-#define CAN_MANAGER_HPP
+#ifndef CANMANAGER_H_
+#define CANMANAGER_H_
 
 #include "SourceManagerBase.hpp"
 
@@ -15,7 +15,7 @@ class CANManager : public SourceManagerBase<CANData, false> {
     std::shared_ptr<CANData> refresh();
     std::shared_ptr<CANData> refresh_sim();
 
-    std::string name(){
+    std::string name() {
       return "can";
     }
 
@@ -23,4 +23,4 @@ class CANManager : public SourceManagerBase<CANData, false> {
     int i = 5;
 };
 
-#endif
+#endif // CANMANAGER_H_

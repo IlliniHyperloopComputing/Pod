@@ -1,5 +1,5 @@
-#ifndef TEMPERATURE_MANAGER_HPP
-#define TEMPERATURE_MANAGER_HPP
+#ifndef TMPMANAGER_H_
+#define TMPMANAGER_H_
 
 #include "SourceManagerBase.hpp"
 #include <string>
@@ -26,7 +26,7 @@ class TMPManager : public SourceManagerBase<TMPData, false> {
                                     "28-0417029a0dff", 
                                     "28-051701e603ff"};
 
-    std::string name(){
+    std::string name() {
       return "tmp";
     }
 
@@ -36,4 +36,4 @@ class TMPManager : public SourceManagerBase<TMPData, false> {
 
 };
 
-#endif
+#endif // TMPMANAGER_H_

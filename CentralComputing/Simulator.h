@@ -1,5 +1,5 @@
-#ifndef SIMULATOR_HPP
-#define SIMULATOR_HPP
+#ifndef SIMULATOR_H_
+#define SIMULATOR_H_
 
 #include "NetworkManager.h"
 #include "StateSpace.hpp"
@@ -117,4 +117,4 @@ namespace SimulatorManager {
   extern Simulator sim;
 }
 
-#endif //SIMULATOR_HPP
+#endif // SIMULATOR_H_

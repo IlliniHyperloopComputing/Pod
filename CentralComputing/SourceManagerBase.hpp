@@ -6,8 +6,8 @@
 #include "Simulator.h"
 #include "Configurator.h"
 #include <memory>
-#include <thread>
-#include <mutex>
+#include <thread> // NOLINT
+#include <mutex>  // NOLINT
 #include <atomic>
 
 #ifdef SIM
@@ -18,8 +18,9 @@
 #pragma GCC diagnostic pop
 #endif
 
-using namespace Utils;
-using namespace std;
+using Utils::print;
+using Utils::LogLevel;
+//using namespace std;
 
 template <class Data, bool DataEvent >
 class SourceManagerBase {
@@ -42,7 +43,7 @@ class SourceManagerBase {
       #endif
 
       closing.reset();
-      if(initialized_correctly){
+      if (initialized_correctly) {
         // If initialized correcly, setup the worker
         
         #ifdef SIM
@@ -55,8 +56,7 @@ class SourceManagerBase {
 
         // I don't know how to start a thread using a member function, but I know how to use lambdas so suck it C++
         worker = std::thread( [&] { refresh_loop(); } );
-      }
-      else{
+      } else {
 
         // Did not setup correctly. Print error and set garbage data
         #ifdef SIM
@@ -74,11 +74,11 @@ class SourceManagerBase {
     }
     
     void stop() {
-      if(initialized_correctly){
+      if (initialized_correctly) {
         running.store(false);
         closing.invoke();
 
-        if(DataEvent){
+        if (DataEvent) {
           data_event.invoke();
         }
 
@@ -87,24 +87,24 @@ class SourceManagerBase {
       }
     }
 
-    void data_event_wait(){
+    void data_event_wait() {
       data_event.wait();
     }
-    void data_event_reset(){
+
+    void data_event_reset() {
       data_event.reset();
     }
 
-    bool is_running(){
+    bool is_running() {
       return running.load();
     }
 
     // returns how long this thread should sleep
-    long long refresh_timeout(){
+    long long refresh_timeout() {
       long long value;
-      if(ConfiguratorManager::config.getValue(name()+"_manager_timeout", value)){
+      if (ConfiguratorManager::config.getValue(name()+"_manager_timeout", value)) {
         return value;
-      }
-      else{
+      } else {
         print(LogLevel::LOG_ERROR, "Failed to get timeout for: %s. Using default value of (1.0 * 1E6)\n", name().c_str());
         return (long long) (1.0 * 1E6);
       }
@@ -112,7 +112,7 @@ class SourceManagerBase {
 
   protected:
 
-    std::shared_ptr<Data> empty_data(){
+    std::shared_ptr<Data> empty_data() {
       std::shared_ptr<Data> d = std::make_shared<Data>();
       memset(d.get(), (uint8_t)0, sizeof(Data));
       return d;
@@ -133,7 +133,7 @@ class SourceManagerBase {
 
     void refresh_loop() {
       long long delayInUsecs = refresh_timeout();
-      while(running.load()) {
+      while (running.load()) {
         #ifndef SIM
           std::shared_ptr<Data> new_data = refresh();
         #else
@@ -144,7 +144,7 @@ class SourceManagerBase {
         data = new_data;
         mutex.unlock();
         
-        if(DataEvent) {
+        if (DataEvent) {
           data_event.invoke();
         }
 

@@ -1,8 +1,8 @@
-#ifndef EVENT_HPP
-#define EVENT_HPP
+#ifndef EVENT_H_
+#define EVENT_H_
 
-#include <mutex>
-#include <condition_variable>
+#include <mutex> // NOLINT
+#include <condition_variable> // NOLINT
 
 
 //The Event object helps manage the pod's threads and is useful to wait for something to occur
@@ -39,4 +39,4 @@ class Event {
   bool condition = false;
 
 };
-#endif
+#endif // EVENT_H_

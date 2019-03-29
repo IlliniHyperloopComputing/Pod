@@ -1,5 +1,5 @@
-#ifndef NETWORK_HPP
-#define NETWORK_HPP
+#ifndef NETWORKMANAGER_H_
+#define NETWORKMANAGER_H_
 
 #include "Utils.h"
 #include "SafeQueue.hpp"
@@ -11,7 +11,7 @@
 #include <netdb.h>
 #include <poll.h>
 #include <atomic>
-#include <thread>
+#include <thread> // NOLINT
 #include <memory>
 #include <sys/ioctl.h>
 
@@ -139,7 +139,7 @@ void network_loop();
  */
 void stop_threads();
 
-}
+} // namespace NetworkManager
 
-#endif
+#endif // NETWORKMANAGER_H_
 

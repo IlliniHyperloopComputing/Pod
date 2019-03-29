@@ -1,5 +1,5 @@
-#ifndef I2C_MANAGER_HPP
-#define I2C_MANAGER_HPP
+#ifndef I2CMANAGER_H_
+#define I2CMANAGER_H_
 
 #include "SourceManagerBase.hpp"
 
@@ -15,7 +15,7 @@ class I2CManager : public SourceManagerBase<I2CData, false> {
     std::shared_ptr<I2CData> refresh();
     std::shared_ptr<I2CData> refresh_sim();
 
-    std::string name(){
+    std::string name() {
       return "i2c";
     }
 
@@ -23,5 +23,4 @@ class I2CManager : public SourceManagerBase<I2CData, false> {
     int i = 5;
 };
 
-#endif
-
+#endif // I2CMANAGER_H_

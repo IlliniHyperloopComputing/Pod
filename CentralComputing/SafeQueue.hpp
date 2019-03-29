@@ -3,8 +3,8 @@
 
 #include "Utils.h"
 #include <queue>
-#include <thread>
-#include <mutex>
+#include <thread> // NOLINT
+#include <mutex>  // NOLINT
 
 template <class T>
 class SafeQueue {  
@@ -22,7 +22,7 @@ class SafeQueue {
     */
     T dequeue() {
       std::lock_guard<std::mutex> guard(m_mutex);
-      if(m_queue.empty()){
+      if (m_queue.empty()) {
         return nullptr;
       } else {
         T ret = m_queue.front();

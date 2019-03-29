@@ -1,5 +1,5 @@
-#ifndef SOURCE_MANAGER_HPP
-#define SOURCE_MANAGER_HPP
+#ifndef SOURCEMANAGER_H_
+#define SOURCEMANAGER_H_
 
 #include "PRUManager.h"
 #include "CANManager.h"
@@ -25,4 +25,5 @@ namespace SourceManager {
   extern I2CManager I2C;
   extern MotionModel MM;
 }
-#endif
+
+#endif // SOURCEMANAGER_H_

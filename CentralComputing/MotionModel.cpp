@@ -1,5 +1,8 @@
 #include "MotionModel.h"
 
+using Utils::print;
+using Utils::LogLevel;
+
 bool MotionModel::initialize_source() {
   state.x[0] = 0;
   state.x[1] = 0;

@@ -1,5 +1,5 @@
-#ifndef MOTOR_HPP
-#define MOTOR_HPP
+#ifndef MOTOR_H_
+#define MOTOR_H_
 
 #include "Utils.h"
 #include "SourceManager.h"
@@ -51,4 +51,4 @@ class Motor {
 
 };
 
-#endif
+#endif // MOTOR_H_ 

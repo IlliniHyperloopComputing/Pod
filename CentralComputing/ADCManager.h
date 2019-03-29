@@ -1,5 +1,5 @@
-#ifndef ADC_MANAGER_HPP
-#define ADC_MANAGER_HPP
+#ifndef ADCMANAGER_H_
+#define ADCMANAGER_H_
 
 #include "SourceManagerBase.hpp"
 #include "SourceManager.h"
@@ -21,7 +21,7 @@ class ADCManager : public SourceManagerBase<ADCData, true> {
     std::shared_ptr<ADCData> refresh();
     std::shared_ptr<ADCData> refresh_sim();
 
-    std::string name(){
+    std::string name() {
       return "adc";
     }
 
@@ -29,5 +29,4 @@ class ADCManager : public SourceManagerBase<ADCData, true> {
     int i = 5;
 };
 
-#endif
-
+#endif // ADCMANAGER_H_

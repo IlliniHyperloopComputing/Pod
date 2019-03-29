@@ -1,8 +1,12 @@
 #include "NetworkManager.h"
 
-using namespace std;
+//using namespace std;
 using Utils::print;
 using Utils::LogLevel;
+using std::make_shared;
+using std::vector;
+using std::thread;
+using std::shared_ptr;
 
 int NetworkManager::socketfd = 0;
 int NetworkManager::clientfd = 0;

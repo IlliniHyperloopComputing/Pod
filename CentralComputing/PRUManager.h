@@ -1,5 +1,5 @@
-#ifndef PRU_MANAGER_HPP
-#define PRU_MANAGER_HPP
+#ifndef PRUMANAGER_H_
+#define PRUMANAGER_H_
 
 #include "SourceManagerBase.hpp"
 #include "SourceManager.h"
@@ -50,5 +50,4 @@ class PRUManager : public SourceManagerBase<PRUData, true> {
       
 };
 
-#endif
-
+#endif // PRUMANAGER_H_

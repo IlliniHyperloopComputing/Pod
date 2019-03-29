@@ -1,5 +1,5 @@
-#ifndef BRAKES_HPP
-#define BRAKES_HPP
+#ifndef BRAKES_H_
+#define BRAKES_H_
 
 #include "Utils.h"
 #include "SourceManager.h"
@@ -48,4 +48,4 @@ class Brakes {
 
 };
 
-#endif
+#endif // BRAKES_H_

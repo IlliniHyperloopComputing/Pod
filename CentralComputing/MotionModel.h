@@ -1,5 +1,5 @@
-#ifndef MOTION_MODEL_HPP
-#define MOTION_MODEL_HPP
+#ifndef MOTIONMODEL_H_
+#define MOTIONMODEL_H_
 
 #include "SourceManagerBase.hpp"
 #include "SourceManager.h"
@@ -7,9 +7,6 @@
 #include "ADCManager.h"
 #include "StateSpace.hpp"
 #include "Filter.h"
-
-using namespace Utils;
-
 
 
 class MotionModel : public SourceManagerBase<StateSpace, false> {
@@ -22,7 +19,7 @@ class MotionModel : public SourceManagerBase<StateSpace, false> {
     std::shared_ptr<StateSpace> refresh();
     std::shared_ptr<StateSpace> refresh_sim();
 
-    std::string name(){
+    std::string name() {
       return "mm";
     }
 
@@ -32,5 +29,5 @@ class MotionModel : public SourceManagerBase<StateSpace, false> {
 
 };
 
-#endif
+#endif // MOTIONMODEL_H_
 
