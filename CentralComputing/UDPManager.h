@@ -13,6 +13,7 @@
 #include <atomic>
 #include <thread> // NOLINT
 #include <memory>
+#include <mutex>
 #include <sys/ioctl.h>
 
 namespace UDPManager {
@@ -29,6 +30,7 @@ extern Connection_Status connection_status;
 extern struct addrinfo hints, *sendinfo, *recvinfo;
 
 extern Event setup;
+extern std::mutex mutex;
 
 /**
  * Starts UDP server

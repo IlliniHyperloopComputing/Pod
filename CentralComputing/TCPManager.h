@@ -13,6 +13,7 @@
 #include <atomic>
 #include <thread> // NOLINT
 #include <memory>
+#include <mutex>
 #include <sys/ioctl.h>
 
 #define SETUP_FAILURE -1
@@ -69,7 +70,7 @@ extern SafeQueue<std::shared_ptr<TCPManager::Network_Command>> command_queue;
 
 extern Event connected;  // Used within Simulator to check when TCP is connected
 extern Event closing;    // Used to wait between writes in the write_loop()
-extern Event threads_joined;    // Used to signal that the read and write threads are exited
+extern std::mutex mutex;  // Used to eliminate TSan errors
 
 int connect_to_server(const char * hostname, const char * port);
 

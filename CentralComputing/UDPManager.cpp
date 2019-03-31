@@ -10,10 +10,12 @@ struct addrinfo UDPManager::hints;
 struct addrinfo * UDPManager::sendinfo = NULL;
 struct addrinfo * UDPManager::recvinfo = NULL;
 Event UDPManager::setup;
+std::mutex UDPManager::mutex;
 
 bool UDPManager::start_udp(const char * hostname, const char * send_port, const char * recv_port) {
   int rv;
   int enable = 1;
+  std::lock_guard<std::mutex> guard(mutex);
 
   /////////////////////
   // SETUP UDP SEND PORT
@@ -175,14 +177,14 @@ void UDPManager::connection_monitor(const char * hostname, const char * send_por
     }
   }
 
+  freeaddrinfo(sendinfo);  // Free memory
+  close(socketfd);  // Close socket
+  setup.reset();  // Reset event (important when tests are run repeatedly)
   print(LogLevel::LOG_INFO, "UDP Exiting\n");
 }
 
 void UDPManager::close_client() {
-  freeaddrinfo(sendinfo);
-  shutdown(socketfd, SHUT_RDWR);
-  close(socketfd);
-
+  std::lock_guard<std::mutex> guard(mutex);
   running.store(false);
-  setup.reset();
+  shutdown(socketfd, SHUT_RDWR);
 }
