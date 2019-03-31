@@ -110,40 +110,49 @@ void Simulator::disconnect() {
 }
 
 void Simulator::logging(bool enable) {
+  std::lock_guard<std::mutex> guard(mutex);
   enable_logging = enable;
 }
 
 void Simulator::sim_motor_enable() {
+  std::lock_guard<std::mutex> guard(mutex);
   print(LogLevel::LOG_DEBUG, "Sim - Motors Enabled\n");
   motorsOn = true;
 }
 
 void Simulator::sim_motor_disable() {
+  std::lock_guard<std::mutex> guard(mutex);
   print(LogLevel::LOG_DEBUG, "Sim - Motors Disabled\n");
   motorsOn = false;
 }
 
 void Simulator::sim_motor_set_throttle(uint8_t value) {
+  std::lock_guard<std::mutex> guard(mutex);
   print(LogLevel::LOG_DEBUG, "Sim - Setting motor throttle: %d\n", value);
   throttle = value;
 }
 
 void Simulator::sim_brake_enable() {
+  std::lock_guard<std::mutex> guard(mutex);
   print(LogLevel::LOG_DEBUG, "Sim - Brakes Enabled\n");
   brakesOn = true;
 }
 
 void Simulator::sim_brake_disable() {
+  std::lock_guard<std::mutex> guard(mutex);
   print(LogLevel::LOG_DEBUG, "Sim - Brakes Disabled\n");
   brakesOn = false;
 }
 
 void Simulator::sim_brake_set_pressure(uint8_t value) {
+  std::lock_guard<std::mutex> guard(mutex);
   print(LogLevel::LOG_DEBUG, "Setting brake pressure: %d\n", value);
   pressure = value;
 }
 
 std::shared_ptr<StateSpace> Simulator::sim_get_motion() {
+  std::lock_guard<std::mutex> guard(mutex);
+
   // FOR FIRST CALL
   if (timeLast == -1) {
     timeDelta = 0.000;

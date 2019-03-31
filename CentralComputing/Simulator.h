@@ -96,6 +96,7 @@ class Simulator {
   Event closed;
   Event connected;
   std::thread read_thread;
+  std::mutex mutex; // To get rid of data races when accessing motion data
 
   bool enable_logging = true;
 
