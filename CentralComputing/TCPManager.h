@@ -69,6 +69,7 @@ extern SafeQueue<std::shared_ptr<TCPManager::Network_Command>> command_queue;
 
 extern Event connected;  // Used within Simulator to check when TCP is connected
 extern Event closing;    // Used to wait between writes in the write_loop()
+extern Event threads_joined;    // Used to signal that the read and write threads are exited
 
 int connect_to_server(const char * hostname, const char * port);
 
@@ -109,11 +110,6 @@ void tcp_loop(const char * hostname, const char * port);
  * Closes the socket, ending all transmission
  **/
 void close_client();
-
-/*
- * Stops threads and exits
- */
-void stop_threads();
 
 }  // namespace TCPManager
 

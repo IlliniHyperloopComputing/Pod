@@ -103,10 +103,10 @@ void Simulator::disconnect() {
   active_connection.store(false);  // stop the read loop
 
   shutdown(clientfd, SHUT_RDWR);
+  closed.wait();    // wait for sim_connect() to close, which was waiting on the read_loop
   close(clientfd);  // close TCP connection
   shutdown(socketfd, SHUT_RDWR);
   close(socketfd);  // close TCP server
-  closed.wait();    // wait for sim_connect() to close, which was waiting on the read_loop
 }
 
 void Simulator::logging(bool enable) {

@@ -154,8 +154,6 @@ void Pod::stop() {
   closing.invoke();
   TCPManager::close_client();
   UDPManager::close_client();
-  TCPManager::stop_threads();
-  UDPManager::stop_threads();
 }
 
 function<void(int)> shutdown_handler;

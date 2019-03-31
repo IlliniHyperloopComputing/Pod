@@ -182,9 +182,7 @@ void UDPManager::close_client() {
   freeaddrinfo(sendinfo);
   shutdown(socketfd, SHUT_RDWR);
   close(socketfd);
-}
 
-void UDPManager::stop_threads() {
   running.store(false);
   setup.reset();
 }

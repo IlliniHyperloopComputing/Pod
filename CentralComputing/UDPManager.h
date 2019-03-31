@@ -52,11 +52,6 @@ void connection_monitor(const char * hostname, const char * send_port, const cha
  **/
 void close_client();
 
-/*
- * Stops threads and exits
- */
-void stop_threads();
-
 }  // namespace UDPManager
 
 #endif  // UDPMANAGER_H_

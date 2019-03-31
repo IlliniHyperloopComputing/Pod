@@ -10,6 +10,7 @@ using Utils::LogLevel;
 int TCPManager::socketfd = 0;
 Event TCPManager::connected;
 Event TCPManager::closing;
+Event TCPManager::threads_joined;
 
 std::atomic<bool> TCPManager::running(false);
 SafeQueue<shared_ptr<TCPManager::Network_Command>> TCPManager::command_queue;
@@ -94,6 +95,7 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
     int fd = connect_to_server(hostname, port);
     if (fd > 0) {
       print(LogLevel::LOG_INFO, "TCP Starting network threads\n");
+      threads_joined.reset();  // Indicate that the threads have closed
       thread read_thread(read_loop);
       thread write_thread(write_loop);
 
@@ -101,6 +103,9 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
 
       read_thread.join();
       write_thread.join();
+
+      threads_joined.invoke();  // Indicate that the threads have closed
+
       print(LogLevel::LOG_INFO, "TCP Connection lost\n");
 
     } else {
@@ -112,17 +117,15 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
   print(LogLevel::LOG_INFO, "TCP Exiting loop\n");
 }
 
-
 void TCPManager::close_client() {
-  shutdown(socketfd, SHUT_RDWR);
-  close(socketfd);
-  connected.reset();
+  running.store(false);  // Will cause the tcp_loop to exit once threads join.
+  closing.invoke();  // write_thread sleeps using an event. Invoke the event to stop further sleeping
+  shutdown(socketfd, SHUT_RDWR);  // Causes read(socketfd) or write(socketfd) to return. 
+  threads_joined.wait();  // Wait for threads to join before closing socket. Avoids tsan errors
+  close(socketfd);  // At last, close the socket
+  connected.reset();  
 }
 
-void TCPManager::stop_threads() {
-  running.store(false);
-  closing.invoke();
-}
 
 
 
