@@ -16,21 +16,20 @@
 
 class Pod {
  public:
-    Pod();
+  Pod();
 
-    void startup();
+  void startup();
+  void trigger_shutdown();
 
-    void stop();
-
-    std::shared_ptr<Pod_State> state_machine;
-    std::atomic<bool> running;
-    Event ready;
-    Event processing_command;
-    Event closing;
+  std::shared_ptr<Pod_State> state_machine;
+  std::atomic<bool> running;
+  Event ready;
+  Event processing_command;
+  Event closing;
 
  private:
-    void logic_loop();
-    bool switchVal;
+  void logic_loop();
+  bool switchVal;
 };
 
 void signal_handler(int signal);
