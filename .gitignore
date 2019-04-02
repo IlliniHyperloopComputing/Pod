@@ -15,7 +15,7 @@ BBBSetup/pru_encoder/Debug/*
 !BBBSetup/halt/Debug/halt.out
 !BBBSetup/pru_encoder/Debug/pru_encoder.out
 
-
+# Visual Studio Code
 .vscode
 
 
