@@ -1,13 +1,13 @@
-#include "PRUManager.hpp"
+#include "PRUManager.h"
 
-using namespace Utils;
+using Utils::print;
+using Utils::LogLevel;
 
 std::string PRUManager::name() {
   return "pru";
 }
 
-bool PRUManager::initialize_source(){
-  
+bool PRUManager::initialize_source() {
   /* Open the rpmsg_pru character device file */
   pollfds[0].fd = open(DEVICE_NAME, O_RDWR);
 
@@ -17,14 +17,14 @@ bool PRUManager::initialize_source(){
   }
 
   int result = write(pollfds[0].fd, "start", 6);
-  if(result == 0){
+  if (result == 0) {
     print(LogLevel::LOG_ERROR, "PRU Unable to write during init: %s\n", DEVICE_NAME);
     return false;
   }
 
   /* Poll until we receive a message from the PRU and then print it */
   result = read(pollfds[0].fd, readBuf, MAX_BUFFER_SIZE);
-  if(result == 0){
+  if (result == 0) {
     print(LogLevel::LOG_ERROR, "PRU Unable to read during init: %s\n", DEVICE_NAME);
     return false;
   }
@@ -33,15 +33,14 @@ bool PRUManager::initialize_source(){
   return true;
 }
 
-void PRUManager::stop_source(){
-	close(pollfds[0].fd);
+void PRUManager::stop_source() {
+  close(pollfds[0].fd);
   print(LogLevel::LOG_DEBUG, "PRU Manager stopped\n");
 }
 
 std::shared_ptr<PRUData> PRUManager::refresh() {
-
   int result = write(pollfds[0].fd, "1", 2);
-  if(result == 0){
+  if (result == 0) {
     print(LogLevel::LOG_ERROR, "Unable to write during operation %s\n", DEVICE_NAME);
 
     // Error. return garbage
@@ -50,8 +49,8 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
     return new_data;
   }
 
-	result = read(pollfds[0].fd, readBuf, MAX_BUFFER_SIZE);
-  if(result == 0){
+  result = read(pollfds[0].fd, readBuf, MAX_BUFFER_SIZE);
+  if (result == 0) {
     print(LogLevel::LOG_ERROR, "Unable to read during operation %s\n", DEVICE_NAME);
 
     // Error. return garbage
@@ -68,16 +67,16 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
   PRUData new_data;
   
   // Convert encoder data
-  for(int i = 0; i < NUM_ENC_INPUTS; i++){
+  for (int i = 0; i < NUM_ENC_INPUTS; i++) {
     new_data.encoder_distance[i] = raw_data.counts[enc_idx[i]] * enc_map[i];
-    new_data.encoder_velocity[i] = convert_to_velocity( raw_data.decays[enc_idx[i]], 
+    new_data.encoder_velocity[i] = convert_to_velocity(raw_data.decays[enc_idx[i]], 
                                                         raw_data.deltas[enc_idx[i]],
                                                         enc_map[i]);
   }
 
   // Convert disk RPM data
-  for(int i = 0; i < NUM_MOTOR_INPUTS; i++){
-    new_data.disk_RPM[i] = convert_to_velocity( raw_data.decays[enc_idx[i]], 
+  for (int i = 0; i < NUM_MOTOR_INPUTS; i++) {
+    new_data.disk_RPM[i] = convert_to_velocity(raw_data.decays[enc_idx[i]], 
                                                 raw_data.deltas[enc_idx[i]],
                                                 enc_map[i]);
   }
@@ -90,20 +89,17 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
 }
 
 inline
-double PRUManager::convert_to_velocity(uint32_t decay, uint32_t delta, double distance){
-
+double PRUManager::convert_to_velocity(uint32_t decay, uint32_t delta, double distance) {
     // Pick the one that gives us the slower velocity
     uint32_t slower = std::max(decay, delta);
 
-    if(slower == UINT32_MAX){ // register this as 0 velocity
+    if (slower == UINT32_MAX) {  // register this as 0 velocity
       return 0;
-    }
-    else{
+    } else {
       // Do the proper conversion into m/s
       double time_diff = slower * CLOCK_TO_SEC;
       return distance / time_diff;
     }
-
 }
 
 std::shared_ptr<PRUData> PRUManager::refresh_sim() {

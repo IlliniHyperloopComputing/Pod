@@ -74,6 +74,10 @@ msg :
 	$(info =             ___/  /___  /__/   /  / /__/   /  / /  /                    )
 	$(info =          __ __/______/ /______/__/ /______/__/ /__/                     )  
 
+.PHONY: lint
+lint:
+	python cpplint/cpplint/cpplint.py --filter=-legal/copyright,-build/include,-whitespace/end_of_line,-readability/todo --linelength=120 --quiet --extensions=cpp,h,hpp --root=. *.cpp *.hpp *.h
+
 .PHONY: mkdir_obj
 mkdir_obj:
 	@mkdir -p $(OBJ_DIR)

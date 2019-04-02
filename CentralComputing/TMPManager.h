@@ -1,5 +1,5 @@
-#ifndef TEMPERATURE_MANAGER_HPP
-#define TEMPERATURE_MANAGER_HPP
+#ifndef TMPMANAGER_H_
+#define TMPMANAGER_H_
 
 #include "SourceManagerBase.hpp"
 #include <string>
@@ -13,7 +13,7 @@ struct TMPData {
 };
 
 class TMPManager : public SourceManagerBase<TMPData, false> {
-  private:
+ private:
     bool initialize_source();
     void stop_source();
     std::shared_ptr<TMPData> refresh();
@@ -21,19 +21,18 @@ class TMPManager : public SourceManagerBase<TMPData, false> {
 
     std::string prefix = "/sys/bus/w1/devices/";
     std::string suffix = "/w1_slave";
-    std::string devices[NUM_TMP] = {"28-0417028e39ff", 
-                                    "28-0417029885ff", 
-                                    "28-0417029a0dff", 
+    std::string devices[NUM_TMP] = {"28-0417028e39ff",
+                                    "28-0417029885ff",
+                                    "28-0417029a0dff",
                                     "28-051701e603ff"};
 
-    std::string name(){
+    std::string name() {
       return "tmp";
     }
 
     int idx = 0;
 
     TMPData old_data;
-
 };
 
-#endif
+#endif  // TMPMANAGER_H_

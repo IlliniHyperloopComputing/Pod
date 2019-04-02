@@ -1,14 +1,18 @@
 #ifdef SIM // Only compile if building test executable
 #include "Utils.h"
 #include "Pod.h"
-#include "Event.hpp"
-#include "Simulator.hpp"
+#include "Event.h"
+#include "Simulator.h"
 #include <ctime>
 #include <iostream>
 #include <cstdio>
 #include <pthread.h>
 #include <fstream>
 #include <string>
+
+using Utils::print;
+using Utils::LogLevel;
+using namespace Utils;
 
 TEST(UtilsTest, busyWaitTest) {
 	//buffer based on how accurate busyWait needs to be while still passing the test
@@ -108,7 +112,7 @@ TEST(UtilsTest, GPIOToggleTest) {
 	EXPECT_EQ(content, one);
 
   #else 
-  print(LOG_ERROR, "Test only works on BBB. Run on BBB\n");
+  print(LogLevel::LOG_ERROR, "Test only works on BBB. Run on BBB\n");
   EXPECT_EQ(true, true);
   #endif
 

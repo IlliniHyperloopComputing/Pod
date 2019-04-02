@@ -1,17 +1,16 @@
-#ifndef MOTOR_HPP
-#define MOTOR_HPP
+#ifndef MOTOR_H_
+#define MOTOR_H_
 
 #include "Utils.h"
-#include "SourceManager.hpp"
-#include "Simulator.hpp"
+#include "SourceManager.h"
+#include "Simulator.h"
 #include "Filter.h"
 #include <cmath>
 
 #define MOTOR_OFF 0
 
 class Motor {
-  public:
-
+ public:
     /*
      * Constructor
      */
@@ -39,16 +38,12 @@ class Motor {
      */
     void set_throttle(int16_t value);
 
-    void debug_set_pwm_pin(std::string & path);
-
-  private:
-
+ private:
     void set_enable(bool enable);
 
     bool enabled;
 
     int16_t throttle;
-
 };
 
-#endif
+#endif  // MOTOR_H_ 
