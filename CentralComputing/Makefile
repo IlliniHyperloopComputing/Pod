@@ -22,7 +22,7 @@ CFLAGS_SIM 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_
 CFLAGS_BBB      := -DBBB
 
 #Set up linker
-LDFLAGS := -pthread -fsanitize=thread -lm #-static-libgcc -static-libstdc++ 
+LDFLAGS := -pthread -lm $(SANITIZER_OPTS) #-static-libgcc -static-libstdc++ 
 # The 'static' flags might be necessary if the cross compiler and BBB have different versions of the libgcc and libstdc++ libraries. 
 # This is why these flags were intially included, but now the BBBs are running newer software such that these are no longer needed.
 # However, the 'static' flags will likely not work with any of the Sanitizers
@@ -89,12 +89,12 @@ mkdir_obj:
 
 # Compile libgtest
 ${LIB_DIR}/gtest-all.o : ${GTEST_DIR}/src/gtest-all.cc 
-	$(CXX_NORM) -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all.o $(SANITIZER_OPTS)
+	$(CXX_NORM) -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all.o ${SANITIZER_OPTS}
 	ar -rv ${LIB_DIR}/libgtest.a ${LIB_DIR}/gtest-all.o
 
 ifdef ARM_COMPILER_EXISTS
 ${LIB_DIR}/gtest-all-arm.o : ${GTEST_DIR}/src/gtest-all.cc 
-	$(CXX_BBB) -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all-arm.o
+	$(CXX_BBB) -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all-arm.o ${SANITIZER_OPTS}
 	ar -rv ${LIB_DIR}/libgtest-arm.a ${LIB_DIR}/gtest-all-arm.o
 endif
 
