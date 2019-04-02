@@ -12,6 +12,7 @@
 
 using Utils::print;
 using Utils::LogLevel;
+using namespace Utils;
 
 TEST(UtilsTest, busyWaitTest) {
 	//buffer based on how accurate busyWait needs to be while still passing the test
