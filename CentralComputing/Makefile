@@ -22,7 +22,7 @@ CFLAGS_SIM 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_
 CFLAGS_BBB      := -DBBB
 
 #Set up linker
-LDFLAGS := -pthread -lm $(SANITIZER_OPTS) #-static-libgcc -static-libstdc++ 
+LDFLAGS := -pthread -lm -fsanitize=thread #-static-libgcc -static-libstdc++ 
 # The 'static' flags might be necessary if the cross compiler and BBB have different versions of the libgcc and libstdc++ libraries. 
 # This is why these flags were intially included, but now the BBBs are running newer software such that these are no longer needed.
 # However, the 'static' flags will likely not work with any of the Sanitizers
