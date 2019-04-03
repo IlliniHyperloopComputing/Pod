@@ -35,12 +35,6 @@ void Pod::logic_loop() {
     // Get current state from all of the SourceMangaers
     update_unified_state();    
 
-    // Pass current state into Motion Model
-    #ifndef SIM
-    MotionModel::refresh();
-    #else
-    unified_state->motion_data = MotionModel::refresh_sim();
-    #endif
 
     // Calls the steady state function for the current state
     // Passes in command, and current state. 
@@ -78,6 +72,14 @@ void Pod::update_unified_state() {
   unified_state->pru_data = SourceManager::PRU.Get();
   unified_state->state = state_machine->get_current_state();
   // TODO: Add more things to unified state 
+
+  // Update motion_data
+  // Pass current state into Motion Model
+  #ifndef SIM
+  MotionModel::calculate(unified_state);
+  #else
+  MotionModel::calculate_sim(unified_state);
+  #endif
 }
 
 Pod::Pod() {
