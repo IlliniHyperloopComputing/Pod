@@ -4,52 +4,30 @@ using Utils::print;
 using Utils::LogLevel;
 using Utils::microseconds;
 
-KinematicData MotionModel::state;
-int64_t MotionModel::last_time;
-
-bool MotionModel::initialize_source() {
-  state.x[0] = 0;
-  state.x[1] = 0;
-  state.x[2] = 0;
-  state.rpm = 0;
-  state.fM = 0;
-  state.fD = 0;
-  
-  last_time = microseconds();
-
-  if (!SourceManager::PRU.is_running() || !SourceManager::ADC.is_running()) {
-    print(LogLevel::LOG_ERROR, "Motion Model setup Failed. PRU or ADC is not up\n");
-    return false;
-  }
-  
-  print(LogLevel::LOG_DEBUG, "Motion Model setup successful\n");
-  return true;
-}
-
-std::shared_ptr<KinematicData> MotionModel::refresh() {
+std::shared_ptr<MotionData> MotionModel::refresh() {
   // Grab current time
   int64_t cur_time = microseconds();
+  // Calculate time delta
+  //int64_t dt = cur_time - last_time;
+  // Set last time
+  //last_time = cur_time;
 
   // Grab data
-  std::shared_ptr<PRUData> pru = SourceManager::PRU.Get();
-  std::shared_ptr<ADCData> adc = SourceManager::ADC.Get();
+  //std::shared_ptr<PRUData> pru = SourceManager::PRU.Get();
+  //std::shared_ptr<ADCData> adc = SourceManager::ADC.Get();
 
   // Measured state variable
-  KinematicData meas;
-  meas.x[0] = Filter::Median(pru.get()->encoder_distance, NUM_ENC_INPUTS);
-  meas.x[1] = Filter::Median(pru.get()->encoder_velocity, NUM_ENC_INPUTS);
-  meas.x[2] = Filter::Median(adc.get()->accel, NUM_ACCEL); 
-  meas.rpm  = Filter::Median(pru.get()->disk_RPM, NUM_MOTOR_INPUTS);
-  meas.fM = Filter::motor_profile(meas.x[1], meas.rpm);
-  meas.fD = Filter::drag_profile(meas.x[1]);
+  MotionData meas;
+  //meas.x[0] = MotionModel::Median(pru.get()->encoder_distance, NUM_ENC_INPUTS);
+  //meas.x[1] = MotionModel::Median(pru.get()->encoder_velocity, NUM_ENC_INPUTS);
+  //meas.x[2] = MotionModel::Median(adc.get()->accel, NUM_ACCEL); 
+  //meas.rpm  = MotionModel::Median(pru.get()->disk_RPM, NUM_MOTOR_INPUTS);
+  //meas.fM = MotionModel::motor_profile(meas.x[1], meas.rpm);
+  //meas.fD = MotionModel::drag_profile(meas.x[1]);
   
 
-  // Calculate time delta
-  int64_t dt = cur_time - last_time;
-  // Set last time
-  last_time = cur_time;
 
-  KinematicData gain;
+  MotionData gain;
   gain.x[0] = 1;
   gain.x[1] = 1;
   gain.x[2] = 1;
@@ -58,16 +36,76 @@ std::shared_ptr<KinematicData> MotionModel::refresh() {
   gain.fD = 1;
 
   // Apply Constant Gain Filter
-  Filter::ConstantGainFilter(&state, meas, gain, dt);
+  // MotionModel::ConstantGainFilter(&state, meas, gain, dt);
 
   // Return state
-  std::shared_ptr<KinematicData> new_data = std::make_shared<KinematicData>();
-  *new_data = state;
+  std::shared_ptr<MotionData> new_data = std::make_shared<MotionData>();
+  //*new_data = state;
 
   return new_data;
 }
 
-// get KinematicData object
-std::shared_ptr<KinematicData> MotionModel::refresh_sim() {
+// get MotionData object
+std::shared_ptr<MotionData> MotionModel::refresh_sim() {
+  #ifdef SIM
   return SimulatorManager::sim.sim_get_motion();
+  #else
+  return std::shared_ptr<MotionData>();
+  #endif
+}
+
+double MotionModel::LowPass(double t_old, double t_new) {
+  return t_old * LOWPASS_PERCENT + t_new * (1.0 - LOWPASS_PERCENT);
+}
+
+void MotionModel::ConstantGainFilter(MotionData * state, 
+                                const MotionData & meas, 
+                                const MotionData & gain,
+                                double delta) {
+  // Propagate state forward
+  MotionData estimate;
+  estimate.x[0] = state->x[0] + state->x[1] * delta;  // propagate distance 
+  estimate.x[1] = state->x[1] + state->x[2] * delta;  // propagate velocity
+  
+  // RPM should track velocity
+  // Take velocity slope (acceleration) and propagate forward
+  estimate.rpm = state->rpm + (state->x[2] * delta) * MS_TO_RPM;
+
+  // Calculate estimated Acceleration
+  estimate.fM = motor_profile(estimate.x[1], estimate.rpm);  // Motor force
+  estimate.fD = drag_profile(estimate.x[1]);  // Drag force
+
+  // Estimate acceleration based on input forces
+  estimate.x[2] = (state->fM + state->fD) / MASS;
+
+
+  // Calculate residual between measurment and estimate
+  MotionData residual;
+  residual.x[0] = meas.x[0] - estimate.x[0];
+  residual.x[1] = meas.x[1] - estimate.x[1];
+  residual.x[2] = meas.x[2] - estimate.x[2];
+  residual.fM   = meas.fM   - estimate.fM;
+  residual.fD   = meas.fD   - estimate.fD;
+  residual.rpm  = meas.rpm  - estimate.rpm;
+
+
+  // Calculate new state
+  state->x[0] = estimate.x[0] + gain.x[0] * residual.x[0];
+  state->x[1] = estimate.x[1] + gain.x[1] * residual.x[1];
+  state->x[2] = estimate.x[2] + gain.x[2] * residual.x[2];
+  state->fM   = estimate.fM   + gain.fM   * residual.fM;
+  state->fD   = estimate.fD   + gain.fD   * residual.fD;
+  state->rpm  = estimate.rpm  + gain.rpm  * residual.rpm;
+}
+
+double MotionModel::drag_profile(double velocity) {
+  // Apply estimated drag from aero/ friction/ wheel sources
+  // Should be based on velocity
+  return 0;
+}
+
+double MotionModel::motor_profile(double velocity, double RPM) {
+  // Based on profiling curve, calculate velocity.
+  // Maybe we just have a lookup table?
+  return 0;
 }
