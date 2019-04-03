@@ -3,6 +3,7 @@
 
 #include "SourceManagerBase.hpp"
 #include "SourceManager.h"
+#include "Defines.hpp"
 #include <sys/poll.h>
 #include <fcntl.h>
 #include <stdio.h>
@@ -13,14 +14,7 @@
 
 #define CLOCK_TO_SEC (21.474836475/4294967295.0)
 
-#define NUM_ENC_INPUTS 4
-#define NUM_MOTOR_INPUTS 4
 
-struct PRUData {
-  double encoder_distance[NUM_ENC_INPUTS];
-  double encoder_velocity[NUM_ENC_INPUTS];
-  double disk_RPM[NUM_MOTOR_INPUTS];
-};
 
 struct RawPRUData {
   uint32_t counts[11];
