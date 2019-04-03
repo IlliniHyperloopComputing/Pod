@@ -13,7 +13,7 @@
 #include <atomic>
 #include <thread> // NOLINT
 #include <memory>
-#include <mutex>
+#include <mutex> // NOLINT
 #include <sys/ioctl.h>
 
 #define SETUP_FAILURE -1

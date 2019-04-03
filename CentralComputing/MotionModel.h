@@ -46,7 +46,7 @@ namespace MotionModel {
 
   double drag_profile(double velocity);
   double motor_profile(double velocity, double RPM);
-}  // namepsace MotionModel
+}  // namespace MotionModel
 
 #endif  // MOTIONMODEL_H_
 

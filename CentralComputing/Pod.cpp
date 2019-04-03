@@ -9,7 +9,6 @@ using std::function;
 using std::shared_ptr;
 
 void Pod::logic_loop() {
-
   #ifdef SIM  // Used to indicate to the Simulator we have processed a command
   bool command_processed = false;
   #endif
@@ -122,7 +121,6 @@ Pod::Pod() {
   unified_state->pru_data = make_shared<PRUData>();
   running.store(false);
   switchVal = false;
-
 }
 
 void Pod::run() {

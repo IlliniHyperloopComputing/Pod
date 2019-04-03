@@ -17,7 +17,6 @@ typedef void (Pod_State::*transition_function) ();
 
 class Pod_State : public StateMachine {
  public:
-
   /** 
   * Constructs a pod state machine
   **/
@@ -67,14 +66,14 @@ class Pod_State : public StateMachine {
   * Each function call acts as a "frame"
   * Each frame, the function will proces the command, 
   **/
-  void steady_safe_mode(std::shared_ptr<TCPManager::Network_Command> command, std::shared_ptr<UnifiedState> state);
-  void steady_functional(std::shared_ptr<TCPManager::Network_Command> command, std::shared_ptr<UnifiedState> state);
-  void steady_loading(std::shared_ptr<TCPManager::Network_Command> command, std::shared_ptr<UnifiedState> state);
-  void steady_launch_ready(std::shared_ptr<TCPManager::Network_Command> command, std::shared_ptr<UnifiedState> state);
-  void steady_flight_accelerate(std::shared_ptr<TCPManager::Network_Command> command, std::shared_ptr<UnifiedState> state);
-  void steady_flight_coast(std::shared_ptr<TCPManager::Network_Command> command, std::shared_ptr<UnifiedState> state);
-  void steady_flight_brake(std::shared_ptr<TCPManager::Network_Command> command, std::shared_ptr<UnifiedState> state);
-  void steady_error_state(std::shared_ptr<TCPManager::Network_Command> command, std::shared_ptr<UnifiedState> state);
+  void steady_safe_mode(std::shared_ptr<TCPManager::Network_Command>, std::shared_ptr<UnifiedState>);
+  void steady_functional(std::shared_ptr<TCPManager::Network_Command>, std::shared_ptr<UnifiedState>);
+  void steady_loading(std::shared_ptr<TCPManager::Network_Command>, std::shared_ptr<UnifiedState>);
+  void steady_launch_ready(std::shared_ptr<TCPManager::Network_Command>, std::shared_ptr<UnifiedState>);
+  void steady_flight_accelerate(std::shared_ptr<TCPManager::Network_Command>, std::shared_ptr<UnifiedState>);
+  void steady_flight_coast(std::shared_ptr<TCPManager::Network_Command>, std::shared_ptr<UnifiedState>);
+  void steady_flight_brake(std::shared_ptr<TCPManager::Network_Command>, std::shared_ptr<UnifiedState>);
+  void steady_error_state(std::shared_ptr<TCPManager::Network_Command>, std::shared_ptr<UnifiedState>);
 
   /*
   * Gets the steady state function for the current state
