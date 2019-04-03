@@ -4,6 +4,9 @@ using Utils::print;
 using Utils::LogLevel;
 using Utils::microseconds;
 
+KinematicData MotionModel::state;
+int64_t MotionModel::last_time;
+
 bool MotionModel::initialize_source() {
   state.x[0] = 0;
   state.x[1] = 0;
@@ -23,18 +26,7 @@ bool MotionModel::initialize_source() {
   return true;
 }
 
-void MotionModel::stop_source() {
-  SourceManager::ADC.data_event_reset();
-  SourceManager::PRU.data_event_reset();
-  print(LogLevel::LOG_DEBUG, "Motion Model stopped\n");
-}
-
-std::shared_ptr<StateSpace> MotionModel::refresh() {
-  SourceManager::PRU.data_event_wait();
-  SourceManager::ADC.data_event_wait();
-  SourceManager::ADC.data_event_reset();
-  SourceManager::PRU.data_event_reset();
-
+std::shared_ptr<KinematicData> MotionModel::refresh() {
   // Grab current time
   int64_t cur_time = microseconds();
 
@@ -43,7 +35,7 @@ std::shared_ptr<StateSpace> MotionModel::refresh() {
   std::shared_ptr<ADCData> adc = SourceManager::ADC.Get();
 
   // Measured state variable
-  StateSpace meas;
+  KinematicData meas;
   meas.x[0] = Filter::Median(pru.get()->encoder_distance, NUM_ENC_INPUTS);
   meas.x[1] = Filter::Median(pru.get()->encoder_velocity, NUM_ENC_INPUTS);
   meas.x[2] = Filter::Median(adc.get()->accel, NUM_ACCEL); 
@@ -57,7 +49,7 @@ std::shared_ptr<StateSpace> MotionModel::refresh() {
   // Set last time
   last_time = cur_time;
 
-  StateSpace gain;
+  KinematicData gain;
   gain.x[0] = 1;
   gain.x[1] = 1;
   gain.x[2] = 1;
@@ -69,17 +61,13 @@ std::shared_ptr<StateSpace> MotionModel::refresh() {
   Filter::ConstantGainFilter(&state, meas, gain, dt);
 
   // Return state
-  std::shared_ptr<StateSpace> new_data = std::make_shared<StateSpace>();
+  std::shared_ptr<KinematicData> new_data = std::make_shared<KinematicData>();
   *new_data = state;
 
   return new_data;
 }
 
-// get StateSpace object
-std::shared_ptr<StateSpace> MotionModel::refresh_sim() {
-  #ifdef SIM
+// get KinematicData object
+std::shared_ptr<KinematicData> MotionModel::refresh_sim() {
   return SimulatorManager::sim.sim_get_motion();
-  #else
-  return empty_data();
-  #endif
 }

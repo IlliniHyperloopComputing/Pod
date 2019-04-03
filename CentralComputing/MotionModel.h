@@ -6,7 +6,7 @@
 #include "Filter.h"
 #include "Simulator.h"
 
-struct StateSpace {
+struct KinematicData {
   double x[3];  // Position/Velocity/Accel
   // x[0] = x
   // x[1] = x' first derivative
@@ -22,11 +22,11 @@ namespace MotionModel {
   // Source Manager methods
   bool initialize_source();
   void stop_source();
-  std::shared_ptr<StateSpace> refresh();
-  std::shared_ptr<StateSpace> refresh_sim();
+  std::shared_ptr<KinematicData> refresh();
+  std::shared_ptr<KinematicData> refresh_sim();
 
   // Store our state
-  extern StateSpace state;
+  extern KinematicData state;
   extern int64_t last_time;
 }  // namepsace MotionModel
 

@@ -2,7 +2,7 @@
 #define SIMULATOR_H_
 
 #include "TCPManager.h"
-#include "StateSpace.hpp"
+#include "MotionModel.h"
 
 #define MAX_ACCEL 9.81
 #define MAX_DECEL -9.81
@@ -64,9 +64,9 @@ class Simulator {
 
   /*
     * Uses the current state of the brakes/motors to simulate the new position, velocity, 
-    * and acceleration and returns them as a StateSpace object
+    * and acceleration and returns them as a KinematicData object
     */
-  std::shared_ptr<StateSpace> sim_get_motion();
+  std::shared_ptr<KinematicData> sim_get_motion();
 
 
   /**
