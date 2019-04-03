@@ -109,7 +109,6 @@ bool CANManager::recv_frame(){
 
 std::shared_ptr<CANData> CANManager::refresh() {
   std::shared_ptr<CANData> new_data = std::make_shared<CANData>();
-  new_data->dummy_data = 2;
 
   long long a = Utils::microseconds();
   //Send test frame 

@@ -10,7 +10,6 @@
 
 struct CANData {
   //replace with actual data structure
-  uint32_t dummy_data;
   uint16_t status_word;
   int32_t position_val;
   int16_t torque_val;
@@ -19,10 +18,10 @@ struct CANData {
   int32_t dc_link_voltage;
   int16_t logic_power_supply_voltage;
   int16_t current_demand;
-  uint32_t motor_current_val;
-  uint32_t electrical_angle;
-  uint32_t phase_a_current;
-  uint32_t phase_b_current; 
+  uint8_t motor_current_val;
+  int16_t electrical_angle;
+  int16_t phase_a_current;
+  int16_t phase_b_current; 
 };
 
 const char hex_asc_upper[] = "0123456789ABCDEF";
@@ -54,7 +53,9 @@ class CANManager : public SourceManagerBase<CANData, false> {
 
     // CAN socket
     int can_fd;
-
+    const int can_id_t1 = 180; 
+    const int can_id_t2 = 280; 
+    const int can_id_t3 = 380; 
     // Used for CAN socket setup
     struct ifreq ifr;
     struct sockaddr_can addr;
