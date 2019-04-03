@@ -6,11 +6,8 @@ using Utils::microseconds;
 using std::make_shared;
 using std::thread;
 using std::function;
+using std::shared_ptr;
 
-Pod::Pod() {
-  running.store(false);
-  switchVal = false;
-}
 
 void Pod::logic_loop() {
   int64_t logic_loop_timeout;  // Get the loop sleep (timeout) value
@@ -42,7 +39,21 @@ void Pod::logic_loop() {
       command->value = 0;
     }
 
+
+    // Get current state from all of the SourceMangaers
+    update_unified_state();    
+
+    // Pass current state into Motion Model
+    #ifndef SIM
+    MotionModel::refresh();
+    #else
+
+    SimulatorManager::sim.sim_get_motion();
+    MotionModel::refresh_sim();
+    #endif
+
     // Calls the steady state function for the current state
+    // Passes in command, and current state. 
     auto func = state_machine->get_steady_function();
     ((*state_machine).*(func))(command); 
 
@@ -70,14 +81,12 @@ void Pod::logic_loop() {
   print(LogLevel::LOG_INFO, "Exiting Pod Logic Loop\n");
 }
 
-void Pod::startup() {
-  microseconds();
-  print(LogLevel::LOG_INFO, "\n");
-  print(LogLevel::LOG_INFO, "==================\n");
-  print(LogLevel::LOG_INFO, "ILLINI  HYPERLOOP \n");
-  print(LogLevel::LOG_INFO, "==================\n");
-  print(LogLevel::LOG_INFO, "Running Startup\n");
+void Pod::update_unified_state() {
 
+}
+
+Pod::Pod() {
+  microseconds();
   // If we are on the BBB, run specific setup
   #ifdef BBB
   // Start up PRU
@@ -94,9 +103,18 @@ void Pod::startup() {
   print(LogLevel::LOG_INFO, "CPU freq set to 1GHz\n");    
   #endif
 
-  signal(SIGPIPE, SIG_IGN);
+  // Setup any other variables
   state_machine = make_shared<Pod_State>();
+  running.store(false);
+  switchVal = false;
+}
 
+void Pod::run() {
+  print(LogLevel::LOG_INFO, "\n");
+  print(LogLevel::LOG_INFO, "==================\n");
+  print(LogLevel::LOG_INFO, "ILLINI  HYPERLOOP \n");
+  print(LogLevel::LOG_INFO, "==================\n");
+  print(LogLevel::LOG_INFO, "Initialization\n");
   print(LogLevel::LOG_INFO, "Pod State: %s\n", state_machine->get_current_state_string().c_str());
 
   // Start all SourceManager threads
@@ -105,7 +123,6 @@ void Pod::startup() {
   SourceManager::TMP.initialize();
   SourceManager::ADC.initialize();
   SourceManager::I2C.initialize();
-  SourceManager::MM.initialize();
   print(LogLevel::LOG_INFO, "Source Managers started\n");
 
   // Setup Network Server
@@ -127,7 +144,7 @@ void Pod::startup() {
   thread udp_thread([&](){ UDPManager::connection_monitor(udp_addr.c_str(), udp_send.c_str(), udp_recv.c_str()); });
   running.store(true);
   thread logic_thread([&](){ logic_loop(); });  
-  print(LogLevel::LOG_INFO, "Finished Startup\n");
+  print(LogLevel::LOG_INFO, "Finished Initialization\n");
   print(LogLevel::LOG_INFO, "================\n\n");
   
   // ready to begin testing
@@ -145,7 +162,6 @@ void Pod::startup() {
   
   print(LogLevel::LOG_INFO, "Source Managers closing\n");
   // Stop all source managers
-  SourceManager::MM.stop();  // Must be called first
   SourceManager::PRU.stop();
   SourceManager::CAN.stop();
   SourceManager::TMP.stop();
@@ -182,11 +198,12 @@ int main(int argc, char **argv) {
     Utils::loglevel = LogLevel::LOG_EDEBUG;
     // Create the pod object
     auto pod = make_shared<Pod>();
-    // Setup ctrl-c behavior 
-    signal(SIGINT, signal_handler);
+    // Setup signals handlers
+    signal(SIGPIPE, SIG_IGN);  // Ignore SIGPIPE
+    signal(SIGINT, signal_handler);  // ctrl-c handler
     shutdown_handler = [&](int signal) { pod->trigger_shutdown(); };
     // Start the pod running
-    pod->startup();
+    pod->run();
     return 0;
   #else
     Utils::loglevel = LogLevel::LOG_EDEBUG;
