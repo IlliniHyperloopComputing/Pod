@@ -150,7 +150,7 @@ void Simulator::sim_brake_set_pressure(uint8_t value) {
   pressure = value;
 }
 
-std::shared_ptr<KinematicData> Simulator::sim_get_motion() {
+std::shared_ptr<MotionData> Simulator::sim_get_motion() {
   std::lock_guard<std::mutex> guard(mutex);
 
   // FOR FIRST CALL
@@ -177,7 +177,7 @@ std::shared_ptr<KinematicData> Simulator::sim_get_motion() {
               + (0.5 * acceleration * deltaSeconds * deltaSeconds);
 
   // CREATING A STATESPACE OBJECT AND SETTING ITS ARRAY'S VALUES
-  std::shared_ptr<KinematicData> space = std::make_shared<KinematicData>();
+  std::shared_ptr<MotionData> space = std::make_shared<MotionData>();
   space->x[0] = position;
   space->x[1] = velocity;
   space->x[2] = acceleration;
