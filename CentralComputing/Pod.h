@@ -8,6 +8,7 @@
 #include "Configurator.h"
 #include "MotionModel.h"
 #include "SourceManager.h"
+#include "Defines.hpp"
 #include <string>
 #include <functional>
 #include <memory>
@@ -17,16 +18,6 @@
 #include "gtest/gtest.h"
 #pragma GCC diagnostic pop
 
-using std::shared_ptr;
-
-struct UnifiedState{
-  shared_ptr<MotionData> motion_data;
-  shared_ptr<ADCData> adc_data;
-  shared_ptr<CANData> can_data;
-  shared_ptr<I2CData> i2c_data;
-  shared_ptr<PRUData> pru_data;
-  Pod_State::E_States state;
-};
 
 class Pod {
  public:
@@ -37,7 +28,7 @@ class Pod {
 
   std::shared_ptr<Pod_State> state_machine;
   std::atomic<bool> running;
-  UnifiedState unified_state;
+  std::shared_ptr<UnifiedState> unified_state;
   Event ready;
   Event processing_command;
   Event closing;
