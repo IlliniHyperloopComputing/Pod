@@ -13,12 +13,12 @@ struct CANData {
   uint32_t dummy_data;
   uint16_t status_word;
   int32_t position_val;
-  uint16_t torque_val;
+  int16_t torque_val;
   uint8_t controller_temp;
   uint8_t motor_temp;
-  uint32_t dc_link_voltage;
-  uint32_t logic_power_supply_voltage;
-  uint32_t current_demand;
+  int32_t dc_link_voltage;
+  int16_t logic_power_supply_voltage;
+  int16_t current_demand;
   uint32_t motor_current_val;
   uint32_t electrical_angle;
   uint32_t phase_a_current;
