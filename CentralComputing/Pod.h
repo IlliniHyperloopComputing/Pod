@@ -51,6 +51,7 @@ class Pod {
   string udp_send;  // port we send packets to
   string udp_recv;  // port we recv packets from
   string udp_addr; 
+  int64_t logic_loop_timeout;  // logic_loop sleep (timeout) value
 };
 
 void signal_handler(int signal);

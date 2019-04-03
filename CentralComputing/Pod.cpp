@@ -8,13 +8,7 @@ using std::thread;
 using std::function;
 using std::shared_ptr;
 
-
 void Pod::logic_loop() {
-  int64_t logic_loop_timeout;  // Get the loop sleep (timeout) value
-  if (!ConfiguratorManager::config.getValue("logic_loop_timeout", logic_loop_timeout)) {
-    print(LogLevel::LOG_ERROR, "Unable to find logic_loop timeout config, exiting logic_loop\n");
-    return;
-  }
 
   #ifdef SIM  // Used to indicate to the Simulator we have processed a command
   bool command_processed = false;
@@ -38,7 +32,6 @@ void Pod::logic_loop() {
       command->id = 0;
       command->value = 0;
     }
-
 
     // Get current state from all of the SourceMangaers
     update_unified_state();    
@@ -82,11 +75,18 @@ void Pod::logic_loop() {
 }
 
 void Pod::update_unified_state() {
-
+  unified_state.adc_data = SourceManager::ADC.Get();
+  unified_state.can_data = SourceManager::CAN.Get();
+  unified_state.i2c_data = SourceManager::I2C.Get();
+  unified_state.pru_data = SourceManager::PRU.Get();
+  unified_state.state = state_machine->get_current_state();
+  // TODO: Add more things to unified state 
 }
 
 Pod::Pod() {
+  // Setup "0" time. All further calls to microseconds() use this as the base time
   microseconds();
+
   // If we are on the BBB, run specific setup
   #ifdef BBB
   // Start up PRU
@@ -108,8 +108,10 @@ Pod::Pod() {
       ConfiguratorManager::config.getValue("tcp_addr", tcp_addr) &&
       ConfiguratorManager::config.getValue("udp_send_port", udp_send) &&
       ConfiguratorManager::config.getValue("udp_recv_port", udp_recv) &&
-      ConfiguratorManager::config.getValue("udp_addr", udp_addr))) {
-    print(LogLevel::LOG_ERROR, "CONFIG_FILE: Missing port or addr configuration\n");
+      ConfiguratorManager::config.getValue("udp_addr", udp_addr) &&
+      ConfiguratorManager::config.getValue("logic_loop_timeout", logic_loop_timeout))) {
+    print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: Missing necessary configuration\n");
+    exit(1);
   }
 
   // Setup any other member variables here
