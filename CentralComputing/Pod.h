@@ -46,6 +46,11 @@ class Pod {
   void logic_loop();
   void update_unified_state();
   bool switchVal;
+  string tcp_port;
+  string tcp_addr;
+  string udp_send;  // port we send packets to
+  string udp_recv;  // port we recv packets from
+  string udp_addr; 
 };
 
 void signal_handler(int signal);

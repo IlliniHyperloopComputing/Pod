@@ -103,7 +103,16 @@ Pod::Pod() {
   print(LogLevel::LOG_INFO, "CPU freq set to 1GHz\n");    
   #endif
 
-  // Setup any other variables
+  // Grab Network Server variables from config file
+  if (!(ConfiguratorManager::config.getValue("tcp_port", tcp_port) && 
+      ConfiguratorManager::config.getValue("tcp_addr", tcp_addr) &&
+      ConfiguratorManager::config.getValue("udp_send_port", udp_send) &&
+      ConfiguratorManager::config.getValue("udp_recv_port", udp_recv) &&
+      ConfiguratorManager::config.getValue("udp_addr", udp_addr))) {
+    print(LogLevel::LOG_ERROR, "CONFIG_FILE: Missing port or addr configuration\n");
+  }
+
+  // Setup any other member variables here
   state_machine = make_shared<Pod_State>();
   running.store(false);
   switchVal = false;
@@ -114,7 +123,6 @@ void Pod::run() {
   print(LogLevel::LOG_INFO, "==================\n");
   print(LogLevel::LOG_INFO, "ILLINI  HYPERLOOP \n");
   print(LogLevel::LOG_INFO, "==================\n");
-  print(LogLevel::LOG_INFO, "Initialization\n");
   print(LogLevel::LOG_INFO, "Pod State: %s\n", state_machine->get_current_state_string().c_str());
 
   // Start all SourceManager threads
@@ -123,21 +131,7 @@ void Pod::run() {
   SourceManager::TMP.initialize();
   SourceManager::ADC.initialize();
   SourceManager::I2C.initialize();
-  print(LogLevel::LOG_INFO, "Source Managers started\n");
 
-  // Setup Network Server
-  string tcp_port;
-  string tcp_addr;
-  string udp_send;  // port we send packets to
-  string udp_recv;  // port we recv packets from
-  string udp_addr; 
-  if (!(ConfiguratorManager::config.getValue("tcp_port", tcp_port) && 
-      ConfiguratorManager::config.getValue("tcp_addr", tcp_addr) &&
-      ConfiguratorManager::config.getValue("udp_send_port", udp_send) &&
-      ConfiguratorManager::config.getValue("udp_recv_port", udp_recv) &&
-      ConfiguratorManager::config.getValue("udp_addr", udp_addr))) {
-    print(LogLevel::LOG_ERROR, "Missing port or addr configuration\n");
-  }
   // Start Network and main loop thread.
   // I don't know how to use member functions as a thread function, but lambdas work
   thread tcp_thread([&](){ TCPManager::tcp_loop(tcp_addr.c_str(), tcp_port.c_str()); });
@@ -147,27 +141,22 @@ void Pod::run() {
   print(LogLevel::LOG_INFO, "Finished Initialization\n");
   print(LogLevel::LOG_INFO, "================\n\n");
   
-  // ready to begin testing
+  // signal to test suite that we are ready to begin testing
   ready.invoke();
 
   // Join all threads
   logic_thread.join();
   // Once logic_loop joins, trigger other threads to stop
-  print(LogLevel::LOG_INFO, "Closing TCP \n");
   TCPManager::close_client();
-  print(LogLevel::LOG_INFO, "Closing UDP \n");
   UDPManager::close_client();
   tcp_thread.join();
   udp_thread.join();
-  
-  print(LogLevel::LOG_INFO, "Source Managers closing\n");
-  // Stop all source managers
   SourceManager::PRU.stop();
   SourceManager::CAN.stop();
   SourceManager::TMP.stop();
   SourceManager::ADC.stop();
   SourceManager::I2C.stop();
-  print(LogLevel::LOG_INFO, "Source Managers closed, Pod shutting down\n");
+  print(LogLevel::LOG_INFO, "All threads closed, Pod shutting down\n");
 }
 
 // Cause the logic_loop to close.
