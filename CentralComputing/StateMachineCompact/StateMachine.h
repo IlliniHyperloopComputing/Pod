@@ -1,6 +1,7 @@
 #ifndef _STATE_MACHINE_H
 #define _STATE_MACHINE_H
 #include <stdio.h>
+#include <mutex>
  
 class EventData 
 {
@@ -28,6 +29,7 @@ private:
     bool _eventGenerated;
     EventData* _pEventData;
     void StateEngine(void);
+    std::mutex _mutex;
 };
  
 typedef void (StateMachine::*StateFunc)(EventData *);

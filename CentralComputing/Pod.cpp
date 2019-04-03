@@ -135,6 +135,11 @@ void Pod::startup() {
 
   // Join all threads
   logic_thread.join();
+  // Once logic_loop joins, trigger other threads to stop
+  print(LogLevel::LOG_INFO, "Closing TCP \n");
+  TCPManager::close_client();
+  print(LogLevel::LOG_INFO, "Closing UDP \n");
+  UDPManager::close_client();
   tcp_thread.join();
   udp_thread.join();
   
@@ -149,13 +154,10 @@ void Pod::startup() {
   print(LogLevel::LOG_INFO, "Source Managers closed, Pod shutting down\n");
 }
 
-void Pod::stop() {
-  running.store(false); 
+// Cause the logic_loop to close.
+void Pod::trigger_shutdown() {
+  running.store(false);  
   closing.invoke();
-  TCPManager::close_client();
-  UDPManager::close_client();
-  TCPManager::stop_threads();
-  UDPManager::stop_threads();
 }
 
 function<void(int)> shutdown_handler;
@@ -182,7 +184,7 @@ int main(int argc, char **argv) {
     auto pod = make_shared<Pod>();
     // Setup ctrl-c behavior 
     signal(SIGINT, signal_handler);
-    shutdown_handler = [&](int signal) { pod->stop(); };
+    shutdown_handler = [&](int signal) { pod->trigger_shutdown(); };
     // Start the pod running
     pod->startup();
     return 0;
