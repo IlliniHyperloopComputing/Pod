@@ -40,15 +40,13 @@ void Pod::logic_loop() {
     #ifndef SIM
     MotionModel::refresh();
     #else
-
-    SimulatorManager::sim.sim_get_motion();
-    MotionModel::refresh_sim();
+    unified_state->motion_data = MotionModel::refresh_sim();
     #endif
 
     // Calls the steady state function for the current state
     // Passes in command, and current state. 
     auto func = state_machine->get_steady_function();
-    ((*state_machine).*(func))(command); 
+    ((*state_machine).*(func))(command, unified_state); 
 
     #ifdef BBB
     // Send the heartbeat signal to the watchdog.
@@ -75,11 +73,11 @@ void Pod::logic_loop() {
 }
 
 void Pod::update_unified_state() {
-  unified_state.adc_data = SourceManager::ADC.Get();
-  unified_state.can_data = SourceManager::CAN.Get();
-  unified_state.i2c_data = SourceManager::I2C.Get();
-  unified_state.pru_data = SourceManager::PRU.Get();
-  unified_state.state = state_machine->get_current_state();
+  unified_state->adc_data = SourceManager::ADC.Get();
+  unified_state->can_data = SourceManager::CAN.Get();
+  unified_state->i2c_data = SourceManager::I2C.Get();
+  unified_state->pru_data = SourceManager::PRU.Get();
+  unified_state->state = state_machine->get_current_state();
   // TODO: Add more things to unified state 
 }
 
@@ -116,8 +114,15 @@ Pod::Pod() {
 
   // Setup any other member variables here
   state_machine = make_shared<Pod_State>();
+  unified_state = make_shared<UnifiedState>();
+  unified_state->motion_data = make_shared<MotionData>();
+  unified_state->adc_data = make_shared<ADCData>();
+  unified_state->can_data = make_shared<CANData>();
+  unified_state->i2c_data = make_shared<I2CData>();
+  unified_state->pru_data = make_shared<PRUData>();
   running.store(false);
   switchVal = false;
+
 }
 
 void Pod::run() {
@@ -133,6 +138,8 @@ void Pod::run() {
   SourceManager::TMP.initialize();
   SourceManager::ADC.initialize();
   SourceManager::I2C.initialize();
+
+  signal(SIGPIPE, SIG_IGN);  // Ignore SIGPIPE
 
   // Start Network and main loop thread.
   // I don't know how to use member functions as a thread function, but lambdas work
@@ -190,7 +197,6 @@ int main(int argc, char **argv) {
     // Create the pod object
     auto pod = make_shared<Pod>();
     // Setup signals handlers
-    signal(SIGPIPE, SIG_IGN);  // Ignore SIGPIPE
     signal(SIGINT, signal_handler);  // ctrl-c handler
     shutdown_handler = [&](int signal) { pod->trigger_shutdown(); };
     // Start the pod running
