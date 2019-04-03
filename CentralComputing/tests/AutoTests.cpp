@@ -29,4 +29,16 @@ TEST_F(PodTest, AutomaticTransitionBasic) {
   EXPECT_EQ(pod->state_machine->get_current_state(), Pod_State::E_States::ST_FLIGHT_BRAKE);
 
 }
+
+TEST_F(PodTest, TestingEmergencyBrakes) {
+  MoveState(TCPManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(TCPManager::Network_Command_ID::TRANS_LOADING, Pod_State::E_States::ST_LOADING, true);
+  MoveState(TCPManager::Network_Command_ID::TRANS_LAUNCH_READY, Pod_State::E_States::ST_LAUNCH_READY, true);
+  MoveState(TCPManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, true);
+  EXPECT_TRUE(pod->state_machine->motor.is_enabled());
+  //okay, now we want to send the signal to brake:
+  MoveState(TCPManager::Network_Command_ID::EMERGENCY_BRAKE, Pod_State::E_States::ST_FLIGHT_BRAKE, true);
+  EXPECT_FALSE(pod->state_machine->motor.is_enabled());
+}
+
 #endif
