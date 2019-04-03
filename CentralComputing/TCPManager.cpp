@@ -50,8 +50,9 @@ int TCPManager::read_command(Network_Command * buffer) {
 
 int TCPManager::write_data() {
   // TODO write real data
+  shared_ptr<TCPManager::Network_Command> nextCommand = command_queue.dequeue();
   vector<char> bytes = { '9' , ',' , '8' , ',' , '7' };
-  return write(socketfd, bytes.data(), bytes.size());
+  return write(socketfd, &nextCommand, 2);
 }
 
 void TCPManager::read_loop() {
