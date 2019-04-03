@@ -4,7 +4,7 @@ using Utils::print;
 using Utils::LogLevel;
 using Utils::microseconds;
 
-void MotionModel::calculate(std::shared_ptr<UnifiedState> state){
+void MotionModel::calculate(std::shared_ptr<UnifiedState> state) {
   // Measured state variable
   MotionData meas;
   meas.x[0] = Median(state->pru_data.get()->encoder_distance, NUM_ENC_INPUTS);
@@ -16,7 +16,7 @@ void MotionModel::calculate(std::shared_ptr<UnifiedState> state){
 }
 
 // get MotionData object
-void MotionModel::calculate_sim(std::shared_ptr<UnifiedState> state){
+void MotionModel::calculate_sim(std::shared_ptr<UnifiedState> state) {
   #ifdef SIM
   state->motion_data = SimulatorManager::sim.sim_get_motion();
   #endif
