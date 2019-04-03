@@ -15,15 +15,17 @@ CXX_BBB 	:= arm-linux-gnueabihf-g++
 WARNINGS 	:= -Wall -Wextra -pedantic -Wdouble-promotion -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Wno-unused
 
 INCLUDE_DIRS	:= -IStateMachineCompact -I${GTEST_DIR}/include -I.
+SANITIZER_OPTS  := -fsanitize=thread -fPIE -pie
 CFLAGS_RELEASE 	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG
-CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG 
-CFLAGS_SIM 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG -DSIM
+CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG $(SANITIZER_OPTS)
+CFLAGS_SIM 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG -DSIM $(SANITIZER_OPTS) 
 CFLAGS_BBB      := -DBBB
 
 #Set up linker
-LDFLAGS := -pthread -lm #-static-libgcc -static-libstdc++ 
+LDFLAGS := -pthread -lm -fsanitize=thread #-static-libgcc -static-libstdc++ 
 # The 'static' flags might be necessary if the cross compiler and BBB have different versions of the libgcc and libstdc++ libraries. 
 # This is why these flags were intially included, but now the BBBs are running newer software such that these are no longer needed.
+# However, the 'static' flags will likely not work with any of the Sanitizers
 LD_TEST_NORM := ${LIB_DIR}/libgtest.a
 LD_TEST_ARM  := ${LIB_DIR}/libgtest-arm.a
 LD_NORM := $(CXX_NORM)
@@ -74,6 +76,10 @@ msg :
 	$(info =             ___/  /___  /__/   /  / /__/   /  / /  /                    )
 	$(info =          __ __/______/ /______/__/ /______/__/ /__/                     )  
 
+.PHONY: lint
+lint:
+	python cpplint/cpplint/cpplint.py --filter=-legal/copyright,-build/include,-whitespace/end_of_line,-readability/todo --linelength=120 --quiet --extensions=cpp,h,hpp --root=. *.cpp *.hpp *.h
+
 .PHONY: mkdir_obj
 mkdir_obj:
 	@mkdir -p $(OBJ_DIR)
@@ -83,12 +89,12 @@ mkdir_obj:
 
 # Compile libgtest
 ${LIB_DIR}/gtest-all.o : ${GTEST_DIR}/src/gtest-all.cc 
-	g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all.o
+	$(CXX_NORM) -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all.o ${SANITIZER_OPTS}
 	ar -rv ${LIB_DIR}/libgtest.a ${LIB_DIR}/gtest-all.o
 
 ifdef ARM_COMPILER_EXISTS
 ${LIB_DIR}/gtest-all-arm.o : ${GTEST_DIR}/src/gtest-all.cc 
-	arm-linux-gnueabihf-g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all-arm.o
+	$(CXX_BBB) -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all-arm.o ${SANITIZER_OPTS}
 	ar -rv ${LIB_DIR}/libgtest-arm.a ${LIB_DIR}/gtest-all-arm.o
 endif
 

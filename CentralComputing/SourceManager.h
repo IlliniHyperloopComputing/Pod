@@ -1,14 +1,14 @@
-#ifndef SOURCE_MANAGER_HPP
-#define SOURCE_MANAGER_HPP
+#ifndef SOURCEMANAGER_H_
+#define SOURCEMANAGER_H_
 
-#include "PRUManager.hpp"
-#include "CANManager.hpp"
-#include "TMPManager.hpp"
-#include "ADCManager.hpp"
-#include "I2CManager.hpp"
-#include "MotionModel.hpp"
+#include "PRUManager.h"
+#include "CANManager.h"
+#include "TMPManager.h"
+#include "ADCManager.h"
+#include "I2CManager.h"
+#include "MotionModel.h"
 
-// Include stubbs to allow Managers to 
+// Include stubbs to allow Managers to
 // include this .hpp in their files
 class PRUManager;
 class CANManager;
@@ -25,4 +25,5 @@ namespace SourceManager {
   extern I2CManager I2C;
   extern MotionModel MM;
 }
-#endif
+
+#endif  // SOURCEMANAGER_H_

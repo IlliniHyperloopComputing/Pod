@@ -1,6 +1,6 @@
 #ifdef SIM // Only compile if building test executable
 #include "Pod.h"
-#include "Simulator.hpp"
+#include "Simulator.h"
 
 using namespace Utils;
 class PodTest : public ::testing::Test
@@ -50,7 +50,7 @@ class PodTest : public ::testing::Test
     SimulatorManager::sim.logging(false);
     SimulatorManager::sim.disconnect();
     sim_thread.join();
-    pod->stop();
+    pod->trigger_shutdown();
     pod_thread.join();
     print(LogLevel::LOG_DEBUG, "Test teardown complete\n");
   }

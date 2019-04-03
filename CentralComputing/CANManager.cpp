@@ -1,7 +1,6 @@
-#include "CANManager.hpp"
+#include "CANManager.h"
 
-bool CANManager::initialize_source(){
-
+bool CANManager::initialize_source() {
   #ifndef BBB
   print(LogLevel::LOG_ERROR, "CAN Manager setup failed, not on BBB\n");
   return false;
@@ -105,6 +104,7 @@ bool CANManager::recv_frame(){
     return false;
   }
   return true;
+
 }
 
 std::shared_ptr<CANData> CANManager::refresh() {

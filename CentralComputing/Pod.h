@@ -1,11 +1,11 @@
-#ifndef POD_H
-#define POD_H
+#ifndef POD_H_
+#define POD_H_
 
-#include "TCPManager.hpp"
-#include "UDPManager.hpp"
-#include "Event.hpp"
+#include "TCPManager.h"
+#include "UDPManager.h"
+#include "Event.h"
 #include "Pod_State.h"
-#include "Configurator.hpp"
+#include "Configurator.h"
 #include <string>
 #include <functional>
 #include <semaphore.h>
@@ -14,27 +14,24 @@
 #include "gtest/gtest.h"
 #pragma GCC diagnostic pop
 
-
 class Pod {
-  public:
-    Pod();
+ public:
+  Pod();
 
-    void startup();
+  void startup();
+  void trigger_shutdown();
 
-    void stop();
+  std::shared_ptr<Pod_State> state_machine;
+  std::atomic<bool> running;
+  Event ready;
+  Event processing_command;
+  Event closing;
 
-    std::shared_ptr<Pod_State> state_machine;
-    std::atomic<bool> running;
-    Event ready;
-    Event processing_command;
-    Event closing;
-
-  private:
-    void logic_loop();
-    bool switchVal;
+ private:
+  void logic_loop();
+  bool switchVal;
 };
 
 void signal_handler(int signal);
 
-
-#endif
+#endif  // POD_H_

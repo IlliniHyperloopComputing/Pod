@@ -1,34 +1,40 @@
-#include "TCPManager.hpp"
+#include "TCPManager.h"
 
-using namespace std;
-using namespace Utils;
+using std::vector;
+using std::make_shared;
+using std::shared_ptr;
+using std::thread;
+using Utils::print;
+using Utils::LogLevel;
 
 int TCPManager::socketfd = 0;
 Event TCPManager::connected;
 Event TCPManager::closing;
 
 std::atomic<bool> TCPManager::running(false);
+std::mutex TCPManager::mutex;
 SafeQueue<shared_ptr<TCPManager::Network_Command>> TCPManager::command_queue;
 
-int TCPManager::connect_to_server( const char * hostname, const char * port){
+int TCPManager::connect_to_server(const char * hostname, const char * port) {
+  std::lock_guard<std::mutex> guard(mutex);  // Used to protect socketfd (TSan datarace)
   struct addrinfo hints, *servinfo;
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_INET;
   hints.ai_socktype = SOCK_STREAM;
   int rv;
-  if((rv = getaddrinfo(hostname, port, &hints, &servinfo)) != 0) {
+  if ((rv = getaddrinfo(hostname, port, &hints, &servinfo)) != 0) {
     freeaddrinfo(servinfo);
     print(LogLevel::LOG_ERROR, "TCP Error get addrinfo\n");
     return false;
   }
 
-  if((socketfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol)) == -1) {
+  if ((socketfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol)) == -1) {
     freeaddrinfo(servinfo);
     print(LogLevel::LOG_ERROR, "TCP Error getting socket\n");
     return false;
   }
 
-  if(connect(socketfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1) {
+  if (connect(socketfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1) {
     close(socketfd);
     freeaddrinfo(servinfo);
     print(LogLevel::LOG_ERROR, "TCP Error connecting\n");
@@ -44,7 +50,6 @@ int TCPManager::read_command(Network_Command * buffer) {
   int bytes_read = read(socketfd, bytes, 2);
   buffer->id = (Network_Command_ID) bytes[0];
   buffer->value = bytes[1];
- 
   return bytes_read;
 }
 
@@ -57,11 +62,11 @@ int TCPManager::write_data() {
 void TCPManager::read_loop() {
   bool active_connection = true;
   Network_Command buffer;
-  while (running && active_connection){
+  while (running && active_connection) {
     int bytes_read = read_command(&buffer);
     active_connection = bytes_read > 0;
     if (bytes_read > 0) {
-      //print(LogLevel::LOG_EDEBUG, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
+      // print(LogLevel::LOG_EDEBUG, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
       auto command = make_shared<Network_Command>();
       command->id = buffer.id;
       command->value = buffer.value;
@@ -73,7 +78,7 @@ void TCPManager::read_loop() {
 
 void TCPManager::write_loop() {
   bool active_connection = true;
-  while(running && active_connection){
+  while (running && active_connection) {
     closing.wait_for(1000000);
     int written = write_data();
     print(LogLevel::LOG_DEBUG, "Wrote %d bytes\n", written);
@@ -87,40 +92,38 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
   closing.reset();
   running.store(true);
 
-  while(running){
+  while (running) {
     int fd = connect_to_server(hostname, port);
-    if(fd > 0){
+    if (fd > 0) {
       print(LogLevel::LOG_INFO, "TCP Starting network threads\n");
       thread read_thread(read_loop);
       thread write_thread(write_loop);
 
-      connected.invoke(); // Threads started, show simulator we are connected
+      connected.invoke();  // Threads started, show simulator we are connected
 
       read_thread.join();
       write_thread.join();
+
       print(LogLevel::LOG_INFO, "TCP Connection lost\n");
 
-    } 
-    else {
+    } else {
       running.store(false);
       break;
     }
   }   
 
+  close(socketfd);  // At last, close the socket
+  connected.reset();  
   print(LogLevel::LOG_INFO, "TCP Exiting loop\n");
 }
 
-
 void TCPManager::close_client() {
-  shutdown(socketfd, SHUT_RDWR);
-  close(socketfd);
-  connected.reset();
+  std::lock_guard<std::mutex> guard(mutex);  // Used to protect socketfd (TSan datarace)
+  running.store(false);  // Will cause the tcp_loop to exit once threads join.
+  closing.invoke();  // write_thread sleeps using an event. Invoke the event to stop further sleeping
+  shutdown(socketfd, SHUT_RDWR);  // Causes read(socketfd) or write(socketfd) to return. 
 }
 
-void TCPManager::stop_threads() {
-  running.store(false);
-  closing.invoke();
-}
 
 
 

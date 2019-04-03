@@ -1,9 +1,9 @@
-#ifndef UDPMANAGER_HPP 
-#define UDPMANAGER_HPP
+#ifndef UDPMANAGER_H_
+#define UDPMANAGER_H_
 
 #include "Utils.h"
 #include "SafeQueue.hpp"
-#include "Event.hpp"
+#include "Event.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <stdlib.h>
@@ -11,8 +11,9 @@
 #include <netdb.h>
 #include <poll.h>
 #include <atomic>
-#include <thread>
+#include <thread> // NOLINT
 #include <memory>
+#include <mutex>
 #include <sys/ioctl.h>
 
 namespace UDPManager {
@@ -29,6 +30,7 @@ extern Connection_Status connection_status;
 extern struct addrinfo hints, *sendinfo, *recvinfo;
 
 extern Event setup;
+extern std::mutex mutex;
 
 /**
  * Starts UDP server
@@ -39,9 +41,9 @@ extern Event setup;
  **/
 bool start_udp(const char * hostname, const char * send_port, const char * recv_port);
 
-int udp_recv(uint8_t* recv_buf, uint8_t len); //receives data and is put into a buffer
-int udp_send(uint8_t* buf, uint8_t len);      //send data from the buffer passed in
-bool udp_parse(uint8_t* buf, uint8_t len);    //parse the data in the buffer
+int udp_recv(uint8_t* recv_buf, uint8_t len);  // receives data and is put into a buffer
+int udp_send(uint8_t* buf, uint8_t len);       // send data from the buffer passed in
+bool udp_parse(uint8_t* buf, uint8_t len);     // parse the data in the buffer
 /**
  * Uses the UDP port setup by start_udp to monitor connection status
  **/
@@ -52,11 +54,6 @@ void connection_monitor(const char * hostname, const char * send_port, const cha
  **/
 void close_client();
 
-/*
- * Stops threads and exits
- */
-void stop_threads();
+}  // namespace UDPManager
 
-}
-
-#endif
+#endif  // UDPMANAGER_H_
