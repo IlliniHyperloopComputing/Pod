@@ -4,7 +4,6 @@
 #include "Utils.h"
 #include "SourceManager.h"
 #include "Simulator.h"
-#include "Filter.h"
 #include <cmath>
 
 #define MOTOR_OFF 0
