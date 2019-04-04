@@ -129,9 +129,20 @@ std::shared_ptr<CANData> CANManager::refresh() {
     b = Utils::microseconds();
     print(LogLevel::LOG_INFO, "CAN recv_frame takes %lu microseconds\n", b-a);
     if (r_frame.can_id == can_id_t1) {
-      
+      new_data->status_word =(uint16_t) cast_to_u32(0,2,r_frame.data);
+      new_data->position_val = (int32_t) cast_to_u32(2,4,r_frame.data); 
+      new_data->torque_val = (int16_t) cast_to_u32(6,2,r_frame.data);  
     } else if (r_frame.can_id == can_id_t2) {
+      new_data->controller_temp = (uint8_t) cast_to_u32(0,1,r_frame.data);
+      new_data->motor_temp = (uint8_t) cast_to_u32(1,1,r_frame.data);
+      new_data->dc_link_voltage = (int32_t) cast_to_u32(2,2,r_frame.data);
+      new_data->logic_power_supply_voltage = (int16_t) cast_to_u32(4,2,r_frame.data);
+      new_data->current_demand = (int16_t) cast_to_u32(6,2,r_frame.data);
     } else if (r_frame.can_id == can_id_t3) {
+      new_data->motor_current_val = (uint8_t) cast_to_u32(0,2,r_frame.data);
+      new_data->electrical_angle = (int16_t) cast_to_u32(2,2,r_frame.data);
+      new_data->phase_a_current = (int16_t) cast_to_u32(4,2,r_frame.data);
+      new_data->phase_b_current = (int16_t) cast_to_u32(6,2,r_frame.data);
     } else {
       continue; 
     }
@@ -151,4 +162,11 @@ std::shared_ptr<CANData> CANManager::refresh() {
 
 std::shared_ptr<CANData> CANManager::refresh_sim() {
   return empty_data();
+}
+uint32_t CANManager::cast_to_u32(int offset, int bytes_per_item, unsigned char* bufferArray) {
+  uint32_t tmp = 0;
+  for(int i = 0; i < bytes_per_item; i++){
+    tmp |= (uint8_t)(bufferArray[offset + i] << (i * 8));
+  }
+  return tmp;
 }
