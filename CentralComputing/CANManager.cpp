@@ -128,7 +128,13 @@ std::shared_ptr<CANData> CANManager::refresh() {
     }
     b = Utils::microseconds();
     print(LogLevel::LOG_INFO, "CAN recv_frame takes %lu microseconds\n", b-a);
-
+    if (r_frame.can_id == can_id_t1) {
+      
+    } else if (r_frame.can_id == can_id_t2) {
+    } else if (r_frame.can_id == can_id_t3) {
+    } else {
+      continue; 
+    }
     //Print the contents of r_frame (assumes len <= 8)
     char buff[16];
     for(int j = 0; j < r_frame.len*2; j+=2){

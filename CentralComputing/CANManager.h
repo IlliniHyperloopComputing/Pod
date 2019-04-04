@@ -48,14 +48,15 @@ class CANManager : public SourceManagerBase<CANData, false> {
     // Non-blocking read of CAN bus. Reads one frame at a time, populates r_frame member variable. Returns false if critical failure
     bool recv_frame();
 
+    uint_32_t cast_to_u32(int offset, int bytes_per_item, 
     // Heavily inspired by: https://github.com/linux-can/can-utils/blob/master/candump.c
     // https://www.can-cia.org/fileadmin/resources/documents/proceedings/2012_kleine-budde.pdf
 
     // CAN socket
     int can_fd;
-    const int can_id_t1 = 180; 
-    const int can_id_t2 = 280; 
-    const int can_id_t3 = 380; 
+    const int can_id_t1 = 181;
+    const int can_id_t2 = 281; 
+    const int can_id_t3 = 381; 
     // Used for CAN socket setup
     struct ifreq ifr;
     struct sockaddr_can addr;
