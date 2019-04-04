@@ -12,9 +12,10 @@
 #define DEVICE_NAME   "/dev/rpmsg_pru31"
 #define MAX_BUFFER_SIZE   512
 
+#define HUNDRED_FEET_IN_MM (30480)
+#define WHEEL_CIRCUMFRENCE_IN_MM (500)
+
 #define CLOCK_TO_SEC (21.474836475/4294967295.0)
-
-
 
 struct RawPRUData {
   uint32_t counts[11];
@@ -29,7 +30,7 @@ class PRUManager : public SourceManagerBase<PRUData, true> {
     std::shared_ptr<PRUData> refresh();
     std::shared_ptr<PRUData> refresh_sim();
 
-    double convert_to_velocity(uint32_t decay, uint32_t delta, double distance);
+    int32_t convert_to_velocity(uint32_t decay, uint32_t delta, uint32_t distance);
 
     std::string name();
 
@@ -37,10 +38,10 @@ class PRUManager : public SourceManagerBase<PRUData, true> {
     struct pollfd pollfds[1];
 
     // Variables used for pru processing
-    const int enc_idx[NUM_ENC_INPUTS] = {1, 2, 3, 4}; 
-    const double enc_map[NUM_ENC_INPUTS] = {1, 1, 1, 1};
-    const int disk_idx[NUM_MOTOR_INPUTS] = {5, 6, 7, 8}; 
-    const double disk_map[NUM_MOTOR_INPUTS] = {1, 1, 1, 1};
+    const int orange_idx[NUM_ORANGE_INPUTS] = {1, 2}; 
+    const uint32_t orange_map[NUM_ORANGE_INPUTS] = {WHEEL_CIRCUMFRENCE_IN_MM, WHEEL_CIRCUMFRENCE_IN_MM};
+    const int wheel_idx[NUM_WHEEL_INPUTS] = {3, 4}; 
+    const uint32_t wheel_map[NUM_WHEEL_INPUTS] = {HUNDRED_FEET_IN_MM, HUNDRED_FEET_IN_MM};
 };
 
 #endif  // PRUMANAGER_H_

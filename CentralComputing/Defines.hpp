@@ -16,13 +16,15 @@ enum E_States {
 
 #define NUM_ACCEL 3
 struct ADCData {
-  double accel[NUM_ACCEL];
+  int32_t accel[NUM_ACCEL];
   int dummy_data;
 };
 
 struct CANData {
   // replace with actual data structure
   int dummy_data;
+  int32_t wheel_distance;
+  int32_t drive_wheel_velocity;
 };
 
 struct I2CData {
@@ -30,12 +32,13 @@ struct I2CData {
   int dummy_data;
 };
 
-#define NUM_ENC_INPUTS 4
-#define NUM_MOTOR_INPUTS 4
+#define NUM_ORANGE_INPUTS 2
+#define NUM_WHEEL_INPUTS 2
 struct PRUData {
-  double encoder_distance[NUM_ENC_INPUTS];
-  double encoder_velocity[NUM_ENC_INPUTS];
-  double disk_RPM[NUM_MOTOR_INPUTS];
+  int32_t orange_distance[NUM_ORANGE_INPUTS];
+  int32_t orange_velocity[NUM_ORANGE_INPUTS];
+  int32_t wheel_distance[NUM_WHEEL_INPUTS];
+  int32_t wheel_velocity[NUM_WHEEL_INPUTS];
 };
 
 struct MotionData {
