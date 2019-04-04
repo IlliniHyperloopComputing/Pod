@@ -1,14 +1,18 @@
 #ifdef SIM // Only compile if building test executable
 #include "Utils.h"
 #include "Pod.h"
-#include "Event.hpp"
-#include "Simulator.hpp"
+#include "Event.h"
+#include "Simulator.h"
 #include <ctime>
 #include <iostream>
 #include <cstdio>
 #include <pthread.h>
 #include <fstream>
 #include <string>
+
+using Utils::print;
+using Utils::LogLevel;
+using namespace Utils;
 
 TEST(UtilsTest, busyWaitTest) {
 	//buffer based on how accurate busyWait needs to be while still passing the test
@@ -59,7 +63,7 @@ TEST(UtilsTest, busyWaitIndivThreads) {
 	constexpr int threadCount = 10;
 	long time = 100000;
 	//buffer based on how accurate busyWait needs to be while still passing the test
-	long buffer = 10000;
+	long buffer = 15000;
 	//need to save the first affinity and set it back to that at the end
 	cpu_set_t first;
 	EXPECT_EQ(sched_getaffinity(0, sizeof(first), &first), 0);
@@ -108,7 +112,7 @@ TEST(UtilsTest, GPIOToggleTest) {
 	EXPECT_EQ(content, one);
 
   #else 
-  print(LOG_ERROR, "Test only works on BBB. Run on BBB\n");
+  print(LogLevel::LOG_ERROR, "Test only works on BBB. Run on BBB\n");
   EXPECT_EQ(true, true);
   #endif
 

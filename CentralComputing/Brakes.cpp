@@ -1,7 +1,6 @@
-#include "Brakes.hpp"
-using namespace Utils;
+#include "Brakes.h"
 
-Brakes::Brakes(){
+Brakes::Brakes() {
   enabled = false;
 }
 
@@ -24,10 +23,10 @@ void Brakes::disable_brakes() {
   print(LogLevel::LOG_DEBUG, "Brakes Disabled\n");
 }
 
-void Brakes::set_enable(bool enable){
+void Brakes::set_enable(bool enable) {
 }
 
-bool Brakes::is_enabled(){
+bool Brakes::is_enabled() {
   return enabled;
 }
 

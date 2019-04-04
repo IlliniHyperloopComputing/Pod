@@ -1,9 +1,9 @@
-#ifndef TCPMANAGER_HPP 
-#define TCPMANAGER_HPP
+#ifndef TCPMANAGER_H_
+#define TCPMANAGER_H_
 
 #include "Utils.h"
 #include "SafeQueue.hpp"
-#include "Event.hpp"
+#include "Event.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <stdlib.h>
@@ -11,8 +11,9 @@
 #include <netdb.h>
 #include <poll.h>
 #include <atomic>
-#include <thread>
+#include <thread> // NOLINT
 #include <memory>
+#include <mutex> // NOLINT
 #include <sys/ioctl.h>
 
 #define SETUP_FAILURE -1
@@ -23,7 +24,7 @@
 namespace TCPManager {
 
 enum Network_Command_ID {
-  //state transitions
+  // state transitions
   TRANS_SAFE_MODE = 0,
   TRANS_FUNCTIONAL_TEST = 1,
   TRANS_LOADING = 2,
@@ -37,11 +38,11 @@ enum Network_Command_ID {
   DISABLE_BRAKE = 10,
   TRANS_FLIGHT_COAST = 11,
   TRANS_FLIGHT_BRAKE = 12,
-  TRANS_ERROR_STATE=13,
+  TRANS_ERROR_STATE = 13,
 };
 
-//enum specifying what data is sent
-//[1 byte Data ID][4 byte size][size byte chunk]
+// enum specifying what data is sent
+// [1 byte Data ID][4 byte size][size byte chunk]
 enum Network_Data_ID {
   POD_STATE,
   BRAKE_STATUS,
@@ -56,8 +57,8 @@ enum Network_Data_ID {
 * A network command is returned by read and parsed within Pod.cpp
 **/
 struct Network_Command {
-  //state transtitions
-  uint8_t id; //id is just a network command
+  // state transtitions
+  uint8_t id;  // id is just a network command
   uint8_t value;
 };
 
@@ -67,10 +68,11 @@ extern int socketfd;
 extern std::atomic<bool> running;
 extern SafeQueue<std::shared_ptr<TCPManager::Network_Command>> command_queue;
 
-extern Event connected; // Used within Simulator to check when TCP is connected
-extern Event closing;   // Used to wait between writes in the write_loop()
+extern Event connected;  // Used within Simulator to check when TCP is connected
+extern Event closing;    // Used to wait between writes in the write_loop()
+extern std::mutex mutex;  // Used to eliminate TSan errors
 
-int connect_to_server( const char * hostname, const char * port);
+int connect_to_server(const char * hostname, const char * port);
 
 /**
  * Reads from socketfd, parses read bytes into a Network_Command struct
@@ -110,11 +112,6 @@ void tcp_loop(const char * hostname, const char * port);
  **/
 void close_client();
 
-/*
- * Stops threads and exits
- */
-void stop_threads();
+}  // namespace TCPManager
 
-}
-
-#endif
+#endif  // TCPMANAGER_H_

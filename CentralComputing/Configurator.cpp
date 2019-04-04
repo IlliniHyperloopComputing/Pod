@@ -1,13 +1,11 @@
-#include "Configurator.hpp"
+#include "Configurator.h"
 #include <string>
-
-using namespace std;
 
 Configurator ConfiguratorManager::config;
 
 bool Configurator::openConfigFile(const string& fileName) {
   inFile.open(fileName);
-  if(!inFile) {
+  if (!inFile) {
     return false;
   }
   loadValues();
@@ -18,7 +16,7 @@ bool Configurator::openConfigFile(const string& fileName) {
 void Configurator::loadValues() {
   string varName;
   string val;
-  while(inFile >> varName){
+  while (inFile >> varName) {
     inFile >> val;
     mapVals.insert(pair<string, string> (varName, val));
   }
@@ -32,7 +30,7 @@ bool Configurator::getValue(const string& varName, string& value) {
   return true;
 }
 
-bool Configurator::getValue(const string& varName, long long& value) {
+bool Configurator::getValue(const string& varName, int64_t& value) {
   if (mapVals.find(varName) == mapVals.end()) {
     return false;
   }
