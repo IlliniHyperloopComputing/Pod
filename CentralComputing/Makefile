@@ -9,18 +9,19 @@ OBJ := $(patsubst %.cpp, %.o, $(SRC))
 GTEST_DIR := googletest/googletest
 LIB_DIR   := .lib
 
-SANITIZER_OPTS  := -fsanitize=thread -fPIE -pie
 
 # Set up compiler
-CXX_NORM	:= g++ -fpermissive $(SANITIZER_OPTS)
+CXX_NORM	:= g++ -fpermissive 
 CXX_BBB 	:= arm-linux-gnueabihf-g++
 WARNINGS 	:= -Wall -Wextra -pedantic -Wdouble-promotion -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Wno-unused
+
 
 INCLUDE_DIRS	:= -IStateMachineCompact -I${GTEST_DIR}/include -I.
 CFLAGS_RELEASE 	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG
 CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG 
 CFLAGS_SIM 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG -DSIM 
 CFLAGS_BBB      := -DBBB
+CFLAGS_NORM     := -fsanitize=thread -fPIE -pie
 
 #Set up linker
 LDFLAGS := -pthread -lm  #-static-libgcc -static-libstdc++ 
@@ -133,7 +134,7 @@ msg_p :
 # build
 #####
 $(POD) : CXX 	= $(CXX_NORM)
-$(POD) : CFLAGS = $(CFLAGS_RELEASE)
+$(POD) : CFLAGS = $(CFLAGS_RELEASE) $(CFLAGS_NORM)
 $(POD) : LD  	= $(LD_NORM)
 $(POD) : mkdir_obj build-$(POD)
 build-$(POD) : $(OBJ:%.o=$(OBJ_DIR)/%-build.o)
@@ -146,7 +147,7 @@ $(OBJ_DIR)/%-build.o : %.cpp
 # build-debug
 #####
 $(POD_D) : CXX		= $(CXX_NORM)
-$(POD_D) : CFLAGS  	= $(CFLAGS_DEBUG)
+$(POD_D) : CFLAGS  	= $(CFLAGS_DEBUG) $(CFLAGS_NORM)
 $(POD_D) : LD  		= $(LD_NORM)
 $(POD_D) : mkdir_obj build-$(POD_D)
 build-$(POD_D) : $(OBJ:%.o=$(OBJ_DIR)/%-build-debug.o)
@@ -159,7 +160,7 @@ $(OBJ_DIR)/%-build-debug.o : %.cpp
 # build-test
 #####
 $(POD_T) : CXX 		= $(CXX_NORM)
-$(POD_T) : CFLAGS  	= $(CFLAGS_SIM)
+$(POD_T) : CFLAGS  	= $(CFLAGS_SIM) $(CFLAGS_NORM)
 $(POD_T) : LD  		= $(LD_NORM)
 $(POD_T) : mkdir_obj build-$(POD_T)
 
