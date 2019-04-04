@@ -5,7 +5,6 @@ using Utils::LogLevel;
 using Utils::microseconds;
 
 void MotionModel::calculate(std::shared_ptr<UnifiedState> state) {
-
   // POSITION
   double w1 = 1.0;
   double w2 = 1.0;
@@ -13,8 +12,8 @@ void MotionModel::calculate(std::shared_ptr<UnifiedState> state) {
   double w4 = 1.0;
   double w5 = 1.0;
   double w6 = 1.0;
-  //The values w1, w2 and w3 will sum to 1 and will be tuned
-  //w1 + w2 + w3 = 1, w4 + w5 = 1 and w5 + w6 = 1. All values will be tuned
+  // The values w1, w2 and w3 will sum to 1 and will be tuned
+  // w1 + w2 + w3 = 1, w4 + w5 = 1 and w5 + w6 = 1. All values will be tuned
   int32_t orange_dist = std::max(state->pru_data->orange_distance[0], state->pru_data->orange_distance[1]);
   int32_t wheel_dist = std::max(state->pru_data->wheel_distance[0], state->pru_data->wheel_distance[1]);
   int32_t motor_dist = state->can_data->wheel_distance;
