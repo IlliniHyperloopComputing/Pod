@@ -10,6 +10,8 @@ double IDEAL_DECCEL = -9.8;
 double LENGTH_OF_TRACK = 1000;
 double BUFFER_LENGTH = 20;
 double MAX_VELOCITY = 550;
+double SAFE_ACCEL = 0.5;
+double SAFE_VELOC = 3;
 
 Pod_State::Pod_State()
   : StateMachine(ST_MAX_STATES),
@@ -288,6 +290,24 @@ void Pod_State::steady_flight_coast(std::shared_ptr<TCPManager::Network_Command>
 
 void Pod_State::steady_flight_brake(std::shared_ptr<TCPManager::Network_Command> command) {
   // Brakes are applied
+	// Access Pos, Vel, and Accel from Motion Model
+  print(LogLevel::LOG_INFO, "Function getting called.\n");
+  std::shared_ptr<StateSpace> state = SourceManager::MM.Get();
+  double pos = state->x[0];
+  double vel = state->x[1];
+  double acc = state->x[2];
+  print(LogLevel::LOG_INFO, "Made it past getting kinematics.\n");
+
+  if (acc < SAFE_ACCEL && vel < SAFE_VELOC) {
+  	print(LogLevel::LOG_INFO, "Made it past conditional.\n");
+  	auto newCommand = std::make_shared<TCPManager::Network_Command>();
+    newCommand->id = TCPManager::Network_Command_ID::TRANS_SAFE_MODE;
+    print(LogLevel::LOG_INFO, "Made it past sending command.\n");
+    newCommand->value = 0;
+    TCPManager::command_queue.enqueue(newCommand);
+    print(LogLevel::LOG_INFO, "Made it past enqueing command.\n");
+    auto_transition_safeMode.invoke();
+  }
 }
 
 bool Pod_State::shouldBrake(double vel, double pos) {

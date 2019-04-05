@@ -36,15 +36,19 @@ TEST_F(PodTest, TestEmergencyBrakes) {
   MoveState(TCPManager::Network_Command_ID::TRANS_LAUNCH_READY, Pod_State::E_States::ST_LAUNCH_READY, true);
   MoveState(TCPManager::Network_Command_ID::LAUNCH, Pod_State::E_States::ST_FLIGHT_ACCEL, true);
   EXPECT_TRUE(pod->state_machine->motor.is_enabled());
+  EXPECT_FALSE(pod->state_machine->brakes.is_enabled());
   
   //okay, now we want to send the signal to brake:
   MoveState(TCPManager::Network_Command_ID::EMERGENCY_BRAKE, Pod_State::E_States::ST_FLIGHT_BRAKE, true);
   EXPECT_FALSE(pod->state_machine->motor.is_enabled());
+  EXPECT_TRUE(pod->state_machine->brakes.is_enabled());
 
   //after the brakes are hit, the pod should automatically transition into safe mode:
   pod->processing_command.reset();
-  pod->state_machine->auto_transition_coast.wait();
+  pod->state_machine->auto_transition_safeMode.wait();
   pod->processing_command.wait();
   EXPECT_EQ(pod->state_machine->get_current_state(), Pod_State::E_States::ST_SAFE_MODE);
+  EXPECT_FALSE(pod->state_machine->motor.is_enabled());
+  EXPECT_TRUE(pod->state_machine->brakes.is_enabled());
 }
 #endif

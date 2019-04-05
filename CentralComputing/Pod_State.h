@@ -105,6 +105,7 @@ class Pod_State : public StateMachine {
   Brakes brakes;
   Event auto_transition_coast;
   Event auto_transition_brake;
+  Event auto_transition_safeMode;
     
  private:
   std::map<TCPManager::Network_Command_ID, transition_function> transition_map; 
