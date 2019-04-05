@@ -4,14 +4,13 @@
 #include "SourceManagerBase.hpp"
 #include "SourceManager.hpp"
 
-#define NUM_ACCEL 3
+#define NUM_INPUTS 7 
 
 struct ADCData {
-  double accel[NUM_ACCEL];
-  int dummy_data;
+  double accel[NUM_INPUTS];
 };
 struct RawADCData {
-  int dummy_data;
+    double raw_accel[NUM_INPUTS];
 };
 
 class ADCManager : public SourceManagerBase<(long long) (1.0 * 1E6), ADCData, true> {
