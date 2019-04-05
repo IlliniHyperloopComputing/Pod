@@ -71,6 +71,9 @@ void Pod::update_unified_state() {
   unified_state->i2c_data = SourceManager::I2C.Get();
   unified_state->pru_data = SourceManager::PRU.Get();
   unified_state->state = state_machine->get_current_state();
+  
+  TCPManager::unified_state.enqueue(unified_state);  
+
   // TODO: Add more things to unified state 
 
   // Update motion_data

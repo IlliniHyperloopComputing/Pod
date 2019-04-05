@@ -1,6 +1,7 @@
 #ifndef TCPMANAGER_H_
 #define TCPMANAGER_H_
 
+#include "Defines.hpp"
 #include "Utils.h"
 #include "SafeQueue.hpp"
 #include "Event.h"
@@ -67,6 +68,7 @@ extern int socketfd;
 
 extern std::atomic<bool> running;
 extern SafeQueue<std::shared_ptr<TCPManager::Network_Command>> command_queue;
+extern SafeQueue<std::shared_ptr<UnifiedState>> unified_state;
 
 extern Event connected;  // Used within Simulator to check when TCP is connected
 extern Event closing;    // Used to wait between writes in the write_loop()

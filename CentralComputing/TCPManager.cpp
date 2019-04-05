@@ -15,6 +15,8 @@ std::atomic<bool> TCPManager::running(false);
 std::mutex TCPManager::mutex;
 SafeQueue<shared_ptr<TCPManager::Network_Command>> TCPManager::command_queue;
 
+SafeQueue<shared_ptr<UnifiedState>> TCPManager::unified_state;  // I'm not sure how to get the unified state to the TCPManager
+
 int TCPManager::connect_to_server(const char * hostname, const char * port) {
   std::lock_guard<std::mutex> guard(mutex);  // Used to protect socketfd (TSan datarace)
   struct addrinfo hints, *servinfo;
@@ -55,8 +57,12 @@ int TCPManager::read_command(Network_Command * buffer) {
 
 int TCPManager::write_data() {
   // TODO write real data
+  auto uS = unified_state.dequeue();
+  uS->motion_data->x[1] = 32;
+  uS->motion_data->x[0] = 27;
+  vector<int32_t> vals = { uS->motion_data->x[1], uS->motion_data->x[0] };
   vector<char> bytes = { '9' , ',' , '8' , ',' , '7' };
-  return write(socketfd, bytes.data(), bytes.size());
+  return write(socketfd, vals.data(), vals.size() * sizeof(int32_t) + 1);
 }
 
 void TCPManager::read_loop() {

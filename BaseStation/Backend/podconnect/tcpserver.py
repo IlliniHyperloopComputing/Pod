@@ -7,7 +7,7 @@ from podconnect.models import DataPacket
 def serve():
     TCP_IP = '127.0.0.1'
     TCP_PORT = 8001
-    BUFFER_SIZE = 20
+    BUFFER_SIZE = 128
 
     mutex = Lock()
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -28,12 +28,12 @@ def serve():
                 data = conn.recv(BUFFER_SIZE)
                 if not data or data == None:
                     break
-                data = data.decode()
-                dataSplit = data.split(',')
-                d = DataPacket(velocity=dataSplit[0],acceleration=dataSplit[1],position=dataSplit[2])
-                mutex.acquire(1)
-                d.save()
-                mutex.release()
+                #data = data.decode()
+                #dataSplit = data.split(',')
+                #d = DataPacket(velocity=dataSplit[0],acceleration=dataSplit[1],position=dataSplit[2])
+               # mutex.acquire(1)
+                #data.save()
+                #mutex.release()
                 print("TCP received data:", data)
             except:
                 print("Error in TCP Received message")
