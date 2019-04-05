@@ -15,7 +15,8 @@ std::atomic<bool> TCPManager::running(false);
 std::mutex TCPManager::mutex;
 SafeQueue<shared_ptr<TCPManager::Network_Command>> TCPManager::command_queue;
 
-SafeQueue<shared_ptr<UnifiedState>> TCPManager::write_queue;  // I'm not sure how to get the unified state to the TCPManager
+// I'm not sure how to get the unified state to the TCPManager
+SafeQueue<shared_ptr<UnifiedState>> TCPManager::write_queue;  
 
 int TCPManager::connect_to_server(const char * hostname, const char * port) {
   std::lock_guard<std::mutex> guard(mutex);  // Used to protect socketfd (TSan datarace)
