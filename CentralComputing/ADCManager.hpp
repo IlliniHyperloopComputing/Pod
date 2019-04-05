@@ -24,8 +24,8 @@ class ADCManager : public SourceManagerBase<(long long) (1.0 * 1E6), ADCData, tr
       return "adc";
     }
 
-    //iterator for testing purposes, remove
-    int i = 5;
+    std::string fileName;
+    ifstream inFile;
 };
 
 #endif
