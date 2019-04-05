@@ -44,6 +44,13 @@ def serve():
                 print("TCP received data 5 :", h[5] )
                 print("TCP received data 6 :", h[6] )
                 print("TCP received data 7 :", h[7] )
+
+                val1 = h[0] + h[1] * 2**8 + h[2] * 2**16 + h[3] * 2**24
+                val2 = h[4] + h[5] * 2**8 + h[6] * 2**16 + h[7] * 2**24
+
+                print("val1: ", val1)  # val1 and val2 are taking the bytes from
+                print("val2: ", val2)  # bytearray and reconstructing the sent data 
+
             except:
                 print("Error in TCP Received message")
 
