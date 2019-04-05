@@ -1,6 +1,5 @@
 #include "ADCManager.hpp"
 
-
 bool ADCManager::initialize_source(){
 
     fileName = "/dev/iio:device0";

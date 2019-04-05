@@ -44,7 +44,7 @@ std::shared_ptr<StateSpace> MotionModel::refresh(){
   StateSpace meas;
   meas.x[0] = Filter::Median(pru.get()->encoder_distance, NUM_ENC_INPUTS);
   meas.x[1] = Filter::Median(pru.get()->encoder_velocity, NUM_ENC_INPUTS);
-  meas.x[2] = Filter::Median(adc.get()->accel, NUM_ACCEL); 
+  meas.x[2] = Filter::Median(adc.get()->accel, NUM_INPUTS); 
   meas.rpm  = Filter::Median(pru.get()->disk_RPM, NUM_MOTOR_INPUTS);
   meas.fM = Filter::motor_profile(meas.x[1], meas.rpm);
   meas.fD = Filter::drag_profile( meas.x[1]);
