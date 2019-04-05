@@ -34,7 +34,16 @@ def serve():
                # mutex.acquire(1)
                 #data.save()
                 #mutex.release()
-                print("TCP received data:", data)
+                print("TCP received len :", len(data))
+                h = bytearray(data);
+                print("TCP received data 0 :", h[0] )
+                print("TCP received data 1 :", h[1] )
+                print("TCP received data 2 :", h[2] )
+                print("TCP received data 3 :", h[3] )
+                print("TCP received data 4 :", h[4] )
+                print("TCP received data 5 :", h[5] )
+                print("TCP received data 6 :", h[6] )
+                print("TCP received data 7 :", h[7] )
             except:
                 print("Error in TCP Received message")
 

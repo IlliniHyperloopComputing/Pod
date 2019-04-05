@@ -63,12 +63,11 @@ struct Network_Command {
   uint8_t value;
 };
 
-
 extern int socketfd;
 
 extern std::atomic<bool> running;
 extern SafeQueue<std::shared_ptr<TCPManager::Network_Command>> command_queue;
-extern SafeQueue<std::shared_ptr<UnifiedState>> unified_state;
+extern SafeQueue<std::shared_ptr<UnifiedState>> write_queue;
 
 extern Event connected;  // Used within Simulator to check when TCP is connected
 extern Event closing;    // Used to wait between writes in the write_loop()
