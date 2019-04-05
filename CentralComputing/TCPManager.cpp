@@ -59,7 +59,7 @@ int TCPManager::write_data() {
   // TODO write real data
   auto uS = write_queue.dequeue();
   // TODO: CHANGE, just for testing
-  int32_t x1 = 32;
+  int32_t x1 = 1000000;
   int32_t x2 = 27;
   vector<int32_t> vals = { x1, x2};
   vector<char> bytes = { '9' , ',' , '8' , ',' , '7' };
