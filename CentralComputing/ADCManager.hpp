@@ -3,6 +3,8 @@
 
 #include "SourceManagerBase.hpp"
 #include "SourceManager.hpp"
+#include <fstream>
+using std::ifstream;
 
 #define NUM_INPUTS 7 
 
