@@ -1,8 +1,7 @@
 #include "TCPManager.h"
+#include "Command.h"
 
 using std::vector;
-using std::make_shared;
-using std::shared_ptr;
 using std::thread;
 using Utils::print;
 using Utils::LogLevel;
@@ -13,7 +12,6 @@ Event TCPManager::closing;
 
 std::atomic<bool> TCPManager::running(false);
 std::mutex TCPManager::mutex;
-SafeQueue<shared_ptr<TCPManager::Network_Command>> TCPManager::command_queue;
 
 int TCPManager::connect_to_server(const char * hostname, const char * port) {
   std::lock_guard<std::mutex> guard(mutex);  // Used to protect socketfd (TSan datarace)
@@ -45,11 +43,11 @@ int TCPManager::connect_to_server(const char * hostname, const char * port) {
   return socketfd;
 }
 
-int TCPManager::read_command(Network_Command * buffer) {
+int TCPManager::read_command(uint8_t & ID, uint8_t & Command) {
   uint8_t bytes[2];
   int bytes_read = read(socketfd, bytes, 2);
-  buffer->id = (Network_Command_ID) bytes[0];
-  buffer->value = bytes[1];
+  ID = (Network_Command_ID) bytes[0];
+  Command = bytes[1];
   return bytes_read;
 }
 
@@ -61,16 +59,14 @@ int TCPManager::write_data() {
 
 void TCPManager::read_loop() {
   bool active_connection = true;
-  Network_Command buffer;
+  uint8_t ID;
+  uint8_t Command;
   while (running && active_connection) {
-    int bytes_read = read_command(&buffer);
+    int bytes_read = read_command(ID, Command);
     active_connection = bytes_read > 0;
     if (bytes_read > 0) {
       // print(LogLevel::LOG_EDEBUG, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
-      auto command = make_shared<Network_Command>();
-      command->id = buffer.id;
-      command->value = buffer.value;
-      command_queue.enqueue(command);
+      Command::put(ID, Command);
     }
   }
   print(LogLevel::LOG_INFO, "TCP read Loop exiting.\n");
