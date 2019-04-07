@@ -16,7 +16,7 @@ class Configurator {
   bool openConfigFile(const string&);
   bool getValue(const string&, string&);
   bool getValue(const string&, int64_t&);
-  bool getValue(const string&, double&); 
+  bool getValue(const string&, float&); 
 
  private:
   void loadValues();

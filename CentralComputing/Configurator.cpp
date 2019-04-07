@@ -38,7 +38,7 @@ bool Configurator::getValue(const string& varName, int64_t& value) {
   return true;
 }
 
-bool Configurator::getValue(const string& varName, double& value) {
+bool Configurator::getValue(const string& varName, float& value) {
   if (mapVals.find(varName) == mapVals.end()) {
     return false;
   }
