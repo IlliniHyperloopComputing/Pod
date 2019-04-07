@@ -4,14 +4,18 @@ using Utils::print;
 using Utils::LogLevel;
 using Utils::microseconds;
 
+MotionModel::MotionModel() {
+  if((ConfiguratorManager::config.getValue("w1", w1) &&
+      ConfiguratorManager::config.getValue("w2", w2) &&
+      ConfiguratorManager::config.getValue("w3", w3) &&
+      ConfiguratorManager::config.getValue("w4", w4) &&
+      ConfiguratorManager::config.getValue("w5", w5) &&
+      ConfiguratorManager::config.getValue("w6", w6))) {
+
+  }
+}
+
 void MotionModel::calculate(std::shared_ptr<UnifiedState> state) {
-  // POSITION
-  double w1 = 1.0;
-  double w2 = 1.0;
-  double w3 = 1.0;
-  double w4 = 1.0;
-  double w5 = 1.0;
-  double w6 = 1.0;
   // The values w1, w2 and w3 will sum to 1 and will be tuned
   // w1 + w2 + w3 = 1, w4 + w5 = 1 and w5 + w6 = 1. All values will be tuned
   int32_t orange_dist = std::max(state->pru_data->orange_distance[0], state->pru_data->orange_distance[1]);
@@ -35,7 +39,6 @@ void MotionModel::calculate(std::shared_ptr<UnifiedState> state) {
   // TODO:  Take median? Take Max? Take average?
   int32_t vel = Median(vels, 3);
 
-
   // ACCELERATION
   int32_t accl = Median(state->adc_data.get()->accel, NUM_ACCEL); 
 
@@ -52,8 +55,8 @@ void MotionModel::calculate_sim(std::shared_ptr<UnifiedState> state) {
   #endif
 }
 
-double MotionModel::LowPass(double t_old, double t_new) {
-  return t_old * LOWPASS_PERCENT + t_new * (1.0 - LOWPASS_PERCENT);
+float MotionModel::LowPass(float t_old, float t_new, float lowpass_percent) {
+  return t_old * lowpass_percent + t_new * ((float)1.0 - lowpass_percent);
 }
 
 template<class T>
