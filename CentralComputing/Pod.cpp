@@ -75,9 +75,9 @@ void Pod::update_unified_state() {
   // Update motion_data
   // Pass current state into Motion Model
   #ifndef SIM
-  MotionModel::calculate(unified_state);
+  motion_model->calculate(unified_state);
   #else
-  MotionModel::calculate_sim(unified_state);
+  motion_model->calculate_sim(unified_state);
   #endif
 
   // TODO: Add more things to unified state 
@@ -118,6 +118,7 @@ Pod::Pod() {
 
   // Setup any other member variables here
   state_machine = make_shared<Pod_State>();
+  motion_model = make_shared<MotionModel>();
   unified_state = make_shared<UnifiedState>();
   unified_state->motion_data = make_shared<MotionData>();
   unified_state->adc_data = make_shared<ADCData>();

@@ -27,6 +27,7 @@ class Pod {
   void trigger_shutdown();
 
   std::shared_ptr<Pod_State> state_machine;
+  std::shared_ptr<MotionModel> motion_model;
   std::atomic<bool> running;
   std::shared_ptr<UnifiedState> unified_state;
   Event ready;
