@@ -27,12 +27,12 @@ class PodTest : public ::testing::Test
     pod = std::make_shared<Pod>();
 
     // Set the Pod running in its own thread
-    pod_thread = std::thread([&](){ pod->startup();});
+    pod_thread = std::thread([&](){ pod->run();});
 
     // We wait until pod->startup() is done
     pod->ready.wait();
    
-    EXPECT_EQ(pod->state_machine->get_current_state(), Pod_State::E_States::ST_SAFE_MODE);
+    EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
 
     // We wait until the Pod has connected, and we see connected on the Simulator side
     // Need both of these because otherwise there were occasionally problems -- 
@@ -77,7 +77,7 @@ class PodTest : public ::testing::Test
    * @param state the target state the command will bring you to
    * @param allow true if this transition should be allowed, false otherwises
    */
-  void MoveState(TCPManager::Network_Command_ID id, Pod_State::E_States state, bool allow) {
+  void MoveState(TCPManager::Network_Command_ID id, E_States state, bool allow) {
 
     auto start_state = pod->state_machine->get_current_state();
     SendCommand(id, 0);
