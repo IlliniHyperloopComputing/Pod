@@ -12,3 +12,7 @@ tcp_addr 127.0.0.1
 udp_send_port 5004
 udp_recv_port 5005
 udp_addr 127.0.0.1
+
+low_pass_filter_velocity 0.90
+low_pass_filter_acceleration 0.90
+motor_distance_clamp 60960

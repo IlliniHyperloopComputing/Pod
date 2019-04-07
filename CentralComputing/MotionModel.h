@@ -23,14 +23,15 @@ class MotionModel {
   // EX: lowpass_percent = 0.00 means the output == t_new
   // Usually something like 0.90 (90%) is used, but it depends on how
   // frequently this function is called.
-  float LowPass(float t_old, float t_new, float lowpass_percent);
+  float low_pass_filter(float t_old, float t_new, float lowpass_percent);
 
   template<class T>
   T Median(T * input, unsigned size);                          
 
  private:
   // Weights used in position calculation
-  float w1, w2, w3, w4, w5, w6 ;
+  float lpfv, lpfa;
+  int32_t motor_distance_clamp; // used while calculating distance. See calculate()
 };
 
 #endif  // MOTIONMODEL_H_
