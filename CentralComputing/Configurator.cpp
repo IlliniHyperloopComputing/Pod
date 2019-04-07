@@ -38,7 +38,23 @@ bool Configurator::getValue(const string& varName, int64_t& value) {
   return true;
 }
 
+bool Configurator::getValue(const string& varName, int32_t& value) {
+  if (mapVals.find(varName) == mapVals.end()) {
+    return false;
+  }
+  value = std::stoll(mapVals.find(varName)->second);
+  return true;
+}
+
 bool Configurator::getValue(const string& varName, float& value) {
+  if (mapVals.find(varName) == mapVals.end()) {
+    return false;
+  }
+  value = std::stod(mapVals.find(varName)->second);
+  return true;
+}
+
+bool Configurator::getValue(const string& varName, double& value) {
   if (mapVals.find(varName) == mapVals.end()) {
     return false;
   }
