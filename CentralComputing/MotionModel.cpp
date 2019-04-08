@@ -39,15 +39,17 @@ void MotionModel::calculate(std::shared_ptr<UnifiedState> state) {
   dist = clamp(motor_dist, dist, dist + motor_distance_clamp);
 
   // VELOCITY
-  int32_t orange_vel = (state->pru_data->orange_velocity[0] + state->pru_data->orange_velocity[1]) / 2;  // average
+  // TODO: Refine this further. Incorporate other sensor inputs??
+  // int32_t orange_vel = (state->pru_data->orange_velocity[0] + state->pru_data->orange_velocity[1]) / 2;  // average
   int32_t wheel_vel = (state->pru_data->wheel_velocity[0] + state->pru_data->wheel_velocity[1]) / 2;    // average
-  int32_t motor_vel = state->can_data->drive_wheel_velocity;
-  // TODO: Refine this further
+  // int32_t motor_vel = state->can_data->drive_wheel_velocity;
   // This is using low_pass_filter as a weighted average. 
-  int32_t vel = low_pass_filter(wheel_vel, orange_vel, 0.90);
-  vel = low_pass_filter(vel, motor_vel, 0.90);
+  // int32_t vel = low_pass_filter(wheel_vel, orange_vel, 0.90);
+  // vel = low_pass_filter(vel, motor_vel, 0.90);
+  int32_t vel = wheel_vel;
 
   // ACCELERATION
+  // Simply take the median of the three inputs.
   int32_t accl = Median(state->adc_data.get()->accel, NUM_ACCEL); 
 
   // Set state
@@ -77,7 +79,7 @@ T MotionModel::Median(T * input, unsigned size) {
     T sum = input[size/2] + input[size/2+1];
     return sum/2;
   } else {
-    std::nth_element(input, input+size/2+1, input + size);
-    return input[size/2 + 1];
+    std::nth_element(input, input+size/2, input + size);
+    return input[size/2];
   }
 }
