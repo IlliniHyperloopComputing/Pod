@@ -8,6 +8,8 @@ using std::thread;
 using std::function;
 using std::shared_ptr;
 
+static string config_to_open = "defaultConfig.txt";
+
 void Pod::logic_loop() {
   #ifdef SIM  // Used to indicate to the Simulator we have processed a command
   bool command_processed = false;
@@ -86,6 +88,11 @@ void Pod::update_unified_state() {
 }
 
 Pod::Pod() {
+  // Open configuration file
+  if (!ConfiguratorManager::config.openConfigFile(config_to_open)) {
+    print(LogLevel::LOG_ERROR, "Config missing. File: %s\n", config_to_open.c_str());
+    exit(1);
+  }
   // Setup "0" time. All further calls to microseconds() use this as the base time
   microseconds();
 
@@ -127,6 +134,10 @@ Pod::Pod() {
   unified_state->pru_data = make_shared<PRUData>();
   running.store(false);
   switchVal = false;
+}
+
+Pod::~Pod(){
+  ConfiguratorManager::config.clear();
 }
 
 void Pod::run() {
@@ -181,19 +192,15 @@ void Pod::trigger_shutdown() {
 function<void(int)> shutdown_handler;
 void signal_handler(int signal) {shutdown_handler(signal); }
 
+
 int main(int argc, char **argv) {
   // Load the configuration file if specified, or use the default
-  string config_to_open = "defaultConfig.txt";
   if (argc > 1) {  // If the first argument is a file, use it as the config file
     ifstream test_if_file(argv[1]);
     if (test_if_file.is_open()) {
       test_if_file.close();
       config_to_open = argv[1];
     }
-  }
-  if (!ConfiguratorManager::config.openConfigFile(config_to_open)) {
-    print(LogLevel::LOG_ERROR, "Config missing. File: %s\n", config_to_open.c_str());
-    return 1;
   }
 
   #ifndef SIM

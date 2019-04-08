@@ -22,6 +22,7 @@
 class Pod {
  public:
   Pod();
+  ~Pod();
 
   void run();
   void trigger_shutdown();
