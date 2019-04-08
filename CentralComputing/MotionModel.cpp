@@ -6,7 +6,7 @@ using Utils::microseconds;
 using Utils::clamp;
 
 MotionModel::MotionModel() {
-  if(!(ConfiguratorManager::config.getValue("low_pass_filter_velocity", lpfv) &&
+  if (!(ConfiguratorManager::config.getValue("low_pass_filter_velocity", lpfv) &&
       ConfiguratorManager::config.getValue("low_pass_filter_acceleration", lpfa) &&
       ConfiguratorManager::config.getValue("motor_distance_clamp", motor_distance_clamp))) {
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: MOTION_MODEL Missing necessary configuration\n");
@@ -66,7 +66,7 @@ void MotionModel::calculate_sim(std::shared_ptr<UnifiedState> state) {
 }
 
 float MotionModel::low_pass_filter(float t_old, float t_new, float lowpass_percent) {
-  return t_old * lowpass_percent + t_new * ((float)1.0 - lowpass_percent);
+  return t_old * lowpass_percent + t_new * (static_cast<float>(1.0) - lowpass_percent);
 }
 
 template<class T>
