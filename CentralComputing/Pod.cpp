@@ -8,8 +8,6 @@ using std::thread;
 using std::function;
 using std::shared_ptr;
 
-static string config_to_open = "defaultConfig.txt";
-
 void Pod::logic_loop() {
   #ifdef SIM  // Used to indicate to the Simulator we have processed a command
   bool command_processed = false;
@@ -87,7 +85,7 @@ void Pod::update_unified_state() {
   TCPManager::write_queue.enqueue(unified_state);  
 }
 
-Pod::Pod() {
+Pod::Pod(const std::string & config_to_open) {
   // Open configuration file
   if (!ConfiguratorManager::config.openConfigFile(config_to_open)) {
     print(LogLevel::LOG_ERROR, "Config missing. File: %s\n", config_to_open.c_str());
@@ -136,7 +134,7 @@ Pod::Pod() {
   switchVal = false;
 }
 
-Pod::~Pod(){
+Pod::~Pod() {
   ConfiguratorManager::config.clear();
 }
 
@@ -192,22 +190,29 @@ void Pod::trigger_shutdown() {
 function<void(int)> shutdown_handler;
 void signal_handler(int signal) {shutdown_handler(signal); }
 
-
-int main(int argc, char **argv) {
+void parse_command_line_args(int argc, char **argv, string * config_to_open);
+void parse_command_line_args(int argc, char **argv, string * config_to_open) {
   // Load the configuration file if specified, or use the default
+  *config_to_open = "defaultConfig.txt";
   if (argc > 1) {  // If the first argument is a file, use it as the config file
     ifstream test_if_file(argv[1]);
     if (test_if_file.is_open()) {
       test_if_file.close();
-      config_to_open = argv[1];
+      *config_to_open = argv[1];
     }
   }
+}
+
+int main(int argc, char **argv) {
+  std::string config_to_open;
 
   #ifndef SIM
     Utils::loglevel = LogLevel::LOG_EDEBUG;
+    // Load the configuration file if specified, or use the default
+    parse_command_line_args(argc, argv, &config_to_open);
     // Create the pod object
-    auto pod = make_shared<Pod>();
-    // Setup signals handlers
+    auto pod = make_shared<Pod>(config_to_open);
+    // Setup some handlers
     signal(SIGINT, signal_handler);  // ctrl-c handler
     shutdown_handler = [&](int signal) { pod->trigger_shutdown(); };
     // Start the pod running
@@ -215,7 +220,13 @@ int main(int argc, char **argv) {
     return 0;
   #else
     Utils::loglevel = LogLevel::LOG_EDEBUG;
-    testing::InitGoogleTest(&argc, argv);
+    testing::InitGoogleTest(&argc, argv);  // after calling this, all argc/v related to gtest are removed
+    parse_command_line_args(argc, argv, &config_to_open);
+    podtest_global::config_to_open = config_to_open;
     return RUN_ALL_TESTS();
   #endif
 }
+
+namespace podtest_global {
+  std::string config_to_open;
+}  // namespace podtest_global
