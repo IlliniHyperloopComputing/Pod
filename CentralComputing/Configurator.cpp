@@ -22,7 +22,7 @@ void Configurator::loadValues() {
   }
 }
 
-void Configurator::clear(){
+void Configurator::clear() {
   mapVals.clear();
 }
 
