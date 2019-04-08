@@ -22,6 +22,10 @@ void Configurator::loadValues() {
   }
 }
 
+void Configurator::clear(){
+  mapVals.clear();
+}
+
 bool Configurator::getValue(const string& varName, string& value) {
   if (mapVals.find(varName) == mapVals.end()) {
     return false;
