@@ -63,7 +63,7 @@ TEST(UtilsTest, busyWaitIndivThreads) {
 	constexpr int threadCount = 10;
 	long time = 100000;
 	//buffer based on how accurate busyWait needs to be while still passing the test
-	long buffer = 10000;
+	long buffer = 15000;
 	//need to save the first affinity and set it back to that at the end
 	cpu_set_t first;
 	EXPECT_EQ(sched_getaffinity(0, sizeof(first), &first), 0);

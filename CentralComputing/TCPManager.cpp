@@ -12,9 +12,11 @@ Event TCPManager::connected;
 Event TCPManager::closing;
 
 std::atomic<bool> TCPManager::running(false);
+std::mutex TCPManager::mutex;
 SafeQueue<shared_ptr<TCPManager::Network_Command>> TCPManager::command_queue;
 
 int TCPManager::connect_to_server(const char * hostname, const char * port) {
+  std::lock_guard<std::mutex> guard(mutex);  // Used to protect socketfd (TSan datarace)
   struct addrinfo hints, *servinfo;
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_INET;
@@ -101,6 +103,7 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
 
       read_thread.join();
       write_thread.join();
+
       print(LogLevel::LOG_INFO, "TCP Connection lost\n");
 
     } else {
@@ -109,20 +112,18 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
     }
   }   
 
+  close(socketfd);  // At last, close the socket
+  connected.reset();  
   print(LogLevel::LOG_INFO, "TCP Exiting loop\n");
 }
 
-
 void TCPManager::close_client() {
-  shutdown(socketfd, SHUT_RDWR);
-  close(socketfd);
-  connected.reset();
+  std::lock_guard<std::mutex> guard(mutex);  // Used to protect socketfd (TSan datarace)
+  running.store(false);  // Will cause the tcp_loop to exit once threads join.
+  closing.invoke();  // write_thread sleeps using an event. Invoke the event to stop further sleeping
+  shutdown(socketfd, SHUT_RDWR);  // Causes read(socketfd) or write(socketfd) to return. 
 }
 
-void TCPManager::stop_threads() {
-  running.store(false);
-  closing.invoke();
-}
 
 
 

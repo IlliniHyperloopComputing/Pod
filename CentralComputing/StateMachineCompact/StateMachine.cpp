@@ -9,6 +9,7 @@ StateMachine::StateMachine(unsigned char maxStates) :
 }    
 // returns the current state of the StateMachine
 unsigned char StateMachine::getCurrentState() {
+    std::lock_guard<std::mutex> guard(_mutex);
 	return currentState;
 }
 // generates an external event. called once per external event 
@@ -23,13 +24,11 @@ void StateMachine::ExternalEvent(unsigned char newState,
             delete pData;
     }
     else {
-		// TODO - capture software lock here for thread-safety if necessary
-
+        
         // generate the event and execute the state engine
         InternalEvent(newState, pData); 
         StateEngine();     
 
-		// TODO - release software lock here 
     }
 }
 
@@ -38,6 +37,7 @@ void StateMachine::ExternalEvent(unsigned char newState,
 void StateMachine::InternalEvent(unsigned char newState, 
                                  EventData* pData)
 {
+    std::lock_guard<std::mutex> guard(_mutex); // Mutex lock for thread safety
 	if (pData == NULL)
 		pData = new EventData();
 

@@ -49,9 +49,14 @@ Pod_State::E_States Pod_State::get_current_state() {
 
 /**
  * User controlled movement events
+ * For each TRANSITION_MAP_ENTRY(_STATE_), 
+ * We can enter the _STATE_ from the commemented state on the right
 **/
 
 
+/**
+ * Can enter (transition into) FUNCTIONAL_TEST only from Safe Mode
+ **/
 void Pod_State::move_functional_tests() {
   BEGIN_TRANSITION_MAP              /* Current state */
     TRANSITION_MAP_ENTRY(ST_FUNCTIONAL_TEST)      /* Safe Mode */
@@ -65,6 +70,13 @@ void Pod_State::move_functional_tests() {
   END_TRANSITION_MAP(NULL)
 }
 
+/**
+ * Can enter (transition into) SAFE_MODE from: 
+ * --Functional test
+ * --Loading
+ * --Launch Ready
+ * --Flight Brake
+ **/
 void Pod_State::move_safe_mode() {
   BEGIN_TRANSITION_MAP              /* Current state */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safe Mode */
