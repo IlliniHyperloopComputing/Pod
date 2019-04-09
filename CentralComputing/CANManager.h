@@ -2,11 +2,7 @@
 #define CANMANAGER_H_
 
 #include "SourceManagerBase.hpp"
-
-struct CANData {
-  // replace with actual data structure
-  int dummy_data;
-};
+#include "Defines.hpp"
 
 class CANManager : public SourceManagerBase<CANData, false> {
  private:

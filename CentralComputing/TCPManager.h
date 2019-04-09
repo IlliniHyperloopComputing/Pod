@@ -1,6 +1,7 @@
 #ifndef TCPMANAGER_H_
 #define TCPMANAGER_H_
 
+#include "Defines.hpp"
 #include "Utils.h"
 #include "SafeQueue.hpp"
 #include "Event.h"
@@ -13,7 +14,7 @@
 #include <atomic>
 #include <thread> // NOLINT
 #include <memory>
-#include <mutex>
+#include <mutex> // NOLINT
 #include <sys/ioctl.h>
 
 #define SETUP_FAILURE -1
@@ -62,11 +63,11 @@ struct Network_Command {
   uint8_t value;
 };
 
-
 extern int socketfd;
 
 extern std::atomic<bool> running;
 extern SafeQueue<std::shared_ptr<TCPManager::Network_Command>> command_queue;
+extern SafeQueue<std::shared_ptr<UnifiedState>> write_queue;
 
 extern Event connected;  // Used within Simulator to check when TCP is connected
 extern Event closing;    // Used to wait between writes in the write_loop()

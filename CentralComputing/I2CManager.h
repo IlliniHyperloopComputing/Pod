@@ -2,11 +2,7 @@
 #define I2CMANAGER_H_
 
 #include "SourceManagerBase.hpp"
-
-struct I2CData {
-  // replace with actual data structure
-  int dummy_data;
-};
+#include "Defines.hpp"
 
 class I2CManager : public SourceManagerBase<I2CData, false> {
  private:

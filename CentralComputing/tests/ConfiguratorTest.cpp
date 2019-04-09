@@ -44,8 +44,5 @@ TEST_F(PodTest, ConfigManagerTimeouts) {
   ConfiguratorManager::config.getValue("pru_manager_timeout", val);
   EXPECT_EQ(std::stoll(val), SourceManager::PRU.refresh_timeout());
 
-  ConfiguratorManager::config.getValue("mm_manager_timeout", val);
-  EXPECT_EQ(std::stoll(val), SourceManager::MM.refresh_timeout());
-
 }
 #endif

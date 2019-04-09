@@ -1,6 +1,5 @@
 #include "Pod_State.h" 
 #include "Pod.h"
-#include "SourceManager.h"
 
 using Utils::print;
 using Utils::LogLevel;
@@ -42,7 +41,7 @@ Pod_State::Pod_State()
 }
 
 // returns the current state as a E_States enum
-Pod_State::E_States Pod_State::get_current_state() {
+E_States Pod_State::get_current_state() {
   return (E_States)StateMachine::getCurrentState();
 }
 
@@ -233,11 +232,13 @@ void Pod_State::ST_Error() {
 /////////////////////////////
 // STEADY STATE FUNCTIONS //
 ///////////////////////////
-void Pod_State::steady_safe_mode(std::shared_ptr<TCPManager::Network_Command> command) {
+void Pod_State::steady_safe_mode(std::shared_ptr<TCPManager::Network_Command> command, 
+                                  std::shared_ptr<UnifiedState> state) {
   // not much special stuff to do here  
 }
 
-void Pod_State::steady_functional(std::shared_ptr<TCPManager::Network_Command> command) {
+void Pod_State::steady_functional(std::shared_ptr<TCPManager::Network_Command> command, 
+                                  std::shared_ptr<UnifiedState> state) {
   // process command, let manual commands go through
   switch (command->id) {
     case TCPManager::ENABLE_MOTOR: 
@@ -262,18 +263,20 @@ void Pod_State::steady_functional(std::shared_ptr<TCPManager::Network_Command> c
   }
 }
 
-void Pod_State::steady_loading(std::shared_ptr<TCPManager::Network_Command> command) {
+void Pod_State::steady_loading(std::shared_ptr<TCPManager::Network_Command> command, 
+                                std::shared_ptr<UnifiedState> state) {
 }
 
-void Pod_State::steady_launch_ready(std::shared_ptr<TCPManager::Network_Command> command) {
+void Pod_State::steady_launch_ready(std::shared_ptr<TCPManager::Network_Command> command, 
+                                    std::shared_ptr<UnifiedState> state) {
 }
 
-void Pod_State::steady_flight_accelerate(std::shared_ptr<TCPManager::Network_Command> command) {
+void Pod_State::steady_flight_accelerate(std::shared_ptr<TCPManager::Network_Command> command, 
+                                        std::shared_ptr<UnifiedState> state) {
   // Access Pos, Vel, and Accel from Motion Model
-  std::shared_ptr<StateSpace> state = SourceManager::MM.Get();
-  double pos = state->x[0];
-  double vel = state->x[1];
-  double acc = state->x[2];
+  double pos = state->motion_data->x[0];
+  double vel = state->motion_data->x[1];
+  double acc = state->motion_data->x[2];
   
   if (shouldBrake(vel, pos) || vel > MAX_VELOCITY) {
     auto newCommand = std::make_shared<TCPManager::Network_Command>();
@@ -284,11 +287,12 @@ void Pod_State::steady_flight_accelerate(std::shared_ptr<TCPManager::Network_Com
   }
 }
 
-void Pod_State::steady_flight_coast(std::shared_ptr<TCPManager::Network_Command> command) {
-  std::shared_ptr<StateSpace> state = SourceManager::MM.Get();
-  double pos = state->x[0];
-  double vel = state->x[1];
-  double acc = state->x[2];
+void Pod_State::steady_flight_coast(std::shared_ptr<TCPManager::Network_Command> command, 
+                                    std::shared_ptr<UnifiedState> state) {
+  std::shared_ptr<MotionData> motion_data = state->motion_data;
+  double pos = state->motion_data->x[0];
+  double vel = state->motion_data->x[1];
+  double acc = state->motion_data->x[2];
   
   
   if (shouldBrake(vel, pos)) {
@@ -300,7 +304,8 @@ void Pod_State::steady_flight_coast(std::shared_ptr<TCPManager::Network_Command>
   }
 }
 
-void Pod_State::steady_flight_brake(std::shared_ptr<TCPManager::Network_Command> command) {
+void Pod_State::steady_flight_brake(std::shared_ptr<TCPManager::Network_Command> command, 
+                                    std::shared_ptr<UnifiedState> state) {
   // Brakes are applied
 	// Access Pos, Vel, and Accel from Motion Model
   print(LogLevel::LOG_INFO, "Function getting called.\n");
@@ -334,5 +339,6 @@ bool Pod_State::shouldBrake(double vel, double pos) {
   }
 }
 
-void Pod_State::steady_error_state(std::shared_ptr<TCPManager::Network_Command> command) {
+void Pod_State::steady_error_state(std::shared_ptr<TCPManager::Network_Command> command, 
+                                    std::shared_ptr<UnifiedState> state) {
 }

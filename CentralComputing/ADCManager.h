@@ -2,14 +2,8 @@
 #define ADCMANAGER_H_
 
 #include "SourceManagerBase.hpp"
-#include "SourceManager.h"
+#include "Defines.hpp"
 
-#define NUM_ACCEL 3
-
-struct ADCData {
-  double accel[NUM_ACCEL];
-  int dummy_data;
-};
 struct RawADCData {
   int dummy_data;
 };
