@@ -25,19 +25,24 @@ void Pod::logic_loop() {
 
   // Start processing/pod logic
   while (running.load()) {
-    auto command = TCPManager::command_queue.dequeue();
-    if (command.get() != nullptr) {
+    uint8_t ID;
+    uint8_t Command;
+    bool loaded  = Command::get(ID, Command);
+    auto command = make_shared<Command::Network_Command>();
+
+    if (loaded) {
       // Parse the command and call the appropriate state machine function
-      auto id = (TCPManager::Network_Command_ID) command->id;
+      auto id = (Command::Network_Command_ID) ID;
       auto transition = state_machine->get_transition_function(id);
       ((*state_machine).*(transition))(); 
-
+      //remove
+      command->id = ID;
+      command->value = Command;
       #ifdef SIM  // Used to indicate to the Simulator that we have processed a command
       command_processed = true;
       #endif
-      print(LogLevel::LOG_INFO, "Command : %d %d\n", command->id, command->value);
+      print(LogLevel::LOG_INFO, "Command : %d %d\n", ID, Command);
     } else {  // Create a "do nothing" command. This will be passed into the steady state caller below
-      command = make_shared<TCPManager::Network_Command>();
       command->id = 0;
       command->value = 0;
     }

@@ -39,8 +39,7 @@ int connect_to_server(const char * hostname, const char * port);
  * @param buffer a pointer to the network command that was read
  * @return the number of bytes read
  **/
-int read_command(Network_Command * buffer);
-
+int read_command(uint8_t & ID, uint8_t & Command); 
 /** 
  * Collects data from sensor, writes to socket
  * @return bytes written or -1 if failed

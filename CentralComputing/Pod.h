@@ -2,6 +2,7 @@
 #define POD_H_
 
 #include "TCPManager.h"
+#include "Command.h"
 #include "UDPManager.h"
 #include "Event.h"
 #include "Pod_State.h"

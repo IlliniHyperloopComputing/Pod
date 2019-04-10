@@ -1,5 +1,5 @@
 #ifndef COMMAND_H
-#define CCOMMAND_H
+#define COMMAND_H
 
 #include "Utils.h"
 #include "SafeQueue.hpp"
@@ -53,5 +53,10 @@ namespace Command {
 	  TEMPERATURE
 	};
 
+  struct Network_Command {
+    // state transtitions
+    uint8_t id;  // id is just a network command
+    uint8_t value;
+  };
 }
 #endif // COMMAND_H
