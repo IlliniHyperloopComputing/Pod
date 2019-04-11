@@ -4,29 +4,27 @@
 #include "StateMachineCompact/StateMachine.h"
 #include "Motor.h"
 #include "Brakes.h"
+<<<<<<< HEAD
 #include "Command.h"
+=======
+#include "TCPManager.h"
+#include "Defines.hpp"
+>>>>>>> origin/pod4
 #include <iostream>
 #include <string>
 #include <map>
 
 class Pod_State;
+<<<<<<< HEAD
 typedef void (Pod_State::*steady_state_function) (std::shared_ptr<Command::Network_Command> command);
+=======
+typedef void (Pod_State::*steady_state_function) (std::shared_ptr<TCPManager::Network_Command> command, 
+                                                  std::shared_ptr<UnifiedState> state);
+>>>>>>> origin/pod4
 typedef void (Pod_State::*transition_function) ();
 
 class Pod_State : public StateMachine {
  public:
-  enum E_States {
-    ST_SAFE_MODE,
-    ST_FUNCTIONAL_TEST,
-    ST_LOADING,
-    ST_LAUNCH_READY,
-    ST_FLIGHT_ACCEL,
-    ST_FLIGHT_COAST,
-    ST_FLIGHT_BRAKE,
-    ST_ERROR,
-    ST_MAX_STATES
-  };
-
   /** 
   * Constructs a pod state machine
   **/
@@ -76,6 +74,7 @@ class Pod_State : public StateMachine {
   * Each function call acts as a "frame"
   * Each frame, the function will proces the command, 
   **/
+<<<<<<< HEAD
   void steady_safe_mode(std::shared_ptr<Command::Network_Command> command);
   void steady_functional(std::shared_ptr<Command::Network_Command> command);
   void steady_loading(std::shared_ptr<Command::Network_Command> command);
@@ -84,6 +83,16 @@ class Pod_State : public StateMachine {
   void steady_flight_coast(std::shared_ptr<Command::Network_Command> command);
   void steady_flight_brake(std::shared_ptr<Command::Network_Command> command);
   void steady_error_state(std::shared_ptr<Command::Network_Command> command);
+=======
+  void steady_safe_mode(std::shared_ptr<TCPManager::Network_Command>, std::shared_ptr<UnifiedState>);
+  void steady_functional(std::shared_ptr<TCPManager::Network_Command>, std::shared_ptr<UnifiedState>);
+  void steady_loading(std::shared_ptr<TCPManager::Network_Command>, std::shared_ptr<UnifiedState>);
+  void steady_launch_ready(std::shared_ptr<TCPManager::Network_Command>, std::shared_ptr<UnifiedState>);
+  void steady_flight_accelerate(std::shared_ptr<TCPManager::Network_Command>, std::shared_ptr<UnifiedState>);
+  void steady_flight_coast(std::shared_ptr<TCPManager::Network_Command>, std::shared_ptr<UnifiedState>);
+  void steady_flight_brake(std::shared_ptr<TCPManager::Network_Command>, std::shared_ptr<UnifiedState>);
+  void steady_error_state(std::shared_ptr<TCPManager::Network_Command>, std::shared_ptr<UnifiedState>);
+>>>>>>> origin/pod4
 
   /*
   * Gets the steady state function for the current state

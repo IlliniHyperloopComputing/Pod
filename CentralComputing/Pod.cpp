@@ -6,19 +6,9 @@ using Utils::microseconds;
 using std::make_shared;
 using std::thread;
 using std::function;
-
-Pod::Pod() {
-  running.store(false);
-  switchVal = false;
-}
+using std::shared_ptr;
 
 void Pod::logic_loop() {
-  int64_t logic_loop_timeout;  // Get the loop sleep (timeout) value
-  if (!ConfiguratorManager::config.getValue("logic_loop_timeout", logic_loop_timeout)) {
-    print(LogLevel::LOG_ERROR, "Unable to find logic_loop timeout config, exiting logic_loop\n");
-    return;
-  }
-
   #ifdef SIM  // Used to indicate to the Simulator we have processed a command
   bool command_processed = false;
   #endif
@@ -47,9 +37,14 @@ void Pod::logic_loop() {
       command->value = 0;
     }
 
+    // Get current state from all of the SourceMangaers
+    update_unified_state();    
+
+
     // Calls the steady state function for the current state
+    // Passes in command, and current state. 
     auto func = state_machine->get_steady_function();
-    ((*state_machine).*(func))(command); 
+    ((*state_machine).*(func))(command, unified_state); 
 
     #ifdef BBB
     // Send the heartbeat signal to the watchdog.
@@ -75,13 +70,29 @@ void Pod::logic_loop() {
   print(LogLevel::LOG_INFO, "Exiting Pod Logic Loop\n");
 }
 
-void Pod::startup() {
+void Pod::update_unified_state() {
+  unified_state->adc_data = SourceManager::ADC.Get();
+  unified_state->can_data = SourceManager::CAN.Get();
+  unified_state->i2c_data = SourceManager::I2C.Get();
+  unified_state->pru_data = SourceManager::PRU.Get();
+  unified_state->state = state_machine->get_current_state();
+
+  // Update motion_data
+  // Pass current state into Motion Model
+  #ifndef SIM
+  MotionModel::calculate(unified_state);
+  #else
+  MotionModel::calculate_sim(unified_state);
+  #endif
+
+  // TODO: Add more things to unified state 
+
+  TCPManager::write_queue.enqueue(unified_state);  
+}
+
+Pod::Pod() {
+  // Setup "0" time. All further calls to microseconds() use this as the base time
   microseconds();
-  print(LogLevel::LOG_INFO, "\n");
-  print(LogLevel::LOG_INFO, "==================\n");
-  print(LogLevel::LOG_INFO, "ILLINI  HYPERLOOP \n");
-  print(LogLevel::LOG_INFO, "==================\n");
-  print(LogLevel::LOG_INFO, "Running Startup\n");
 
   // If we are on the BBB, run specific setup
   #ifdef BBB
@@ -99,9 +110,34 @@ void Pod::startup() {
   print(LogLevel::LOG_INFO, "CPU freq set to 1GHz\n");    
   #endif
 
-  signal(SIGPIPE, SIG_IGN);
-  state_machine = make_shared<Pod_State>();
+  // Grab Network Server variables from config file
+  if (!(ConfiguratorManager::config.getValue("tcp_port", tcp_port) && 
+      ConfiguratorManager::config.getValue("tcp_addr", tcp_addr) &&
+      ConfiguratorManager::config.getValue("udp_send_port", udp_send) &&
+      ConfiguratorManager::config.getValue("udp_recv_port", udp_recv) &&
+      ConfiguratorManager::config.getValue("udp_addr", udp_addr) &&
+      ConfiguratorManager::config.getValue("logic_loop_timeout", logic_loop_timeout))) {
+    print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: Missing necessary configuration\n");
+    exit(1);
+  }
 
+  // Setup any other member variables here
+  state_machine = make_shared<Pod_State>();
+  unified_state = make_shared<UnifiedState>();
+  unified_state->motion_data = make_shared<MotionData>();
+  unified_state->adc_data = make_shared<ADCData>();
+  unified_state->can_data = make_shared<CANData>();
+  unified_state->i2c_data = make_shared<I2CData>();
+  unified_state->pru_data = make_shared<PRUData>();
+  running.store(false);
+  switchVal = false;
+}
+
+void Pod::run() {
+  print(LogLevel::LOG_INFO, "\n");
+  print(LogLevel::LOG_INFO, "==================\n");
+  print(LogLevel::LOG_INFO, "ILLINI  HYPERLOOP \n");
+  print(LogLevel::LOG_INFO, "==================\n");
   print(LogLevel::LOG_INFO, "Pod State: %s\n", state_machine->get_current_state_string().c_str());
 
   // Start all SourceManager threads
@@ -110,53 +146,34 @@ void Pod::startup() {
   SourceManager::TMP.initialize();
   SourceManager::ADC.initialize();
   SourceManager::I2C.initialize();
-  SourceManager::MM.initialize();
-  print(LogLevel::LOG_INFO, "Source Managers started\n");
 
-  // Setup Network Server
-  string tcp_port;
-  string tcp_addr;
-  string udp_send;  // port we send packets to
-  string udp_recv;  // port we recv packets from
-  string udp_addr; 
-  if (!(ConfiguratorManager::config.getValue("tcp_port", tcp_port) && 
-      ConfiguratorManager::config.getValue("tcp_addr", tcp_addr) &&
-      ConfiguratorManager::config.getValue("udp_send_port", udp_send) &&
-      ConfiguratorManager::config.getValue("udp_recv_port", udp_recv) &&
-      ConfiguratorManager::config.getValue("udp_addr", udp_addr))) {
-    print(LogLevel::LOG_ERROR, "Missing port or addr configuration\n");
-  }
+  signal(SIGPIPE, SIG_IGN);  // Ignore SIGPIPE
+
   // Start Network and main loop thread.
   // I don't know how to use member functions as a thread function, but lambdas work
   thread tcp_thread([&](){ TCPManager::tcp_loop(tcp_addr.c_str(), tcp_port.c_str()); });
   thread udp_thread([&](){ UDPManager::connection_monitor(udp_addr.c_str(), udp_send.c_str(), udp_recv.c_str()); });
   running.store(true);
   thread logic_thread([&](){ logic_loop(); });  
-  print(LogLevel::LOG_INFO, "Finished Startup\n");
+  print(LogLevel::LOG_INFO, "Finished Initialization\n");
   print(LogLevel::LOG_INFO, "================\n\n");
   
-  // ready to begin testing
+  // signal to test suite that we are ready to begin testing
   ready.invoke();
 
   // Join all threads
   logic_thread.join();
   // Once logic_loop joins, trigger other threads to stop
-  print(LogLevel::LOG_INFO, "Closing TCP \n");
   TCPManager::close_client();
-  print(LogLevel::LOG_INFO, "Closing UDP \n");
   UDPManager::close_client();
   tcp_thread.join();
   udp_thread.join();
-  
-  print(LogLevel::LOG_INFO, "Source Managers closing\n");
-  // Stop all source managers
-  SourceManager::MM.stop();  // Must be called first
   SourceManager::PRU.stop();
   SourceManager::CAN.stop();
   SourceManager::TMP.stop();
   SourceManager::ADC.stop();
   SourceManager::I2C.stop();
-  print(LogLevel::LOG_INFO, "Source Managers closed, Pod shutting down\n");
+  print(LogLevel::LOG_INFO, "All threads closed, Pod shutting down\n");
 }
 
 // Cause the logic_loop to close.
@@ -187,11 +204,11 @@ int main(int argc, char **argv) {
     Utils::loglevel = LogLevel::LOG_EDEBUG;
     // Create the pod object
     auto pod = make_shared<Pod>();
-    // Setup ctrl-c behavior 
-    signal(SIGINT, signal_handler);
+    // Setup signals handlers
+    signal(SIGINT, signal_handler);  // ctrl-c handler
     shutdown_handler = [&](int signal) { pod->trigger_shutdown(); };
     // Start the pod running
-    pod->startup();
+    pod->run();
     return 0;
   #else
     Utils::loglevel = LogLevel::LOG_EDEBUG;

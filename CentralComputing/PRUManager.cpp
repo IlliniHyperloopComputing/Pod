@@ -66,19 +66,20 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
   // Convert Raw Data into usable data
   PRUData new_data;
   
-  // Convert encoder data
-  for (int i = 0; i < NUM_ENC_INPUTS; i++) {
-    new_data.encoder_distance[i] = raw_data.counts[enc_idx[i]] * enc_map[i];
-    new_data.encoder_velocity[i] = convert_to_velocity(raw_data.decays[enc_idx[i]], 
-                                                        raw_data.deltas[enc_idx[i]],
-                                                        enc_map[i]);
+  // Convert orange encoder data
+  for (int i = 0; i < NUM_ORANGE_INPUTS; i++) {
+    new_data.orange_distance[i] = (int32_t) (raw_data.counts[orange_idx[i]] * orange_map[i]);
+    new_data.orange_velocity[i] = convert_to_velocity(raw_data.decays[orange_idx[i]], 
+                                                        raw_data.deltas[orange_idx[i]],
+                                                        orange_map[i]);
   }
 
-  // Convert disk RPM data
-  for (int i = 0; i < NUM_MOTOR_INPUTS; i++) {
-    new_data.disk_RPM[i] = convert_to_velocity(raw_data.decays[enc_idx[i]], 
-                                                raw_data.deltas[enc_idx[i]],
-                                                enc_map[i]);
+  // Convert wheel encoder data
+  for (int i = 0; i < NUM_WHEEL_INPUTS; i++) {
+    new_data.wheel_distance[i] = (int32_t) (raw_data.counts[wheel_idx[i]] * wheel_map[i]);
+    new_data.wheel_velocity[i] = convert_to_velocity(raw_data.decays[wheel_idx[i]], 
+                                                      raw_data.deltas[wheel_idx[i]],
+                                                      wheel_map[i]);
   }
 
   // Store in shared_ptr
@@ -89,7 +90,7 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
 }
 
 inline
-double PRUManager::convert_to_velocity(uint32_t decay, uint32_t delta, double distance) {
+int32_t PRUManager::convert_to_velocity(uint32_t decay, uint32_t delta, uint32_t distance) {
     // Pick the one that gives us the slower velocity
     uint32_t slower = std::max(decay, delta);
 
