@@ -31,19 +31,22 @@ def serve():
                 #data = data.decode()
                 #dataSplit = data.split(',')
                 #d = DataPacket(velocity=dataSplit[0],acceleration=dataSplit[1],position=dataSplit[2])
-               # mutex.acquire(1)
+                #mutex.acquire(1)
                 #data.save()
                 #mutex.release()
                 print("TCP received len :", len(data))
                 h = bytearray(data);
-                print("TCP received data 0 :", h[0] )
-                print("TCP received data 1 :", h[1] )
-                print("TCP received data 2 :", h[2] )
-                print("TCP received data 3 :", h[3] )
-                print("TCP received data 4 :", h[4] )
-                print("TCP received data 5 :", h[5] )
-                print("TCP received data 6 :", h[6] )
-                print("TCP received data 7 :", h[7] )
+                for i in range(len(h)):
+                  print("TCP received data", i, " : ", h[i] )
+                
+               #print("TCP received data 0 :", h[0] )
+               #print("TCP received data 1 :", h[1] )
+               #print("TCP received data 2 :", h[2] )
+               #print("TCP received data 3 :", h[3] )
+               #print("TCP received data 4 :", h[4] )
+               #print("TCP received data 5 :", h[5] )
+               #print("TCP received data 6 :", h[6] )
+               #print("TCP received data 7 :", h[7] )
 
                 val1 = h[0] + h[1] * 2**8 + h[2] * 2**16 + h[3] * 2**24
                 val2 = h[4] + h[5] * 2**8 + h[6] * 2**16 + h[7] * 2**24

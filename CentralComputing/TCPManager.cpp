@@ -55,14 +55,30 @@ int TCPManager::read_command(Network_Command * buffer) {
   return bytes_read;
 }
 
-int TCPManager::write_data() {
+int TCPManager::write_data(vector<int64_t>& times) {
+  vector<int32_t> vals;
+  if(Utils::microseconds() - times[0] > 1000000){  //  This is the first time threshold
+    vals.push_back(POD_STATE);
+    vals.push_back(POSITION); 
+    vals.push_back(VELOCITY);
+    vals.push_back(ACCELERATION);
+    times[0] = Utils::microseconds();
+  }
+  if(Utils::microseconds() - times[1] > 3000000){  //  This is the second time threshold 
+    vals.push_back(TEMPERATURE);
+    times[1] = Utils::microseconds();
+  }
+  if(Utils::microseconds() - times[2] > 6000000){  //  This is the third time threshold 
+    vals.push_back(BRAKE_STATUS);
+    vals.push_back(MOTOR_STATUS);
+    times[2] = Utils::microseconds();
+  }  
   // TODO write real data
   auto uS = write_queue.dequeue();
   // TODO: CHANGE, just for testing
-  int32_t x1 = 1000000;
-  int32_t x2 = 27;
-  vector<int32_t> vals = { x1, x2};
-  vector<char> bytes = { '9' , ',' , '8' , ',' , '7' };
+  //int16_t x1 = 100;
+  //int32_t x2 = 27;
+  //vector<int32_t> vals = { x1, x2};
   return write(socketfd, vals.data(), vals.size() * sizeof(int32_t));
 }
 
@@ -84,11 +100,14 @@ void TCPManager::read_loop() {
 }
 
 void TCPManager::write_loop() {
+  vector<int64_t> times;
+  int64_t time = Utils::microseconds();
+  for(int i = 0; i < 3; i++) times.push_back(time);
   bool active_connection = true;
   while (running && active_connection) {
     closing.wait_for(1000000);
-    int written = write_data();
-    print(LogLevel::LOG_DEBUG, "Wrote %d bytes\n", written);
+    int written = write_data(times);
+    print(LogLevel::LOG_DEBUG, "TCP Wrote %d bytes\n", written);
     active_connection = written != -1;
   }
   print(LogLevel::LOG_INFO, "TCP write Loop exiting.\n");

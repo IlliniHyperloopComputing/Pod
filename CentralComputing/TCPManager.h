@@ -85,9 +85,10 @@ int read_command(Network_Command * buffer);
 
 /** 
  * Collects data from sensor, writes to socket
+ * @param times timings for when to send specific data
  * @return bytes written or -1 if failed
  **/
-int write_data();
+int write_data(std::vector<int64_t>& times);
 
 /**
  * Thread function, continually reads commands from the socket and 
