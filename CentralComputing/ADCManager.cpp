@@ -1,7 +1,6 @@
-#include "ADCManager.hpp"
+#include "ADCManager.h"
 
-bool ADCManager::initialize_source(){
-
+bool ADCManager::initialize_source() {
     fileName = "/dev/iio:device0";
     inFile.open(fileName, std::ifstream::in | std::ifstream::binary);
     if (!inFile) {
@@ -23,8 +22,11 @@ void ADCManager::stop_source(){
 }
 
 std::shared_ptr<ADCData> ADCManager::refresh() {
-
-  //this is where you would query the ADC and get new data
+  // this is where you would query the ADC and get new data
+  
+  std::shared_ptr<ADCData> new_data = std::make_shared<ADCData>();
+  new_data->dummy_data = i;
+  i++;
 
     std::shared_ptr<ADCData> new_data = std::make_shared<ADCData>();
     uint8_t buffer [NUM_INPUTS * 2];

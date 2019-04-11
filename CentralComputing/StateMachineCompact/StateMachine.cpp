@@ -1,4 +1,3 @@
-#include <assert.h>
 #include "StateMachine.h"
  
 StateMachine::StateMachine(unsigned char maxStates) :
@@ -10,6 +9,7 @@ StateMachine::StateMachine(unsigned char maxStates) :
 }    
 // returns the current state of the StateMachine
 unsigned char StateMachine::getCurrentState() {
+    std::lock_guard<std::mutex> guard(_mutex);
 	return currentState;
 }
 // generates an external event. called once per external event 
@@ -24,13 +24,11 @@ void StateMachine::ExternalEvent(unsigned char newState,
             delete pData;
     }
     else {
-		// TODO - capture software lock here for thread-safety if necessary
-
+        
         // generate the event and execute the state engine
         InternalEvent(newState, pData); 
         StateEngine();     
 
-		// TODO - release software lock here 
     }
 }
 
@@ -39,6 +37,7 @@ void StateMachine::ExternalEvent(unsigned char newState,
 void StateMachine::InternalEvent(unsigned char newState, 
                                  EventData* pData)
 {
+    std::lock_guard<std::mutex> guard(_mutex); // Mutex lock for thread safety
 	if (pData == NULL)
 		pData = new EventData();
 
@@ -58,7 +57,11 @@ void StateMachine::StateEngine(void)
         _pEventData = NULL;       // event data used up, reset ptr
         _eventGenerated = false;  // event used up, reset flag
  
-        assert(currentState < _maxStates);
+        // assert(currentState < _maxStates);
+        // We should avoid assert because it will casue a crash
+        if (currentState < _maxStates) {
+            // GO TO ERROR STATE MUST BE IMPLEMENTED
+        }
 
 		// get state map
         const StateStruct* pStateMap = GetStateMap();

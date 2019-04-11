@@ -1,11 +1,17 @@
-#ifndef POD_H
-#define POD_H
+#ifndef POD_H_
+#define POD_H_
 
-#include "NetworkManager.hpp"
-#include "Event.hpp"
+#include "TCPManager.h"
+#include "UDPManager.h"
+#include "Event.h"
 #include "Pod_State.h"
-#include "Configurator.hpp"
+#include "Configurator.h"
+#include "MotionModel.h"
+#include "SourceManager.h"
+#include "Defines.hpp"
+#include <string>
 #include <functional>
+#include <memory>
 #include <semaphore.h>
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wctor-dtor-privacy"
@@ -14,24 +20,31 @@
 
 
 class Pod {
-  public:
-    Pod();
+ public:
+  Pod();
 
-    void startup();
+  void run();
+  void trigger_shutdown();
 
-    void stop();
+  std::shared_ptr<Pod_State> state_machine;
+  std::atomic<bool> running;
+  std::shared_ptr<UnifiedState> unified_state;
+  Event ready;
+  Event processing_command;
+  Event closing;
 
-    std::shared_ptr<Pod_State> state_machine;
-    std::atomic<bool> running;
-    Event ready;
-    Event processing_command;
-    Event closing;
-
-  private:
-    void logic_loop();
+ private:
+  void logic_loop();
+  void update_unified_state();
+  bool switchVal;
+  string tcp_port;
+  string tcp_addr;
+  string udp_send;  // port we send packets to
+  string udp_recv;  // port we recv packets from
+  string udp_addr; 
+  int64_t logic_loop_timeout;  // logic_loop sleep (timeout) value
 };
 
 void signal_handler(int signal);
 
-
-#endif
+#endif  // POD_H_

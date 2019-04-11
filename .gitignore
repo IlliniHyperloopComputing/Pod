@@ -9,11 +9,17 @@ cross
 dcross
 scross
 
+# Ignore vs code
+.vscode/
+
 # Allowing .out files for PRU stuff
 BBBSetup/halt/Debug/*
 BBBSetup/pru_encoder/Debug/*
 !BBBSetup/halt/Debug/halt.out
 !BBBSetup/pru_encoder/Debug/pru_encoder.out
+
+
+.vscode
 
 
 # Byte-compiled / optimized / DLL files

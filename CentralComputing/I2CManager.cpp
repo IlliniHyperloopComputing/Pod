@@ -1,13 +1,11 @@
-#include "I2CManager.hpp"
+#include "I2CManager.h"
 
-bool I2CManager::initialize_source(){
-
+bool I2CManager::initialize_source() {
   print(LogLevel::LOG_DEBUG, "I2C Manger setup successful\n");
   return true;
 }
 
-void I2CManager::stop_source(){
-
+void I2CManager::stop_source() {
   print(LogLevel::LOG_DEBUG, "I2C Manger stopped\n");
 }
 
@@ -17,6 +15,7 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
   i++;
   return new_data;
 }
+
 std::shared_ptr<I2CData> I2CManager::refresh_sim() {
   return empty_data();
 }
