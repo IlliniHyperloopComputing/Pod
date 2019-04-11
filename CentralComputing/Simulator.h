@@ -1,13 +1,8 @@
 #ifndef SIMULATOR_H_
 #define SIMULATOR_H_
 
-<<<<<<< HEAD
 #include "Command.h"
-#include "StateSpace.hpp"
-=======
-#include "TCPManager.h"
 #include "Defines.hpp"
->>>>>>> origin/pod4
 
 #define MAX_ACCEL 9.81
 #define MAX_DECEL -9.81
