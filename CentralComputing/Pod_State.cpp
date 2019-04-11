@@ -277,7 +277,7 @@ void Pod_State::steady_flight_accelerate(std::shared_ptr<Command::Network_Comman
   double acc = state->motion_data->x[2];
   
   if (shouldBrake(vel, pos) || vel > MAX_VELOCITY) {
-    Command::put(Command::Network_Command_ID::TRANS_FLIGHT_COAST,0);
+    Command::put(Command::Network_Command_ID::TRANS_FLIGHT_COAST, 0);
     auto_transition_coast.invoke();
   }
 }
@@ -291,7 +291,7 @@ void Pod_State::steady_flight_coast(std::shared_ptr<Command::Network_Command> co
   
   
   if (shouldBrake(vel, pos)) {
-    Command::put(Command::Network_Command_ID::TRANS_FLIGHT_BRAKE,0);
+    Command::put(Command::Network_Command_ID::TRANS_FLIGHT_BRAKE, 0);
     auto_transition_brake.invoke();
   }
 }
