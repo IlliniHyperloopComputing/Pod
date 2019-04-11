@@ -309,10 +309,10 @@ void Pod_State::steady_flight_brake(std::shared_ptr<TCPManager::Network_Command>
   // Brakes are applied
 	// Access Pos, Vel, and Accel from Motion Model
   print(LogLevel::LOG_INFO, "Function getting called.\n");
-  std::shared_ptr<StateSpace> state = SourceManager::MM.Get();
-  double pos = state->x[0];
-  double vel = state->x[1];
-  double acc = state->x[2];
+  std::shared_ptr<MotionData> motion_data = state->motion_data;
+  double pos = state->motion_data->x[0];
+  double vel = state->motion_data->x[1];
+  double acc = state->motion_data->x[2];
   print(LogLevel::LOG_INFO, "Made it past getting kinematics.\n");
 
   if (acc < SAFE_ACCEL && vel < SAFE_VELOC) {
