@@ -14,10 +14,9 @@ enum E_States {
   ST_MAX_STATES
 };
 
-#define NUM_ACCEL 3
+#define NUM_ACCEL 7
 struct ADCData {
   int32_t accel[NUM_ACCEL];
-  int dummy_data;
 };
 
 struct CANData {

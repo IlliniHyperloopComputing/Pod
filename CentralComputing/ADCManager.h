@@ -6,13 +6,8 @@
 #include <fstream>
 using std::ifstream;
 
-#define NUM_INPUTS 7 
-
-struct ADCData {
-  double accel[NUM_INPUTS];
-};
 struct RawADCData {
-    double raw_accel[NUM_INPUTS];
+    double raw_accel[NUM_ACCEL];
 };
 
 class ADCManager : public SourceManagerBase<ADCData, true> {
