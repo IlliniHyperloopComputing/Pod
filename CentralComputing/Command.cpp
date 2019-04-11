@@ -1,8 +1,10 @@
 #include "Command.h"
 
+SafeQueue<uint16_t> Command::command_queue;
+
 void Command::put(uint8_t ID, uint8_t Command){
 	uint16_t toQueue = (ID << 8) | Command;
-	command_queue.enqueue(toQueue);
+  command_queue.enqueue(toQueue);
 }
 
 bool Command::get(uint8_t & ID, uint8_t & Command){
