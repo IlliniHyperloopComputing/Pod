@@ -1,7 +1,7 @@
 #include "I2CManager.h"
 
-bool I2CManager::open_i2c(int & fd) {
-  if ((fd = open("/dev/i2c-2" , O_RDWR)) < 0) {
+bool I2CManager::open_i2c(int * fd) {
+  if ((*fd = open("/dev/i2c-2" , O_RDWR)) < 0) {
     print(LogLevel::LOG_ERROR, "I2C Manager setup failed. Failed to open bus: %s\n", strerror(errno));
     return false;
   }
@@ -24,7 +24,7 @@ bool I2CManager::initialize_source() {
   return false;
   #endif
 
-  if (!open_i2c(i2c_fd)) {
+  if (!open_i2c(&i2c_fd)) {
     return false;
   }
 

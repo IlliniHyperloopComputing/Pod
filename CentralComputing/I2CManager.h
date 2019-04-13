@@ -18,7 +18,7 @@ class I2CManager : public SourceManagerBase<I2CData, false> {
   std::shared_ptr<I2CData> refresh();
   std::shared_ptr<I2CData> refresh_sim();
   bool single_shot(int fd, int port, int16_t * value);
-  bool open_i2c(int & fd);
+  bool open_i2c(int * fd);
   bool set_i2c_addr(int fd, int addr);
 
   std::string name() {
