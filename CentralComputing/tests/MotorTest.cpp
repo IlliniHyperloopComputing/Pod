@@ -13,7 +13,7 @@ void check_test_eq(std::string file, std::string val){
 
 
 TEST_F(PodTest, MotorTest) {
-  MoveState(TCPManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, Pod_State::E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(TCPManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
 
   //Enable motors
   SendCommand(TCPManager::Network_Command_ID::ENABLE_MOTOR, 0);

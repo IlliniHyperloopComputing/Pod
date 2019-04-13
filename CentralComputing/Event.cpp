@@ -1,4 +1,4 @@
-#include "Event.hpp"
+#include "Event.h"
 
 void Event::wait() {
   std::unique_lock<std::mutex> lk(mutex);
@@ -6,7 +6,7 @@ void Event::wait() {
   lk.unlock();
 }
 
-void Event::wait_for(long long micros) {
+void Event::wait_for(int64_t micros) {
   std::unique_lock<std::mutex> lk(mutex);
   cond.wait_for(lk, std::chrono::microseconds(micros), [&]{ return condition; });
   lk.unlock();
