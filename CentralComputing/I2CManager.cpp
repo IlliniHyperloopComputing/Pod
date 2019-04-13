@@ -41,7 +41,7 @@ void I2CManager::stop_source() {
   print(LogLevel::LOG_DEBUG, "I2C Manger stopped\n");
 }
 
-bool I2CManager::single_shot(int fd, int port, int16_t & value) {
+bool I2CManager::single_shot(int fd, int port, int16_t *value) {
   uint8_t writeBuf[3];
 
   // set config register and start conversion
@@ -91,7 +91,7 @@ bool I2CManager::single_shot(int fd, int port, int16_t & value) {
   }
 
   // convert display results
-  value = readBuf[0] << 8 | readBuf[1];
+  *value = readBuf[0] << 8 | readBuf[1];
 
   return true;
 }
@@ -100,13 +100,12 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
   std::shared_ptr<I2CData> new_data = std::make_shared<I2CData>();
   new_data->dummy_data = i;
   i++;
-
   int64_t a = Utils::microseconds(); 
   int16_t value = 0;
   if (!set_i2c_addr(i2c_fd, 0x48)) {
     return false;
   }
-  if (single_shot(i2c_fd, ANC0, value)) {
+  if (single_shot(i2c_fd, ANC0, &value)) {
     int64_t b = Utils::microseconds(); 
     print(LogLevel::LOG_INFO, "i2c val1: %d, in micros: %lu\n", value, b-a);
   }
@@ -114,7 +113,7 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
   if (!set_i2c_addr(i2c_fd, 0x49)) {
     return false;
   }
-  if (single_shot(i2c_fd, ANC1, value)) {
+  if (single_shot(i2c_fd, ANC1, &value)) {
     print(LogLevel::LOG_INFO, "i2c val2: %d\n", value);
   }
 
