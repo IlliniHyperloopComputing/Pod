@@ -104,5 +104,9 @@ int32_t PRUManager::convert_to_velocity(uint32_t decay, uint32_t delta, uint32_t
 }
 
 std::shared_ptr<PRUData> PRUManager::refresh_sim() {
+  #ifdef SIM
+  return SimulatorManager::sim.sim_get_pru();
+  #else
   return empty_data();
+  #endif
 }
