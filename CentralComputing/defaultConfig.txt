@@ -3,7 +3,6 @@ i2c_manager_timeout 1000000.0
 can_manager_timeout 1000000.0
 adc_manager_timeout 1000000.0
 pru_manager_timeout 1000000.0
-mm_manager_timeout  5000.0
 logic_loop_timeout  1000.0
 
 tcp_port 8001
@@ -12,3 +11,7 @@ tcp_addr 127.0.0.1
 udp_send_port 5004
 udp_recv_port 5005
 udp_addr 127.0.0.1
+
+low_pass_filter_velocity 0.90
+low_pass_filter_acceleration 0.90
+motor_distance_clamp 60960

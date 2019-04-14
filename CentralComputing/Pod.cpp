@@ -8,6 +8,11 @@ using std::thread;
 using std::function;
 using std::shared_ptr;
 
+// Pod's "main loop"
+// This logic_loop is the main driver for the pod. 
+// It processes commands, interacts with the state machine, 
+// collects all of the State data, interacts with the motion model
+// organizes what data gets sent to TCP endpoint
 void Pod::logic_loop() {
   #ifdef SIM  // Used to indicate to the Simulator we have processed a command
   bool command_processed = false;
@@ -34,7 +39,6 @@ void Pod::logic_loop() {
 
     // Get current state from all of the SourceMangaers
     update_unified_state();    
-
 
     // Calls the steady state function for the current state
     // Passes in command, and current state. 
@@ -65,6 +69,9 @@ void Pod::logic_loop() {
   print(LogLevel::LOG_INFO, "Exiting Pod Logic Loop\n");
 }
 
+// Helper function called from logic_loop()
+// Updates the unified_state
+// Calls MotionModel::calculate()
 void Pod::update_unified_state() {
   unified_state->adc_data = SourceManager::ADC.Get();
   unified_state->can_data = SourceManager::CAN.Get();
@@ -75,9 +82,9 @@ void Pod::update_unified_state() {
   // Update motion_data
   // Pass current state into Motion Model
   #ifndef SIM
-  MotionModel::calculate(unified_state);
+  motion_model->calculate(unified_state);
   #else
-  MotionModel::calculate_sim(unified_state);
+  motion_model->calculate_sim(unified_state);
   #endif
 
   // TODO: Add more things to unified state 
@@ -85,7 +92,11 @@ void Pod::update_unified_state() {
   TCPManager::write_queue.enqueue(unified_state);  
 }
 
-Pod::Pod() {
+// Pod constructor
+// Takes a config file as an argument
+// Setsup variables, loads configurations, does some other initialization work. 
+// Does NOT start any threads.
+Pod::Pod(const std::string & config_to_open) {
   // Setup "0" time. All further calls to microseconds() use this as the base time
   microseconds();
 
@@ -105,7 +116,13 @@ Pod::Pod() {
   print(LogLevel::LOG_INFO, "CPU freq set to 1GHz\n");    
   #endif
 
-  // Grab Network Server variables from config file
+  // Open configuration file
+  if (!ConfiguratorManager::config.openConfigFile(config_to_open)) {
+    print(LogLevel::LOG_ERROR, "Config missing. File: %s\n", config_to_open.c_str());
+    exit(1);
+  }
+
+  // Grab all configuration variables
   if (!(ConfiguratorManager::config.getValue("tcp_port", tcp_port) && 
       ConfiguratorManager::config.getValue("tcp_addr", tcp_addr) &&
       ConfiguratorManager::config.getValue("udp_send_port", udp_send) &&
@@ -118,6 +135,7 @@ Pod::Pod() {
 
   // Setup any other member variables here
   state_machine = make_shared<Pod_State>();
+  motion_model = make_shared<MotionModel>();
   unified_state = make_shared<UnifiedState>();
   unified_state->motion_data = make_shared<MotionData>();
   unified_state->adc_data = make_shared<ADCData>();
@@ -128,6 +146,15 @@ Pod::Pod() {
   switchVal = false;
 }
 
+// Pod Desctructor
+// Clean up Configuration Manager
+Pod::~Pod() {
+  ConfiguratorManager::config.clear();
+}
+
+// Run the Pod.
+// Starts all threads going, network threads and SourceManagers
+// Joins all threads at the end, and exits gracefully
 void Pod::run() {
   print(LogLevel::LOG_INFO, "\n");
   print(LogLevel::LOG_INFO, "==================\n");
@@ -177,29 +204,36 @@ void Pod::trigger_shutdown() {
   closing.invoke();
 }
 
-function<void(int)> shutdown_handler;
-void signal_handler(int signal) {shutdown_handler(signal); }
-
-int main(int argc, char **argv) {
-  // Load the configuration file if specified, or use the default
-  string config_to_open = "defaultConfig.txt";
+// Parse any command line arguments passed into the Pod
+// Used right now to load the configuration file if specified, or use the default
+void parse_command_line_args(int argc, char **argv, string * config_to_open);
+void parse_command_line_args(int argc, char **argv, string * config_to_open) {
+  *config_to_open = "defaultConfig.txt";
   if (argc > 1) {  // If the first argument is a file, use it as the config file
     ifstream test_if_file(argv[1]);
     if (test_if_file.is_open()) {
       test_if_file.close();
-      config_to_open = argv[1];
+      *config_to_open = argv[1];
     }
   }
-  if (!ConfiguratorManager::config.openConfigFile(config_to_open)) {
-    print(LogLevel::LOG_ERROR, "Config missing. File: %s\n", config_to_open.c_str());
-    return 1;
-  }
+}
+
+// Signal handlers. Defined within main()
+function<void(int)> shutdown_handler;
+void signal_handler(int signal) {shutdown_handler(signal); }
+
+// Main 
+// Starts the Pod up, or the GTest suite, depending on compiler flags
+int main(int argc, char **argv) {
+  std::string config_to_open;
 
   #ifndef SIM
     Utils::loglevel = LogLevel::LOG_EDEBUG;
+    // Load the configuration file if specified, or use the default
+    parse_command_line_args(argc, argv, &config_to_open);
     // Create the pod object
-    auto pod = make_shared<Pod>();
-    // Setup signals handlers
+    auto pod = make_shared<Pod>(config_to_open);
+    // Setup some handlers
     signal(SIGINT, signal_handler);  // ctrl-c handler
     shutdown_handler = [&](int signal) { pod->trigger_shutdown(); };
     // Start the pod running
@@ -207,7 +241,17 @@ int main(int argc, char **argv) {
     return 0;
   #else
     Utils::loglevel = LogLevel::LOG_EDEBUG;
-    testing::InitGoogleTest(&argc, argv);
+    testing::InitGoogleTest(&argc, argv);  // after calling this, all argc/v related to gtest are removed
+    parse_command_line_args(argc, argv, &config_to_open);
+    podtest_global::config_to_open = config_to_open;
     return RUN_ALL_TESTS();
   #endif
 }
+
+// This is used in tests/PodTest.cpp
+// Needed to pass in variables into the testing environment
+// Used to pass config file name, specifically
+// See Pod.h for where this namespace is declared.
+namespace podtest_global {
+  std::string config_to_open;
+}  // namespace podtest_global
