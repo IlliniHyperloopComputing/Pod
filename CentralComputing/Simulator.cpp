@@ -9,6 +9,7 @@ Simulator SimulatorManager::sim;
 Simulator::Simulator() {
   reset_motion();
   connected.reset();
+  scenario = std::nullptr;
 }
 
 int Simulator::start_server(const char * hostname, const char * port) {
@@ -109,6 +110,10 @@ void Simulator::disconnect() {
   close(socketfd);  // close TCP server
 }
 
+void Simulator::set_scenario(std::shared_ptr<Scenario> scn) {
+  scenario = scn;
+}
+
 void Simulator::logging(bool enable) {
   std::lock_guard<std::mutex> guard(mutex);
   enable_logging = enable;
@@ -150,51 +155,25 @@ void Simulator::sim_brake_set_pressure(uint8_t value) {
   pressure = value;
 }
 
+std::shared_ptr<ADCData> Simulator::sim_get_adc() {
+
+}
+
+std::shared_ptr<CANData> Simulator::sim_get_can() {
+
+}
+
+std::shared_ptr<I2CData> Simulator::sim_get_i2c() {
+
+}
+
+std::shared_ptr<PRUData> Simulator::sim_get_pru() {
+
+}
+
 std::shared_ptr<MotionData> Simulator::sim_get_motion() {
   std::lock_guard<std::mutex> guard(mutex);
 
-  // FOR FIRST CALL
-  if (timeLast == -1) {
-    timeDelta = 0.000;
-  } else {  // SUBSEQUENT CALLS
-    timeDelta = Utils::microseconds() - timeLast;
-  }
-
-  if (motorsOn) {
-    acceleration = MAX_ACCEL * throttle;
-  } else if (brakesOn) {
-    acceleration = MAX_DECEL * pressure;
-  } else {
-    acceleration = 0;
-  }
-
-
-  double deltaSeconds = static_cast<double>(timeDelta) / 1000000.0;
-
-  // KINEMATIC PHYSICS CALCULATIONS
-  velocity = lastVelocity + (acceleration * deltaSeconds);
-  position = lastPosition + ((lastVelocity + velocity)/2 * deltaSeconds) 
-              + (0.5 * acceleration * deltaSeconds * deltaSeconds);
-
-  // CREATING A STATESPACE OBJECT AND SETTING ITS ARRAY'S VALUES
-  std::shared_ptr<MotionData> space = std::make_shared<MotionData>();
-  space->x[0] = position;
-  space->x[1] = velocity;
-  space->x[2] = acceleration;
-
-  if (enable_logging) {
-    print(LogLevel::LOG_DEBUG, 
-      "Motion: Pos: %.2f, Vel: %.2f, Acl= %.2f, lastPos= %.2f, lastVel = %.2f, delta = %d, timeLast=%ld, t = %ld\n",
-      position, velocity, acceleration, lastPosition, lastVelocity, timeDelta, timeLast, Utils::microseconds());
-  }
-
-  // UPDATING VARIABLES
-  lastPosition = position;
-  lastVelocity = velocity;
-  timeLast = Utils::microseconds();
-
-
-  return space;
 }
 
 

@@ -3,6 +3,7 @@
 
 #include "TCPManager.h"
 #include "Defines.hpp"
+#include "Scenario.hpp"
 
 #define MAX_ACCEL 9.81
 #define MAX_DECEL -9.81
@@ -29,12 +30,10 @@ class Simulator {
     */
   void sim_motor_enable();
 
-
   /*
     * Simulates disarming the motor
     */
   void sim_motor_disable();
-
 
   /*
     * Simulates setting the motor throttle to a specific value
@@ -42,18 +41,15 @@ class Simulator {
     */
   void sim_motor_set_throttle(uint8_t value);
 
-
   /*
     * Simulates enabling the brakes
     */
   void sim_brake_enable();
 
-
   /*
     * Simulates disabling the brakes
     */
   void sim_brake_disable();
-
 
   /*
     * Simulates setting the brake pressure to a specific Value
@@ -61,13 +57,11 @@ class Simulator {
     */
   void sim_brake_set_pressure(uint8_t value);
 
-
   /*
     * Uses the current state of the brakes/motors to simulate the new position, velocity, 
     * and acceleration and returns them as a MotionData object
     */
   std::shared_ptr<MotionData> sim_get_motion();
-
 
   /**
    * Sends the given command to the connected pod
@@ -75,12 +69,10 @@ class Simulator {
    */
   bool send_command(std::shared_ptr<TCPManager::Network_Command> command);
 
-
   /**
    * Thread function, reads continually and updates the internal simulate state variables
    */
   void read_loop();
-
 
   /**
    * Close the active connection and free any owned variables
@@ -88,9 +80,9 @@ class Simulator {
   void disconnect();
 
   /**
-   * Resets the motion variables
+   * Set the Scenario to use 
    */
-  void reset_motion();
+  void set_scenario(std::shared_ptr<Scenario> scn);
 
   std::atomic<bool> active_connection;
   Event closed;
@@ -98,22 +90,11 @@ class Simulator {
   std::thread read_thread;
   std::mutex mutex;  // To get rid of data races when accessing motion data
 
-  bool enable_logging = true;
-
   int socketfd;
   int clientfd;
 
-  int64_t timeLast = -1;
-  int64_t timeDelta = 0.000;
-  bool motorsOn = false;
-  bool brakesOn = false;
-  uint8_t throttle = 0.000;
-  uint8_t pressure = 0.000;
-  double position = 0.000;
-  double lastPosition = 0.000;
-  double velocity = 0.000;
-  double lastVelocity = 0.000;
-  double acceleration = 0.000;
+  std::shared_ptr<Scenario> scenario;
+
 };
 namespace SimulatorManager {
   extern Simulator sim;
