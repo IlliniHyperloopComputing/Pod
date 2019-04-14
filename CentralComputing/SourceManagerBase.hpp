@@ -105,7 +105,6 @@ class SourceManagerBase {
     }
   }
 
- protected:
   std::shared_ptr<Data> empty_data() {
     std::shared_ptr<Data> d = std::make_shared<Data>();
     memset(d.get(), (uint8_t)0, sizeof(Data));
