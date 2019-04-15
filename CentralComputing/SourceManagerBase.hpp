@@ -10,14 +10,6 @@
 #include <mutex>  // NOLINT
 #include <atomic>
 
-#ifdef SIM
-#include <fstream>
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wctor-dtor-privacy"
-#include "gtest/gtest.h"
-#pragma GCC diagnostic pop
-#endif
-
 using Utils::print;
 using Utils::LogLevel;
 
