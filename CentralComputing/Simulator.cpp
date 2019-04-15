@@ -110,9 +110,9 @@ void Simulator::disconnect() {
 }
 
 void Simulator::stop() {
-  std::lock_guard<std::mutex> guard(mutex);
   logging(false);
   disconnect();
+  std::lock_guard<std::mutex> guard(mutex);
   scenario = nullptr;
 }
 
@@ -230,7 +230,6 @@ std::shared_ptr<MotionData> Simulator::sim_get_motion(MotionModel * mm, std::sha
     mm->calculate(state);
     return state->motion_data;
   }
-
 }
 
 #endif
