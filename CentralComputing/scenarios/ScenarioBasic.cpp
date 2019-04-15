@@ -3,7 +3,8 @@
 bool ScenarioBasic::use_motion_model() {
   return true;
 }
-std::shared_ptr<MotionData> sim_get_motion() {
+
+std::shared_ptr<MotionData> ScenarioBasic::sim_get_motion() {
   // FOR FIRST CALL
   if (timeLast == -1) {
     timeDelta = 0.000;
@@ -43,7 +44,6 @@ std::shared_ptr<MotionData> sim_get_motion() {
   lastPosition = position;
   lastVelocity = velocity;
   timeLast = Utils::microseconds();
-
 
   return space;
 }

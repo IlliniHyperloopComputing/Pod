@@ -7,9 +7,8 @@ using Utils::LogLevel;
 Simulator SimulatorManager::sim;
 
 Simulator::Simulator() {
-  reset_motion();
   connected.reset();
-  scenario = std::nullptr;
+  scenario = nullptr;
 }
 
 int Simulator::start_server(const char * hostname, const char * port) {
@@ -110,90 +109,127 @@ void Simulator::disconnect() {
   close(socketfd);  // close TCP server
 }
 
-void Simulator::set_scenario(std::shared_ptr<Scenario> scn) {
-  scenario = scn;
+void Simulator::stop() {
+  logging(false);
+  disconnect();
+  scenario = nullptr;
+}
+
+void Simulator::set_scenario(std::shared_ptr<Scenario> s) {
+  scenario = s;
 }
 
 void Simulator::logging(bool enable) {
   std::lock_guard<std::mutex> guard(mutex);
-  enable_logging = enable;
+  if (scenario != nullptr) {
+    scenario->logging(enable);
+  }
 }
 
 void Simulator::sim_motor_enable() {
   std::lock_guard<std::mutex> guard(mutex);
   print(LogLevel::LOG_DEBUG, "Sim - Motors Enabled\n");
-  motorsOn = true;
+  if (scenario != nullptr) {
+    scenario->sim_motor_enable();
+  }
 }
 
 void Simulator::sim_motor_disable() {
   std::lock_guard<std::mutex> guard(mutex);
   print(LogLevel::LOG_DEBUG, "Sim - Motors Disabled\n");
-  motorsOn = false;
+  if (scenario != nullptr) {
+    scenario->sim_motor_disable();
+  }
 }
 
 void Simulator::sim_motor_set_throttle(uint8_t value) {
   std::lock_guard<std::mutex> guard(mutex);
   print(LogLevel::LOG_DEBUG, "Sim - Setting motor throttle: %d\n", value);
-  throttle = value;
+  if (scenario != nullptr) {
+    scenario->sim_motor_set_throttle(value);
+  }
 }
 
 void Simulator::sim_brake_enable() {
   std::lock_guard<std::mutex> guard(mutex);
   print(LogLevel::LOG_DEBUG, "Sim - Brakes Enabled\n");
-  brakesOn = true;
+  if (scenario != nullptr) {
+    scenario->sim_brake_enable();
+  }
 }
 
 void Simulator::sim_brake_disable() {
   std::lock_guard<std::mutex> guard(mutex);
   print(LogLevel::LOG_DEBUG, "Sim - Brakes Disabled\n");
-  brakesOn = false;
+  if (scenario != nullptr) {
+    scenario->sim_brake_disable();
+  }
 }
 
 void Simulator::sim_brake_set_pressure(uint8_t value) {
   std::lock_guard<std::mutex> guard(mutex);
   print(LogLevel::LOG_DEBUG, "Setting brake pressure: %d\n", value);
-  pressure = value;
+  if (scenario != nullptr) {
+    scenario->sim_brake_set_pressure(value);
+  }
 }
 
 std::shared_ptr<ADCData> Simulator::sim_get_adc() {
-
+  std::lock_guard<std::mutex> guard(mutex);
+  if (scenario != nullptr && (!scenario->use_motion_model())) {
+    return scenario->sim_get_adc();
+  } else {
+    std::shared_ptr<ADCData> d = std::make_shared<ADCData>();
+    memset(d.get(), (uint8_t)0, sizeof(ADCData));
+    return d;
+  }
 }
 
 std::shared_ptr<CANData> Simulator::sim_get_can() {
-
+  std::lock_guard<std::mutex> guard(mutex);
+  if (scenario != nullptr && (!scenario->use_motion_model())) {
+    return scenario->sim_get_can();
+  } else {
+    std::shared_ptr<CANData> d = std::make_shared<CANData>();
+    memset(d.get(), (uint8_t)0, sizeof(CANData));
+    return d;
+  }
 }
 
 std::shared_ptr<I2CData> Simulator::sim_get_i2c() {
-
+  std::lock_guard<std::mutex> guard(mutex);
+  if (scenario != nullptr && (!scenario->use_motion_model())) {
+    return scenario->sim_get_i2c();
+  } else {
+    std::shared_ptr<I2CData> d = std::make_shared<I2CData>();
+    memset(d.get(), (uint8_t)0, sizeof(I2CData));
+    return d;
+  }
 }
 
 std::shared_ptr<PRUData> Simulator::sim_get_pru() {
-
+  std::lock_guard<std::mutex> guard(mutex);
+  if (scenario != nullptr && (!scenario->use_motion_model())) {
+    return scenario->sim_get_pru();
+  } else {
+    std::shared_ptr<PRUData> d = std::make_shared<PRUData>();
+    memset(d.get(), (uint8_t)0, sizeof(PRUData));
+    return d;
+  }
 }
 
 std::shared_ptr<MotionData> Simulator::sim_get_motion() {
   std::lock_guard<std::mutex> guard(mutex);
+  if (scenario != nullptr && (scenario->use_motion_model())) {
+    return scenario->sim_get_motion();
+  } else {
+    std::shared_ptr<MotionData> space = std::make_shared<MotionData>();
+    space->x[0] = 0;
+    space->x[1] = 0;
+    space->x[2] = 0;
+    return space;
+  }
 
-}
-
-
-
-void Simulator::reset_motion() {
-    timeLast = -1;
-    timeDelta = 0.0;
-    
-    motorsOn = false;
-    brakesOn = false;
-    
-    throttle = 0.0;
-    pressure = 0.0;
-    
-    position = 0.0;
-    lastPosition = 0.0;
-    velocity = 0.0;
-    lastVelocity = 0.0;
-    acceleration = 0.0;
-    timeLast = -1;
 }
 
 #endif
