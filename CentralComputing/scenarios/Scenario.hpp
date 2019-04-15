@@ -1,3 +1,5 @@
+#ifndef SCENARIO_H_
+#define SCENARIO_H_
 #include "Defines.hpp"
 #include "Utils.h"
 
@@ -82,3 +84,4 @@ class Scenario{
   double acceleration = 0.000;
 
 };
+#endif 

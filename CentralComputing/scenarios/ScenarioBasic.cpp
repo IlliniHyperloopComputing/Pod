@@ -1,4 +1,8 @@
+#ifdef SIM
 #include "ScenarioBasic.h"
+
+#define MAX_ACCEL 9.81
+#define MAX_DECEL -9.81
 
 bool ScenarioBasic::use_motion_model() {
   return true;
@@ -47,3 +51,4 @@ std::shared_ptr<MotionData> ScenarioBasic::sim_get_motion() {
 
   return space;
 }
+#endif
