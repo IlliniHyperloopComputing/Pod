@@ -61,7 +61,7 @@ void MotionModel::calculate(std::shared_ptr<UnifiedState> state) {
 // get MotionData object
 void MotionModel::calculate_sim(std::shared_ptr<UnifiedState> state) {
   #ifdef SIM
-  state->motion_data = SimulatorManager::sim.sim_get_motion();
+  state->motion_data = SimulatorManager::sim.sim_get_motion(this, state);
   #endif
 }
 

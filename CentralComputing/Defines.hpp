@@ -2,6 +2,9 @@
 #define STRUCTS_H_
 
 #include <memory>
+
+class MotionModel;
+
 enum E_States {
   ST_SAFE_MODE,
   ST_FUNCTIONAL_TEST,

@@ -7,6 +7,7 @@
 #include "Configurator.h"
 #include <memory>
 
+// Class pre-defined in Defines.hpp, FYI
 class MotionModel {
  public:
   // Used to read variables in from config file

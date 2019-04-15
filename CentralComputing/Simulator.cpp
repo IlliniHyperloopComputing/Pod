@@ -110,12 +110,14 @@ void Simulator::disconnect() {
 }
 
 void Simulator::stop() {
+  std::lock_guard<std::mutex> guard(mutex);
   logging(false);
   disconnect();
   scenario = nullptr;
 }
 
 void Simulator::set_scenario(std::shared_ptr<Scenario> s) {
+  std::lock_guard<std::mutex> guard(mutex);
   scenario = s;
 }
 
@@ -218,16 +220,15 @@ std::shared_ptr<PRUData> Simulator::sim_get_pru() {
   }
 }
 
-std::shared_ptr<MotionData> Simulator::sim_get_motion() {
+std::shared_ptr<MotionData> Simulator::sim_get_motion(MotionModel * mm, std::shared_ptr<UnifiedState> state) {
   std::lock_guard<std::mutex> guard(mutex);
+  // Either go to the scenario for motion data
   if (scenario != nullptr && (scenario->use_motion_model())) {
     return scenario->sim_get_motion();
   } else {
-    std::shared_ptr<MotionData> space = std::make_shared<MotionData>();
-    space->x[0] = 0;
-    space->x[1] = 0;
-    space->x[2] = 0;
-    return space;
+    // Or just call the MotionModel's usual calculate() function
+    mm->calculate(state);
+    return state->motion_data;
   }
 
 }
