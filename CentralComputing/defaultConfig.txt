@@ -1,8 +1,8 @@
-tmp_manager_timeout 1000000.0
-i2c_manager_timeout 1000000.0
-can_manager_timeout 1000000.0
-adc_manager_timeout 1000000.0
-pru_manager_timeout 1000000.0
+tmp_manager_timeout 100000.0
+i2c_manager_timeout 100000.0
+can_manager_timeout 100000.0
+adc_manager_timeout 100000.0
+pru_manager_timeout 100000.0
 logic_loop_timeout  1000.0
 
 tcp_port 8001

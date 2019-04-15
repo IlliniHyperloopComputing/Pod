@@ -4,6 +4,7 @@
 #include "Utils.h"
 
 using Utils::print;
+using Utils::microseconds;
 using Utils::LogLevel;
 
 // Abstract class 
@@ -52,6 +53,7 @@ class Scenario{
 
   void sim_motor_enable() {
     motorsOn = true;
+    motors_on = microseconds();
   }
   
   void sim_motor_disable() {
@@ -86,6 +88,7 @@ class Scenario{
   double velocity = 0.000;
   double lastVelocity = 0.000;
   double acceleration = 0.000;
+  int64_t motors_on = 0;
 
 };
 #endif 
