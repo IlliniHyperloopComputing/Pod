@@ -14,26 +14,30 @@ class Scenario{
   virtual bool use_motion_model() = 0;
 
   // By default, all functions return "empty data"
-  std::shared_ptr<ADCData> sim_get_adc() {
+  virtual std::shared_ptr<ADCData> sim_get_adc() {
     std::shared_ptr<ADCData> d = std::make_shared<ADCData>();
     memset(d.get(), (uint8_t)0, sizeof(ADCData));
     return d;
   }
-  std::shared_ptr<CANData> sim_get_can() {
+  
+  virtual std::shared_ptr<CANData> sim_get_can() {
     std::shared_ptr<CANData> d = std::make_shared<CANData>();
     memset(d.get(), (uint8_t)0, sizeof(CANData));
     return d;
   }
-  std::shared_ptr<I2CData> sim_get_i2c() {
+
+  virtual std::shared_ptr<I2CData> sim_get_i2c() {
     std::shared_ptr<I2CData> d = std::make_shared<I2CData>();
     memset(d.get(), (uint8_t)0, sizeof(I2CData));
     return d;
   }
-  std::shared_ptr<PRUData> sim_get_pru() {
+
+  virtual std::shared_ptr<PRUData> sim_get_pru() {
     std::shared_ptr<PRUData> d = std::make_shared<PRUData>();
     memset(d.get(), (uint8_t)0, sizeof(PRUData));
     return d;
   }
+
   virtual std::shared_ptr<MotionData> sim_get_motion() {
     std::shared_ptr<MotionData> space = std::make_shared<MotionData>();
     space->x[0] = 0;

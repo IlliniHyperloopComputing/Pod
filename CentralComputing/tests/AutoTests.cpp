@@ -1,6 +1,7 @@
 #ifdef SIM // Only compile if building test executable
 #include "PodTest.cpp"
 #include "ScenarioBasic.h"
+#include "ScenarioRealNoFault.h"
 using std::make_shared;
 
 TEST_F(PodTest, AutomaticTransitionBasic) {
@@ -34,7 +35,7 @@ TEST_F(PodTest, AutomaticTransitionBasic) {
 }
 
 TEST_F(PodTest, AutomaticTransitionSensors) {
-  SimulatorManager::sim.set_scenario(make_shared<ScenarioBasic>());
+  SimulatorManager::sim.set_scenario(make_shared<ScenarioRealNoFault>());
   MoveState(TCPManager::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
   MoveState(TCPManager::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
   MoveState(TCPManager::Network_Command_ID::TRANS_LAUNCH_READY, E_States::ST_LAUNCH_READY, true);
