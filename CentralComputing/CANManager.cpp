@@ -170,3 +170,13 @@ uint32_t CANManager::cast_to_u32(int offset, int bytes_per_item, unsigned char* 
   }
   return tmp;
 }
+void u32_to_bytes(uint32_t toCast, unsigned char* bufferArray) {
+  bufferArray[0] = toCast;
+  bufferArray[1] = toCast >>  8;
+  bufferArray[2] = toCast >> 16;
+  bufferArray[3] = toCast >> 24;
+}
+void u16_to_bytes(uint16_t toCast, unsigned char* bufferArray) {
+  bufferArray[0] = toCast;
+  bufferArray[1] = toCast >> 8;
+}
