@@ -57,8 +57,8 @@ int TCPManager::read_command(uint8_t * ID, uint8_t * Command) {
 
 int TCPManager::write_data() {
   // TODO write real datauint16_t uS;
-  shared_ptr<UnifiedState> * uS;
-  write_queue.dequeue(uS);
+  shared_ptr<UnifiedState> uS;
+  write_queue.dequeue(&uS);
   // TODO: CHANGE, just for testing
   int32_t x1 = 32;
   int32_t x2 = 27;
