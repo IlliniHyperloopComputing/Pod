@@ -15,20 +15,20 @@ void Pod::logic_loop() {
 
   // Start processing/pod logic
   while (running.load()) {
-    Command::Network_Command * com;
-    bool loaded  = Command::get(com);
+    Command::Network_Command com;
+    bool loaded  = Command::get(&com);
 
     if (loaded) {
       // Parse the command and call the appropriate state machine function
-      auto transition = state_machine->get_transition_function((Command::Network_Command_ID) com->id);
+      auto transition = state_machine->get_transition_function((Command::Network_Command_ID) com.id);
       ((*state_machine).*(transition))(); 
       #ifdef SIM  // Used to indicate to the Simulator that we have processed a command
       command_processed = true;
       #endif
-      print(LogLevel::LOG_INFO, "Command : %d %d\n", com->id, com->value);
+      print(LogLevel::LOG_INFO, "Command : %d %d\n", com.id, com.value);
     } else {  // Create a "do nothing" command. This will be passed into the steady state caller below
-      com->id = 0;
-      com->value = 0;
+      com.id = 0;
+      com.value = 0;
     }
 
     // Get current state from all of the SourceMangaers
@@ -38,7 +38,7 @@ void Pod::logic_loop() {
     // Calls the steady state function for the current state
     // Passes in command, and current state. 
     auto func = state_machine->get_steady_function();
-    ((*state_machine).*(func))(com, unified_state); 
+    ((*state_machine).*(func))(&com, unified_state); 
 
     #ifdef BBB
     // Send the heartbeat signal to the watchdog.
