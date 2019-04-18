@@ -47,17 +47,17 @@ int TCPManager::connect_to_server(const char * hostname, const char * port) {
   return socketfd;
 }
 
-int TCPManager::read_command(uint8_t & ID, uint8_t & Command) {
+int TCPManager::read_command(uint8_t * ID, uint8_t * Command) {
   uint8_t bytes[2];
   int bytes_read = read(socketfd, bytes, 2);
-  ID = (Command::Network_Command_ID) bytes[0];
-  Command = bytes[1];
+  *ID = (Command::Network_Command_ID) bytes[0];
+  *Command = bytes[1];
   return bytes_read;
 }
 
 int TCPManager::write_data() {
   // TODO write real datauint16_t uS;
-  shared_ptr<UnifiedState> uS;
+  shared_ptr<UnifiedState> * uS;
   write_queue.dequeue(uS);
   // TODO: CHANGE, just for testing
   int32_t x1 = 32;
@@ -69,14 +69,14 @@ int TCPManager::write_data() {
 
 void TCPManager::read_loop() {
   bool active_connection = true;
-  uint8_t ID;
-  uint8_t Command;
+  uint8_t * ID;
+  uint8_t * Command;
   while (running && active_connection) {
     int bytes_read = read_command(ID, Command);
     active_connection = bytes_read > 0;
     if (bytes_read > 0) {
       // print(LogLevel::LOG_EDEBUG, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
-      Command::put(ID, Command);
+      Command::put(*ID, *Command);
     }
   }
   print(LogLevel::LOG_INFO, "TCP read Loop exiting.\n");

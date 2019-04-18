@@ -7,11 +7,11 @@ void Command::put(uint8_t ID, uint8_t Command) {
   command_queue.enqueue(toQueue);
 }
 
-bool Command::get(uint8_t & ID, uint8_t & Command) {
+bool Command::get(Network_Command * com) {
   uint16_t preShift;
   bool loaded = command_queue.dequeue(preShift);
   if (!loaded) return loaded;
-  Command = static_cast<uint8_t>(preShift);
-  ID = static_cast<uint8_t>(preShift >> 8);
+  com->id = static_cast<uint8_t>(preShift);
+  com->value = static_cast<uint8_t>(preShift >> 8);
   return loaded;
 }
