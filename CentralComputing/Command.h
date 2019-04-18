@@ -19,7 +19,7 @@ namespace Command {
 
 extern SafeQueue<uint16_t> command_queue;
 struct Network_Command;
-void put(uint8_t ID, uint8_t Command);
+void put(uint8_t id, uint8_t value);
 bool get(Network_Command * com);
   
 enum Network_Command_ID {
