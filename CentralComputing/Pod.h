@@ -19,15 +19,16 @@
 #include "gtest/gtest.h"
 #pragma GCC diagnostic pop
 
-
 class Pod {
  public:
-  Pod();
+  explicit Pod(const std::string & config_to_open);
+  ~Pod();
 
   void run();
   void trigger_shutdown();
 
   std::shared_ptr<Pod_State> state_machine;
+  std::shared_ptr<MotionModel> motion_model;
   std::atomic<bool> running;
   std::shared_ptr<UnifiedState> unified_state;
   Event ready;
@@ -45,6 +46,10 @@ class Pod {
   string udp_addr; 
   int64_t logic_loop_timeout;  // logic_loop sleep (timeout) value
 };
+
+namespace podtest_global {
+  extern std::string config_to_open;
+}  // namespace podtest_global
 
 void signal_handler(int signal);
 

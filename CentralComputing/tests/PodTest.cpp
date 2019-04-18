@@ -3,6 +3,7 @@
 #include "Simulator.h"
 
 using namespace Utils;
+
 class PodTest : public ::testing::Test
 {
   protected:
@@ -24,7 +25,7 @@ class PodTest : public ::testing::Test
     sim_thread = std::thread([&](){ SimulatorManager::sim.sim_connect();});
 
     // Create the Pod object
-    pod = std::make_shared<Pod>();
+    pod = std::make_shared<Pod>(podtest_global::config_to_open);
 
     // Set the Pod running in its own thread
     pod_thread = std::thread([&](){ pod->run();});
