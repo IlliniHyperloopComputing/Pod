@@ -69,14 +69,14 @@ int TCPManager::write_data() {
 
 void TCPManager::read_loop() {
   bool active_connection = true;
-  uint8_t * ID;
-  uint8_t * Command;
+  uint8_t ID;
+  uint8_t Command;
   while (running && active_connection) {
-    int bytes_read = read_command(ID, Command);
+    int bytes_read = read_command(&ID, &Command);
     active_connection = bytes_read > 0;
     if (bytes_read > 0) {
       // print(LogLevel::LOG_EDEBUG, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
-      Command::put(*ID, *Command);
+      Command::put(ID, Command);
     }
   }
   print(LogLevel::LOG_INFO, "TCP read Loop exiting.\n");
