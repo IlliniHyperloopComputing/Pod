@@ -13,21 +13,21 @@ double MAX_VELOCITY = 550;
 Pod_State::Pod_State()
   : StateMachine(ST_MAX_STATES),
   motor(), brakes() {
-  transition_map[TCPManager::TRANS_SAFE_MODE] = &Pod_State::move_safe_mode;  
-  transition_map[TCPManager::TRANS_FUNCTIONAL_TEST] = &Pod_State::move_functional_tests;
-  transition_map[TCPManager::TRANS_LOADING] = &Pod_State::move_loading;
-  transition_map[TCPManager::TRANS_LAUNCH_READY] = &Pod_State::move_launch_ready;
-  transition_map[TCPManager::LAUNCH] = &Pod_State::accelerate;
-  transition_map[TCPManager::TRANS_FLIGHT_COAST] = &Pod_State::coast;
-  transition_map[TCPManager::TRANS_FLIGHT_BRAKE] = &Pod_State::brake;
-  transition_map[TCPManager::EMERGENCY_BRAKE] = &Pod_State::emergency_brake;
-  transition_map[TCPManager::TRANS_ERROR_STATE]= &Pod_State::error;
+  transition_map[Command::TRANS_SAFE_MODE] = &Pod_State::move_safe_mode;  
+  transition_map[Command::TRANS_FUNCTIONAL_TEST] = &Pod_State::move_functional_tests;
+  transition_map[Command::TRANS_LOADING] = &Pod_State::move_loading;
+  transition_map[Command::TRANS_LAUNCH_READY] = &Pod_State::move_launch_ready;
+  transition_map[Command::LAUNCH] = &Pod_State::accelerate;
+  transition_map[Command::TRANS_FLIGHT_COAST] = &Pod_State::coast;
+  transition_map[Command::TRANS_FLIGHT_BRAKE] = &Pod_State::brake;
+  transition_map[Command::EMERGENCY_BRAKE] = &Pod_State::emergency_brake;
+  transition_map[Command::TRANS_ERROR_STATE]= &Pod_State::error;
   // non state transition commands
-  transition_map[TCPManager::ENABLE_MOTOR] = &Pod_State::no_transition;
-  transition_map[TCPManager::DISABLE_MOTOR] = &Pod_State::no_transition;
-  transition_map[TCPManager::SET_MOTOR_SPEED] = &Pod_State::no_transition;
-  transition_map[TCPManager::ENABLE_BRAKE] = &Pod_State::no_transition;
-  transition_map[TCPManager::DISABLE_BRAKE] = &Pod_State::no_transition;
+  transition_map[Command::ENABLE_MOTOR] = &Pod_State::no_transition;
+  transition_map[Command::DISABLE_MOTOR] = &Pod_State::no_transition;
+  transition_map[Command::SET_MOTOR_SPEED] = &Pod_State::no_transition;
+  transition_map[Command::ENABLE_BRAKE] = &Pod_State::no_transition;
+  transition_map[Command::DISABLE_BRAKE] = &Pod_State::no_transition;
   steady_state_map[ST_SAFE_MODE] = &Pod_State::steady_safe_mode;
   steady_state_map[ST_FUNCTIONAL_TEST] = &Pod_State::steady_functional;
   steady_state_map[ST_LOADING] = &Pod_State::steady_loading;
@@ -230,29 +230,29 @@ void Pod_State::ST_Error() {
 /////////////////////////////
 // STEADY STATE FUNCTIONS //
 ///////////////////////////
-void Pod_State::steady_safe_mode(std::shared_ptr<TCPManager::Network_Command> command, 
+void Pod_State::steady_safe_mode(Command::Network_Command * command, 
                                   std::shared_ptr<UnifiedState> state) {
   // not much special stuff to do here  
 }
 
-void Pod_State::steady_functional(std::shared_ptr<TCPManager::Network_Command> command, 
+void Pod_State::steady_functional(Command::Network_Command * command, 
                                   std::shared_ptr<UnifiedState> state) {
   // process command, let manual commands go through
   switch (command->id) {
-    case TCPManager::ENABLE_MOTOR: 
+    case Command::ENABLE_MOTOR: 
       motor.enable_motors();
       break;
-    case TCPManager::DISABLE_MOTOR:
+    case Command::DISABLE_MOTOR:
       motor.disable_motors();
       break;
-    case TCPManager::SET_MOTOR_SPEED:
+    case Command::SET_MOTOR_SPEED:
       motor.set_throttle(command->value); 
       break;
-    case TCPManager::ENABLE_BRAKE:
+    case Command::ENABLE_BRAKE:
       // activate brakes
       brakes.enable_brakes();
       break;
-    case TCPManager::DISABLE_BRAKE:
+    case Command::DISABLE_BRAKE:
       // deactivate brakes
       brakes.disable_brakes();
       break;
@@ -261,15 +261,15 @@ void Pod_State::steady_functional(std::shared_ptr<TCPManager::Network_Command> c
   }
 }
 
-void Pod_State::steady_loading(std::shared_ptr<TCPManager::Network_Command> command, 
+void Pod_State::steady_loading(Command::Network_Command * command, 
                                 std::shared_ptr<UnifiedState> state) {
 }
 
-void Pod_State::steady_launch_ready(std::shared_ptr<TCPManager::Network_Command> command, 
+void Pod_State::steady_launch_ready(Command::Network_Command * command, 
                                     std::shared_ptr<UnifiedState> state) {
 }
 
-void Pod_State::steady_flight_accelerate(std::shared_ptr<TCPManager::Network_Command> command, 
+void Pod_State::steady_flight_accelerate(Command::Network_Command * command, 
                                         std::shared_ptr<UnifiedState> state) {
   // Access Pos, Vel, and Accel from Motion Model
   double pos = state->motion_data->x[0];
@@ -277,15 +277,12 @@ void Pod_State::steady_flight_accelerate(std::shared_ptr<TCPManager::Network_Com
   double acc = state->motion_data->x[2];
   
   if (shouldBrake(vel, pos) || vel > MAX_VELOCITY) {
-    auto newCommand = std::make_shared<TCPManager::Network_Command>();
-    newCommand->id = TCPManager::Network_Command_ID::TRANS_FLIGHT_COAST;
-    newCommand->value = 0;
-    TCPManager::command_queue.enqueue(newCommand);
+    Command::put(Command::Network_Command_ID::TRANS_FLIGHT_COAST, 0);
     auto_transition_coast.invoke();
   }
 }
 
-void Pod_State::steady_flight_coast(std::shared_ptr<TCPManager::Network_Command> command, 
+void Pod_State::steady_flight_coast(Command::Network_Command * command, 
                                     std::shared_ptr<UnifiedState> state) {
   std::shared_ptr<MotionData> motion_data = state->motion_data;
   double pos = state->motion_data->x[0];
@@ -294,15 +291,12 @@ void Pod_State::steady_flight_coast(std::shared_ptr<TCPManager::Network_Command>
   
   
   if (shouldBrake(vel, pos)) {
-    auto newCommand = std::make_shared<TCPManager::Network_Command>();
-    newCommand->id = TCPManager::Network_Command_ID::TRANS_FLIGHT_BRAKE;
-    newCommand->value = 0;
-    TCPManager::command_queue.enqueue(newCommand);
+    Command::put(Command::Network_Command_ID::TRANS_FLIGHT_BRAKE, 0);
     auto_transition_brake.invoke();
   }
 }
 
-void Pod_State::steady_flight_brake(std::shared_ptr<TCPManager::Network_Command> command, 
+void Pod_State::steady_flight_brake(Command::Network_Command * command, 
                                     std::shared_ptr<UnifiedState> state) {
   // Brakes are applied
 }
@@ -319,6 +313,6 @@ bool Pod_State::shouldBrake(double vel, double pos) {
   }
 }
 
-void Pod_State::steady_error_state(std::shared_ptr<TCPManager::Network_Command> command, 
+void Pod_State::steady_error_state(Command::Network_Command * command, 
                                     std::shared_ptr<UnifiedState> state) {
 }
