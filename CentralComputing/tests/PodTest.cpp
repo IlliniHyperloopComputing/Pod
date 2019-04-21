@@ -12,12 +12,6 @@ class PodTest : public ::testing::Test
     TCPManager::connected.reset();
     UDPManager::setup.reset();
 
-    // Reset simulator motion
-    SimulatorManager::sim.reset_motion();
-    
-    // Enable logging
-    SimulatorManager::sim.logging(true);
-
     // Startup our server
     EXPECT_TRUE(SimulatorManager::sim.start_server("127.0.0.1", "8001") >= 0);
 
@@ -48,8 +42,7 @@ class PodTest : public ::testing::Test
 
   virtual void TearDown() {
     print(LogLevel::LOG_DEBUG, "Test finished, begin teardown\n");
-    SimulatorManager::sim.logging(false);
-    SimulatorManager::sim.disconnect();
+    SimulatorManager::sim.stop();
     sim_thread.join();
     pod->trigger_shutdown();
     pod_thread.join();

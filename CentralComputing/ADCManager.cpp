@@ -20,5 +20,9 @@ std::shared_ptr<ADCData> ADCManager::refresh() {
 }
 
 std::shared_ptr<ADCData> ADCManager::refresh_sim() {
+  #ifdef SIM
+  return SimulatorManager::sim.sim_get_adc();
+  #else
   return empty_data();
+  #endif
 }

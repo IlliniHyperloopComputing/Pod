@@ -10,14 +10,6 @@
 #include <mutex>  // NOLINT
 #include <atomic>
 
-#ifdef SIM
-#include <fstream>
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wctor-dtor-privacy"
-#include "gtest/gtest.h"
-#pragma GCC diagnostic pop
-#endif
-
 using Utils::print;
 using Utils::LogLevel;
 
@@ -105,7 +97,6 @@ class SourceManagerBase {
     }
   }
 
- protected:
   std::shared_ptr<Data> empty_data() {
     std::shared_ptr<Data> d = std::make_shared<Data>();
     memset(d.get(), (uint8_t)0, sizeof(Data));

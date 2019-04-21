@@ -17,5 +17,10 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
 }
 
 std::shared_ptr<I2CData> I2CManager::refresh_sim() {
+  #ifdef SIM
+  return SimulatorManager::sim.sim_get_i2c();
+  #else
   return empty_data();
+  #endif
 }
+

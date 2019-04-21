@@ -17,5 +17,9 @@ std::shared_ptr<CANData> CANManager::refresh() {
 }
 
 std::shared_ptr<CANData> CANManager::refresh_sim() {
+  #ifdef SIM
+  return SimulatorManager::sim.sim_get_can();
+  #else
   return empty_data();
+  #endif
 }
