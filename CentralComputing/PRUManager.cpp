@@ -13,12 +13,14 @@ bool PRUManager::initialize_source() {
 
   if (pollfds[0].fd < 0) {
     print(LogLevel::LOG_ERROR, "PRU FAILED TO OPEN %s\n", DEVICE_NAME);
+    set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR, PRUErrors::PRU_SETUP_FAILURE);
     return false;
   }
 
   int result = write(pollfds[0].fd, "start", 6);
   if (result == 0) {
     print(LogLevel::LOG_ERROR, "PRU Unable to write during init: %s\n", DEVICE_NAME);
+    set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR, PRUErrors::PRU_SETUP_FAILURE);
     return false;
   }
 
@@ -26,6 +28,7 @@ bool PRUManager::initialize_source() {
   result = read(pollfds[0].fd, readBuf, MAX_BUFFER_SIZE);
   if (result == 0) {
     print(LogLevel::LOG_ERROR, "PRU Unable to read during init: %s\n", DEVICE_NAME);
+    set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR, PRUErrors::PRU_SETUP_FAILURE);
     return false;
   }
 
@@ -42,6 +45,7 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
   int result = write(pollfds[0].fd, "1", 2);
   if (result == 0) {
     print(LogLevel::LOG_ERROR, "Unable to write during operation %s\n", DEVICE_NAME);
+    set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR, PRUErrors::PRU_WRITE_ERROR);
 
     // Error. return garbage
     std::shared_ptr<PRUData> new_data = std::make_shared<PRUData>();

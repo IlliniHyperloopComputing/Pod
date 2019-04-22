@@ -23,6 +23,11 @@ struct ADCData {
   int dummy_data;
 };
 
+enum ADCErrors {
+  ADC_SETUP_FAILURE = 0x1,
+  ADC_READ_ERROR = 0x2,
+};
+
 struct CANData {
   // replace with actual data structure
   int dummy_data;
@@ -30,9 +35,26 @@ struct CANData {
   int32_t drive_wheel_velocity;
 };
 
+enum CANErrors {
+  CAN_SETUP_FAILURE = 0x1,
+  CAN_SEND_FRAME_ERROR = 0x2,
+  CAN_RECV_FRAME_ERROR = 0x4,
+  CAN_OVER_VOLTAGE_ERROR = 0x8,
+  CAN_UNDER_VOLTAGE_ERROR = 0x10,
+  CAN_OVER_CURRENT = 0x20,
+  CAN_OVER_TEMPERATURE = 0x40,
+  CAN_MOTOR_CONTROLLER_ERROR = 0x80,
+};
+
 struct I2CData {
   // replace with actual data structure
   int dummy_data;
+};
+
+enum I2CErrors {
+  I2C_SETUP_FAILURE = 0x1,
+  I2C_WRITE_ERROR = 0x2,
+  I2C_READ_ERROR = 0x4,
 };
 
 #define NUM_ORANGE_INPUTS 2
@@ -42,6 +64,12 @@ struct PRUData {
   int32_t orange_velocity[NUM_ORANGE_INPUTS];
   int32_t wheel_distance[NUM_WHEEL_INPUTS];
   int32_t wheel_velocity[NUM_WHEEL_INPUTS];
+};
+
+enum PRUErrors {
+  PRU_SETUP_FAILURE = 0x1,
+  PRU_WRITE_ERROR = 0x2,
+  PRU_READ_ERROR = 0x4,
 };
 
 struct MotionData {
@@ -58,6 +86,10 @@ struct UnifiedState{
   std::shared_ptr<I2CData> i2c_data;
   std::shared_ptr<PRUData> pru_data;
   E_States state;
+  uint8_t adc_errors;
+  uint8_t can_errors;
+  uint8_t i2c_errors;
+  uint8_t pru_errors;
 };
 
 #endif

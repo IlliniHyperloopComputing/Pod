@@ -38,6 +38,14 @@ enum Network_Command_ID {
   TRANS_FLIGHT_COAST = 11,
   TRANS_FLIGHT_BRAKE = 12,
   TRANS_ERROR_STATE = 13,
+  SET_ADC_ERROR= 14,
+  CLR_ADC_ERROR= 15,
+  SET_CAN_ERROR= 17,
+  CLR_CAN_ERROR= 18,
+  SET_I2C_ERROR= 19,
+  CLR_I2C_ERROR= 20,
+  SET_PRU_ERROR= 21,
+  CLR_PRU_ERROR= 22,
 };
 
 // enum specifying what data is sent

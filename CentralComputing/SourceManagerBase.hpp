@@ -31,6 +31,9 @@ class SourceManagerBase {
       initialized_correctly = initialize_source();
     #endif
 
+    // Initialize error timers to 0
+    memset(error_flag_timers, 0, sizeof(error_flag_timers));
+
     closing.reset();
     if (initialized_correctly) {
       // If initialized correcly, setup the worker
@@ -103,6 +106,22 @@ class SourceManagerBase {
     return d;
   }
 
+  // Used in set_error_flag to not flood the command queue
+  int64_t error_flag_timers[8];
+
+  // Used in set_error_flag to not flood the command queue
+  void set_error_flag(uint8_t id, uint8_t value){
+    for (int i = 0, j = 1; i < 8; i++, j*=2) {
+      if (value & j) {  // if the specific bit is on
+        int64_t delta = microseconds() - error_flag_timers[i]; 
+        if (delta > 1000000) {  // Delta is greater than 1 second
+          error_flag_timers[i] = microseconds();
+          Command::put(id, value & j);  // put command on queue
+        }
+      }
+    }
+  }
+
  private:
   // Init and Stop functions can setup devices/ file I/O
   // Stop will only be called if init returns true
@@ -137,6 +156,7 @@ class SourceManagerBase {
       closing.wait_for(delayInUsecs);
     }
   }
+
 
 
   std::shared_ptr<Data> data;
