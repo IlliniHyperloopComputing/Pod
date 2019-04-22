@@ -36,8 +36,9 @@ void Pod::logic_loop() {
       com.value = 0;
     }
 
+    // Set error codes if command contained any
     set_error_code(&com);
-    // Get current state from all of the SourceMangaers
+    // Collect sensor data and set motion model
     update_unified_state();    
 
     // Calls the steady state function for the current state
@@ -63,29 +64,25 @@ void Pod::logic_loop() {
     command_processed = false;
     #endif 
 
+    // TODO: enqueue this in a smarter way, so you don't have to pass the entire object
+    TCPManager::write_queue.enqueue(unified_state);  
+
     // Sleep for the given timeout
     closing.wait_for(logic_loop_timeout);
   } 
   print(LogLevel::LOG_INFO, "Exiting Pod Logic Loop\n");
 }
 
+
 void Pod::set_error_code(Command::Network_Command * com) {
-  if (com->id == Command::Network_Command_ID::SET_ADC_ERROR) {
-    unified_state->errors->adc_errors |= com->value;
-  } else if (com->id == Command::Network_Command_ID::SET_CAN_ERROR) {
-    unified_state->errors->can_errors |= com->value;
-  } else if (com->id == Command::Network_Command_ID::SET_I2C_ERROR) {
-    unified_state->errors->i2c_errors |= com->value;
-  } else if (com->id == Command::Network_Command_ID::SET_PRU_ERROR) {
-    unified_state->errors->pru_errors |= com->value;
-  } else if (com->id == Command::Network_Command_ID::CLR_ADC_ERROR) {
-    unified_state->errors->adc_errors &= (~com->value);
-  } else if (com->id == Command::Network_Command_ID::CLR_CAN_ERROR) {
-    unified_state->errors->can_errors &= (~com->value);
-  } else if (com->id == Command::Network_Command_ID::CLR_I2C_ERROR) {
-    unified_state->errors->i2c_errors &= (~com->value);
-  } else if (com->id == Command::Network_Command_ID::CLR_PRU_ERROR) {
-    unified_state->errors->pru_errors &= (~com->value);
+  if (com->id >= Command::Network_Command_ID::SET_ADC_ERROR 
+    && com->id <= Command::Network_Command_ID::SET_PRU_ERROR) {
+    // Set flag
+    unified_state->errors->error_vector[com->id - Command::Network_Command_ID::SET_ADC_ERROR] |= com->value;
+  } else if (com->id >= Command::Network_Command_ID::CLR_ADC_ERROR 
+    && com->id <= Command::Network_Command_ID::CLR_PRU_ERROR) {
+    // Clear flag
+    unified_state->errors->error_vector[com->id - Command::Network_Command_ID::CLR_ADC_ERROR] &= (~com->value);
   }
 }
 
@@ -107,9 +104,7 @@ void Pod::update_unified_state() {
   motion_model->calculate_sim(unified_state);
   #endif
 
-  // TODO: Add more things to unified state 
 
-  TCPManager::write_queue.enqueue(unified_state);  
 }
 
 // Pod constructor

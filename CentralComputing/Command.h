@@ -38,11 +38,11 @@ enum Network_Command_ID {
   TRANS_FLIGHT_COAST = 11,
   TRANS_FLIGHT_BRAKE = 12,
   TRANS_ERROR_STATE = 13,
-  SET_ADC_ERROR= 14,
+  SET_ADC_ERROR= 14,  // SET_XXX_ERROR defines must be one after another, in one block
   SET_CAN_ERROR= 15,
   SET_I2C_ERROR= 16,
   SET_PRU_ERROR= 17,
-  CLR_ADC_ERROR= 18,
+  CLR_ADC_ERROR= 18,  // CLR_XXX_ERROR defines must be one after another, in one block
   CLR_CAN_ERROR= 19,
   CLR_I2C_ERROR= 20,
   CLR_PRU_ERROR= 21,
