@@ -30,6 +30,18 @@ Pod_State::Pod_State()
   steady_state_map[ST_FLIGHT_COAST] = &Pod_State::steady_flight_coast;
   steady_state_map[ST_FLIGHT_BRAKE] = &Pod_State::steady_flight_brake;
   steady_state_map[ST_ERROR] = &Pod_State::steady_abort_state;
+
+  if (!(ConfiguratorManager::config.getValue("acceleration_timeout", acceleration_timeout) && 
+      ConfiguratorManager::config.getValue("coast_timeout", coast_timeout) &&
+      ConfiguratorManager::config.getValue("brake_timeout", brake_timeout) &&
+      ConfiguratorManager::config.getValue("estimated_brake_deceleration", estimated_brake_deceleration) &&
+      ConfiguratorManager::config.getValue("length_of_track", length_of_track) &&
+      ConfiguratorManager::config.getValue("brake_buffer_length", brake_buffer_length) &&
+      ConfiguratorManager::config.getValue("not_moving_velocity", not_moving_velocity) &&
+      ConfiguratorManager::config.getValue("not_moving_acceleration", not_moving_acceleration))) {
+    print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: POD_STATE: Missing necessary configuration\n");
+    exit(1);
+  }
 }
 
 // returns the current state as a E_States enum
