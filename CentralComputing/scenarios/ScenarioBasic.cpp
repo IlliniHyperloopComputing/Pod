@@ -8,6 +8,7 @@ bool ScenarioBasic::use_motion_model() {
   return true;
 }
 
+// This test is designed to do the same thing that the original code in Simulator.cpp did
 std::shared_ptr<MotionData> ScenarioBasic::sim_get_motion() {
   // FOR FIRST CALL
   if (timeLast == -1) {
