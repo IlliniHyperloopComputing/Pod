@@ -21,6 +21,16 @@ bool Command::get(Network_Command * com) {
 // Used in set_error_flag to not flood the command queue
 // See the .h for more explanation
 void Command::set_error_flag(uint8_t id, uint8_t value){
+  // Initialize if this is the first function call
+  static bool first_time = 1;
+  if (first_time) {
+    // Setup error flag timers to -1
+    for (int i = 0; i < 8*6; i++) {
+      Command::error_flag_timers[i] = -1000000;  // negative 1 second. 
+    }
+    first_time = 0;
+  }
+
   for (int i = 0, j = 1; i < 8; i++, j*=2) {  // Go through each bit of the flag  
     if (value & j) {  // if the specific bit is on
       // Determine the time delta, use the error_flag_timers

@@ -114,8 +114,6 @@ void Pod::update_unified_state() {
 Pod::Pod(const std::string & config_to_open) {
   // Setup "0" time. All further calls to microseconds() use this as the base time
   microseconds();
-  // Setup error flag timers to 0. 
-  memset(Command::error_flag_timers, 0, sizeof(Command::error_flag_timers));
 
   // If we are on the BBB, run specific setup
   #ifdef BBB
