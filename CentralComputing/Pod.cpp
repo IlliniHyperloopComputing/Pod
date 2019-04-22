@@ -76,11 +76,11 @@ void Pod::logic_loop() {
 
 void Pod::set_error_code(Command::Network_Command * com) {
   if (com->id >= Command::Network_Command_ID::SET_ADC_ERROR 
-    && com->id <= Command::Network_Command_ID::SET_PRU_ERROR) {
+    && com->id <= Command::Network_Command_ID::SET_OTHER_ERROR) {
     // Set flag
     unified_state->errors->error_vector[com->id - Command::Network_Command_ID::SET_ADC_ERROR] |= com->value;
   } else if (com->id >= Command::Network_Command_ID::CLR_ADC_ERROR 
-    && com->id <= Command::Network_Command_ID::CLR_PRU_ERROR) {
+    && com->id <= Command::Network_Command_ID::CLR_OTHER_ERROR) {
     // Clear flag
     unified_state->errors->error_vector[com->id - Command::Network_Command_ID::CLR_ADC_ERROR] &= (~com->value);
   }

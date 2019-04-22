@@ -42,10 +42,14 @@ namespace Command {
     SET_CAN_ERROR= 15,
     SET_I2C_ERROR= 16,
     SET_PRU_ERROR= 17,
-    CLR_ADC_ERROR= 18,  // CLR_XXX_ERROR defines must be one after another, in one block
-    CLR_CAN_ERROR= 19,
-    CLR_I2C_ERROR= 20,
-    CLR_PRU_ERROR= 21,
+    SET_NETWORK_ERROR= 18,
+    SET_OTHER_ERROR= 19,
+    CLR_ADC_ERROR= 20,  // CLR_XXX_ERROR defines must be one after another, in one block
+    CLR_CAN_ERROR= 21,
+    CLR_I2C_ERROR= 22,
+    CLR_PRU_ERROR= 23,
+    CLR_NETWORK_ERROR= 24,
+    CLR_OTHER_ERROR= 25,
   };
   
   // enum specifying what data is sent
