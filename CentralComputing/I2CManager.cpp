@@ -24,3 +24,6 @@ std::shared_ptr<I2CData> I2CManager::refresh_sim() {
   #endif
 }
 
+void I2CManager::check_for_sensor_error(const std::shared_ptr<I2CData> & check_data) {
+
+}

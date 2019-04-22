@@ -29,6 +29,7 @@ class PRUManager : public SourceManagerBase<PRUData, true> {
     void stop_source();
     std::shared_ptr<PRUData> refresh();
     std::shared_ptr<PRUData> refresh_sim();
+    void check_for_sensor_error(const std::shared_ptr<PRUData> &);
 
     int32_t convert_to_velocity(uint32_t decay, uint32_t delta, uint32_t distance);
 

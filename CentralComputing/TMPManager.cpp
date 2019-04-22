@@ -52,3 +52,7 @@ std::shared_ptr<TMPData> TMPManager::refresh() {
 std::shared_ptr<TMPData> TMPManager::refresh_sim() {
   return empty_data();
 }
+
+void TMPManager::check_for_sensor_error(const std::shared_ptr<TMPData> & check_data) {
+
+}

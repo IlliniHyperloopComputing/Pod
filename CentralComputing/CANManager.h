@@ -10,6 +10,7 @@ class CANManager : public SourceManagerBase<CANData, false> {
   void stop_source();
   std::shared_ptr<CANData> refresh();
   std::shared_ptr<CANData> refresh_sim();
+  void check_for_sensor_error(const std::shared_ptr<CANData> &);
 
   std::string name() {
     return "can";

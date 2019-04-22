@@ -10,6 +10,7 @@ class I2CManager : public SourceManagerBase<I2CData, false> {
   void stop_source();
   std::shared_ptr<I2CData> refresh();
   std::shared_ptr<I2CData> refresh_sim();
+  void check_for_sensor_error(const std::shared_ptr<I2CData> &);
 
   std::string name() {
     return "i2c";

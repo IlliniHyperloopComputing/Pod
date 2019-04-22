@@ -14,6 +14,7 @@ class ADCManager : public SourceManagerBase<ADCData, true> {
   void stop_source();
   std::shared_ptr<ADCData> refresh();
   std::shared_ptr<ADCData> refresh_sim();
+  void check_for_sensor_error(const std::shared_ptr<ADCData> &);
 
   std::string name() {
     return "adc";

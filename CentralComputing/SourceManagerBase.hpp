@@ -130,7 +130,7 @@ class SourceManagerBase {
 
   virtual std::string name() = 0;
 
-  virtual void check_for_sensor_error(const std::shared_ptr<Data> & data) = 0;
+  virtual void check_for_sensor_error(const std::shared_ptr<Data> & check_data) = 0;
 
   // constructs a new Data object and fills it in
   virtual std::shared_ptr<Data> refresh() = 0;  

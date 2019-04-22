@@ -33,6 +33,8 @@ class TMPManager : public SourceManagerBase<TMPData, false> {
     int idx = 0;
 
     TMPData old_data;
+
+    void check_for_sensor_error(const std::shared_ptr<TMPData> &);
 };
 
 #endif  // TMPMANAGER_H_
