@@ -37,9 +37,9 @@ bool ScenarioRealLong::use_motion_model() {
 std::shared_ptr<ADCData> ScenarioRealLong::sim_get_adc() {
   true_motion();
   std::shared_ptr<ADCData> d = std::make_shared<ADCData>();
-  d->accel[0] =  acceleration;
-  d->accel[1] =  acceleration;
-  d->accel[2] =  acceleration;
+  d->accel[0] =  acceleration * 1000; // multiply by 1000 to convert to millimeters
+  d->accel[1] =  acceleration * 1000;
+  d->accel[2] =  acceleration * 1000;
   return d;
 }
 
@@ -63,11 +63,11 @@ std::shared_ptr<PRUData> ScenarioRealLong::sim_get_pru() {
     "Motion: Pos: %.2f, Vel: %.2f, Acl: %.2f \n", position, velocity, acceleration );
 
   std::shared_ptr<PRUData> d = std::make_shared<PRUData>();
-  d->wheel_velocity[0] =  velocity;
-  d->wheel_velocity[1] =  velocity;
+  d->wheel_velocity[0] =  velocity * 1000; // multiply by 1000 to convert to millimeters
+  d->wheel_velocity[1] =  velocity * 1000;
 
-  d->orange_distance[0] =  position;
-  d->orange_distance[1] =  d->orange_distance[0];
+  d->orange_distance[0] =  position * 1000; // multiply by 1000 to convert to millimeters
+  d->orange_distance[1] = d->orange_distance[0];
   d->wheel_distance[0] =  d->orange_distance[0];
   d->wheel_distance[1] =  d->orange_distance[0];
 
