@@ -32,10 +32,14 @@ Pod_State::Pod_State()
   transition_map[Command::SET_CAN_ERROR] = &Pod_State::move_safe_mode_or_abort;
   transition_map[Command::SET_I2C_ERROR] = &Pod_State::move_safe_mode_or_abort;
   transition_map[Command::SET_PRU_ERROR] = &Pod_State::move_safe_mode_or_abort;
+  transition_map[Command::SET_NETWORK_ERROR] = &Pod_State::move_safe_mode_or_abort;
+  transition_map[Command::SET_OTHER_ERROR] = &Pod_State::move_safe_mode_or_abort;
   transition_map[Command::CLR_ADC_ERROR] = &Pod_State::no_transition;
   transition_map[Command::CLR_CAN_ERROR] = &Pod_State::no_transition;
   transition_map[Command::CLR_I2C_ERROR] = &Pod_State::no_transition;
   transition_map[Command::CLR_PRU_ERROR] = &Pod_State::no_transition;
+  transition_map[Command::CLR_NETWORK_ERROR] = &Pod_State::no_transition;
+  transition_map[Command::CLR_OTHER_ERROR] = &Pod_State::no_transition;
   steady_state_map[ST_SAFE_MODE] = &Pod_State::steady_safe_mode;
   steady_state_map[ST_FUNCTIONAL_TEST] = &Pod_State::steady_functional;
   steady_state_map[ST_LOADING] = &Pod_State::steady_loading;
