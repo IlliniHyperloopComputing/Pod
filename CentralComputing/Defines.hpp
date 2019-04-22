@@ -23,16 +23,37 @@ struct ADCData {
   int dummy_data;
 };
 
-enum ADCErrors {
-  ADC_SETUP_FAILURE = 0x1,
-  ADC_READ_ERROR = 0x2,
-};
-
 struct CANData {
   // replace with actual data structure
   int dummy_data;
   int32_t wheel_distance;
   int32_t drive_wheel_velocity;
+};
+
+struct I2CData {
+  // replace with actual data structure
+  int dummy_data;
+};
+
+#define NUM_ORANGE_INPUTS 2
+#define NUM_WHEEL_INPUTS 2
+struct PRUData {
+  int32_t orange_distance[NUM_ORANGE_INPUTS];
+  int32_t orange_velocity[NUM_ORANGE_INPUTS];
+  int32_t wheel_distance[NUM_WHEEL_INPUTS];
+  int32_t wheel_velocity[NUM_WHEEL_INPUTS];
+};
+
+struct MotionData {
+  int32_t x[3];  // Position/Velocity/Accel
+  // x[0] = x
+  // x[1] = x' first derivative
+  // x[2] = x'' second derivative
+};
+
+enum ADCErrors {
+  ADC_SETUP_FAILURE = 0x1,
+  ADC_READ_ERROR = 0x2,
 };
 
 enum CANErrors {
@@ -46,24 +67,10 @@ enum CANErrors {
   CAN_MOTOR_CONTROLLER_ERROR = 0x80,
 };
 
-struct I2CData {
-  // replace with actual data structure
-  int dummy_data;
-};
-
 enum I2CErrors {
   I2C_SETUP_FAILURE = 0x1,
   I2C_WRITE_ERROR = 0x2,
   I2C_READ_ERROR = 0x4,
-};
-
-#define NUM_ORANGE_INPUTS 2
-#define NUM_WHEEL_INPUTS 2
-struct PRUData {
-  int32_t orange_distance[NUM_ORANGE_INPUTS];
-  int32_t orange_velocity[NUM_ORANGE_INPUTS];
-  int32_t wheel_distance[NUM_WHEEL_INPUTS];
-  int32_t wheel_velocity[NUM_WHEEL_INPUTS];
 };
 
 enum PRUErrors {
@@ -72,18 +79,27 @@ enum PRUErrors {
   PRU_READ_ERROR = 0x4,
 };
 
-struct MotionData {
-  int32_t x[3];  // Position/Velocity/Accel
-  // x[0] = x
-  // x[1] = x' first derivative
-  // x[2] = x'' second derivative
+enum NETWORKErrors {
+  UDP_SETUP_FAILURE = 0x1,
+  TCP_SETUP_FAILURE = 0x2,
+  UDP_READ_WRITE_ERROR = 0x4, 
+  TCP_READ_WRITE_ERROR = 0x8, 
+  UDP_DISCONNECT_ERROR = 0x10, 
+  TCP_DISCONNECT_ERROR = 0x20, 
+};
+
+enum OTHERErrors {
+  GPIO_SWITCH_ERROR = 0x1,
 };
 
 struct Errors{
-  uint8_t adc_errors;
-  uint8_t can_errors;
-  uint8_t i2c_errors;
-  uint8_t pru_errors;
+  uint8_t error_vector[6]; 
+  // [0] ADC errors
+  // [1] CAN errors
+  // [2] I2C errors
+  // [3] PRU errors
+  // [4] Networking Errors
+  // [5] Other Errors
 };
 
 struct UnifiedState{
