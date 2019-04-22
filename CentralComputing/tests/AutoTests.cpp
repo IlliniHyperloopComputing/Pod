@@ -135,6 +135,7 @@ TEST_F(PodTest, AutomaticTransitionTestTimeouts) {
   pod->processing_command.reset();
   pod->state_machine->auto_transition_brake.wait();
   EXPECT_GT(microseconds()-c_start, coast_timeout); // test to make sure that we waited the correct ammount of time
+  EXPECT_LT(microseconds()-c_start, coast_timeout*2); // test to make sure that we are bounded 
   pod->processing_command.wait();
   EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_FLIGHT_BRAKE);
 
