@@ -32,7 +32,7 @@ class SourceManagerBase {
     #endif
 
     // Initialize error timers to 0
-    memset(error_flag_timers, 0, sizeof(error_flag_timers));
+    // memset(error_flag_timers, 0, sizeof(error_flag_timers));
 
     closing.reset();
     if (initialized_correctly) {
@@ -104,22 +104,6 @@ class SourceManagerBase {
     std::shared_ptr<Data> d = std::make_shared<Data>();
     memset(d.get(), (uint8_t)0, sizeof(Data));
     return d;
-  }
-
-  // Used in set_error_flag to not flood the command queue
-  int64_t error_flag_timers[8];
-
-  // Used in set_error_flag to not flood the command queue
-  virtual void set_error_flag(uint8_t id, uint8_t value){
-    for (int i = 0, j = 1; i < 8; i++, j*=2) {
-      if (value & j) {  // if the specific bit is on
-        int64_t delta = microseconds() - error_flag_timers[i]; 
-        if (delta > 1000000) {  // Delta is greater than 1 second
-          error_flag_timers[i] = microseconds();
-          Command::put(id, value & j);  // put command on queue
-        }
-      }
-    }
   }
 
  private:
