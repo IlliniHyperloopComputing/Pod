@@ -2,7 +2,7 @@
 
 using Utils::print;
 using Utils::LogLevel;
-using Utils::set_error_flag;
+using Command::set_error_flag;
 
 std::string PRUManager::name() {
   return "pru";
