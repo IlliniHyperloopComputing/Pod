@@ -21,11 +21,11 @@ void Pod::logic_loop() {
   // Start processing/pod logic
   while (running.load()) {
     Command::Network_Command com;
-    bool loaded  = Command::get(&com);
+    bool loaded = Command::get(&com);
 
     if (loaded) {
       // Parse the command and call the appropriate state machine function
-      auto transition = state_machine->get_transition_function((Command::Network_Command_ID) com.id);
+      auto transition = state_machine->get_transition_function(&com);
       ((*state_machine).*(transition))(); 
       #ifdef SIM  // Used to indicate to the Simulator that we have processed a command
       command_processed = true;
@@ -36,6 +36,7 @@ void Pod::logic_loop() {
       com.value = 0;
     }
 
+    set_error_code(&com);
     // Get current state from all of the SourceMangaers
     update_unified_state();    
 
@@ -66,6 +67,26 @@ void Pod::logic_loop() {
     closing.wait_for(logic_loop_timeout);
   } 
   print(LogLevel::LOG_INFO, "Exiting Pod Logic Loop\n");
+}
+
+void Pod::set_error_code(Command::Network_Command * com) {
+  if (com->id == Command::Network_Command_ID::SET_ADC_ERROR) {
+    unified_state->errors->adc_errors |= com->value;
+  } else if (com->id = Command::Network_Command_ID::SET_CAN_ERROR) {
+    unified_state->errors->can_errors |= com->value;
+  } else if (com->id = Command::Network_Command_ID::SET_I2C_ERROR) {
+    unified_state->errors->i2c_errors |= com->value;
+  } else if (com->id = Command::Network_Command_ID::SET_PRU_ERROR) {
+    unified_state->errors->pru_errors |= com->value;
+  } else if (com->id = Command::Network_Command_ID::CLR_ADC_ERROR) {
+    unified_state->errors->adc_errors &= (~com->value);
+  } else if (com->id = Command::Network_Command_ID::CLR_CAN_ERROR) {
+    unified_state->errors->can_errors &= (~com->value);
+  } else if (com->id = Command::Network_Command_ID::CLR_I2C_ERROR) {
+    unified_state->errors->i2c_errors &= (~com->value);
+  } else if (com->id = Command::Network_Command_ID::CLR_PRU_ERROR) {
+    unified_state->errors->pru_errors &= (~com->value);
+  }
 }
 
 // Helper function called from logic_loop()
@@ -141,6 +162,7 @@ Pod::Pod(const std::string & config_to_open) {
   unified_state->can_data = make_shared<CANData>();
   unified_state->i2c_data = make_shared<I2CData>();
   unified_state->pru_data = make_shared<PRUData>();
+  unified_state->errors = make_shared<Errors>();
   running.store(false);
   switchVal = false;
 }
