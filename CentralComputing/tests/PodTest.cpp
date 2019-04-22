@@ -26,6 +26,11 @@ class PodTest : public ::testing::Test
 
     // We wait until pod->startup() is done
     pod->ready.wait();
+
+    // Reset error timeout flags
+    for (int i = 0; i < 8*6; i++) {
+        Command::error_flag_timers[i] = -1000000;  // negative 1 second. 
+    }
    
     EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
 
