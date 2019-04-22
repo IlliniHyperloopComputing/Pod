@@ -92,12 +92,6 @@ class Pod_State : public StateMachine {
     return transition_map[(Command::Network_Command_ID)com->id];
   }
 
-  /**
-   * Take an input command, check if it is an error command
-   * IF the command is an error command, set the unified state appropriatly
-   *   And return a transition to the appropriate state
-   */
-  void handle_error_code(Command::Network_Command * com, std::shared_ptr<UnifiedState> unified_state);
 
   Motor motor;
   Brakes brakes;
