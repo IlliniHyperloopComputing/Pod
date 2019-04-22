@@ -110,7 +110,7 @@ class SourceManagerBase {
   int64_t error_flag_timers[8];
 
   // Used in set_error_flag to not flood the command queue
-  void set_error_flag(uint8_t id, uint8_t value){
+  virtual void set_error_flag(uint8_t id, uint8_t value){
     for (int i = 0, j = 1; i < 8; i++, j*=2) {
       if (value & j) {  // if the specific bit is on
         int64_t delta = microseconds() - error_flag_timers[i]; 
@@ -130,6 +130,8 @@ class SourceManagerBase {
 
   virtual std::string name() = 0;
 
+  virtual void check_for_sensor_error(const std::shared_ptr<Data> & data) = 0;
+
   // constructs a new Data object and fills it in
   virtual std::shared_ptr<Data> refresh() = 0;  
 
@@ -145,6 +147,7 @@ class SourceManagerBase {
         std::shared_ptr<Data> new_data = refresh_sim();
         delayInUsecs = refresh_timeout();  // could be updated by SIM
       #endif
+      check_for_sensor_error(new_data);
       mutex.lock();
       data = new_data;
       mutex.unlock();
@@ -156,8 +159,6 @@ class SourceManagerBase {
       closing.wait_for(delayInUsecs);
     }
   }
-
-
 
   std::shared_ptr<Data> data;
   std::mutex mutex;
