@@ -79,17 +79,21 @@ struct MotionData {
   // x[2] = x'' second derivative
 };
 
+struct Errors{
+  uint8_t adc_errors;
+  uint8_t can_errors;
+  uint8_t i2c_errors;
+  uint8_t pru_errors;
+};
+
 struct UnifiedState{
   std::shared_ptr<MotionData> motion_data;
   std::shared_ptr<ADCData> adc_data;
   std::shared_ptr<CANData> can_data;
   std::shared_ptr<I2CData> i2c_data;
   std::shared_ptr<PRUData> pru_data;
+  std::shared_ptr<Errors> errors;
   E_States state;
-  uint8_t adc_errors;
-  uint8_t can_errors;
-  uint8_t i2c_errors;
-  uint8_t pru_errors;
 };
 
 #endif
