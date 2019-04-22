@@ -14,7 +14,7 @@ void ScenarioRealLong::true_motion() {
   double deltaSeconds = static_cast<double>(timeDelta) / 1000000.0;
 
   if (motorsOn) {
-    acceleration = 9 - 2.5 * clamp((microseconds() - motors_on)/10000000.0, 0.0, 1.0);
+    acceleration = 9 - 2.5 * clamp((microseconds() - motors_on_time)/10000000.0, 0.0, 1.0);
   } else if (brakesOn) {
     acceleration = -20;
   } else {
