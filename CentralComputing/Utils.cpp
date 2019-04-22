@@ -9,25 +9,26 @@
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
 Utils::LogLevel Utils::loglevel = LOG_ERROR;
+int64_t Utils::error_flag_timers[8*6]; 
 
 void Utils::print(LogLevel level, const char * format, ...) {
-      if (loglevel <= level) {
-        char buffer[256];
-        if (level == LOG_ERROR) {
-          snprintf(buffer, sizeof(buffer), "%s[ERROR]:%s %s", ANSI_COLOR_RED, ANSI_COLOR_RESET, format);
-        } else if (level == LOG_INFO) {
-          snprintf(buffer, sizeof(buffer), "%s[INFO ]:%s %s", ANSI_COLOR_GREEN, ANSI_COLOR_RESET, format);
-        } else if (level == LOG_DEBUG) {
-          snprintf(buffer, sizeof(buffer), "%s[DEBUG]:%s %s", ANSI_COLOR_YELLOW, ANSI_COLOR_RESET, format);
-        } else if (level == LOG_EDEBUG) {
-          snprintf(buffer, sizeof(buffer), "%s", format);
-        }
+  if (loglevel <= level) {
+    char buffer[256];
+    if (level == LOG_ERROR) {
+      snprintf(buffer, sizeof(buffer), "%s[ERROR]:%s %s", ANSI_COLOR_RED, ANSI_COLOR_RESET, format);
+    } else if (level == LOG_INFO) {
+      snprintf(buffer, sizeof(buffer), "%s[INFO ]:%s %s", ANSI_COLOR_GREEN, ANSI_COLOR_RESET, format);
+    } else if (level == LOG_DEBUG) {
+      snprintf(buffer, sizeof(buffer), "%s[DEBUG]:%s %s", ANSI_COLOR_YELLOW, ANSI_COLOR_RESET, format);
+    } else if (level == LOG_EDEBUG) {
+      snprintf(buffer, sizeof(buffer), "%s", format);
+    }
 
-        va_list args;
-        va_start(args, format);
-        vfprintf(stdout, buffer, args);
-        va_end(args);
-      }
+    va_list args;
+    va_start(args, format);
+    vfprintf(stdout, buffer, args);
+    va_end(args);
+  }
 }
 
 bool Utils::set_GPIO(int GPIONumber, bool switchVal) {
@@ -60,6 +61,21 @@ int64_t Utils::microseconds() {
   }
 }
 
+// Used in set_error_flag to not flood the command queue
+// See the .h for more explanation
+void Utils::set_error_flag(uint8_t id, uint8_t value){
+  for (int i = 0, j = 1; i < 8; i++, j*=2) {  // Go through each bit of the flag  
+    if (value & j) {  // if the specific bit is on
+      // Determine the time delta, use the error_flag_timers
+      int64_t delta = microseconds() - error_flag_timers[(id-Command::SET_ADC_ERROR) * 8 + i]; 
+      if (delta > 1000000) {  // Delta is greater than 1 second. This means we only send once per second!
+        error_flag_timers[(id-Command::SET_ADC_ERROR) * 8 + i] = microseconds();
+        Command::put(id, value & j);  // put command on queue
+      }
+    }
+  }
+}
+
 void Utils::busyWait(int64_t microseconds) {
   struct timespec currTime;
   clockid_t threadClockId;
@@ -78,6 +94,7 @@ void Utils::busyWait(int64_t microseconds) {
   return;
 }
 
+
 ssize_t Utils::write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
   size_t bytes_written = 0;
   while (bytes_written != count) {
@@ -94,4 +111,3 @@ ssize_t Utils::write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
   }
   return (ssize_t)bytes_written;
 }
-
