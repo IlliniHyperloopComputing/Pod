@@ -1,9 +1,9 @@
-tmp_manager_timeout 100000.0
-i2c_manager_timeout 100000.0
-can_manager_timeout 100000.0
-adc_manager_timeout 100000.0
-pru_manager_timeout 100000.0
-logic_loop_timeout  1000.0
+tmp_manager_timeout 100000.0 # Units are microseconds
+i2c_manager_timeout 100000.0 # Units are microseconds
+can_manager_timeout 100000.0 # Units are microseconds 
+adc_manager_timeout 100000.0 # Units are microseconds
+pru_manager_timeout 100000.0 # Units are microseconds
+logic_loop_timeout  1000.0   # Units are microseconds
 
 tcp_port 8001
 tcp_addr 127.0.0.1
@@ -14,4 +14,17 @@ udp_addr 127.0.0.1
 
 low_pass_filter_velocity 0.90
 low_pass_filter_acceleration 0.90
-motor_distance_clamp 60960
+motor_distance_clamp 60960    
+
+acceleration_timeout 10000000 # Units are microseconds
+coast_timeout 200000          # Units are microseconds
+brake_timeout 10000000        # Units are microseconds
+
+estimated_brake_deceleration 9810 # Units are mm/s/s
+
+length_of_track     1250000  # Units are mm
+brake_buffer_length 50000    # Units are mm
+
+not_moving_velocity     200  # Units are mm/s
+not_moving_acceleration 200  # Units are mm/s
+

@@ -19,6 +19,7 @@ void Configurator::loadValues() {
   while (inFile >> varName) {
     inFile >> val;
     mapVals.insert(pair<string, string> (varName, val));
+    inFile.ignore(200, '\n');
   }
 }
 
