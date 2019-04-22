@@ -72,19 +72,19 @@ void Pod::logic_loop() {
 void Pod::set_error_code(Command::Network_Command * com) {
   if (com->id == Command::Network_Command_ID::SET_ADC_ERROR) {
     unified_state->errors->adc_errors |= com->value;
-  } else if (com->id = Command::Network_Command_ID::SET_CAN_ERROR) {
+  } else if (com->id == Command::Network_Command_ID::SET_CAN_ERROR) {
     unified_state->errors->can_errors |= com->value;
-  } else if (com->id = Command::Network_Command_ID::SET_I2C_ERROR) {
+  } else if (com->id == Command::Network_Command_ID::SET_I2C_ERROR) {
     unified_state->errors->i2c_errors |= com->value;
-  } else if (com->id = Command::Network_Command_ID::SET_PRU_ERROR) {
+  } else if (com->id == Command::Network_Command_ID::SET_PRU_ERROR) {
     unified_state->errors->pru_errors |= com->value;
-  } else if (com->id = Command::Network_Command_ID::CLR_ADC_ERROR) {
+  } else if (com->id == Command::Network_Command_ID::CLR_ADC_ERROR) {
     unified_state->errors->adc_errors &= (~com->value);
-  } else if (com->id = Command::Network_Command_ID::CLR_CAN_ERROR) {
+  } else if (com->id == Command::Network_Command_ID::CLR_CAN_ERROR) {
     unified_state->errors->can_errors &= (~com->value);
-  } else if (com->id = Command::Network_Command_ID::CLR_I2C_ERROR) {
+  } else if (com->id == Command::Network_Command_ID::CLR_I2C_ERROR) {
     unified_state->errors->i2c_errors &= (~com->value);
-  } else if (com->id = Command::Network_Command_ID::CLR_PRU_ERROR) {
+  } else if (com->id == Command::Network_Command_ID::CLR_PRU_ERROR) {
     unified_state->errors->pru_errors &= (~com->value);
   }
 }
