@@ -2,8 +2,6 @@
 #define BRAKES_H_
 
 #include "Utils.h"
-#include "SourceManager.h"
-#include "MotionModel.h"
 #include "Simulator.h"
 #include <cmath>
 
