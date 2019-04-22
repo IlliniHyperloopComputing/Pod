@@ -15,7 +15,6 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "Command.h"
 
 namespace Utils {
 
@@ -26,15 +25,6 @@ namespace Utils {
   * @return a long long representing the number of microseconds since startup
   **/
   int64_t microseconds();
-
-  // To make error flag setting easy, this helper functionn is defined
-  // Why use this instead of just calling Command::put() ? 
-  // This function is "safe" and will not spam the queue.
-  // Say something is faulting every cycle. Initially it will set the error flag
-  // But then it send another command to the Unified Queue once every second. 
-  // This helper function, and the int64_t array of timers makes that possible
-  extern int64_t error_flag_timers[8*6];  // 8 flags per error ID, 6 errors
-  void set_error_flag(uint8_t id, uint8_t value);
 
   // Set GPIO to specific value
   bool set_GPIO(int GPIONumber, bool switchVal);

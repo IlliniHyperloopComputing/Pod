@@ -9,7 +9,6 @@
 #define ANSI_COLOR_RESET   "\x1b[0m"
 
 Utils::LogLevel Utils::loglevel = LOG_ERROR;
-int64_t Utils::error_flag_timers[8*6]; 
 
 void Utils::print(LogLevel level, const char * format, ...) {
   if (loglevel <= level) {
@@ -32,21 +31,21 @@ void Utils::print(LogLevel level, const char * format, ...) {
 }
 
 bool Utils::set_GPIO(int GPIONumber, bool switchVal) {
-    std::string start = "/sys/class/gpio/gpio";
-    std::string integer = std::to_string(GPIONumber);
-    std::string end = "/value";
-    std::string path = start + integer + end;
-    std::ofstream out(path, std::ofstream::trunc);
-    if (!out.is_open()) {
-        return false;
-    }
-    if (switchVal == true) {
-        out << "1";
-    } else {
-        out << "0";
-    }
-    out.close();
-    return true;  // Have it return 1 if it works and zero otherwise
+  std::string start = "/sys/class/gpio/gpio";
+  std::string integer = std::to_string(GPIONumber);
+  std::string end = "/value";
+  std::string path = start + integer + end;
+  std::ofstream out(path, std::ofstream::trunc);
+  if (!out.is_open()) {
+      return false;
+  }
+  if (switchVal == true) {
+      out << "1";
+  } else {
+      out << "0";
+  }
+  out.close();
+  return true;  // Have it return 1 if it works and zero otherwise
 }
 
 int64_t Utils::microseconds() {
@@ -58,21 +57,6 @@ int64_t Utils::microseconds() {
     return 0;
   } else {
     return std::chrono::duration_cast<std::chrono::microseconds>(duration).count() - start_time;
-  }
-}
-
-// Used in set_error_flag to not flood the command queue
-// See the .h for more explanation
-void Utils::set_error_flag(uint8_t id, uint8_t value){
-  for (int i = 0, j = 1; i < 8; i++, j*=2) {  // Go through each bit of the flag  
-    if (value & j) {  // if the specific bit is on
-      // Determine the time delta, use the error_flag_timers
-      int64_t delta = microseconds() - error_flag_timers[(id-Command::SET_ADC_ERROR) * 8 + i]; 
-      if (delta > 1000000) {  // Delta is greater than 1 second. This means we only send once per second!
-        error_flag_timers[(id-Command::SET_ADC_ERROR) * 8 + i] = microseconds();
-        Command::put(id, value & j);  // put command on queue
-      }
-    }
   }
 }
 
