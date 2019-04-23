@@ -28,7 +28,16 @@ std::shared_ptr<ADCData> ADCManager::refresh_sim() {
 }
 
 void ADCManager::initialize_sensor_error_configs() {
+  // For ADCs
+  // Get Standard Deviation to check against (or just the difference)
 
+  // For other measurements
+  // Pneumatic pressure over pressure 1
+  // Pneumatic pressure over pressure 2
+  // Pneumatic pressure over pressure 3
+  // Pneumatic pressure over pressure 4
+  // Battery Box over pressure
+  // Battery Box under pressure
 }
 
 void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_data) {
