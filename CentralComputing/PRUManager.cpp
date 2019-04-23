@@ -96,16 +96,16 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
 
 inline
 int32_t PRUManager::convert_to_velocity(uint32_t decay, uint32_t delta, uint32_t distance) {
-    // Pick the one that gives us the slower velocity
-    uint32_t slower = std::max(decay, delta);
+  // Pick the one that gives us the slower velocity
+  uint32_t slower = std::max(decay, delta);
 
-    if (slower == UINT32_MAX) {  // register this as 0 velocity
-      return 0;
-    } else {
-      // Do the proper conversion into m/s
-      double time_diff = slower * CLOCK_TO_SEC;
-      return distance / time_diff;
-    }
+  if (slower == UINT32_MAX) {  // register this as 0 velocity
+    return 0;
+  } else {
+    // Do the proper conversion into m/s
+    double time_diff = slower * CLOCK_TO_SEC;
+    return distance / time_diff;
+  }
 }
 
 std::shared_ptr<PRUData> PRUManager::refresh_sim() {
