@@ -134,7 +134,7 @@ class App extends Component {
         <header className="App-header">
           <BrowserRouter>
             <div className="Main-Content">
-              <Route path="/debug" render={(props) => {
+              <Route path="/dev" render={(props) => {
                 return(
                   <div>
                     <p>{ command_response }</p>
