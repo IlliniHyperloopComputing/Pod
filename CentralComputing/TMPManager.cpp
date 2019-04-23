@@ -13,6 +13,9 @@ bool TMPManager::initialize_source() {
   }
 }
 
+void TMPManager::initialize_sensor_error_configs() {
+}
+
 void TMPManager::stop_source() {
   print(LogLevel::LOG_DEBUG, "TMP Manger stopped\n");
 }
@@ -54,5 +57,4 @@ std::shared_ptr<TMPData> TMPManager::refresh_sim() {
 }
 
 void TMPManager::check_for_sensor_error(const std::shared_ptr<TMPData> & check_data) {
-
 }

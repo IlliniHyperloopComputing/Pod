@@ -27,6 +27,9 @@ std::shared_ptr<ADCData> ADCManager::refresh_sim() {
   #endif
 }
 
-void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_data) {
+void ADCManager::initialize_sensor_error_configs() {
 
+}
+
+void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_data) {
 }

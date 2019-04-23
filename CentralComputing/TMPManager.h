@@ -12,12 +12,13 @@ struct TMPData {
   double tmp_data[NUM_TMP];
 };
 
-class TMPManager : public SourceManagerBase<TMPData, false> {
+class TMPManager : public SourceManagerBase<TMPData> {
  private:
     bool initialize_source();
     void stop_source();
     std::shared_ptr<TMPData> refresh();
     std::shared_ptr<TMPData> refresh_sim();
+    void initialize_sensor_error_configs();
 
     std::string prefix = "/sys/bus/w1/devices/";
     std::string suffix = "/w1_slave";

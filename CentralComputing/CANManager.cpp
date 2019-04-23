@@ -24,6 +24,8 @@ std::shared_ptr<CANData> CANManager::refresh_sim() {
   #endif
 }
 
-void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_data) {
+void CANManager::initialize_sensor_error_configs() {
+}
 
+void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_data) {
 }

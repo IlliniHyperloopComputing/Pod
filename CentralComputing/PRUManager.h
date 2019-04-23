@@ -23,12 +23,13 @@ struct RawPRUData {
   uint32_t deltas[11];
 };
 
-class PRUManager : public SourceManagerBase<PRUData, true> {
+class PRUManager : public SourceManagerBase<PRUData> {
  private:
     bool initialize_source();
     void stop_source();
     std::shared_ptr<PRUData> refresh();
     std::shared_ptr<PRUData> refresh_sim();
+    void initialize_sensor_error_configs();
     void check_for_sensor_error(const std::shared_ptr<PRUData> &);
 
     int32_t convert_to_velocity(uint32_t decay, uint32_t delta, uint32_t distance);

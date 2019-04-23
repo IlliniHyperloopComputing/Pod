@@ -8,12 +8,13 @@ struct RawADCData {
   int dummy_data;
 };
 
-class ADCManager : public SourceManagerBase<ADCData, true> {
+class ADCManager : public SourceManagerBase<ADCData> {
  private:
   bool initialize_source();
   void stop_source();
   std::shared_ptr<ADCData> refresh();
   std::shared_ptr<ADCData> refresh_sim();
+  void initialize_sensor_error_configs();
   void check_for_sensor_error(const std::shared_ptr<ADCData> &);
 
   std::string name() {

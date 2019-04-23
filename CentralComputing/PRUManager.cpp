@@ -116,6 +116,10 @@ std::shared_ptr<PRUData> PRUManager::refresh_sim() {
   #endif
 }
 
+void PRUManager::initialize_sensor_error_configs() {
+
+}
+
 void PRUManager::check_for_sensor_error(const std::shared_ptr<PRUData> & check_data) {
 
 }

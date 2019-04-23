@@ -13,7 +13,7 @@
 using Utils::print;
 using Utils::LogLevel;
 
-template <class Data, bool DataEvent >
+template <class Data>
 class SourceManagerBase {
  public:
   std::shared_ptr<Data> Get() {
@@ -31,10 +31,10 @@ class SourceManagerBase {
       initialized_correctly = initialize_source();
     #endif
 
-    // Initialize error timers to 0
-    // memset(error_flag_timers, 0, sizeof(error_flag_timers));
+    // Always call this regardless of SIM or not. 
+    // Should be used to load configuration values regarding what would trigger an error
+    initialize_sensor_error_configs();
 
-    closing.reset();
     if (initialized_correctly) {
       // If initialized correcly, setup the worker
       
@@ -68,21 +68,9 @@ class SourceManagerBase {
       running.store(false);
       closing.invoke();
 
-      if (DataEvent) {
-        data_event.invoke();
-      }
-
       worker.join();
       stop_source();
     }
-  }
-
-  void data_event_wait() {
-    data_event.wait();
-  }
-
-  void data_event_reset() {
-    data_event.reset();
   }
 
   bool is_running() {
@@ -114,6 +102,7 @@ class SourceManagerBase {
 
   virtual std::string name() = 0;
 
+  virtual void initialize_sensor_error_configs() = 0;
   virtual void check_for_sensor_error(const std::shared_ptr<Data> & check_data) = 0;
 
   // constructs a new Data object and fills it in
@@ -136,10 +125,6 @@ class SourceManagerBase {
       data = new_data;
       mutex.unlock();
       
-      if (DataEvent) {
-        data_event.invoke();
-      }
-
       closing.wait_for(delayInUsecs);
     }
   }
@@ -148,7 +133,6 @@ class SourceManagerBase {
   std::mutex mutex;
   std::atomic<bool> running;
   Event closing;
-  Event data_event;
   std::thread worker;
   bool initialized_correctly;
 };
