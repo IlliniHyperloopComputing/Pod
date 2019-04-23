@@ -43,3 +43,6 @@ error_pneumatic_4_over_pressure 2000
 
 error_battery_box_over_pressure 2000
 error_battery_box_under_pressure 2000
+
+error_orange_diff 20
+error_encoder_wheel_diff 30
