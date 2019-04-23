@@ -160,6 +160,24 @@ TEST_F(PodTest, ErrorFlagTestWithPodClearFlag) {
   unified_state = pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
   EXPECT_EQ(unified_state->errors->error_vector[1], 0);
+
+  // Do it again, nothing should happen
+  pod->processing_command.reset();
+  Command::put(Command::CLR_CAN_ERROR, CAN_MOTOR_CONTROLLER_ERROR);
+  pod->processing_command.wait();
+  // copy unified state and check it
+  unified_state = pod->unified_state;
+  EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
+  EXPECT_EQ(unified_state->errors->error_vector[1], 0);
+
+  // Do it again, nothing should happen
+  pod->processing_command.reset();
+  Command::put(Command::CLR_ADC_ERROR, ADC_SETUP_FAILURE);
+  pod->processing_command.wait();
+  // copy unified state and check it
+  unified_state = pod->unified_state;
+  EXPECT_EQ(unified_state->errors->error_vector[0], 0);
+  EXPECT_EQ(unified_state->errors->error_vector[1], 0);
 }
 
 TEST_F(PodTest, ErrorFlagTestWithPodMoveState) {
