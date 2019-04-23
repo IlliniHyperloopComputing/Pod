@@ -1,4 +1,5 @@
 import React, { Component } from 'react';
+import { BrowserRouter, Route } from 'react-router-dom';
 import midwest from './midwest.png';
 import { Line, Circle } from 'rc-progress';
 import axios from 'axios';
@@ -15,6 +16,9 @@ class App extends Component {
       accelPercent: "0",
       accelColor: '#3FC7FA',
       connectionText: "",
+      command: "",
+      value: 0,
+      command_response: "",
     };
     this.getColorFor = this.getColorFor.bind(this);
     this.stopPressed = this.stopPressed.bind(this);
@@ -107,21 +111,63 @@ class App extends Component {
       })
   }
 
+  handleCommandChange = (event) => {
+    this.setState({
+      command: event.target.value
+    });
+  }
+
+  handleValueChange = (event) => {
+    this.setState({
+      value: event.target.value
+    });
+  }
+
+  handleCommandSubmit = (event) => {
+    alert(this.state.command + ":" + this.state.value);
+  }
+
   render() {
-    const { speedPercent, speedColor, posPercent, posColor, accelColor, accelPercent, connectionText } = this.state;
+    const { speedPercent, speedColor, posPercent, posColor, accelColor, accelPercent, connectionText, command_response } = this.state;
     return (
       <div className="App">
         <header className="App-header">
-          <img src={midwest} className="App-logo" alt="logo" />
-          <Circle percent={speedPercent} className="Speed-Circle" strokeWidth="4" strokeColor={speedColor}></Circle>
-          <Circle percent={accelPercent} className="Accel-Circle" strokeWidth="4" strokeColor={accelColor}></Circle>
-          <Line percent={posPercent} strokeColor={posColor} className="Pos-Line"></Line>
-          <p className="Pos-Text">Position</p>
-          <p className="Speed-Text">Velocity</p>
-          <p className="Accel-Text">Acceleration</p>
-          <p className="Connection-Text">{ connectionText }</p>
-          <button className="Stop-Button"  onClick={() => this.stopPressed()}>STOP</button>
-          <button className="Ready-Button" onClick={() => this.readyPressed()}>Ready</button>
+          <BrowserRouter>
+            <div className="Main-Content">
+              <Route path="/debug" render={(props) => {
+                return(
+                  <div>
+                    <p>{ command_response }</p>
+                    <form id="Command-Form" onSubmit={this.handleCommandSubmit}>
+                      <select form="Command-Form" onChange={this.handleCommandChange}>
+                        <option value="-1">Select Command</option>
+                        <option value="1">Command 1</option>
+                        <option value="2">Command 2</option>
+                      </select>
+                      Value: <input type="number" name="value" onChange={this.handleValueChange}></input><br></br>
+                      <input type="submit" value="Submit"></input>
+                    </form>
+                  </div>
+                );
+              }}></Route>
+              <Route exact path="/" render={(props) => {
+                return(
+                  <div>
+                    <img src={midwest} className="App-logo" alt="logo" />
+                    <Circle percent={speedPercent} className="Speed-Circle" strokeWidth="4" strokeColor={speedColor}></Circle>
+                    <Circle percent={accelPercent} className="Accel-Circle" strokeWidth="4" strokeColor={accelColor}></Circle>
+                    <Line percent={posPercent} strokeColor={posColor} className="Pos-Line"></Line>
+                    <p className="Pos-Text">Position</p>
+                    <p className="Speed-Text">Velocity</p>
+                    <p className="Accel-Text">Acceleration</p>
+                    <p className="Connection-Text">{ connectionText }</p>
+                    <button className="Stop-Button"  onClick={() => this.stopPressed()}>STOP</button>
+                    <button className="Ready-Button" onClick={() => this.readyPressed()}>Ready</button>
+                  </div>
+                );
+              }}></Route>
+            </div>
+          </BrowserRouter>
         </header>
       </div>
     );
