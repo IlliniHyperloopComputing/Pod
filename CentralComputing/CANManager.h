@@ -13,6 +13,20 @@ class CANManager : public SourceManagerBase<CANData> {
   void initialize_sensor_error_configs();
   void check_for_sensor_error(const std::shared_ptr<CANData> &);
 
+  int32_t error_motor_ctrl_over_temp;
+  int32_t error_motor_over_temp;
+  int32_t error_dc_link_over_voltage; 
+  int32_t error_dc_link_under_voltage; 
+  int32_t error_motor_ctrl_logic_over_voltage; 
+  int32_t error_motor_ctrl_logic_under_voltage; 
+
+  int32_t error_cell_over_voltage;
+  int32_t error_cell_under_voltage;
+  int32_t error_cell_over_temp;
+  int32_t error_battery_over_voltage;
+  int32_t error_battery_under_voltage;
+  int32_t error_battery_over_current;
+
   std::string name() {
     return "can";
   }
