@@ -29,8 +29,8 @@ void CANManager::initialize_sensor_error_configs() {
       ConfiguratorManager::config.getValue("error_motor_over_temp", error_motor_over_temp) &&
       ConfiguratorManager::config.getValue("error_dc_link_over_voltage", error_dc_link_over_voltage) &&
       ConfiguratorManager::config.getValue("error_dc_link_under_voltage", error_dc_link_under_voltage) &&
-      ConfiguratorManager::config.getValue("error_motor_ctrl_logic_over_voltage",  error_motor_ctrl_logic_over_voltage) &&
-      ConfiguratorManager::config.getValue("error_motor_ctrl_logic_under_voltage", error_motor_ctrl_logic_under_voltage) &&
+      ConfiguratorManager::config.getValue("error_motor_ctrl_logic_over_voltage",  error_motor_ctrl_logic_over_voltage) &&  // NOLINT
+      ConfiguratorManager::config.getValue("error_motor_ctrl_logic_under_voltage", error_motor_ctrl_logic_under_voltage) && // NOLINT
       ConfiguratorManager::config.getValue("error_cell_over_voltage",  error_cell_over_voltage) &&
       ConfiguratorManager::config.getValue("error_cell_under_voltage", error_cell_under_voltage) &&
       ConfiguratorManager::config.getValue("error_cell_over_temp", error_cell_over_temp) &&

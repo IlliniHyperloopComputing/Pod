@@ -118,7 +118,7 @@ std::shared_ptr<PRUData> PRUManager::refresh_sim() {
 
 void PRUManager::initialize_sensor_error_configs() {
   if (!(ConfiguratorManager::config.getValue("error_orange_diff", error_orange_diff) && 
-      ConfiguratorManager::config.getValue("error_encoder_wheel_diff", error_encoder_wheel_diff))){
+      ConfiguratorManager::config.getValue("error_encoder_wheel_diff", error_encoder_wheel_diff))) { 
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: PRUManager Missing necessary configuration\n");
     exit(1);
   }
@@ -126,5 +126,4 @@ void PRUManager::initialize_sensor_error_configs() {
 }
 
 void PRUManager::check_for_sensor_error(const std::shared_ptr<PRUData> & check_data) {
-
 }
