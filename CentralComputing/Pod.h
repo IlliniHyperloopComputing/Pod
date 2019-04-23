@@ -38,7 +38,8 @@ class Pod {
  private:
   void logic_loop();
   void update_unified_state();
-  void set_error_code(Command::Network_Command * com);  // IF the command is an error command, set the unified state appropriatly
+  // IF the command is an error command, set the unified state appropriatly
+  void set_error_code(Command::Network_Command * com);    
   bool switchVal;
   string tcp_port;
   string tcp_addr;

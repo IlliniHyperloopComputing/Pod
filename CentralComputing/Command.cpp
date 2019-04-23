@@ -20,7 +20,7 @@ bool Command::get(Network_Command * com) {
 
 // Used in set_error_flag to not flood the command queue
 // See the .h for more explanation
-void Command::set_error_flag(uint8_t id, uint8_t value){
+void Command::set_error_flag(uint8_t id, uint8_t value) {
   // Initialize if this is the first function call
   static bool first_time = 1;
   if (first_time) {

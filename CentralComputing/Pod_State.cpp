@@ -198,7 +198,7 @@ void Pod_State::error() {
 
 void Pod_State::move_safe_mode_or_abort() {
   // Try moving to safemode first
-  for (int i = 0; i < 1; i++){
+  for (int i = 0; i < 1; i++) {
   BEGIN_TRANSITION_MAP              /* Current state */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safe Mode */
     TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Functional test */

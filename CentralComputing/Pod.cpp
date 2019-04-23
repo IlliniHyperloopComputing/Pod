@@ -103,8 +103,6 @@ void Pod::update_unified_state() {
   #else
   motion_model->calculate_sim(unified_state);
   #endif
-
-
 }
 
 // Pod constructor
