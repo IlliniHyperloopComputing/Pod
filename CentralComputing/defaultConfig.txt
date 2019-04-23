@@ -29,3 +29,17 @@ error_cell_over_temp 50
 error_battery_over_voltage 4010
 error_battery_under_voltage 3100
 error_battery_over_current 700
+
+error_general_1_over_temp 40
+error_general_2_over_temp 40
+error_general_3_over_temp 40
+
+error_accel_diff 20
+
+error_pneumatic_1_over_pressure 2000
+error_pneumatic_2_over_pressure 2000
+error_pneumatic_3_over_pressure 2000
+error_pneumatic_4_over_pressure 2000
+
+error_battery_box_over_pressure 2000
+error_battery_box_under_pressure 2000

@@ -28,7 +28,17 @@ std::shared_ptr<ADCData> ADCManager::refresh_sim() {
 }
 
 void ADCManager::initialize_sensor_error_configs() {
-  // For ADCs
+  if (!(ConfiguratorManager::config.getValue("error_accel_diff", error_accel_diff) && 
+      ConfiguratorManager::config.getValue("error_pneumatic_1_over_pressure", error_pneumatic_1_over_pressure) &&
+      ConfiguratorManager::config.getValue("error_pneumatic_2_over_pressure", error_pneumatic_2_over_pressure) &&
+      ConfiguratorManager::config.getValue("error_pneumatic_3_over_pressure", error_pneumatic_3_over_pressure) &&
+      ConfiguratorManager::config.getValue("error_pneumatic_4_over_pressure", error_pneumatic_4_over_pressure) &&
+      ConfiguratorManager::config.getValue("error_battery_box_over_pressure",  error_battery_box_over_pressure) &&
+      ConfiguratorManager::config.getValue("error_battery_box_under_pressure", error_battery_box_under_pressure))) {
+    print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: ADCManager Missing necessary configuration\n");
+    exit(1);
+  }
+  // For accelerometers
   // Get Standard Deviation to check against (or just the difference)
 
   // For other measurements

@@ -25,6 +25,12 @@ std::shared_ptr<I2CData> I2CManager::refresh_sim() {
 }
 
 void I2CManager::initialize_sensor_error_configs() {
+  if (!(ConfiguratorManager::config.getValue("error_general_1_over_temp", error_general_1_over_temp) && 
+      ConfiguratorManager::config.getValue("error_general_2_over_temp",   error_general_2_over_temp) &&
+      ConfiguratorManager::config.getValue("error_general_3_over_temp",   error_general_3_over_temp))) {
+    print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: I2CManager Missing necessary configuration\n");
+    exit(1);
+  }
   // Over Temperature conditionns
   // Possibly different thresholds for each measurement??
 }
