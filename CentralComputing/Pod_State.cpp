@@ -198,25 +198,11 @@ void Pod_State::error() {
 
 void Pod_State::move_safe_mode_or_abort() {
   // Try moving to safemode first
-  for (int i = 0; i < 1; i++) {
   BEGIN_TRANSITION_MAP              /* Current state */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safe Mode */
     TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Functional test */
     TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Loading */
     TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Launch ready */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight accel */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight coast */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight brake */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     // Error State
-  END_TRANSITION_MAP(NULL)
-  }
-
-  // Try moving to error mode next (if in safemode this won't do anything)
-  BEGIN_TRANSITION_MAP              /* Current state */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safe Mode */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Loading */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Launch ready */
     TRANSITION_MAP_ENTRY(ST_ERROR)          /* Flight accel */
     TRANSITION_MAP_ENTRY(ST_ERROR)          /* Flight coast */
     TRANSITION_MAP_ENTRY(ST_ERROR)          /* Flight brake */
