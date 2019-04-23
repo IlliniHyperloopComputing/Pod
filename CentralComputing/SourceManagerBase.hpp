@@ -35,6 +35,9 @@ class SourceManagerBase {
     // Should be used to load configuration values regarding what would trigger an error
     initialize_sensor_error_configs();
 
+    // Make sure event is setup correctly
+    closing.reset();
+
     if (initialized_correctly) {
       // If initialized correcly, setup the worker
       
