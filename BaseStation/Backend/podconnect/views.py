@@ -4,6 +4,7 @@ from django.http import HttpResponse, HttpRequest
 from django.core.serializers import serialize
 
 from threading import Lock
+import json
 
 def getAllData(request):
     mutex = Lock()
@@ -29,4 +30,11 @@ def stopPressed(request):
 def readyPressed(request):
     if request.method == "POST":
         print("Ready!")
+        return HttpResponse()
+
+def devCommand(request):
+    if request.method == "POST":
+        message = request.body.decode()
+        mess = json.loads(message)
+        print("Command " + str(mess))
         return HttpResponse()

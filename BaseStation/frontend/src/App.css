@@ -6,6 +6,7 @@
   position: absolute;
   bottom: 10px;
   height: 100px;
+  left: 700px;
 }
 
 .App-header {
@@ -31,11 +32,13 @@
 .Pos-Line {
   position: absolute;
   bottom: 150px;
+  left: 0px;
 }
 
 .Pos-Text {
   position: absolute;
   bottom: 150px;
+  left: 920px;
 }
 
 .Speed-Circle {

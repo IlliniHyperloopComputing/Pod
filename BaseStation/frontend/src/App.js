@@ -32,7 +32,7 @@ class App extends Component {
     var _this = this;
     this.serverRequest = 
       axios
-        .get("http://localhost:8000/podconnect/data/latest")
+        .get("http://localhost:8000/api/data/latest")
         .then(function(result) {    
           var XMLParser = require('react-xml-parser');
           var xml = new XMLParser().parseFromString(result.data);
@@ -92,7 +92,7 @@ class App extends Component {
   }
 
   stopPressed() {
-    axios.post(`http://localhost:8000/podconnect/commands/stop`,)
+    axios.post(`http://localhost:8000/api/commands/stop`,)
       .then(res => {
         console.log(res);
         console.log(res.data);
@@ -102,7 +102,7 @@ class App extends Component {
   }
 
   readyPressed() {
-    axios.post(`http://localhost:8000/podconnect/commands/ready`,)
+    axios.post(`http://localhost:8000/api/commands/ready`,)
       .then(res => {
         console.log(res);
         console.log(res.data);
@@ -124,7 +124,16 @@ class App extends Component {
   }
 
   handleCommandSubmit = (event) => {
-    alert(this.state.command + ":" + this.state.value);
+    axios.post(`http://localhost:8000/api/commands/dev`, {
+      command: this.state.command,
+      value: this.state.value
+    })
+      .then(res => {
+        console.log(res);
+        console.log(res.data);
+      }).catch(function (error) {
+        console.log("Ready failed!!")
+      })
   }
 
   render() {
