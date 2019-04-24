@@ -9,6 +9,9 @@ cross
 dcross
 scross
 
+# Ignore vs code
+.vscode/
+
 # Allowing .out files for PRU stuff
 BBBSetup/halt/Debug/*
 BBBSetup/pru_encoder/Debug/*

@@ -2,3 +2,6 @@ Variable 12
 Number 2342
 MaxAccel 1231.23
 MaxDecel 231
+motor_distance_clamp 10
+low_pass_filter_velocity 0.90
+low_pass_filter_acceleration 0.90

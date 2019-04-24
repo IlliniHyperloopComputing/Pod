@@ -1,20 +1,16 @@
 #ifdef SIM // Only compile if building test executable
 #include "Pod.h"
-#include "Simulator.hpp"
+#include "Simulator.h"
 
 using namespace Utils;
+
 class PodTest : public ::testing::Test
 {
   protected:
   virtual void SetUp() {
     // Reset the condition we use to determine when the Pod is connected
     TCPManager::connected.reset();
-
-    // Reset simulator motion
-    SimulatorManager::sim.reset_motion();
-    
-    // Enable logging
-    SimulatorManager::sim.logging(true);
+    UDPManager::setup.reset();
 
     // Startup our server
     EXPECT_TRUE(SimulatorManager::sim.start_server("127.0.0.1", "8001") >= 0);
@@ -23,20 +19,21 @@ class PodTest : public ::testing::Test
     sim_thread = std::thread([&](){ SimulatorManager::sim.sim_connect();});
 
     // Create the Pod object
-    pod = std::make_shared<Pod>();
+    pod = std::make_shared<Pod>(podtest_global::config_to_open);
 
     // Set the Pod running in its own thread
-    pod_thread = std::thread([&](){ pod->startup();});
+    pod_thread = std::thread([&](){ pod->run();});
 
     // We wait until pod->startup() is done
     pod->ready.wait();
    
-    EXPECT_EQ(pod->state_machine->get_current_state(), Pod_State::E_States::ST_SAFE_MODE);
+    EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
 
     // We wait until the Pod has connected, and we see connected on the Simulator side
     // Need both of these because otherwise there were occasionally problems -- 
     // the pod must have connected by it wasn't registered by the simulation. 
     // then when the simulation tried to send data it failed.
+    UDPManager::setup.wait();
     TCPManager::connected.wait();
     SimulatorManager::sim.connected.wait();
 
@@ -45,10 +42,9 @@ class PodTest : public ::testing::Test
 
   virtual void TearDown() {
     print(LogLevel::LOG_DEBUG, "Test finished, begin teardown\n");
-    SimulatorManager::sim.logging(false);
-    SimulatorManager::sim.disconnect();
+    SimulatorManager::sim.stop();
     sim_thread.join();
-    pod->stop();
+    pod->trigger_shutdown();
     pod_thread.join();
     print(LogLevel::LOG_DEBUG, "Test teardown complete\n");
   }
@@ -59,9 +55,9 @@ class PodTest : public ::testing::Test
    * @param id the id of the command to run
    * @param value the value for the command
    */
-  void SendCommand(TCPManager::Network_Command_ID id, uint8_t value) {
+  void SendCommand(Command::Network_Command_ID id, uint8_t value) {
 
-    auto command = std::make_shared<TCPManager::Network_Command>();
+    auto command = std::make_shared<Command::Network_Command>();
     command->id = id;
     command->value = value;
     pod->processing_command.reset();
@@ -75,7 +71,7 @@ class PodTest : public ::testing::Test
    * @param state the target state the command will bring you to
    * @param allow true if this transition should be allowed, false otherwises
    */
-  void MoveState(TCPManager::Network_Command_ID id, Pod_State::E_States state, bool allow) {
+  void MoveState(Command::Network_Command_ID id, E_States state, bool allow) {
 
     auto start_state = pod->state_machine->get_current_state();
     SendCommand(id, 0);
