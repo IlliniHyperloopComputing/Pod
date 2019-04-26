@@ -33,6 +33,11 @@ std::shared_ptr<ADCData> ScenarioRealNoFault::sim_get_adc() {
     d->accel[2] =  0;
     acceleration = 0;
   }
+
+  // Multiply by 1000 to convert to millimeters
+  d->accel[0] *= 1000;
+  d->accel[1] *= 1000;
+  d->accel[2] *= 1000; 
   return d;
 }
 
@@ -65,6 +70,12 @@ std::shared_ptr<PRUData> ScenarioRealNoFault::sim_get_pru() {
   lastPosition = position;
   lastVelocity = velocity;
   pru_delta_seconds = microseconds();
+  d->wheel_velocity[0] *= 1000; // multiply by 1000 to convert to millimeters
+  d->wheel_velocity[1] *= 1000;
+  d->orange_distance[0] *= 1000; 
+  d->orange_distance[1] *= 1000;
+  d->wheel_distance[0]  *= 1000; 
+  d->wheel_distance[1]  *= 1000; 
   return d;
 }
 
