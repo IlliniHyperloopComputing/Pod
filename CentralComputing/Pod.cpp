@@ -21,11 +21,11 @@ void Pod::logic_loop() {
   // Start processing/pod logic
   while (running.load()) {
     Command::Network_Command com;
-    bool loaded  = Command::get(&com);
+    bool loaded = Command::get(&com);
 
     if (loaded) {
       // Parse the command and call the appropriate state machine function
-      auto transition = state_machine->get_transition_function((Command::Network_Command_ID) com.id);
+      auto transition = state_machine->get_transition_function(&com);
       ((*state_machine).*(transition))(); 
       #ifdef SIM  // Used to indicate to the Simulator that we have processed a command
       command_processed = true;
@@ -36,7 +36,9 @@ void Pod::logic_loop() {
       com.value = 0;
     }
 
-    // Get current state from all of the SourceMangaers
+    // Set error codes if command contained any
+    set_error_code(&com);
+    // Collect sensor data and set motion model
     update_unified_state();    
 
     // Calls the steady state function for the current state
@@ -62,10 +64,26 @@ void Pod::logic_loop() {
     command_processed = false;
     #endif 
 
+    // TODO: enqueue this in a smarter way, so you don't have to pass the entire object
+    TCPManager::write_queue.enqueue(unified_state);  
+
     // Sleep for the given timeout
     closing.wait_for(logic_loop_timeout);
   } 
   print(LogLevel::LOG_INFO, "Exiting Pod Logic Loop\n");
+}
+
+
+void Pod::set_error_code(Command::Network_Command * com) {
+  if (com->id >= Command::Network_Command_ID::SET_ADC_ERROR 
+    && com->id <= Command::Network_Command_ID::SET_OTHER_ERROR) {
+    // Set flag
+    unified_state->errors->error_vector[com->id - Command::Network_Command_ID::SET_ADC_ERROR] |= com->value;
+  } else if (com->id >= Command::Network_Command_ID::CLR_ADC_ERROR 
+    && com->id <= Command::Network_Command_ID::CLR_OTHER_ERROR) {
+    // Clear flag
+    unified_state->errors->error_vector[com->id - Command::Network_Command_ID::CLR_ADC_ERROR] &= (~com->value);
+  }
 }
 
 // Helper function called from logic_loop()
@@ -85,10 +103,6 @@ void Pod::update_unified_state() {
   #else
   motion_model->calculate_sim(unified_state);
   #endif
-
-  // TODO: Add more things to unified state 
-
-  TCPManager::write_queue.enqueue(unified_state);  
 }
 
 // Pod constructor
@@ -141,6 +155,7 @@ Pod::Pod(const std::string & config_to_open) {
   unified_state->can_data = make_shared<CANData>();
   unified_state->i2c_data = make_shared<I2CData>();
   unified_state->pru_data = make_shared<PRUData>();
+  unified_state->errors = make_shared<Errors>();
   running.store(false);
   switchVal = false;
 }

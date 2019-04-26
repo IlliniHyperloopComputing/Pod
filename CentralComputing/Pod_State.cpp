@@ -22,6 +22,18 @@ Pod_State::Pod_State()
   transition_map[Command::SET_MOTOR_SPEED] = &Pod_State::no_transition;
   transition_map[Command::ENABLE_BRAKE] = &Pod_State::no_transition;
   transition_map[Command::DISABLE_BRAKE] = &Pod_State::no_transition;
+  transition_map[Command::SET_ADC_ERROR] = &Pod_State::move_safe_mode_or_abort;
+  transition_map[Command::SET_CAN_ERROR] = &Pod_State::move_safe_mode_or_abort;
+  transition_map[Command::SET_I2C_ERROR] = &Pod_State::move_safe_mode_or_abort;
+  transition_map[Command::SET_PRU_ERROR] = &Pod_State::move_safe_mode_or_abort;
+  transition_map[Command::SET_NETWORK_ERROR] = &Pod_State::move_safe_mode_or_abort;
+  transition_map[Command::SET_OTHER_ERROR] = &Pod_State::move_safe_mode_or_abort;
+  transition_map[Command::CLR_ADC_ERROR] = &Pod_State::no_transition;
+  transition_map[Command::CLR_CAN_ERROR] = &Pod_State::no_transition;
+  transition_map[Command::CLR_I2C_ERROR] = &Pod_State::no_transition;
+  transition_map[Command::CLR_PRU_ERROR] = &Pod_State::no_transition;
+  transition_map[Command::CLR_NETWORK_ERROR] = &Pod_State::no_transition;
+  transition_map[Command::CLR_OTHER_ERROR] = &Pod_State::no_transition;
   steady_state_map[ST_SAFE_MODE] = &Pod_State::steady_safe_mode;
   steady_state_map[ST_FUNCTIONAL_TEST] = &Pod_State::steady_functional;
   steady_state_map[ST_LOADING] = &Pod_State::steady_loading;
@@ -48,7 +60,6 @@ Pod_State::Pod_State()
 E_States Pod_State::get_current_state() {
   return (E_States)StateMachine::getCurrentState();
 }
-
 
 /**
  * User controlled movement events
@@ -189,6 +200,20 @@ void Pod_State::abort() {
     TRANSITION_MAP_ENTRY(ST_ERROR)        /* Flight brake */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // Error State
   END_TRANSITION_MAP(NULL)  
+}
+
+void Pod_State::move_safe_mode_or_abort() {
+  // Try moving to safemode first
+  BEGIN_TRANSITION_MAP              /* Current state */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safe Mode */
+    TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Functional test */
+    TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Loading */
+    TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Launch ready */
+    TRANSITION_MAP_ENTRY(ST_ERROR)          /* Flight accel */
+    TRANSITION_MAP_ENTRY(ST_ERROR)          /* Flight coast */
+    TRANSITION_MAP_ENTRY(ST_ERROR)          /* Flight brake */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     // Error State
+  END_TRANSITION_MAP(NULL)
 }
 
 void Pod_State::no_transition() {

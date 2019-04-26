@@ -61,6 +61,7 @@ class Pod_State : public StateMachine {
   void coast();
   void brake();
   void abort();
+  void move_safe_mode_or_abort();
 
   /**
   * Steady state functions
@@ -88,9 +89,10 @@ class Pod_State : public StateMachine {
   * Gets the transition function for the given network command
   * @return a member function pointer
   */
-  transition_function get_transition_function(Command::Network_Command_ID id) {
-    return transition_map[id];
+  transition_function get_transition_function(Command::Network_Command * com) {
+    return transition_map[(Command::Network_Command_ID)com->id];
   }
+
 
   Motor motor;
   Brakes brakes;
@@ -122,8 +124,6 @@ class Pod_State : public StateMachine {
   void ST_Flight_Brake();
   void ST_Error();
   bool shouldBrake(int64_t, int64_t);
-
-
 
   BEGIN_STATE_MAP
     STATE_MAP_ENTRY(&Pod_State::ST_Safe_Mode)
