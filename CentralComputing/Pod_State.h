@@ -35,12 +35,13 @@ class Pod_State : public StateMachine {
       "FLIGHT_ACCEL",
       "FLIGHT_COAST",
       "FLIGHT_BRAKE",
-      "ERROR_STATE",
+      "ABORT_STATE",
       "NOT A STATE"
     };
     return states[static_cast<int>(get_current_state())];
   }
   
+  // The following functions define transition maps for the state diagram
   /**
   * User controlled movement events
   **/
@@ -59,7 +60,7 @@ class Pod_State : public StateMachine {
   **/
   void coast();
   void brake();
-  void error();
+  void abort();
   void move_safe_mode_or_abort();
 
   /**
@@ -74,7 +75,7 @@ class Pod_State : public StateMachine {
   void steady_flight_accelerate(Command::Network_Command*, std::shared_ptr<UnifiedState>);
   void steady_flight_coast(Command::Network_Command*, std::shared_ptr<UnifiedState>);
   void steady_flight_brake(Command::Network_Command*, std::shared_ptr<UnifiedState>);
-  void steady_error_state(Command::Network_Command*, std::shared_ptr<UnifiedState>);
+  void steady_abort_state(Command::Network_Command*, std::shared_ptr<UnifiedState>);
 
   /*
   * Gets the steady state function for the current state
@@ -99,6 +100,18 @@ class Pod_State : public StateMachine {
   Event auto_transition_brake;
     
  private:
+  // variables used to measure time in a state, and configurable timeout values
+  int64_t acceleration_start_time, acceleration_timeout;
+  int64_t coast_start_time, coast_timeout;
+  int64_t brake_start_time, brake_timeout;
+
+  // variables used to determine when to exit acceleration
+  int64_t estimated_brake_deceleration;
+  int64_t length_of_track;
+  int64_t brake_buffer_length;
+  int64_t not_moving_acceleration;
+  int64_t not_moving_velocity;
+
   std::map<Command::Network_Command_ID, transition_function> transition_map; 
   
   std::map<E_States, steady_state_function> steady_state_map;
@@ -110,7 +123,7 @@ class Pod_State : public StateMachine {
   void ST_Flight_Coast();
   void ST_Flight_Brake();
   void ST_Error();
-  bool shouldBrake(double, double);
+  bool shouldBrake(int64_t, int64_t);
 
   BEGIN_STATE_MAP
     STATE_MAP_ENTRY(&Pod_State::ST_Safe_Mode)

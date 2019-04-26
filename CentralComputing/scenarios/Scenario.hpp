@@ -53,7 +53,7 @@ class Scenario{
 
   void sim_motor_enable() {
     motorsOn = true;
-    motors_on = microseconds();
+    motors_on_time = microseconds();
   }
   
   void sim_motor_disable() {
@@ -66,6 +66,7 @@ class Scenario{
   
   void sim_brake_enable() {
     brakesOn = true;
+    brakes_on_time = microseconds();
   }
   
   void sim_brake_disable() {
@@ -88,7 +89,8 @@ class Scenario{
   double velocity = 0.000;
   double lastVelocity = 0.000;
   double acceleration = 0.000;
-  int64_t motors_on = 0;
+  int64_t motors_on_time = 0;
+  int64_t brakes_on_time= 0;
 
 };
 #endif 
