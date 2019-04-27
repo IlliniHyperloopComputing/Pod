@@ -6,45 +6,45 @@ using Utils::microseconds;
 using std::make_shared;
 using std::thread;
 using std::function;
+using std::shared_ptr;
 
-Pod::Pod() {
-  running.store(false);
-  switchVal = false;
-}
-
+// Pod's "main loop"
+// This logic_loop is the main driver for the pod. 
+// It processes commands, interacts with the state machine, 
+// collects all of the State data, interacts with the motion model
+// organizes what data gets sent to TCP endpoint
 void Pod::logic_loop() {
-  int64_t logic_loop_timeout;  // Get the loop sleep (timeout) value
-  if (!ConfiguratorManager::config.getValue("logic_loop_timeout", logic_loop_timeout)) {
-    print(LogLevel::LOG_ERROR, "Unable to find logic_loop timeout config, exiting logic_loop\n");
-    return;
-  }
-
   #ifdef SIM  // Used to indicate to the Simulator we have processed a command
   bool command_processed = false;
   #endif
 
   // Start processing/pod logic
   while (running.load()) {
-    auto command = TCPManager::command_queue.dequeue();
-    if (command.get() != nullptr) {
-      // Parse the command and call the appropriate state machine function
-      auto id = (TCPManager::Network_Command_ID) command->id;
-      auto transition = state_machine->get_transition_function(id);
-      ((*state_machine).*(transition))(); 
+    Command::Network_Command com;
+    bool loaded = Command::get(&com);
 
+    if (loaded) {
+      // Parse the command and call the appropriate state machine function
+      auto transition = state_machine->get_transition_function(&com);
+      ((*state_machine).*(transition))(); 
       #ifdef SIM  // Used to indicate to the Simulator that we have processed a command
       command_processed = true;
       #endif
-      print(LogLevel::LOG_INFO, "Command : %d %d\n", command->id, command->value);
+      print(LogLevel::LOG_INFO, "Command : %d %d\n", com.id, com.value);
     } else {  // Create a "do nothing" command. This will be passed into the steady state caller below
-      command = make_shared<TCPManager::Network_Command>();
-      command->id = 0;
-      command->value = 0;
+      com.id = 0;
+      com.value = 0;
     }
 
+    // Set error codes if command contained any
+    set_error_code(&com);
+    // Collect sensor data and set motion model
+    update_unified_state();    
+
     // Calls the steady state function for the current state
+    // Passes in command, and current state. 
     auto func = state_machine->get_steady_function();
-    ((*state_machine).*(func))(command); 
+    ((*state_machine).*(func))(&com, unified_state); 
 
     #ifdef BBB
     // Send the heartbeat signal to the watchdog.
@@ -64,19 +64,54 @@ void Pod::logic_loop() {
     command_processed = false;
     #endif 
 
+    // TODO: enqueue this in a smarter way, so you don't have to pass the entire object
+    TCPManager::write_queue.enqueue(unified_state);  
+
     // Sleep for the given timeout
     closing.wait_for(logic_loop_timeout);
   } 
   print(LogLevel::LOG_INFO, "Exiting Pod Logic Loop\n");
 }
 
-void Pod::startup() {
+
+void Pod::set_error_code(Command::Network_Command * com) {
+  if (com->id >= Command::Network_Command_ID::SET_ADC_ERROR 
+    && com->id <= Command::Network_Command_ID::SET_OTHER_ERROR) {
+    // Set flag
+    unified_state->errors->error_vector[com->id - Command::Network_Command_ID::SET_ADC_ERROR] |= com->value;
+  } else if (com->id >= Command::Network_Command_ID::CLR_ADC_ERROR 
+    && com->id <= Command::Network_Command_ID::CLR_OTHER_ERROR) {
+    // Clear flag
+    unified_state->errors->error_vector[com->id - Command::Network_Command_ID::CLR_ADC_ERROR] &= (~com->value);
+  }
+}
+
+// Helper function called from logic_loop()
+// Updates the unified_state
+// Calls MotionModel::calculate()
+void Pod::update_unified_state() {
+  unified_state->adc_data = SourceManager::ADC.Get();
+  unified_state->can_data = SourceManager::CAN.Get();
+  unified_state->i2c_data = SourceManager::I2C.Get();
+  unified_state->pru_data = SourceManager::PRU.Get();
+  unified_state->state = state_machine->get_current_state();
+
+  // Update motion_data
+  // Pass current state into Motion Model
+  #ifndef SIM
+  motion_model->calculate(unified_state);
+  #else
+  motion_model->calculate_sim(unified_state);
+  #endif
+}
+
+// Pod constructor
+// Takes a config file as an argument
+// Setsup variables, loads configurations, does some other initialization work. 
+// Does NOT start any threads.
+Pod::Pod(const std::string & config_to_open) {
+  // Setup "0" time. All further calls to microseconds() use this as the base time
   microseconds();
-  print(LogLevel::LOG_INFO, "\n");
-  print(LogLevel::LOG_INFO, "==================\n");
-  print(LogLevel::LOG_INFO, "ILLINI  HYPERLOOP \n");
-  print(LogLevel::LOG_INFO, "==================\n");
-  print(LogLevel::LOG_INFO, "Running Startup\n");
 
   // If we are on the BBB, run specific setup
   #ifdef BBB
@@ -94,9 +129,51 @@ void Pod::startup() {
   print(LogLevel::LOG_INFO, "CPU freq set to 1GHz\n");    
   #endif
 
-  signal(SIGPIPE, SIG_IGN);
-  state_machine = make_shared<Pod_State>();
+  // Open configuration file
+  if (!ConfiguratorManager::config.openConfigFile(config_to_open)) {
+    print(LogLevel::LOG_ERROR, "Config missing. File: %s\n", config_to_open.c_str());
+    exit(1);
+  }
 
+  // Grab all configuration variables
+  if (!(ConfiguratorManager::config.getValue("tcp_port", tcp_port) && 
+      ConfiguratorManager::config.getValue("tcp_addr", tcp_addr) &&
+      ConfiguratorManager::config.getValue("udp_send_port", udp_send) &&
+      ConfiguratorManager::config.getValue("udp_recv_port", udp_recv) &&
+      ConfiguratorManager::config.getValue("udp_addr", udp_addr) &&
+      ConfiguratorManager::config.getValue("logic_loop_timeout", logic_loop_timeout))) {
+    print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: Missing necessary configuration\n");
+    exit(1);
+  }
+
+  // Setup any other member variables here
+  state_machine = make_shared<Pod_State>();
+  motion_model = make_shared<MotionModel>();
+  unified_state = make_shared<UnifiedState>();
+  unified_state->motion_data = make_shared<MotionData>();
+  unified_state->adc_data = make_shared<ADCData>();
+  unified_state->can_data = make_shared<CANData>();
+  unified_state->i2c_data = make_shared<I2CData>();
+  unified_state->pru_data = make_shared<PRUData>();
+  unified_state->errors = make_shared<Errors>();
+  running.store(false);
+  switchVal = false;
+}
+
+// Pod Desctructor
+// Clean up Configuration Manager
+Pod::~Pod() {
+  ConfiguratorManager::config.clear();
+}
+
+// Run the Pod.
+// Starts all threads going, network threads and SourceManagers
+// Joins all threads at the end, and exits gracefully
+void Pod::run() {
+  print(LogLevel::LOG_INFO, "\n");
+  print(LogLevel::LOG_INFO, "==================\n");
+  print(LogLevel::LOG_INFO, "ILLINI  HYPERLOOP \n");
+  print(LogLevel::LOG_INFO, "==================\n");
   print(LogLevel::LOG_INFO, "Pod State: %s\n", state_machine->get_current_state_string().c_str());
 
   // Start all SourceManager threads
@@ -105,53 +182,34 @@ void Pod::startup() {
   SourceManager::TMP.initialize();
   SourceManager::ADC.initialize();
   SourceManager::I2C.initialize();
-  SourceManager::MM.initialize();
-  print(LogLevel::LOG_INFO, "Source Managers started\n");
 
-  // Setup Network Server
-  string tcp_port;
-  string tcp_addr;
-  string udp_send;  // port we send packets to
-  string udp_recv;  // port we recv packets from
-  string udp_addr; 
-  if (!(ConfiguratorManager::config.getValue("tcp_port", tcp_port) && 
-      ConfiguratorManager::config.getValue("tcp_addr", tcp_addr) &&
-      ConfiguratorManager::config.getValue("udp_send_port", udp_send) &&
-      ConfiguratorManager::config.getValue("udp_recv_port", udp_recv) &&
-      ConfiguratorManager::config.getValue("udp_addr", udp_addr))) {
-    print(LogLevel::LOG_ERROR, "Missing port or addr configuration\n");
-  }
+  signal(SIGPIPE, SIG_IGN);  // Ignore SIGPIPE
+
   // Start Network and main loop thread.
   // I don't know how to use member functions as a thread function, but lambdas work
   thread tcp_thread([&](){ TCPManager::tcp_loop(tcp_addr.c_str(), tcp_port.c_str()); });
   thread udp_thread([&](){ UDPManager::connection_monitor(udp_addr.c_str(), udp_send.c_str(), udp_recv.c_str()); });
   running.store(true);
   thread logic_thread([&](){ logic_loop(); });  
-  print(LogLevel::LOG_INFO, "Finished Startup\n");
+  print(LogLevel::LOG_INFO, "Finished Initialization\n");
   print(LogLevel::LOG_INFO, "================\n\n");
   
-  // ready to begin testing
+  // signal to test suite that we are ready to begin testing
   ready.invoke();
 
   // Join all threads
   logic_thread.join();
   // Once logic_loop joins, trigger other threads to stop
-  print(LogLevel::LOG_INFO, "Closing TCP \n");
   TCPManager::close_client();
-  print(LogLevel::LOG_INFO, "Closing UDP \n");
   UDPManager::close_client();
   tcp_thread.join();
   udp_thread.join();
-  
-  print(LogLevel::LOG_INFO, "Source Managers closing\n");
-  // Stop all source managers
-  SourceManager::MM.stop();  // Must be called first
   SourceManager::PRU.stop();
   SourceManager::CAN.stop();
   SourceManager::TMP.stop();
   SourceManager::ADC.stop();
   SourceManager::I2C.stop();
-  print(LogLevel::LOG_INFO, "Source Managers closed, Pod shutting down\n");
+  print(LogLevel::LOG_INFO, "All threads closed, Pod shutting down\n");
 }
 
 // Cause the logic_loop to close.
@@ -160,37 +218,54 @@ void Pod::trigger_shutdown() {
   closing.invoke();
 }
 
-function<void(int)> shutdown_handler;
-void signal_handler(int signal) {shutdown_handler(signal); }
-
-int main(int argc, char **argv) {
-  // Load the configuration file if specified, or use the default
-  string config_to_open = "defaultConfig.txt";
+// Parse any command line arguments passed into the Pod
+// Used right now to load the configuration file if specified, or use the default
+void parse_command_line_args(int argc, char **argv, string * config_to_open);
+void parse_command_line_args(int argc, char **argv, string * config_to_open) {
+  *config_to_open = "defaultConfig.txt";
   if (argc > 1) {  // If the first argument is a file, use it as the config file
     ifstream test_if_file(argv[1]);
     if (test_if_file.is_open()) {
       test_if_file.close();
-      config_to_open = argv[1];
+      *config_to_open = argv[1];
     }
   }
-  if (!ConfiguratorManager::config.openConfigFile(config_to_open)) {
-    print(LogLevel::LOG_ERROR, "Config missing. File: %s\n", config_to_open.c_str());
-    return 1;
-  }
+}
+
+// Signal handlers. Defined within main()
+function<void(int)> shutdown_handler;
+void signal_handler(int signal) {shutdown_handler(signal); }
+
+// Main 
+// Starts the Pod up, or the GTest suite, depending on compiler flags
+int main(int argc, char **argv) {
+  std::string config_to_open;
 
   #ifndef SIM
     Utils::loglevel = LogLevel::LOG_EDEBUG;
+    // Load the configuration file if specified, or use the default
+    parse_command_line_args(argc, argv, &config_to_open);
     // Create the pod object
-    auto pod = make_shared<Pod>();
-    // Setup ctrl-c behavior 
-    signal(SIGINT, signal_handler);
+    auto pod = make_shared<Pod>(config_to_open);
+    // Setup some handlers
+    signal(SIGINT, signal_handler);  // ctrl-c handler
     shutdown_handler = [&](int signal) { pod->trigger_shutdown(); };
     // Start the pod running
-    pod->startup();
+    pod->run();
     return 0;
   #else
     Utils::loglevel = LogLevel::LOG_EDEBUG;
-    testing::InitGoogleTest(&argc, argv);
+    testing::InitGoogleTest(&argc, argv);  // after calling this, all argc/v related to gtest are removed
+    parse_command_line_args(argc, argv, &config_to_open);
+    podtest_global::config_to_open = config_to_open;
     return RUN_ALL_TESTS();
   #endif
 }
+
+// This is used in tests/PodTest.cpp
+// Needed to pass in variables into the testing environment
+// Used to pass config file name, specifically
+// See Pod.h for where this namespace is declared.
+namespace podtest_global {
+  std::string config_to_open;
+}  // namespace podtest_global

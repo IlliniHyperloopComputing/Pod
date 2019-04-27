@@ -19,7 +19,12 @@ void Configurator::loadValues() {
   while (inFile >> varName) {
     inFile >> val;
     mapVals.insert(pair<string, string> (varName, val));
+    inFile.ignore(200, '\n');
   }
+}
+
+void Configurator::clear() {
+  mapVals.clear();
 }
 
 bool Configurator::getValue(const string& varName, string& value) {
@@ -35,6 +40,22 @@ bool Configurator::getValue(const string& varName, int64_t& value) {
     return false;
   }
   value = std::stoll(mapVals.find(varName)->second);
+  return true;
+}
+
+bool Configurator::getValue(const string& varName, int32_t& value) {
+  if (mapVals.find(varName) == mapVals.end()) {
+    return false;
+  }
+  value = std::stoll(mapVals.find(varName)->second);
+  return true;
+}
+
+bool Configurator::getValue(const string& varName, float& value) {
+  if (mapVals.find(varName) == mapVals.end()) {
+    return false;
+  }
+  value = std::stod(mapVals.find(varName)->second);
   return true;
 }
 
