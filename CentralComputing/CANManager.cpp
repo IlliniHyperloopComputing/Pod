@@ -82,7 +82,7 @@ bool CANManager::recv_frame(){
     r_frame.len = 0;
     r_frame.can_id = 0;
     if(errno == EAGAIN || errno == EWOULDBLOCK){
-      print(LogLevel::LOG_DEBUG, "CAN eagain ewouldblock. %s\n", strerror(errno));
+      //print(LogLevel::LOG_DEBUG, "CAN eagain ewouldblock. %s\n", strerror(errno));
       return true;
     }
     else{
@@ -94,10 +94,10 @@ bool CANManager::recv_frame(){
   // Check to make sure we read a full message
   // See linux/can.h for more details on these constants
 	if((size_t)byte_count == CAN_MTU){
-    print(LogLevel::LOG_DEBUG, "Can MTU\n");
+    //print(LogLevel::LOG_DEBUG, "Can MTU\n");
   }
   else if((size_t)byte_count == CANFD_MTU){
-    print(LogLevel::LOG_DEBUG, "CanFD MTU\n");
+    //print(LogLevel::LOG_DEBUG, "CanFD MTU\n");
   }
   else {
     print(LogLevel::LOG_ERROR, "CAN recvmsg failed, incomplete CAN frame. \n");
@@ -132,29 +132,29 @@ std::shared_ptr<CANData> CANManager::refresh() {
       new_data->status_word =(uint16_t) cast_to_u32(0,2,r_frame.data);
       new_data->position_val = (int32_t) cast_to_u32(2,4,r_frame.data); 
       new_data->torque_val = (int16_t) cast_to_u32(6,2,r_frame.data);  
-      print(LogLevel::LOG_INFO,"status word",new_data->status_word);
-      print(LogLevel::LOG_INFO,"position value",new_data->position_val);
-      print(LogLevel::LOG_INFO,"torque value",new_data->torque_val);
+      print(LogLevel::LOG_INFO,"status word %d\n",new_data->status_word);
+      print(LogLevel::LOG_INFO,"position value %d\n",new_data->position_val);
+      print(LogLevel::LOG_INFO,"torque value %d\n",new_data->torque_val);
     } else if (r_frame.can_id == can_id_t2) {
       new_data->controller_temp = (uint8_t) cast_to_u32(0,1,r_frame.data);
       new_data->motor_temp = (uint8_t) cast_to_u32(1,1,r_frame.data);
       new_data->dc_link_voltage = (int32_t) cast_to_u32(2,2,r_frame.data);
       new_data->logic_power_supply_voltage = (int16_t) cast_to_u32(4,2,r_frame.data);
       new_data->current_demand = (int16_t) cast_to_u32(6,2,r_frame.data);
-      print(LogLevel::LOG_INFO,"controller temp",new_data->controller_temp);
-      print(LogLevel::LOG_INFO,"motor temperature",new_data->motor_temp);
-      print(LogLevel::LOG_INFO,"dc link voltage",new_data->dc_link_voltage);
-      print(LogLevel::LOG_INFO,"logic power supply voltage",new_data->logic_power_supply_voltage);
-      print(LogLevel::LOG_INFO,"current demand",new_data->current_demand);
+      print(LogLevel::LOG_INFO,"controller temp %d\n",new_data->controller_temp);
+      print(LogLevel::LOG_INFO,"motor temperature %d\n",new_data->motor_temp);
+      print(LogLevel::LOG_INFO,"dc link voltage %d\n",new_data->dc_link_voltage);
+      print(LogLevel::LOG_INFO,"logic power supply voltage %d\n",new_data->logic_power_supply_voltage);
+      print(LogLevel::LOG_INFO,"current demand %d\n",new_data->current_demand);
     } else if (r_frame.can_id == can_id_t3) {
       new_data->motor_current_val = (uint8_t) cast_to_u32(0,2,r_frame.data);
       new_data->electrical_angle = (int16_t) cast_to_u32(2,2,r_frame.data);
       new_data->phase_a_current = (int16_t) cast_to_u32(4,2,r_frame.data);
       new_data->phase_b_current = (int16_t) cast_to_u32(6,2,r_frame.data);
-      print(LogLevel::LOG_INFO,"motor current val",new_data->motor_current_val);
-      print(LogLevel::LOG_INFO,"electrical angle",new_data->electrical_angle);
-      print(LogLevel::LOG_INFO,"phase a current",new_data->phase_a_current);
-      print(LogLevel::LOG_INFO,"phase b current",new_data->phase_b_current);
+      print(LogLevel::LOG_INFO,"motor current val %d\n",new_data->motor_current_val);
+      print(LogLevel::LOG_INFO,"electrical angle %d\n",new_data->electrical_angle);
+      print(LogLevel::LOG_INFO,"phase a current  %d\n",new_data->phase_a_current);
+      print(LogLevel::LOG_INFO,"phase b current %d\n",new_data->phase_b_current);
     } else {
       continue; 
     }
