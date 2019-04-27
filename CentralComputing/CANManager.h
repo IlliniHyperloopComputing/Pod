@@ -21,7 +21,39 @@ struct CANData {
   uint8_t motor_current_val;
   int16_t electrical_angle;
   int16_t phase_a_current;
-  int16_t phase_b_current; 
+  int16_t phase_b_current;
+  int relay_state;
+  int rolling_counter;
+  int fail_safe_sate;
+  int peak_current;
+  int pack_voltage_inst;
+  int pack_voltage_open;
+  int pack_sol;
+  int pack_amphours;
+  int pack_resistance;
+  int pack_dod;
+  int pack_soh;
+  int current_limit_status;
+  int max_pack_dcl;
+  int avg_pack_current;
+  int highest_temp;
+  int highest_temp_id;
+  int avg_temp;
+  int internal_temp;
+  int low_cell_voltge;
+  int low_cell_voltage_id; 
+  int high_cell_voltage;
+  int high_cell_voltage_id;
+  int low_cell_internalR;
+  int low_cell_internalR_id;
+  int high_cell_internalR;
+  int high_cell_internalR_id;
+  int power_voltage_input;
+  int dtc_status_one;
+  int dtc_status_two;
+  int adaptive_total_cap;
+  int adaptive_amphours;
+  int adaptive_soc;
 };
 
 const char hex_asc_upper[] = "0123456789ABCDEF";
@@ -62,7 +94,8 @@ class CANManager : public SourceManagerBase<CANData, false> {
     const unsigned int can_id_p1 = 100; //Get actual values
     const unsigned int can_id_p2 = 200;
     const unsigned int can_id_error = 129; //0x081
-    const unsigned int can_id_bms_main = 54; //0x36
+    const unsigned int can_id_bms_one = 54; //0x36
+    const unsigned int can_id_bms_two = 53;
     // Used for CAN socket setup
     struct ifreq ifr;
     struct sockaddr_can addr;

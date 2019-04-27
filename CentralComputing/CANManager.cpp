@@ -155,8 +155,12 @@ std::shared_ptr<CANData> CANManager::refresh() {
       print(LogLevel::LOG_INFO,"electrical angle %d\n",new_data->electrical_angle);
       print(LogLevel::LOG_INFO,"phase a current  %d\n",new_data->phase_a_current);
       print(LogLevel::LOG_INFO,"phase b current %d\n",new_data->phase_b_current);
-    } else {
+    } else if (r_frame.can_id == can_id_bms_one) {
       continue; 
+    } else if (r_frame.can_id == can_id_bms_two) {
+      continue
+    } else {
+      continue;
     }
     //Print the contents of r_frame (assumes len <= 8)
     char buff[16];
