@@ -132,17 +132,29 @@ std::shared_ptr<CANData> CANManager::refresh() {
       new_data->status_word =(uint16_t) cast_to_u32(0,2,r_frame.data);
       new_data->position_val = (int32_t) cast_to_u32(2,4,r_frame.data); 
       new_data->torque_val = (int16_t) cast_to_u32(6,2,r_frame.data);  
+      print(LogLevel::LOG_INFO,"status word",status_word);
+      print(LogLevel::LOG_INFO,"position value",position_val);
+      print(LogLevel::LOG_INFO,"torque value",torque_val);
     } else if (r_frame.can_id == can_id_t2) {
       new_data->controller_temp = (uint8_t) cast_to_u32(0,1,r_frame.data);
       new_data->motor_temp = (uint8_t) cast_to_u32(1,1,r_frame.data);
       new_data->dc_link_voltage = (int32_t) cast_to_u32(2,2,r_frame.data);
       new_data->logic_power_supply_voltage = (int16_t) cast_to_u32(4,2,r_frame.data);
       new_data->current_demand = (int16_t) cast_to_u32(6,2,r_frame.data);
+      print(LogLevel::LOG_INFO,"controller temp",new_data.controller_temp);
+      print(LogLevel::LOG_INFO,"motor temperature",new_data.motor_temp);
+      print(LogLevel::LOG_INFO,"dc link voltage",new_data.dc_link_voltage);
+      print(LogLevel::LOG_INFO,"logic power supply voltage",new_data.logic_power_cupply_voltage);
+      print(LogLevel::LOG_INFO,"current demand",new_data.current_demand);
     } else if (r_frame.can_id == can_id_t3) {
       new_data->motor_current_val = (uint8_t) cast_to_u32(0,2,r_frame.data);
       new_data->electrical_angle = (int16_t) cast_to_u32(2,2,r_frame.data);
       new_data->phase_a_current = (int16_t) cast_to_u32(4,2,r_frame.data);
       new_data->phase_b_current = (int16_t) cast_to_u32(6,2,r_frame.data);
+      print(LogLevel::LOG_INFO,"motor current val",new_data.motor_current_val);
+      print(LogLevel::LOG_INFO,"electrical angle",new_data.electrical_angle);
+      print(LogLevel::LOG_INFO,"phase a current",new_data.phase_a_current);
+      print(LogLevel::LOG_INFO,"phase b current",new_data.phase_b_current);
     } else {
       continue; 
     }
@@ -153,7 +165,7 @@ std::shared_ptr<CANData> CANManager::refresh() {
     }
     buff[r_frame.len*2] = '\0';//include null terminator
 
-    print(LogLevel::LOG_INFO, "CAN msg: id: %d, len: %d, data: %s\n", r_frame.can_id, r_frame.len, buff);
+    print(LogLevel::LOG_INFO, "CAN msg: id: %d, len: %d, data: %s\n", r_frame.can_id, r_frame.len, buff); 
   }
   while(r_frame.len != 0);
 
