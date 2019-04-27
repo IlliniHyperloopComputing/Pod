@@ -158,7 +158,7 @@ std::shared_ptr<CANData> CANManager::refresh() {
     } else if (r_frame.can_id == can_id_bms_one) {
       continue; 
     } else if (r_frame.can_id == can_id_bms_two) {
-      continue
+      continue;
     } else {
       continue;
     }

@@ -84,4 +84,5 @@ class CANManager : public SourceManagerBase<CANData> {
     std::string name(){
       return "can";
     }
+};
 #endif
