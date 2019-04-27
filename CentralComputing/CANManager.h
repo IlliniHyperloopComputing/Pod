@@ -56,11 +56,12 @@ class CANManager : public SourceManagerBase<CANData, false> {
 
     // CAN socket
     int can_fd;
-    const unsigned int can_id_t1 = 181;
-    const unsigned int can_id_t2 = 281; 
-    const unsigned int can_id_t3 = 381; 
-    const unsigned int can_id_p1 = 100; //Get actual values for RPDO ids 
+    const unsigned int can_id_t1 = 385; //0x181
+    const unsigned int can_id_t2 = 641; //0x281 
+    const unsigned int can_id_t3 = 897; //0x381 
+    const unsigned int can_id_p1 = 100; //Get actual values
     const unsigned int can_id_p2 = 200;
+    const unsigned int can_id_error = 129; //081
     // Used for CAN socket setup
     struct ifreq ifr;
     struct sockaddr_can addr;
