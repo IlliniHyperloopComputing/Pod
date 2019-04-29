@@ -65,6 +65,7 @@ bool CANManager::send_frame(uint32_t can_id, const char * buf, int len) {
     print(LogLevel::LOG_ERROR, "CAN send_frame failed. %s\n", strerror(errno));
     return false;
   } else if (ret == 0) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_SEND_FRAME_ERROR);
     print(LogLevel::LOG_ERROR, "CAN send_frame sent 0 bytes\n");
     return false;
   }
@@ -112,10 +113,9 @@ std::shared_ptr<CANData> CANManager::refresh() {
   std::shared_ptr<CANData> new_data = std::make_shared<CANData>();
 
   int64_t a = Utils::microseconds();
-  // Send test frame 
-  if (!send_frame(100, "wow", 3)) {
-    print(LogLevel::LOG_ERROR, "CAN send_frame failed. \n");
-    // TODO: put error on unified command queue
+  // Send HV battery relay state frame
+  if (!send_frame(can_id_bms_relay, (char *)(&relay_state_buf), 3)) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_SEND_FRAME_ERROR);
   }
   int64_t b = Utils::microseconds();
   print(LogLevel::LOG_INFO, "CAN send_frame takes %lu microseconds\n", b-a);
@@ -219,6 +219,10 @@ void CANManager::initialize_sensor_error_configs() {
   // Battery Over Voltage
   // Over Current
   // Grab all configuration variables
+}
+
+void CANManager::set_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
+  ((char *)(&relay_state_buf))[relay] = state;
 }
 
 void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_data) {

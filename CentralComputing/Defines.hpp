@@ -25,8 +25,8 @@ enum HV_Relay_Select {
 
 // Defines for selecting a particular relay state
 enum HV_Relay_State {
-  RELAY_ON = true,
-  RELAY_OFF = false,
+  RELAY_ON = 0x01,
+  RELAY_OFF = 0x00,
 };
 
 #define NUM_ACCEL 3
@@ -37,6 +37,7 @@ struct ADCData {
 
 
 struct CANData {
+  // Motor Controller
   uint16_t status_word;
   int32_t position_val;
   int16_t torque_val;
@@ -49,7 +50,10 @@ struct CANData {
   int16_t electrical_angle;
   int16_t phase_a_current;
   int16_t phase_b_current;
-  int relay_state;
+
+  // BMS
+  uint32_t internal_relay_state;  // Used within the CANManager to set BMS relay states
+  int relay_state;           // This should agree with the above (given a small delay)
   int rolling_counter;
   int fail_safe_sate;
   int peak_current;

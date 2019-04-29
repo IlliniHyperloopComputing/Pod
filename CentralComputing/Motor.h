@@ -38,7 +38,7 @@ class Motor {
   void set_throttle(int16_t value);
 
   
-  void set_relay(HV_Relay_Select, HV_Relay_State);
+  void set_relay_state(HV_Relay_Select, HV_Relay_State);
 
  private:
   void set_enable(bool enable);

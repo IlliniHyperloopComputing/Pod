@@ -57,6 +57,6 @@ void Motor::set_throttle(int16_t value) {
   }
 }
 
-void Motor::set_relay(HV_Relay_Select relay, HV_Relay_State state) {
-  // TODO: Tell the CANManager somehow to set the Relay state.
+void Motor::set_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
+  SourceManager::CAN.set_relay_state(relay, state);
 }

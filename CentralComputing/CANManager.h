@@ -21,6 +21,10 @@ static inline void put_hex_byte(char *buf, __u8 byte) {
 }
 
 class CANManager : public SourceManagerBase<CANData> {
+ public:
+  void set_relay_state(HV_Relay_Select relay, HV_Relay_State state);
+  void set_motor_state();
+
  private:
   bool initialize_source();
   void stop_source();
@@ -70,6 +74,9 @@ class CANManager : public SourceManagerBase<CANData> {
   const unsigned int can_id_error = 129;   // 0x081
   const unsigned int can_id_bms_one = 54;  // 0x36
   const unsigned int can_id_bms_two = 53;
+  const unsigned int can_id_bms_relay = 0x6A0;
+
+  uint32_t relay_state_buf;  // used while sending CAN Frames to BMS
 
   int32_t error_motor_ctrl_over_temp;
   int32_t error_motor_over_temp;
