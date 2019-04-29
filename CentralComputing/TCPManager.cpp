@@ -47,11 +47,11 @@ int TCPManager::connect_to_server(const char * hostname, const char * port) {
   return socketfd;
 }
 
-int TCPManager::read_command(uint8_t * ID, uint8_t * Command) {
-  uint8_t bytes[2];
-  int bytes_read = read(socketfd, bytes, 2);
-  *ID = (Command::Network_Command_ID) bytes[0];
-  *Command = bytes[1];
+int TCPManager::read_command(uint32_t * ID, uint32_t * Command) {
+  uint8_t bytes[8];
+  int bytes_read = read(socketfd, bytes, sizeof(bytes));
+  *ID =  *((uint32_t *)bytes);
+  *Command = *((uint32_t *) (bytes+4));
   return bytes_read;
 }
 
@@ -69,13 +69,13 @@ int TCPManager::write_data() {
 
 void TCPManager::read_loop() {
   bool active_connection = true;
-  uint8_t ID;
-  uint8_t Command;
+  uint32_t ID;
+  uint32_t Command;
   while (running && active_connection) {
     int bytes_read = read_command(&ID, &Command);
     active_connection = bytes_read > 0;
     if (bytes_read > 0) {
-      // print(LogLevel::LOG_EDEBUG, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
+      print(LogLevel::LOG_EDEBUG, "Bytes read: %d Read command %d %d\n", bytes_read, ID, Command);
       Command::put(ID, Command);
     }
   }
