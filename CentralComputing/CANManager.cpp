@@ -225,6 +225,12 @@ void CANManager::set_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
   ((char *)(&relay_state_buf))[relay] = state;
 }
 
+void CANManager::set_motor_state(bool enable) {
+}
+
+void CANManager::set_motor_throttle(int16_t value) {
+}
+
 void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_data) {
 }
 

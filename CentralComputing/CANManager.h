@@ -23,7 +23,8 @@ static inline void put_hex_byte(char *buf, __u8 byte) {
 class CANManager : public SourceManagerBase<CANData> {
  public:
   void set_relay_state(HV_Relay_Select relay, HV_Relay_State state);
-  void set_motor_state();
+  void set_motor_state(bool enable);
+  void set_motor_throttle(int16_t value);
 
  private:
   bool initialize_source();

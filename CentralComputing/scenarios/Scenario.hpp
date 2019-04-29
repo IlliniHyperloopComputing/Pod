@@ -51,13 +51,18 @@ class Scenario{
     enable_logging = enable;
   }
 
-  void sim_motor_enable() {
-    motorsOn = true;
-    motors_on_time = microseconds();
+  void sim_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
+    ((char *)(&relay_state_buf))[relay] = state;
   }
-  
-  void sim_motor_disable() {
-    motorsOn = false;
+
+  void sim_motor_state(bool enable) {
+    if (enable) {
+      motorsOn = true;
+      motors_on_time = microseconds();
+    }
+    else {
+      motorsOn = false;
+    }
   }
   
   void sim_motor_set_throttle(uint8_t value) {
@@ -80,6 +85,7 @@ class Scenario{
   bool enable_logging = true;
   int64_t timeLast = -1;
   int64_t timeDelta = 0.000;
+  uint32_t relay_state_buf = 0;
   bool motorsOn = false;
   bool brakesOn = false;
   uint8_t throttle = 0.000;

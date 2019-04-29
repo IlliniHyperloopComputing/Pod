@@ -4,35 +4,28 @@ using Utils::LogLevel;
 
 Motor::Motor() {
   throttle = 0;
-  set_enable(false);
+  set_motor_state(false);
 }
 
 void Motor::enable_motors() {
   set_throttle(MOTOR_OFF);
-  set_enable(true);
-
-  #ifdef SIM
-  SimulatorManager::sim.sim_motor_enable();
-  #endif
-
+  set_motor_state(true);
   print(LogLevel::LOG_DEBUG, "Motors Enabled\n");
 }
 
 void Motor::disable_motors() {
   set_throttle(MOTOR_OFF);
-  set_enable(false);
-
-  #ifdef SIM
-  SimulatorManager::sim.sim_motor_disable();
-  #endif
-
+  set_motor_state(false);
   print(LogLevel::LOG_DEBUG, "Motors Disabled\n");
 }
 
-void Motor::set_enable(bool enable) {
-  // TODO: Tell the CANManager somehow to set the enable
-
+void Motor::set_motor_state(bool enable) {
   enabled = enable;
+  #ifdef SIM
+  SimulatorManager::sim.sim_motor_state(enable);
+  #else
+  SourceManager::CAN.set_motor_state(enable);
+  #endif
 }
 
 bool Motor::is_enabled() {
@@ -46,11 +39,10 @@ int16_t Motor::get_throttle() {
 void Motor::set_throttle(int16_t value) {
   if (enabled) {
     throttle = value;
-
-    // TODO: Tell the CANManager somehow to set the Motor State
-
     #ifdef SIM
     SimulatorManager::sim.sim_motor_set_throttle(value);
+    #else
+    SourceManager::CAN.set_motor_throttle(value);
     #endif
     
     print(LogLevel::LOG_DEBUG, "Setting motor throttle: %d\n", value);
@@ -58,5 +50,9 @@ void Motor::set_throttle(int16_t value) {
 }
 
 void Motor::set_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
+  #ifdef SIM
+  SimulatorManager::sim.sim_relay_state(relay, state);
+  #else
   SourceManager::CAN.set_relay_state(relay, state);
+  #endif
 }
