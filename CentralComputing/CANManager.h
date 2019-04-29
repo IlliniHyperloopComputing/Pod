@@ -2,6 +2,7 @@
 #define CANMANAGER_H_
 
 #include "Defines.hpp"
+#include "Command.h"
 #include "SourceManagerBase.hpp"
 #include <linux/can.h>
 #include <linux/can/raw.h>
