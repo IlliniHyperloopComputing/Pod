@@ -30,7 +30,6 @@ void Motor::disable_motors() {
 }
 
 void Motor::set_enable(bool enable) {
-  
   // TODO: Tell the CANManager somehow to set the enable
 
   enabled = enable;
@@ -59,6 +58,5 @@ void Motor::set_throttle(int16_t value) {
 }
 
 void Motor::set_relay(HV_Relay_Select relay, HV_Relay_State state) {
-  
   // TODO: Tell the CANManager somehow to set the Relay state.
 }

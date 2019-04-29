@@ -41,7 +41,6 @@ class Motor {
   void set_relay(HV_Relay_Select, HV_Relay_State);
 
  private:
-
   void set_enable(bool enable);
 
   bool enabled;
