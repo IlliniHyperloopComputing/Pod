@@ -66,8 +66,8 @@ enum Network_Data_ID {
 
 struct Network_Command {
   // state transtitions
-  uint32_t id;  // id is a Network_Command_ID
-  uint32_t value;  // value of a command, up to 24 bits  
+  uint32_t id;     // id is a Network_Command_ID
+  uint32_t value;  // value of a command
 };
 
 // To make error flag setting easy, this helper functionn is defined

@@ -48,7 +48,7 @@ int TCPManager::connect_to_server(const char * hostname, const char * port) {
 }
 
 int TCPManager::read_command(uint32_t * ID, uint32_t * Command) {
-  uint8_t bytes[8];
+  uint8_t bytes[sizeof(Command::Network_Command)];
   int bytes_read = read(socketfd, bytes, sizeof(bytes));
   *ID =  *((uint32_t *)bytes);
   *Command = *((uint32_t *) (bytes+4));
