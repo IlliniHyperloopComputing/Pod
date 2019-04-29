@@ -155,10 +155,10 @@ std::shared_ptr<CANData> CANManager::refresh() {
       new_data->phase_a_current =   (int16_t) cast_to_u32(4, 2, r_frame.data);
       new_data->phase_b_current =   (int16_t) cast_to_u32(6, 2, r_frame.data);
       print(LogLevel::LOG_INFO, "CAN frame Motor Controller %d \n", can_id_t1);
-      print(LogLevel::LOG_INFO, "motor current val %d\n", new_data->motor_current_val);
-      print(LogLevel::LOG_INFO, "electrical angle %d\n", new_data->electrical_angle);
-      print(LogLevel::LOG_INFO, "phase a current  %d\n", new_data->phase_a_current);
-      print(LogLevel::LOG_INFO, "phase b current %d\n", new_data->phase_b_current);
+      print(LogLevel::LOG_INFO, "\tmotor current val %d\n", new_data->motor_current_val);
+      print(LogLevel::LOG_INFO, "\telectrical angle %d\n", new_data->electrical_angle);
+      print(LogLevel::LOG_INFO, "\tphase a current  %d\n", new_data->phase_a_current);
+      print(LogLevel::LOG_INFO, "\tphase b current %d\n", new_data->phase_b_current);
     } else if (r_frame.can_id == can_id_bms_one) {
       continue; 
     } else if (r_frame.can_id == can_id_bms_two) {
@@ -224,7 +224,8 @@ void CANManager::initialize_sensor_error_configs() {
 void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_data) {
 }
 
-uint32_t CANManager::cast_to_u32(int offset, int bytes_per_item, unsigned char* bufferArray) {
+// This will convert Big Endian data types to Little Endian types
+inline uint32_t CANManager::cast_to_u32(int offset, int bytes_per_item, uint8_t * bufferArray) {
   uint32_t tmp = 0;
   for (int i = 0; i < bytes_per_item; i++) {
     tmp |= (uint8_t)(bufferArray[offset + i] << (i * 8));
