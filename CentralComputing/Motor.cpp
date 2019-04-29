@@ -3,7 +3,6 @@ using Utils::print;
 using Utils::LogLevel;
 
 Motor::Motor() {
-  // TODO: Setup CAN connection here
   throttle = 0;
   set_enable(false);
 }
@@ -23,7 +22,6 @@ void Motor::disable_motors() {
   set_throttle(MOTOR_OFF);
   set_enable(false);
 
-
   #ifdef SIM
   SimulatorManager::sim.sim_motor_disable();
   #endif
@@ -32,7 +30,9 @@ void Motor::disable_motors() {
 }
 
 void Motor::set_enable(bool enable) {
-  // TODO: Something over CAN
+  
+  // TODO: Tell the CANManager somehow to set the enable
+
   enabled = enable;
 }
 
@@ -48,7 +48,7 @@ void Motor::set_throttle(int16_t value) {
   if (enabled) {
     throttle = value;
 
-    // TODO: Something over CAN
+    // TODO: Tell the CANManager somehow to set the Motor State
 
     #ifdef SIM
     SimulatorManager::sim.sim_motor_set_throttle(value);
@@ -56,4 +56,9 @@ void Motor::set_throttle(int16_t value) {
     
     print(LogLevel::LOG_DEBUG, "Setting motor throttle: %d\n", value);
   }
+}
+
+void Motor::set_relay(HV_Relay_Select relay, HV_Relay_State state) {
+  
+  // TODO: Tell the CANManager somehow to set the Relay state.
 }

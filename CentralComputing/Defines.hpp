@@ -16,6 +16,19 @@ enum E_States {
   ST_MAX_STATES
 };
 
+// Defines for selecting a particular relay
+enum HV_Relay_Select {
+  RELAY_PRE_CHARGE = 1,  // Pre-charge relay of the High-Voltage battery
+  RELAY_LV_POLE = 2,  // Low Voltage pole of the High-Voltage battery
+  RELAY_HV_POLE = 3,  // High Voltage pole of the High-Voltage battery
+};
+
+// Defines for selecting a particular relay state
+enum HV_Relay_State {
+  RELAY_ON = true,
+  RELAY_OFF = false,
+};
+
 #define NUM_ACCEL 3
 struct ADCData {
   int32_t accel[NUM_ACCEL];
