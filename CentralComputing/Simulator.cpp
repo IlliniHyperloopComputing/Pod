@@ -144,7 +144,7 @@ void Simulator::sim_motor_disable() {
   }
 }
 
-void Simulator::sim_motor_set_throttle(uint8_t value) {
+void Simulator::sim_motor_set_throttle(int16_t value) {
   std::lock_guard<std::mutex> guard(mutex);
   print(LogLevel::LOG_DEBUG, "Sim - Setting motor throttle: %d\n", value);
   if (scenario != nullptr) {

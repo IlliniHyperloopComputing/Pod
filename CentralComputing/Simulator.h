@@ -98,7 +98,7 @@ class Simulator {
     * Simulates setting the motor throttle to a specific value
     * param value the new throttle value
     */
-  void sim_motor_set_throttle(uint8_t value);
+  void sim_motor_set_throttle(int16_t value);
 
   /*
     * Simulates enabling the brakes
