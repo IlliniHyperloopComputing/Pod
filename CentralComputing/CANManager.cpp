@@ -225,7 +225,7 @@ void CANManager::set_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
   ((char *)(&relay_state_buf))[relay] = state;
 }
 
-void CANManager::set_motor_state(bool enable) {
+void CANManager::set_motor_state(bool enable) { //TODO: Need to Send controlword 3 at startup
   if (enable) {
     uint32_t pdo_val = can_id_p1;
     char* bufferArray;
