@@ -60,7 +60,7 @@ class Scenario{
     motorsOn = false;
   }
   
-  void sim_motor_set_throttle(uint8_t value) {
+  void sim_motor_set_throttle(int16_t value) {
     throttle = value;
   }
   
@@ -82,7 +82,7 @@ class Scenario{
   int64_t timeDelta = 0.000;
   bool motorsOn = false;
   bool brakesOn = false;
-  uint8_t throttle = 0.000;
+  int16_t throttle = 0.000;
   uint8_t pressure = 0.000;
   double position = 0.000;
   double lastPosition = 0.000;

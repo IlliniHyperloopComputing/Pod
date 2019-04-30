@@ -60,7 +60,7 @@ class PodTest : public ::testing::Test
    * @param id the id of the command to run
    * @param value the value for the command
    */
-  void SendCommand(Command::Network_Command_ID id, uint8_t value) {
+  void SendCommand(Command::Network_Command_ID id, uint32_t value) {
 
     auto command = std::make_shared<Command::Network_Command>();
     command->id = id;

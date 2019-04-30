@@ -17,9 +17,9 @@
 
 namespace Command {
 
-extern SafeQueue<uint16_t> command_queue;
+extern SafeQueue<uint64_t> command_queue;
 struct Network_Command;
-void put(uint8_t id, uint8_t value);
+void put(uint32_t id, uint32_t value);
 bool get(Network_Command * com);
   
 enum Network_Command_ID {
@@ -66,8 +66,8 @@ enum Network_Data_ID {
 
 struct Network_Command {
   // state transtitions
-  uint8_t id;  // id is just a network command
-  uint8_t value;
+  uint32_t id;     // id is a Network_Command_ID
+  uint32_t value;  // value of a command
 };
 
 // To make error flag setting easy, this helper functionn is defined
@@ -77,7 +77,7 @@ struct Network_Command {
 // But then it send another command to the Unified Queue once every second. 
 // This helper function, and the int64_t array of timers makes that possible
 extern int64_t error_flag_timers[8*6];  // 8 flags per error ID, 6 errors
-void set_error_flag(uint8_t id, uint8_t value);
+void set_error_flag(uint32_t id, uint32_t value);
 
 }  // namespace Command
 
