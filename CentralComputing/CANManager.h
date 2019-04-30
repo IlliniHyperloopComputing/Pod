@@ -44,9 +44,10 @@ class CANManager : public SourceManagerBase<CANData> {
   // Returns false if critical failure
   bool recv_frame();
 
-  uint32_t cast_to_u32(int offset, int bytes_per_item, unsigned char* bufferArray);
-  void u32_to_bytes(uint32_t toCast, unsigned char* bufferArray);
-  void u16_to_bytes(uint16_t toCat, unsigned char* bufferArray);
+  uint32_t cast_to_u32(int offset, int bytes_per_item, uint8_t* bufferArray);
+  void u32_to_bytes(uint32_t toCast, char* bufferArray);
+  void u16_to_bytes(uint16_t toCast, char* bufferArray);
+  void i16_to_bytes(int16_t toCast, char* bufferArray);
 
   // CAN socket
   int can_fd;

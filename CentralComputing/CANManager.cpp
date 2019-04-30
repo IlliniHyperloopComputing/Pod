@@ -226,9 +226,22 @@ void CANManager::set_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
 }
 
 void CANManager::set_motor_state(bool enable) {
+  if (enable) {
+    uint32_t pdo_val = can_id_p1;
+    char* bufferArray[2];
+    uint16_t value = 4;
+    u16_to_bytes(value, bufferArray);
+    int length = sizeof(bufferArray) / sizeof(bufferArray[0]);
+    send_frame(pdo_val,bufferArray,length);
+  }
 }
 
-void CANManager::set_motor_throttle(int16_t value) {
+void CANManager::set_motor_throttle(int16_t value) { //Using Throttle Value Here
+  uint32_t pdo_val = can_id_p1;
+  char* bufferArray[2];
+  i16_to_bytes(value, bufferArray); 
+  int length = sizeof(bufferArray) / sizeof(bufferArray[0]);
+  send_frame(pdo_val,bufferArray,length); 
 }
 
 void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_data) {
@@ -243,14 +256,18 @@ inline uint32_t CANManager::cast_to_u32(int offset, int bytes_per_item, uint8_t 
   return tmp;
 }
 
-void CANManager::u32_to_bytes(uint32_t toCast, unsigned char* bufferArray) {
+void CANManager::u32_to_bytes(uint32_t toCast, char* bufferArray) {
   bufferArray[0] = toCast;
   bufferArray[1] = toCast >>  8;
   bufferArray[2] = toCast >> 16;
   bufferArray[3] = toCast >> 24;
 }
 
-void CANManager::u16_to_bytes(uint16_t toCast, unsigned char* bufferArray) {
+void CANManager::u16_to_bytes(uint16_t toCast, char* bufferArray) {
+  bufferArray[0] = toCast;
+  bufferArray[1] = toCast >> 8;
+}
+void CANManager::i16_to_bytes(int16_t toCast, char* bufferArray) {
   bufferArray[0] = toCast;
   bufferArray[1] = toCast >> 8;
 }
