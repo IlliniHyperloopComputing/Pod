@@ -228,7 +228,7 @@ void CANManager::set_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
 void CANManager::set_motor_state(bool enable) {
   if (enable) {
     uint32_t pdo_val = can_id_p1;
-    char* bufferArray[2];
+    char* bufferArray;
     uint16_t value = 4;
     u16_to_bytes(value, bufferArray);
     int length = sizeof(bufferArray) / sizeof(bufferArray[0]);
@@ -238,7 +238,7 @@ void CANManager::set_motor_state(bool enable) {
 
 void CANManager::set_motor_throttle(int16_t value) { //Using Throttle Value Here
   uint32_t pdo_val = can_id_p1;
-  char* bufferArray[2];
+  char* bufferArray;
   i16_to_bytes(value, bufferArray); 
   int length = sizeof(bufferArray) / sizeof(bufferArray[0]);
   send_frame(pdo_val,bufferArray,length); 
