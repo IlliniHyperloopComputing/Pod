@@ -1,11 +1,11 @@
 #include "TCPManager.h"
+#include "Command.h"
 
 using std::vector;
-using std::make_shared;
-using std::shared_ptr;
 using std::thread;
 using Utils::print;
 using Utils::LogLevel;
+using std::shared_ptr;
 
 int TCPManager::socketfd = 0;
 Event TCPManager::connected;
@@ -13,7 +13,6 @@ Event TCPManager::closing;
 
 std::atomic<bool> TCPManager::running(false);
 std::mutex TCPManager::mutex;
-SafeQueue<shared_ptr<TCPManager::Network_Command>> TCPManager::command_queue;
 
 // I'm not sure how to get the unified state to the TCPManager
 SafeQueue<shared_ptr<UnifiedState>> TCPManager::write_queue;  
@@ -48,14 +47,15 @@ int TCPManager::connect_to_server(const char * hostname, const char * port) {
   return socketfd;
 }
 
-int TCPManager::read_command(Network_Command * buffer) {
-  uint8_t bytes[2];
-  int bytes_read = read(socketfd, bytes, 2);
-  buffer->id = (Network_Command_ID) bytes[0];
-  buffer->value = bytes[1];
+int TCPManager::read_command(uint32_t * ID, uint32_t * Command) {
+  uint8_t bytes[sizeof(Command::Network_Command)];
+  int bytes_read = read(socketfd, bytes, sizeof(bytes));
+  *ID =  *((uint32_t *)bytes);
+  *Command = *((uint32_t *) (bytes+4));
   return bytes_read;
 }
 
+<<<<<<< HEAD
 int TCPManager::write_data(vector<int64_t>& times) {
   vector<int32_t> vals;
   if(Utils::microseconds() - times[0] > 1000000){  //  This is the first time threshold
@@ -76,6 +76,12 @@ int TCPManager::write_data(vector<int64_t>& times) {
   }  
   // TODO write real data
   auto uS = write_queue.dequeue();
+=======
+int TCPManager::write_data() {
+  // TODO write real datauint16_t uS;
+  shared_ptr<UnifiedState> uS;
+  write_queue.dequeue(&uS);
+>>>>>>> aa5ded56899777727888fa667e100faf0a14b93c
   // TODO: CHANGE, just for testing
   //int16_t x1 = 100;
   //int32_t x2 = 27;
@@ -85,16 +91,14 @@ int TCPManager::write_data(vector<int64_t>& times) {
 
 void TCPManager::read_loop() {
   bool active_connection = true;
-  Network_Command buffer;
+  uint32_t ID;
+  uint32_t Command;
   while (running && active_connection) {
-    int bytes_read = read_command(&buffer);
+    int bytes_read = read_command(&ID, &Command);
     active_connection = bytes_read > 0;
     if (bytes_read > 0) {
-      // print(LogLevel::LOG_EDEBUG, "Bytes read: %d Read command %d %d\n", bytes_read, buffer.id, buffer.value);
-      auto command = make_shared<Network_Command>();
-      command->id = buffer.id;
-      command->value = buffer.value;
-      command_queue.enqueue(command);
+      print(LogLevel::LOG_EDEBUG, "Bytes read: %d Read command %d %d\n", bytes_read, ID, Command);
+      Command::put(ID, Command);
     }
   }
   print(LogLevel::LOG_INFO, "TCP read Loop exiting.\n");

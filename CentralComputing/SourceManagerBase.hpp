@@ -10,18 +10,10 @@
 #include <mutex>  // NOLINT
 #include <atomic>
 
-#ifdef SIM
-#include <fstream>
-#pragma GCC diagnostic push
-#pragma GCC diagnostic ignored "-Wctor-dtor-privacy"
-#include "gtest/gtest.h"
-#pragma GCC diagnostic pop
-#endif
-
 using Utils::print;
 using Utils::LogLevel;
 
-template <class Data, bool DataEvent >
+template <class Data>
 class SourceManagerBase {
  public:
   std::shared_ptr<Data> Get() {
@@ -39,7 +31,13 @@ class SourceManagerBase {
       initialized_correctly = initialize_source();
     #endif
 
+    // Always call this regardless of SIM or not. 
+    // Should be used to load configuration values regarding what would trigger an error
+    initialize_sensor_error_configs();
+
+    // Make sure event is setup correctly
     closing.reset();
+
     if (initialized_correctly) {
       // If initialized correcly, setup the worker
       
@@ -73,21 +71,9 @@ class SourceManagerBase {
       running.store(false);
       closing.invoke();
 
-      if (DataEvent) {
-        data_event.invoke();
-      }
-
       worker.join();
       stop_source();
     }
-  }
-
-  void data_event_wait() {
-    data_event.wait();
-  }
-
-  void data_event_reset() {
-    data_event.reset();
   }
 
   bool is_running() {
@@ -105,7 +91,6 @@ class SourceManagerBase {
     }
   }
 
- protected:
   std::shared_ptr<Data> empty_data() {
     std::shared_ptr<Data> d = std::make_shared<Data>();
     memset(d.get(), (uint8_t)0, sizeof(Data));
@@ -119,6 +104,9 @@ class SourceManagerBase {
   virtual void stop_source() = 0;
 
   virtual std::string name() = 0;
+
+  virtual void initialize_sensor_error_configs() = 0;
+  virtual void check_for_sensor_error(const std::shared_ptr<Data> & check_data) = 0;
 
   // constructs a new Data object and fills it in
   virtual std::shared_ptr<Data> refresh() = 0;  
@@ -135,24 +123,19 @@ class SourceManagerBase {
         std::shared_ptr<Data> new_data = refresh_sim();
         delayInUsecs = refresh_timeout();  // could be updated by SIM
       #endif
+      check_for_sensor_error(new_data);
       mutex.lock();
       data = new_data;
       mutex.unlock();
       
-      if (DataEvent) {
-        data_event.invoke();
-      }
-
       closing.wait_for(delayInUsecs);
     }
   }
-
 
   std::shared_ptr<Data> data;
   std::mutex mutex;
   std::atomic<bool> running;
   Event closing;
-  Event data_event;
   std::thread worker;
   bool initialized_correctly;
 };

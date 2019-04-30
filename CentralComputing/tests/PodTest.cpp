@@ -3,6 +3,7 @@
 #include "Simulator.h"
 
 using namespace Utils;
+
 class PodTest : public ::testing::Test
 {
   protected:
@@ -11,12 +12,6 @@ class PodTest : public ::testing::Test
     TCPManager::connected.reset();
     UDPManager::setup.reset();
 
-    // Reset simulator motion
-    SimulatorManager::sim.reset_motion();
-    
-    // Enable logging
-    SimulatorManager::sim.logging(true);
-
     // Startup our server
     EXPECT_TRUE(SimulatorManager::sim.start_server("127.0.0.1", "8001") >= 0);
 
@@ -24,13 +19,18 @@ class PodTest : public ::testing::Test
     sim_thread = std::thread([&](){ SimulatorManager::sim.sim_connect();});
 
     // Create the Pod object
-    pod = std::make_shared<Pod>();
+    pod = std::make_shared<Pod>(podtest_global::config_to_open);
 
     // Set the Pod running in its own thread
     pod_thread = std::thread([&](){ pod->run();});
 
     // We wait until pod->startup() is done
     pod->ready.wait();
+
+    // Reset error timeout flags
+    for (int i = 0; i < 8*6; i++) {
+        Command::error_flag_timers[i] = -1000000;  // negative 1 second. 
+    }
    
     EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
 
@@ -47,8 +47,7 @@ class PodTest : public ::testing::Test
 
   virtual void TearDown() {
     print(LogLevel::LOG_DEBUG, "Test finished, begin teardown\n");
-    SimulatorManager::sim.logging(false);
-    SimulatorManager::sim.disconnect();
+    SimulatorManager::sim.stop();
     sim_thread.join();
     pod->trigger_shutdown();
     pod_thread.join();
@@ -61,9 +60,9 @@ class PodTest : public ::testing::Test
    * @param id the id of the command to run
    * @param value the value for the command
    */
-  void SendCommand(TCPManager::Network_Command_ID id, uint8_t value) {
+  void SendCommand(Command::Network_Command_ID id, uint32_t value) {
 
-    auto command = std::make_shared<TCPManager::Network_Command>();
+    auto command = std::make_shared<Command::Network_Command>();
     command->id = id;
     command->value = value;
     pod->processing_command.reset();
@@ -77,7 +76,7 @@ class PodTest : public ::testing::Test
    * @param state the target state the command will bring you to
    * @param allow true if this transition should be allowed, false otherwises
    */
-  void MoveState(TCPManager::Network_Command_ID id, E_States state, bool allow) {
+  void MoveState(Command::Network_Command_ID id, E_States state, bool allow) {
 
     auto start_state = pod->state_machine->get_current_state();
     SendCommand(id, 0);
