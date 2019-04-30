@@ -59,7 +59,7 @@ struct CANData {
   int peak_current;
   int pack_voltage_inst;
   int pack_voltage_open;
-  int pack_sol;
+  int pack_soc;
   int pack_amphours;
   int pack_resistance;
   int pack_dod;

@@ -114,7 +114,7 @@ std::shared_ptr<CANData> CANManager::refresh() {
 
   int64_t a = Utils::microseconds();
   // Send HV battery relay state frame
-  if (!send_frame(can_id_bms_relay, (char *)(&relay_state_buf), 3)) {
+  if (!send_frame(can_id_bms_relay, reinterpret_cast<char*>(&relay_state_buf), 3)) {
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_SEND_FRAME_ERROR);
   }
   int64_t b = Utils::microseconds();
@@ -222,26 +222,26 @@ void CANManager::initialize_sensor_error_configs() {
 }
 
 void CANManager::set_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
-  ((char *)(&relay_state_buf))[relay] = state;
+  (reinterpret_cast<char*>(&relay_state_buf))[relay] = state;
 }
 
-void CANManager::set_motor_state(bool enable) { //TODO: Need to Send controlword 3 at startup
+void CANManager::set_motor_state(bool enable) {  // TODO: Need to Send controlword 3 at startup
   if (enable) {
     uint32_t pdo_val = can_id_p1;
     char* bufferArray;
     uint16_t value = 4;
     u16_to_bytes(value, bufferArray);
     int length = sizeof(bufferArray) / sizeof(bufferArray[0]);
-    send_frame(pdo_val,bufferArray,length);
+    send_frame(pdo_val, bufferArray, length);
   }
 }
 
-void CANManager::set_motor_throttle(int16_t value) { //Using Throttle Value Here
+void CANManager::set_motor_throttle(int16_t value) {  // Using Throttle Value Here
   uint32_t pdo_val = can_id_p1;
   char* bufferArray;
   i16_to_bytes(value, bufferArray); 
   int length = sizeof(bufferArray) / sizeof(bufferArray[0]);
-  send_frame(pdo_val,bufferArray,length); 
+  send_frame(pdo_val, bufferArray, length); 
 }
 
 void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_data) {

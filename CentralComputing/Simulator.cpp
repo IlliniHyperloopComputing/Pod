@@ -132,8 +132,7 @@ void Simulator::sim_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
   std::lock_guard<std::mutex> guard(mutex);
   if (state) {
     print(LogLevel::LOG_DEBUG, "Sim - Relay %d Enabled\n", relay);
-  }
-  else {
+  } else {
     print(LogLevel::LOG_DEBUG, "Sim - Relay %d Disabled\n", relay);
   }
   if (scenario != nullptr) {
@@ -145,8 +144,7 @@ void Simulator::sim_motor_state(bool enable) {
   std::lock_guard<std::mutex> guard(mutex);
   if (enable) {
     print(LogLevel::LOG_DEBUG, "Sim - Motors Enabled\n");
-  }
-  else {
+  } else {
     print(LogLevel::LOG_DEBUG, "Sim - Motors Disabled\n");
   }
   if (scenario != nullptr) {
