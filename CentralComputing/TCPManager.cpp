@@ -55,20 +55,23 @@ int TCPManager::read_command(uint32_t * ID, uint32_t * Command) {
   return bytes_read;
 }
 
-int TCPManager::write_data(vector<int64_t>& times) {
+int TCPManager::write_data() {
   vector<int32_t> vals;
-  if(Utils::microseconds() - times[0] > 1000000){  //  This is the first time threshold
+  static vector<int64_t> times;
+  int64_t start_time = Utils::microseconds();
+  for(int i = 0; i < 3; i++) times.push_back(start_time);  
+  if(start_time - times[0] > 1000000){  //  This is the first time threshold
     vals.push_back(Command::POD_STATE);
     vals.push_back(Command::POSITION); 
     vals.push_back(Command::VELOCITY);
     vals.push_back(Command::ACCELERATION);
     times[0] = Utils::microseconds();
   }
-  if(Utils::microseconds() - times[1] > 3000000){  //  This is the second time threshold 
+  if(start_time - times[1] > 3000000){  //  This is the second time threshold 
     vals.push_back(Command::TEMPERATURE);
     times[1] = Utils::microseconds();
   }
-  if(Utils::microseconds() - times[2] > 6000000){  //  This is the third time threshold 
+  if(start_time - times[2] > 6000000){  //  This is the third time threshold 
     vals.push_back(Command::BRAKE_STATUS);
     vals.push_back(Command::MOTOR_STATUS);
     times[2] = Utils::microseconds();
@@ -95,13 +98,10 @@ void TCPManager::read_loop() {
 }
 
 void TCPManager::write_loop() {
-  vector<int64_t> times;
-  int64_t time = Utils::microseconds();
-  for(int i = 0; i < 3; i++) times.push_back(time);
   bool active_connection = true;
   while (running && active_connection) {
     closing.wait_for(1000000);
-    int written = write_data(times);
+    int written = write_data();
     print(LogLevel::LOG_DEBUG, "TCP Wrote %d bytes\n", written);
     active_connection = written != -1;
   }

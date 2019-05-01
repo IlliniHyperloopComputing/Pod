@@ -8,6 +8,10 @@ logic_loop_timeout  1000.0   # Units are microseconds
 tcp_port 8001
 tcp_addr 127.0.0.1
 
+tcp_stagger_time1 1000000
+tcp_stagger_time2 3000000
+tcp_stagger_time3 6000000
+
 udp_send_port 5004
 udp_recv_port 5005
 udp_addr 127.0.0.1

@@ -48,7 +48,7 @@ int read_command(uint32_t * ID, uint32_t * Command);
  * @param times timings for when to send specific data
  * @return bytes written or -1 if failed
  **/
-int write_data(std::vector<int64_t>& times);
+int write_data();
 
 /**
  * Thread function, continually reads commands from the socket and 
