@@ -57,28 +57,25 @@ int TCPManager::read_command(uint32_t * ID, uint32_t * Command) {
 
 int TCPManager::write_data() {
   vector<int32_t> vals;
-  static vector<int64_t> times;
+  static vector<int64_t> last_sent_time;
   int64_t start_time = Utils::microseconds();
-  for(int i = 0; i < 3; i++) times.push_back(start_time);  
-  if(start_time - times[0] > 1000000){  //  This is the first time threshold
+  for(int i = 0; i < 3; i++) last_sent_time.push_back(start_time);  
+  if(start_time - last_sent_time[0] > stagger_times[0]){  //  This is the first time threshold
     vals.push_back(Command::POD_STATE);
     vals.push_back(Command::POSITION); 
     vals.push_back(Command::VELOCITY);
     vals.push_back(Command::ACCELERATION);
-    times[0] = Utils::microseconds();
+    last_sent_time[0] = start_time;
   }
-  if(start_time - times[1] > 3000000){  //  This is the second time threshold 
+  if(start_time - last_sent_time[1] > stagger_times[1]){  //  This is the second time threshold 
     vals.push_back(Command::TEMPERATURE);
-    times[1] = Utils::microseconds();
+    last_sent_time[1] = start_time;
   }
-  if(start_time - times[2] > 6000000){  //  This is the third time threshold 
+  if(start_time - last_sent_time[2] > stagger_times[2]){  //  This is the third time threshold 
     vals.push_back(Command::BRAKE_STATUS);
     vals.push_back(Command::MOTOR_STATUS);
-    times[2] = Utils::microseconds();
+    last_sent_time[2] = start_time;
   }  
-  //int16_t x1 = 100;
-  //int32_t x2 = 27;
-  //vector<int32_t> vals = { x1, x2};
   return write(socketfd, vals.data(), vals.size() * sizeof(int32_t));
 }
 
@@ -112,6 +109,13 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
   connected.reset();
   closing.reset();
   running.store(true);
+  
+  if (!(ConfiguratorManager::config.getValue("tcp_stagger_time1", stagger_times[0]) &&
+       ConfiguratorManager::config.getValue("tcp_stagger_time2", stagger_times[0]) &&
+       ConfiguratorManager::config.getValue("tcp_stagger_time3", stagger_times[2]))){
+    print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: Missing necessary configuration");
+    running.store(false);
+  }
 
   while (running) {
     int fd = connect_to_server(hostname, port);

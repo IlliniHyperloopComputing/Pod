@@ -1,6 +1,7 @@
 #ifndef TCPMANAGER_H_
 #define TCPMANAGER_H_
 
+#include "Configurator.h"
 #include "Defines.hpp"
 #include "Utils.h"
 #include "SafeQueue.hpp"
@@ -33,6 +34,8 @@ extern SafeQueue<std::shared_ptr<UnifiedState>> write_queue;
 extern Event connected;  // Used within Simulator to check when TCP is connected
 extern Event closing;    // Used to wait between writes in the write_loop()
 extern std::mutex mutex;  // Used to eliminate TSan errors
+
+int64_t stagger_times[3];
 
 int connect_to_server(const char * hostname, const char * port);
 
