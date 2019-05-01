@@ -55,34 +55,24 @@ int TCPManager::read_command(uint32_t * ID, uint32_t * Command) {
   return bytes_read;
 }
 
-<<<<<<< HEAD
 int TCPManager::write_data(vector<int64_t>& times) {
   vector<int32_t> vals;
   if(Utils::microseconds() - times[0] > 1000000){  //  This is the first time threshold
-    vals.push_back(POD_STATE);
-    vals.push_back(POSITION); 
-    vals.push_back(VELOCITY);
-    vals.push_back(ACCELERATION);
+    vals.push_back(Command::POD_STATE);
+    vals.push_back(Command::POSITION); 
+    vals.push_back(Command::VELOCITY);
+    vals.push_back(Command::ACCELERATION);
     times[0] = Utils::microseconds();
   }
   if(Utils::microseconds() - times[1] > 3000000){  //  This is the second time threshold 
-    vals.push_back(TEMPERATURE);
+    vals.push_back(Command::TEMPERATURE);
     times[1] = Utils::microseconds();
   }
   if(Utils::microseconds() - times[2] > 6000000){  //  This is the third time threshold 
-    vals.push_back(BRAKE_STATUS);
-    vals.push_back(MOTOR_STATUS);
+    vals.push_back(Command::BRAKE_STATUS);
+    vals.push_back(Command::MOTOR_STATUS);
     times[2] = Utils::microseconds();
   }  
-  // TODO write real data
-  auto uS = write_queue.dequeue();
-=======
-int TCPManager::write_data() {
-  // TODO write real datauint16_t uS;
-  shared_ptr<UnifiedState> uS;
-  write_queue.dequeue(&uS);
->>>>>>> aa5ded56899777727888fa667e100faf0a14b93c
-  // TODO: CHANGE, just for testing
   //int16_t x1 = 100;
   //int32_t x2 = 27;
   //vector<int32_t> vals = { x1, x2};
