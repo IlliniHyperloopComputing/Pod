@@ -157,10 +157,17 @@ Pod::Pod(const std::string & config_to_open) {
       ConfiguratorManager::config.getValue("udp_send_port", udp_send) &&
       ConfiguratorManager::config.getValue("udp_recv_port", udp_recv) &&
       ConfiguratorManager::config.getValue("udp_addr", udp_addr) &&
-      ConfiguratorManager::config.getValue("logic_loop_timeout", logic_loop_timeout))) {
+      ConfiguratorManager::config.getValue("logic_loop_timeout", logic_loop_timeout) &&
+      ConfiguratorManager::config.getValue("tcp_stagger_time1", stagger_times[0]) &&
+      ConfiguratorManager::config.getValue("tcp_stagger_time2", stagger_times[1]) &&
+      ConfiguratorManager::config.getValue("tcp_stagger_time3", stagger_times[2]))){
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: Missing necessary configuration\n");
-    exit(1);
+    exit(1);  // Crash hard on this error
   }
+
+  last_sent_times[0] = -1000000;  // Initialize these times to a large negative number, so sending happens right away
+  last_sent_times[1] = -1000000;
+  last_sent_times[2] = -1000000;
 
   // Setup any other member variables here
   state_machine = make_shared<Pod_State>();
