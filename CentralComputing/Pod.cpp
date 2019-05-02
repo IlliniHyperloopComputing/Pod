@@ -151,7 +151,13 @@ Pod::Pod(const std::string & config_to_open) {
   // Setup any other member variables here
   state_machine = make_shared<Pod_State>();
   motion_model = make_shared<MotionModel>();
-  Utils::init_unified_state(&unified_state);
+  unified_state.motion_data = make_shared<MotionData>();
+  unified_state.adc_data = make_shared<ADCData>();
+  unified_state.can_data = make_shared<CANData>();
+  unified_state.i2c_data = make_shared<I2CData>();
+  unified_state.pru_data = make_shared<PRUData>();
+  unified_state.errors = make_shared<Errors>();
+  unified_state.state = E_States::ST_SAFE_MODE;
   running.store(false);
   switchVal = false;
 }
