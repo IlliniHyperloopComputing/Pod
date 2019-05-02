@@ -25,24 +25,32 @@
 
 namespace TCPManager {
 
-extern int socketfd;
+struct TCPSendIDs {
+  uint8_t adc_id = 0;
+  uint8_t can_id = 1;
+  uint8_t i2c_id = 2;
+  uint8_t pru_id = 3;
+  uint8_t motion_id = 4;
+  uint8_t error_id = 5;
+  uint8_t state_id = 6;
+};
 
+extern TCPSendIDs TCPID;
+
+extern int socketfd;
 extern std::atomic<bool> running;
 
-extern SafeQueue<std::shared_ptr<UnifiedState>> write_queue;
-extern SafeQueue<std::shared_ptr<CANData>> can_data;
-extern SafeQueue<std::shared_ptr<ADCData>> adc_data;
-extern SafeQueue<std::shared_ptr<I2CData>> i2c_data;
-extern SafeQueue<std::shared_ptr<PRUData>> pru_data;
-extern SafeQueue<std::shared_ptr<MotionData>> motion_data;
-extern SafeQueue<std::shared_ptr<Errors>> error_data;
+extern std::shared_ptr<UnifiedState> data_to_send;
+extern std::shared_ptr<UnifiedState> local_copy_to_send;
+extern int64_t stagger_times[3];  // Used to stagger how frequently data is sent to tcp server 
+extern int64_t last_sent_times[3];   // Used to store the last time a data type was sent
+extern std::mutex data_mutex;  
+extern int64_t write_loop_timeout;
 
 extern Event connected;  // Used within Simulator to check when TCP is connected
 extern Event closing;    // Used to wait between writes in the write_loop()
-extern std::mutex mutex;  // Used to eliminate TSan errors
+extern std::mutex setup_shutdown_mutex;  // Used to eliminate TSan errors
 
-extern int64_t stagger_times[3];  // Used to stagger how frequently data is sent to tcp server 
-extern int64_t last_sent_times[3];   // Used to store the last time a data type was sent
 int connect_to_server(const char * hostname, const char * port);
 
 /**

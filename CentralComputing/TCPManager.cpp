@@ -12,18 +12,20 @@ Event TCPManager::connected;
 Event TCPManager::closing;
 
 std::atomic<bool> TCPManager::running(false);
-std::mutex TCPManager::mutex;
+std::mutex TCPManager::setup_shutdown_mutex;
 
-// I'm not sure how to get the unified state to the TCPManager
-SafeQueue<shared_ptr<CANData>> TCPManager::can_data;
-SafeQueue<shared_ptr<ADCData>> TCPManager::adc_data;
-SafeQueue<shared_ptr<I2CData>> TCPManager::i2c_data;
-SafeQueue<shared_ptr<PRUData>> TCPManager::pru_data;
-SafeQueue<shared_ptr<MotionData>> TCPManager::motion_data;
-SafeQueue<shared_ptr<Errors>> TCPManager::error_data;
+TCPManager::TCPSendIDs TCPManager::TCPID;
+
+shared_ptr<UnifiedState> TCPManager::data_to_send;  
+shared_ptr<UnifiedState> TCPManager::local_copy_to_send;
+std::mutex TCPManager::data_mutex;  
+int64_t TCPManager::write_loop_timeout;
+
+int64_t TCPManager::stagger_times[3];   // For sendig data to the TCP Write loop
+int64_t TCPManager::last_sent_times[3];   // For sending data to the TCP Write loop
 
 int TCPManager::connect_to_server(const char * hostname, const char * port) {
-  std::lock_guard<std::mutex> guard(mutex);  // Used to protect socketfd (TSan datarace)
+  std::lock_guard<std::mutex> guard(setup_shutdown_mutex);  // Used to protect socketfd (TSan datarace)
   struct addrinfo hints, *servinfo;
   memset(&hints, 0, sizeof(hints));
   hints.ai_family = AF_INET;
@@ -61,33 +63,56 @@ int TCPManager::read_command(uint32_t * ID, uint32_t * Command) {
 }
 
 int TCPManager::write_data() {
-  vector<int32_t> vals;
-  shared_ptr<MotionData> MD;
-  if (TCPManager::motion_data.dequeue(&MD))
-    if (Utils::write_all_to_socket(socketfd, MD.get(), sizeof(MotionData)) <= 0)
-      return -1;
+  int64_t cur_time = Utils::microseconds();
 
-  shared_ptr<ADCData> ADC;
-  if (TCPManager::adc_data.dequeue(&ADC))
-    if (Utils::write_all_to_socket(socketfd, ADC.get(), sizeof(ADCData)) <= 0)
-      return -1;
+  // Determine if anything is going to want to send data
+  bool do_update = false;
+  for (int i = 0; i < 3 && !do_update; i++) {
+    do_update |= (cur_time - last_sent_times[i] > stagger_times[i]);
+  }
 
-  shared_ptr<CANData> CAN;
-  if (TCPManager::motion_data.dequeue(&CAN))
-    if (Utils::write_all_to_socket(socketfd, CAN.get(), sizeof(CANData)) <= 0)
-      return -1;
-
-  shared_ptr<I2CData> I2C;
-  if (TCPManager::motion_data.dequeue(&I2C))
-    if (Utils::write_all_to_socket(socketfd, I2C.get(), sizeof(I2CData)) <= 0)
-      return -1;
-
-  shared_ptr<PRUData> PRU;
-  if (TCPManager::motion_data.dequeue(&PRU))
-    if (Utils::write_all_to_socket(socketfd, PRU.get(), sizeof(PRUData)) <= 0)
-      return -1;
-
-  return 1;
+  if (!do_update){
+    return 1;  // Return early, since we are not sending data
+  } else {
+    // If there is an update, copy the data
+    data_mutex.lock();  // Protect access to TCPManger::data_to_send
+    local_copy_to_send = data_to_send;
+    data_mutex.unlock();
+    //  This is the first time threshold
+    if(cur_time - last_sent_times[0] > stagger_times[0]){        
+      if ((Utils::write_all_to_socket(socketfd, &TCPID.motion_id, sizeof(uint8_t))) ||
+          (Utils::write_all_to_socket(socketfd, (uint8_t *)local_copy_to_send->motion_data.get(), sizeof(MotionData)) <= 0) ||
+          (Utils::write_all_to_socket(socketfd, &TCPID.error_id, sizeof(uint8_t))) ||
+          (Utils::write_all_to_socket(socketfd, (uint8_t *)local_copy_to_send->errors.get(), sizeof(Errors)) <= 0)  ||
+          (Utils::write_all_to_socket(socketfd, &TCPID.state_id, sizeof(uint8_t))) ||
+          (Utils::write_all_to_socket(socketfd, (uint8_t *)&local_copy_to_send->state, sizeof(uint32_t)) <= 0) ) {
+        return -1;
+      }
+      last_sent_times[0] = cur_time;
+    }
+    //  This is the second time threshold 
+    if(cur_time - last_sent_times[1] > stagger_times[1]){  
+      if ((Utils::write_all_to_socket(socketfd, &TCPID.can_id, sizeof(uint8_t))) ||
+          (Utils::write_all_to_socket(socketfd, (uint8_t *)local_copy_to_send->can_data.get(), sizeof(MotionData)) <= 0)) {
+        return -1;
+      }
+      last_sent_times[1] = cur_time;
+    }
+    //  This is the third time threshold 
+    if(cur_time - last_sent_times[2] > stagger_times[2]){  
+      if ((Utils::write_all_to_socket(socketfd, &TCPID.pru_id, sizeof(uint8_t))) ||
+          (Utils::write_all_to_socket(socketfd, (uint8_t *)local_copy_to_send->pru_data.get(), sizeof(PRUData)) <= 0) ||
+          (Utils::write_all_to_socket(socketfd, &TCPID.i2c_id, sizeof(uint8_t))) ||
+          (Utils::write_all_to_socket(socketfd, (uint8_t *)local_copy_to_send->i2c_data.get(), sizeof(I2CData)) <= 0) ||
+          (Utils::write_all_to_socket(socketfd, &TCPID.adc_id, sizeof(uint8_t))) ||
+          (Utils::write_all_to_socket(socketfd, (uint8_t *)local_copy_to_send->adc_data.get(), sizeof(ADCData))<= 0)) {
+        return -1;
+      }
+      last_sent_times[2] = cur_time;
+    }  
+    // Return success
+    return 1;
+  }
 }
 
 void TCPManager::read_loop() {
@@ -120,6 +145,17 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
   connected.reset();
   closing.reset();
   running.store(true);
+
+  if (!( ConfiguratorManager::config.getValue("tcp_write_loop_timeout", write_loop_timeout) &&
+      ConfiguratorManager::config.getValue("tcp_stagger_time1", stagger_times[0]) &&
+      ConfiguratorManager::config.getValue("tcp_stagger_time2", stagger_times[1]) &&
+      ConfiguratorManager::config.getValue("tcp_stagger_time3", stagger_times[2]))){
+    print(LogLevel::LOG_ERROR, "TCP CONFIG FILE ERROR: Missing necessary configuration\n");
+    exit(1);  // Crash hard on this error
+  }
+  last_sent_times[0] = -1000000;  // Initialize these times to a large negative number, so sending happens right away
+  last_sent_times[1] = -1000000;
+  last_sent_times[2] = -1000000;
   
   while (running) {
     int fd = connect_to_server(hostname, port);
@@ -147,7 +183,7 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
 }
 
 void TCPManager::close_client() {
-  std::lock_guard<std::mutex> guard(mutex);  // Used to protect socketfd (TSan datarace)
+  std::lock_guard<std::mutex> guard(setup_shutdown_mutex);  // Used to protect socketfd (TSan datarace)
   running.store(false);  // Will cause the tcp_loop to exit once threads join.
   closing.invoke();  // write_thread sleeps using an event. Invoke the event to stop further sleeping
   shutdown(socketfd, SHUT_RDWR);  // Causes read(socketfd) or write(socketfd) to return. 
