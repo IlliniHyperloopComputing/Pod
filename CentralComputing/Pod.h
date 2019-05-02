@@ -36,8 +36,9 @@ class Pod {
   Event closing;
 
  private:
-  void logic_loop();
+  void logic_loop();  
   void update_unified_state();
+  void send_data_to_tcp();
   // IF the command is an error command, set the unified state appropriatly
   void set_error_code(Command::Network_Command * com);    
   bool switchVal;
@@ -47,9 +48,6 @@ class Pod {
   string udp_recv;  // port we recv packets from
   string udp_addr; 
   int64_t logic_loop_timeout;  // logic_loop sleep (timeout) value
-
-  int64_t stagger_times[3];   // For sendig data to the TCP Write loop
-  int64_t last_sent_times[3];   // For sending data to the TCP Write loop
 };
 
 namespace podtest_global {

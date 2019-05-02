@@ -40,6 +40,8 @@ void Pod::logic_loop() {
     set_error_code(&com);
     // Collect sensor data and set motion model
     update_unified_state();    
+    // Send data to TCP write thread
+    send_data_to_tcp();
 
     // Calls the steady state function for the current state
     // Passes in command, and current state. 
@@ -71,6 +73,8 @@ void Pod::logic_loop() {
 }
 
 
+// Helper function called from logic_loop()
+// Updates the unified_state based on if there is SET or CLR error code
 void Pod::set_error_code(Command::Network_Command * com) {
   if (com->id >= Command::Network_Command_ID::SET_ADC_ERROR 
     && com->id <= Command::Network_Command_ID::SET_OTHER_ERROR) {
@@ -101,24 +105,13 @@ void Pod::update_unified_state() {
   #else
   motion_model->calculate_sim(unified_state);
   #endif
+}
 
-  int64_t cur_time = Utils::microseconds();
-
-  if(cur_time - last_sent_times[0] > stagger_times[0]){  //  This is the first time threshold
-    TCPManager::motion_data.enqueue(unified_state->motion_data);
-    TCPManager::error_data.enqueue(unified_state->errors);
-    last_sent_times[0] = cur_time;
-  }
-  if(cur_time - last_sent_times[1] > stagger_times[1]){  //  This is the second time threshold 
-    TCPManager::can_data.enqueue(unified_state->can_data);
-    last_sent_times[1] = cur_time;
-  }
-  if(cur_time - last_sent_times[2] > stagger_times[2]){  //  This is the third time threshold 
-    TCPManager::pru_data.enqueue(unified_state->pru_data);
-    TCPManager::i2c_data.enqueue(unified_state->i2c_data);
-    TCPManager::adc_data.enqueue(unified_state->adc_data);
-    last_sent_times[2] = cur_time;
-  }  
+// Helper function to write Unified state data to the TCP write thread, where
+// That thread will deal with sending it to the front end.
+void Pod::send_data_to_tcp() {
+  std::lock_guard<std::mutex> guard(TCPManager::data_mutex);  // Protect access to TCPManger::data_to_send
+  TCPManager::data_to_send = unified_state;
 }
 
 // Pod constructor
@@ -157,17 +150,10 @@ Pod::Pod(const std::string & config_to_open) {
       ConfiguratorManager::config.getValue("udp_send_port", udp_send) &&
       ConfiguratorManager::config.getValue("udp_recv_port", udp_recv) &&
       ConfiguratorManager::config.getValue("udp_addr", udp_addr) &&
-      ConfiguratorManager::config.getValue("logic_loop_timeout", logic_loop_timeout) &&
-      ConfiguratorManager::config.getValue("tcp_stagger_time1", stagger_times[0]) &&
-      ConfiguratorManager::config.getValue("tcp_stagger_time2", stagger_times[1]) &&
-      ConfiguratorManager::config.getValue("tcp_stagger_time3", stagger_times[2]))){
+      ConfiguratorManager::config.getValue("logic_loop_timeout", logic_loop_timeout))){
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: Missing necessary configuration\n");
     exit(1);  // Crash hard on this error
   }
-
-  last_sent_times[0] = -1000000;  // Initialize these times to a large negative number, so sending happens right away
-  last_sent_times[1] = -1000000;
-  last_sent_times[2] = -1000000;
 
   // Setup any other member variables here
   state_machine = make_shared<Pod_State>();
