@@ -30,6 +30,11 @@ extern int socketfd;
 extern std::atomic<bool> running;
 
 extern SafeQueue<std::shared_ptr<UnifiedState>> write_queue;
+extern SafeQueue<std::shared_ptr<CANData>> can_data;
+extern SafeQueue<std::shared_ptr<ADCData>> adc_data;
+extern SafeQueue<std::shared_ptr<I2CData>> i2c_data;
+extern SafeQueue<std::shared_ptr<PRUData>> pru_data;
+extern SafeQueue<std::shared_ptr<MotionData>> motion_data;
 
 extern Event connected;  // Used within Simulator to check when TCP is connected
 extern Event closing;    // Used to wait between writes in the write_loop()

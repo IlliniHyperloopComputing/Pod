@@ -19,6 +19,11 @@ int64_t TCPManager::last_sent_times[3];
 
 // I'm not sure how to get the unified state to the TCPManager
 SafeQueue<shared_ptr<UnifiedState>> TCPManager::write_queue;  
+SafeQueue<shared_ptr<CANData>> TCPManager::can_data;
+SafeQueue<shared_ptr<ADCData>> TCPManager::adc_data;
+SafeQueue<shared_ptr<I2CData>> TCPManager::i2c_data;
+SafeQueue<shared_ptr<PRUData>> TCPManager::pru_data;
+SafeQueue<shared_ptr<MotionData>> TCPManager::motion_data;
 
 int TCPManager::connect_to_server(const char * hostname, const char * port) {
   std::lock_guard<std::mutex> guard(mutex);  // Used to protect socketfd (TSan datarace)
@@ -61,22 +66,6 @@ int TCPManager::read_command(uint32_t * ID, uint32_t * Command) {
 int TCPManager::write_data() {
   int64_t cur_time = Utils::microseconds();
   vector<int32_t> vals;
-  if(cur_time - last_sent_times[0] > stagger_times[0]){  //  This is the first time threshold
-    vals.push_back(Command::POD_STATE);
-    vals.push_back(Command::POSITION); 
-    vals.push_back(Command::VELOCITY);
-    vals.push_back(Command::ACCELERATION);
-    last_sent_times[0] = cur_time;
-  }
-  if(cur_time - last_sent_times[1] > stagger_times[1]){  //  This is the second time threshold 
-    vals.push_back(Command::TEMPERATURE);
-    last_sent_times[1] = cur_time;
-  }
-  if(cur_time - last_sent_times[2] > stagger_times[2]){  //  This is the third time threshold 
-    vals.push_back(Command::BRAKE_STATUS);
-    vals.push_back(Command::MOTOR_STATUS);
-    last_sent_times[2] = cur_time;
-  }  
   return write(socketfd, vals.data(), vals.size() * sizeof(int32_t));
 }
 

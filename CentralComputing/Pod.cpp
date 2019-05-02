@@ -96,6 +96,22 @@ void Pod::update_unified_state() {
   unified_state->pru_data = SourceManager::PRU.Get();
   unified_state->state = state_machine->get_current_state();
 
+  if(cur_time - last_sent_times[0] > stagger_times[0]){  //  This is the first time threshold
+    vals.push_back(Command::POD_STATE);
+    vals.push_back(Command::POSITION); 
+    vals.push_back(Command::VELOCITY);
+    vals.push_back(Command::ACCELERATION);
+    last_sent_times[0] = cur_time;
+  }
+  if(cur_time - last_sent_times[1] > stagger_times[1]){  //  This is the second time threshold 
+    vals.push_back(Command::TEMPERATURE);
+    last_sent_times[1] = cur_time;
+  }
+  if(cur_time - last_sent_times[2] > stagger_times[2]){  //  This is the third time threshold 
+    vals.push_back(Command::BRAKE_STATUS);
+    vals.push_back(Command::MOTOR_STATUS);
+    last_sent_times[2] = cur_time;
+  }  
   // Update motion_data
   // Pass current state into Motion Model
   #ifndef SIM
