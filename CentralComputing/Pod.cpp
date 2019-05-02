@@ -64,9 +64,6 @@ void Pod::logic_loop() {
     command_processed = false;
     #endif 
 
-    // TODO: enqueue this in a smarter way, so you don't have to pass the entire object
-    TCPManager::write_queue.enqueue(unified_state);  
-
     // Sleep for the given timeout
     closing.wait_for(logic_loop_timeout);
   } 
@@ -95,23 +92,8 @@ void Pod::update_unified_state() {
   unified_state->i2c_data = SourceManager::I2C.Get();
   unified_state->pru_data = SourceManager::PRU.Get();
   unified_state->state = state_machine->get_current_state();
+  // unified_state->errors is already updated, see 'set_error_code`
 
-  if(cur_time - last_sent_times[0] > stagger_times[0]){  //  This is the first time threshold
-    vals.push_back(Command::POD_STATE);
-    vals.push_back(Command::POSITION); 
-    vals.push_back(Command::VELOCITY);
-    vals.push_back(Command::ACCELERATION);
-    last_sent_times[0] = cur_time;
-  }
-  if(cur_time - last_sent_times[1] > stagger_times[1]){  //  This is the second time threshold 
-    vals.push_back(Command::TEMPERATURE);
-    last_sent_times[1] = cur_time;
-  }
-  if(cur_time - last_sent_times[2] > stagger_times[2]){  //  This is the third time threshold 
-    vals.push_back(Command::BRAKE_STATUS);
-    vals.push_back(Command::MOTOR_STATUS);
-    last_sent_times[2] = cur_time;
-  }  
   // Update motion_data
   // Pass current state into Motion Model
   #ifndef SIM
@@ -119,6 +101,24 @@ void Pod::update_unified_state() {
   #else
   motion_model->calculate_sim(unified_state);
   #endif
+
+  int64_t cur_time = Utils::microseconds();
+
+  if(cur_time - last_sent_times[0] > stagger_times[0]){  //  This is the first time threshold
+    TCPManager::motion_data.enqueue(unified_state->motion_data);
+    TCPManager::error_data.enqueue(unified_state->errors);
+    last_sent_times[0] = cur_time;
+  }
+  if(cur_time - last_sent_times[1] > stagger_times[1]){  //  This is the second time threshold 
+    TCPManager::can_data.enqueue(unified_state->can_data);
+    last_sent_times[1] = cur_time;
+  }
+  if(cur_time - last_sent_times[2] > stagger_times[2]){  //  This is the third time threshold 
+    TCPManager::pru_data.enqueue(unified_state->pru_data);
+    TCPManager::i2c_data.enqueue(unified_state->i2c_data);
+    TCPManager::adc_data.enqueue(unified_state->adc_data);
+    last_sent_times[2] = cur_time;
+  }  
 }
 
 // Pod constructor

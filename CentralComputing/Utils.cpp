@@ -78,7 +78,7 @@ void Utils::busyWait(int64_t microseconds) {
   return;
 }
 
-
+// Returns a number > 0 if success. Otherwise, there was a write failure
 ssize_t Utils::write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
   size_t bytes_written = 0;
   while (bytes_written != count) {
