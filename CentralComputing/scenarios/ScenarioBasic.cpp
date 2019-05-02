@@ -8,6 +8,7 @@ bool ScenarioBasic::use_motion_model() {
   return true;
 }
 
+// This test is designed to do the same thing that the original code in Simulator.cpp did
 std::shared_ptr<MotionData> ScenarioBasic::sim_get_motion() {
   // FOR FIRST CALL
   if (timeLast == -1) {
@@ -34,9 +35,9 @@ std::shared_ptr<MotionData> ScenarioBasic::sim_get_motion() {
 
   // CREATING A STATESPACE OBJECT AND SETTING ITS ARRAY'S VALUES
   std::shared_ptr<MotionData> space = std::make_shared<MotionData>();
-  space->x[0] = position;
-  space->x[1] = velocity;
-  space->x[2] = acceleration;
+  space->x[0] = position * 1000; // multiply by 1000 to convert to mm
+  space->x[1] = velocity * 1000; // ^^^^
+  space->x[2] = acceleration * 1000; // ^^^
 
   if (enable_logging) {
     print(LogLevel::LOG_DEBUG, 

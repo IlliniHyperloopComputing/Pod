@@ -12,7 +12,7 @@ class ScenarioRealLong : public Scenario {
   std::shared_ptr<I2CData> sim_get_i2c();
   std::shared_ptr<PRUData> sim_get_pru();
 
-  void true_motion();
+  virtual void true_motion();
   int64_t pru_delta_seconds, can_delta_seconds;
 };
 #endif

@@ -53,19 +53,20 @@ class Scenario{
 
   void sim_motor_enable() {
     motorsOn = true;
-    motors_on = microseconds();
+    motors_on_time = microseconds();
   }
   
   void sim_motor_disable() {
     motorsOn = false;
   }
   
-  void sim_motor_set_throttle(uint8_t value) {
+  void sim_motor_set_throttle(int16_t value) {
     throttle = value;
   }
   
   void sim_brake_enable() {
     brakesOn = true;
+    brakes_on_time = microseconds();
   }
   
   void sim_brake_disable() {
@@ -81,14 +82,15 @@ class Scenario{
   int64_t timeDelta = 0.000;
   bool motorsOn = false;
   bool brakesOn = false;
-  uint8_t throttle = 0.000;
+  int16_t throttle = 0.000;
   uint8_t pressure = 0.000;
   double position = 0.000;
   double lastPosition = 0.000;
   double velocity = 0.000;
   double lastVelocity = 0.000;
   double acceleration = 0.000;
-  int64_t motors_on = 0;
+  int64_t motors_on_time = 0;
+  int64_t brakes_on_time= 0;
 
 };
 #endif 

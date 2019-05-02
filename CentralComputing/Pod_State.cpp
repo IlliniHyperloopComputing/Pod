@@ -4,12 +4,6 @@
 using Utils::print;
 using Utils::LogLevel;
 
-double MAX_DECCEL = -19.6;
-double IDEAL_DECCEL = -9.8;
-double LENGTH_OF_TRACK = 1000;
-double BUFFER_LENGTH = 20;
-double MAX_VELOCITY = 550;
-
 Pod_State::Pod_State()
   : StateMachine(ST_MAX_STATES),
   motor(), brakes() {
@@ -21,13 +15,25 @@ Pod_State::Pod_State()
   transition_map[Command::TRANS_FLIGHT_COAST] = &Pod_State::coast;
   transition_map[Command::TRANS_FLIGHT_BRAKE] = &Pod_State::brake;
   transition_map[Command::EMERGENCY_BRAKE] = &Pod_State::emergency_brake;
-  transition_map[Command::TRANS_ERROR_STATE]= &Pod_State::error;
+  transition_map[Command::TRANS_ERROR_STATE]= &Pod_State::abort;
   // non state transition commands
   transition_map[Command::ENABLE_MOTOR] = &Pod_State::no_transition;
   transition_map[Command::DISABLE_MOTOR] = &Pod_State::no_transition;
   transition_map[Command::SET_MOTOR_SPEED] = &Pod_State::no_transition;
   transition_map[Command::ENABLE_BRAKE] = &Pod_State::no_transition;
   transition_map[Command::DISABLE_BRAKE] = &Pod_State::no_transition;
+  transition_map[Command::SET_ADC_ERROR] = &Pod_State::move_safe_mode_or_abort;
+  transition_map[Command::SET_CAN_ERROR] = &Pod_State::move_safe_mode_or_abort;
+  transition_map[Command::SET_I2C_ERROR] = &Pod_State::move_safe_mode_or_abort;
+  transition_map[Command::SET_PRU_ERROR] = &Pod_State::move_safe_mode_or_abort;
+  transition_map[Command::SET_NETWORK_ERROR] = &Pod_State::move_safe_mode_or_abort;
+  transition_map[Command::SET_OTHER_ERROR] = &Pod_State::move_safe_mode_or_abort;
+  transition_map[Command::CLR_ADC_ERROR] = &Pod_State::no_transition;
+  transition_map[Command::CLR_CAN_ERROR] = &Pod_State::no_transition;
+  transition_map[Command::CLR_I2C_ERROR] = &Pod_State::no_transition;
+  transition_map[Command::CLR_PRU_ERROR] = &Pod_State::no_transition;
+  transition_map[Command::CLR_NETWORK_ERROR] = &Pod_State::no_transition;
+  transition_map[Command::CLR_OTHER_ERROR] = &Pod_State::no_transition;
   steady_state_map[ST_SAFE_MODE] = &Pod_State::steady_safe_mode;
   steady_state_map[ST_FUNCTIONAL_TEST] = &Pod_State::steady_functional;
   steady_state_map[ST_LOADING] = &Pod_State::steady_loading;
@@ -35,14 +41,25 @@ Pod_State::Pod_State()
   steady_state_map[ST_FLIGHT_ACCEL] = &Pod_State::steady_flight_accelerate;
   steady_state_map[ST_FLIGHT_COAST] = &Pod_State::steady_flight_coast;
   steady_state_map[ST_FLIGHT_BRAKE] = &Pod_State::steady_flight_brake;
-  steady_state_map[ST_ERROR] = &Pod_State::steady_error_state;
+  steady_state_map[ST_ERROR] = &Pod_State::steady_abort_state;
+
+  if (!(ConfiguratorManager::config.getValue("acceleration_timeout", acceleration_timeout) && 
+      ConfiguratorManager::config.getValue("coast_timeout", coast_timeout) &&
+      ConfiguratorManager::config.getValue("brake_timeout", brake_timeout) &&
+      ConfiguratorManager::config.getValue("estimated_brake_deceleration", estimated_brake_deceleration) &&
+      ConfiguratorManager::config.getValue("length_of_track", length_of_track) &&
+      ConfiguratorManager::config.getValue("brake_buffer_length", brake_buffer_length) &&
+      ConfiguratorManager::config.getValue("not_moving_velocity", not_moving_velocity) &&
+      ConfiguratorManager::config.getValue("not_moving_acceleration", not_moving_acceleration))) {
+    print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: POD_STATE: Missing necessary configuration\n");
+    exit(1);
+  }
 }
 
 // returns the current state as a E_States enum
 E_States Pod_State::get_current_state() {
   return (E_States)StateMachine::getCurrentState();
 }
-
 
 /**
  * User controlled movement events
@@ -172,7 +189,7 @@ void Pod_State::brake() {
   END_TRANSITION_MAP(NULL)
 }
 
-void Pod_State::error() {
+void Pod_State::abort() {
   BEGIN_TRANSITION_MAP              /* Current state */
     TRANSITION_MAP_ENTRY(ST_ERROR)        /* Safe Mode */
     TRANSITION_MAP_ENTRY(ST_ERROR)        /* Functional test */
@@ -183,6 +200,20 @@ void Pod_State::error() {
     TRANSITION_MAP_ENTRY(ST_ERROR)        /* Flight brake */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // Error State
   END_TRANSITION_MAP(NULL)  
+}
+
+void Pod_State::move_safe_mode_or_abort() {
+  // Try moving to safemode first
+  BEGIN_TRANSITION_MAP              /* Current state */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safe Mode */
+    TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Functional test */
+    TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Loading */
+    TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Launch ready */
+    TRANSITION_MAP_ENTRY(ST_ERROR)          /* Flight accel */
+    TRANSITION_MAP_ENTRY(ST_ERROR)          /* Flight coast */
+    TRANSITION_MAP_ENTRY(ST_ERROR)          /* Flight brake */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     // Error State
+  END_TRANSITION_MAP(NULL)
 }
 
 void Pod_State::no_transition() {
@@ -205,6 +236,7 @@ void Pod_State::ST_Launch_Ready() {
 
 void Pod_State::ST_Flight_Accel() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  acceleration_start_time = microseconds();
   brakes.disable_brakes();
   motor.enable_motors();
   motor.set_throttle(100);
@@ -212,11 +244,13 @@ void Pod_State::ST_Flight_Accel() {
 
 void Pod_State::ST_Flight_Coast() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  coast_start_time = microseconds();
   motor.disable_motors();
 }
 
 void Pod_State::ST_Flight_Brake() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  brake_start_time = microseconds();
   motor.disable_motors();
   brakes.enable_brakes();
 }
@@ -272,11 +306,13 @@ void Pod_State::steady_launch_ready(Command::Network_Command * command,
 void Pod_State::steady_flight_accelerate(Command::Network_Command * command, 
                                         std::shared_ptr<UnifiedState> state) {
   // Access Pos, Vel, and Accel from Motion Model
-  double pos = state->motion_data->x[0];
-  double vel = state->motion_data->x[1];
-  double acc = state->motion_data->x[2];
+  int32_t pos = state->motion_data->x[0];
+  int32_t vel = state->motion_data->x[1];
+  int32_t acc = state->motion_data->x[2];
+  int64_t timeout_check = microseconds() - acceleration_start_time;
   
-  if (shouldBrake(vel, pos) || vel > MAX_VELOCITY) {
+  // Transition if kinematics demand it, or we exceed our timeout
+  if (shouldBrake(vel, pos) || timeout_check >= acceleration_timeout) {
     Command::put(Command::Network_Command_ID::TRANS_FLIGHT_COAST, 0);
     auto_transition_coast.invoke();
   }
@@ -284,13 +320,9 @@ void Pod_State::steady_flight_accelerate(Command::Network_Command * command,
 
 void Pod_State::steady_flight_coast(Command::Network_Command * command, 
                                     std::shared_ptr<UnifiedState> state) {
-  std::shared_ptr<MotionData> motion_data = state->motion_data;
-  double pos = state->motion_data->x[0];
-  double vel = state->motion_data->x[1];
-  double acc = state->motion_data->x[2];
-  
-  
-  if (shouldBrake(vel, pos)) {
+  // Transition after we exceed our timeout
+  int64_t timeout_check = microseconds() - coast_start_time;
+  if (timeout_check >= coast_timeout) {
     Command::put(Command::Network_Command_ID::TRANS_FLIGHT_BRAKE, 0);
     auto_transition_brake.invoke();
   }
@@ -298,14 +330,24 @@ void Pod_State::steady_flight_coast(Command::Network_Command * command,
 
 void Pod_State::steady_flight_brake(Command::Network_Command * command, 
                                     std::shared_ptr<UnifiedState> state) {
-  // Brakes are applied
+  int32_t acc = state->motion_data->x[2];
+  int32_t vel = state->motion_data->x[1];
+  int64_t timeout_check = microseconds() - brake_start_time;
+
+  // Transition after we exceed our timeout AND acceleration AND Velocity are under a configurable value.
+  if (std::abs(acc) < not_moving_velocity 
+      && std::abs(vel) < not_moving_velocity 
+      && timeout_check >= brake_timeout) {
+    Command::put(Command::Network_Command_ID::TRANS_FLIGHT_BRAKE, 0);
+    auto_transition_brake.invoke();
+  }
 }
 
-bool Pod_State::shouldBrake(double vel, double pos) {
-  int32_t target_distance = LENGTH_OF_TRACK - BUFFER_LENGTH;
-  double stopping_distance = pos + -0.5*vel*vel/IDEAL_DECCEL;
+bool Pod_State::shouldBrake(int64_t vel, int64_t pos) {
+  int64_t target_distance = length_of_track - brake_buffer_length;
+  int64_t stopping_distance = pos + (vel * vel) / (2*estimated_brake_deceleration);
 
-  if (stopping_distance > target_distance) {
+  if (stopping_distance >= target_distance) {
     print(LogLevel::LOG_INFO, "Pod Should Brake, vel: %.2f pos: %.2f\n", vel, pos);
     return true;
   } else {
@@ -313,6 +355,6 @@ bool Pod_State::shouldBrake(double vel, double pos) {
   }
 }
 
-void Pod_State::steady_error_state(Command::Network_Command * command, 
+void Pod_State::steady_abort_state(Command::Network_Command * command, 
                                     std::shared_ptr<UnifiedState> state) {
 }
