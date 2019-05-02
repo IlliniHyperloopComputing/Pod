@@ -63,7 +63,32 @@ int TCPManager::read_command(uint32_t * ID, uint32_t * Command) {
 int TCPManager::write_data() {
   int64_t cur_time = Utils::microseconds();
   vector<int32_t> vals;
-  return write(socketfd, vals.data(), vals.size() * sizeof(int32_t));
+  shared_ptr<MotionData> MD;
+  if (TCPManager::motion_data.dequeue(&MD))
+    if (Utils::write_all_to_socket(socketfd, MD.get(), sizeof(MotionData)) <= 0)
+      return -1;
+
+  shared_ptr<ADCData> ADC;
+  if (TCPManager::adc_data.dequeue(&ADC))
+    if (Utils::write_all_to_socket(socketfd, ADC.get(), sizeof(ADCData)) <= 0)
+      return -1;
+
+  shared_ptr<CANData> CAN;
+  if (TCPManager::motion_data.dequeue(&CAN))
+    if (Utils::write_all_to_socket(socketfd, CAN.get(), sizeof(CANData)) <= 0)
+      return -1;
+
+  shared_ptr<I2CData> I2C;
+  if (TCPManager::motion_data.dequeue(&I2C))
+    if (Utils::write_all_to_socket(socketfd, I2C.get(), sizeof(I2CData)) <= 0)
+      return -1;
+
+  shared_ptr<PRUData> PRU;
+  if (TCPManager::motion_data.dequeue(&PRU))
+    if (Utils::write_all_to_socket(socketfd, PRU.get(), sizeof(PRUData)) <= 0)
+      return -1;
+
+  return 1;
 }
 
 void TCPManager::read_loop() {
