@@ -36,7 +36,7 @@ extern Event closing;    // Used to wait between writes in the write_loop()
 extern std::mutex mutex;  // Used to eliminate TSan errors
 
 extern int64_t stagger_times[3];  // Used to stagger how frequently data is sent to tcp server 
-
+extern int64_t last_sent_times[3];   // Used to store the last time a data type was sent
 int connect_to_server(const char * hostname, const char * port);
 
 /**
