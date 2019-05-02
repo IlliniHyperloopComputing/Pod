@@ -14,6 +14,8 @@ Event TCPManager::closing;
 std::atomic<bool> TCPManager::running(false);
 std::mutex TCPManager::mutex;
 
+int64_t TCPManager::stagger_times[3];  
+
 // I'm not sure how to get the unified state to the TCPManager
 SafeQueue<shared_ptr<UnifiedState>> TCPManager::write_queue;  
 

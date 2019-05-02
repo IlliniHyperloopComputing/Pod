@@ -35,7 +35,7 @@ extern Event connected;  // Used within Simulator to check when TCP is connected
 extern Event closing;    // Used to wait between writes in the write_loop()
 extern std::mutex mutex;  // Used to eliminate TSan errors
 
-int64_t stagger_times[3];
+extern int64_t stagger_times[3];  // Used to stagger how frequently data is sent to tcp server 
 
 int connect_to_server(const char * hostname, const char * port);
 
