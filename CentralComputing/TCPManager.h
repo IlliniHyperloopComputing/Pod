@@ -41,7 +41,7 @@ extern int socketfd;
 extern std::atomic<bool> running;
 
 extern std::shared_ptr<UnifiedState> data_to_send;
-extern std::shared_ptr<UnifiedState> local_copy_to_send;
+extern std::shared_ptr<UnifiedState> local_to_send;
 extern int64_t stagger_times[3];  // Used to stagger how frequently data is sent to tcp server 
 extern int64_t last_sent_times[3];   // Used to store the last time a data type was sent
 extern std::mutex data_mutex;  

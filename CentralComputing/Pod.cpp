@@ -150,7 +150,7 @@ Pod::Pod(const std::string & config_to_open) {
       ConfiguratorManager::config.getValue("udp_send_port", udp_send) &&
       ConfiguratorManager::config.getValue("udp_recv_port", udp_recv) &&
       ConfiguratorManager::config.getValue("udp_addr", udp_addr) &&
-      ConfiguratorManager::config.getValue("logic_loop_timeout", logic_loop_timeout))){
+      ConfiguratorManager::config.getValue("logic_loop_timeout", logic_loop_timeout))) {
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: Missing necessary configuration\n");
     exit(1);  // Crash hard on this error
   }

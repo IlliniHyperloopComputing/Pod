@@ -86,10 +86,10 @@ ssize_t Utils::write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
     if (bytes > 0) {
       bytes_written += (size_t)bytes;
     } else if (bytes == 0) {
-      fprintf(stderr, "Disconnected\n");
+      Utils::print(LogLevel::LOG_DEBUG, "write_all_to_socket() failure\n");
       return 0;
     } else if (bytes == -1 && errno != EINTR) {
-      fprintf(stderr, "Write failure!\n");
+      Utils::print(LogLevel::LOG_DEBUG, "write_all_to_socket() failure\n");
       return -1;
     }
   }
