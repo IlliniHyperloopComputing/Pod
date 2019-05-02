@@ -15,12 +15,12 @@ std::atomic<bool> TCPManager::running(false);
 std::mutex TCPManager::mutex;
 
 // I'm not sure how to get the unified state to the TCPManager
-SafeQueue<shared_ptr<UnifiedState>> TCPManager::write_queue;  
 SafeQueue<shared_ptr<CANData>> TCPManager::can_data;
 SafeQueue<shared_ptr<ADCData>> TCPManager::adc_data;
 SafeQueue<shared_ptr<I2CData>> TCPManager::i2c_data;
 SafeQueue<shared_ptr<PRUData>> TCPManager::pru_data;
 SafeQueue<shared_ptr<MotionData>> TCPManager::motion_data;
+SafeQueue<shared_ptr<Errors>> TCPManager::error_data;
 
 int TCPManager::connect_to_server(const char * hostname, const char * port) {
   std::lock_guard<std::mutex> guard(mutex);  // Used to protect socketfd (TSan datarace)
@@ -61,7 +61,6 @@ int TCPManager::read_command(uint32_t * ID, uint32_t * Command) {
 }
 
 int TCPManager::write_data() {
-  int64_t cur_time = Utils::microseconds();
   vector<int32_t> vals;
   shared_ptr<MotionData> MD;
   if (TCPManager::motion_data.dequeue(&MD))
