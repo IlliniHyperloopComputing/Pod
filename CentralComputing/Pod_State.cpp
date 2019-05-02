@@ -265,12 +265,12 @@ void Pod_State::ST_Error() {
 // STEADY STATE FUNCTIONS //
 ///////////////////////////
 void Pod_State::steady_safe_mode(Command::Network_Command * command, 
-                                  std::shared_ptr<UnifiedState> state) {
+                                  UnifiedState * state) {
   // not much special stuff to do here  
 }
 
 void Pod_State::steady_functional(Command::Network_Command * command, 
-                                  std::shared_ptr<UnifiedState> state) {
+                                  UnifiedState * state) {
   // process command, let manual commands go through
   switch (command->id) {
     case Command::ENABLE_MOTOR: 
@@ -296,15 +296,15 @@ void Pod_State::steady_functional(Command::Network_Command * command,
 }
 
 void Pod_State::steady_loading(Command::Network_Command * command, 
-                                std::shared_ptr<UnifiedState> state) {
+                                UnifiedState* state) {
 }
 
 void Pod_State::steady_launch_ready(Command::Network_Command * command, 
-                                    std::shared_ptr<UnifiedState> state) {
+                                    UnifiedState* state) {
 }
 
 void Pod_State::steady_flight_accelerate(Command::Network_Command * command, 
-                                        std::shared_ptr<UnifiedState> state) {
+                                        UnifiedState* state) {
   // Access Pos, Vel, and Accel from Motion Model
   int32_t pos = state->motion_data->x[0];
   int32_t vel = state->motion_data->x[1];
@@ -319,7 +319,7 @@ void Pod_State::steady_flight_accelerate(Command::Network_Command * command,
 }
 
 void Pod_State::steady_flight_coast(Command::Network_Command * command, 
-                                    std::shared_ptr<UnifiedState> state) {
+                                    UnifiedState* state) {
   // Transition after we exceed our timeout
   int64_t timeout_check = microseconds() - coast_start_time;
   if (timeout_check >= coast_timeout) {
@@ -329,7 +329,7 @@ void Pod_State::steady_flight_coast(Command::Network_Command * command,
 }
 
 void Pod_State::steady_flight_brake(Command::Network_Command * command, 
-                                    std::shared_ptr<UnifiedState> state) {
+                                    UnifiedState* state) {
   int32_t acc = state->motion_data->x[2];
   int32_t vel = state->motion_data->x[1];
   int64_t timeout_check = microseconds() - brake_start_time;
@@ -356,5 +356,5 @@ bool Pod_State::shouldBrake(int64_t vel, int64_t pos) {
 }
 
 void Pod_State::steady_abort_state(Command::Network_Command * command, 
-                                    std::shared_ptr<UnifiedState> state) {
+                                    UnifiedState * state) {
 }

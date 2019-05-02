@@ -36,17 +36,17 @@ void Pod::logic_loop() {
       com.value = 0;
     }
 
+    TCPManager::data_mutex.lock();
     // Set error codes if command contained any
     set_error_code(&com);
     // Collect sensor data and set motion model
     update_unified_state();    
-    // Send data to TCP write thread
-    send_data_to_tcp();
+    TCPManager::data_mutex.unlock();
 
     // Calls the steady state function for the current state
     // Passes in command, and current state. 
     auto func = state_machine->get_steady_function();
-    ((*state_machine).*(func))(&com, unified_state); 
+    ((*state_machine).*(func))(&com, &unified_state); 
 
     #ifdef BBB
     // Send the heartbeat signal to the watchdog.
@@ -79,11 +79,11 @@ void Pod::set_error_code(Command::Network_Command * com) {
   if (com->id >= Command::Network_Command_ID::SET_ADC_ERROR 
     && com->id <= Command::Network_Command_ID::SET_OTHER_ERROR) {
     // Set flag
-    unified_state->errors->error_vector[com->id - Command::Network_Command_ID::SET_ADC_ERROR] |= com->value;
+    unified_state.errors->error_vector[com->id - Command::Network_Command_ID::SET_ADC_ERROR] |= com->value;
   } else if (com->id >= Command::Network_Command_ID::CLR_ADC_ERROR 
     && com->id <= Command::Network_Command_ID::CLR_OTHER_ERROR) {
     // Clear flag
-    unified_state->errors->error_vector[com->id - Command::Network_Command_ID::CLR_ADC_ERROR] &= (~com->value);
+    unified_state.errors->error_vector[com->id - Command::Network_Command_ID::CLR_ADC_ERROR] &= (~com->value);
   }
 }
 
@@ -91,27 +91,20 @@ void Pod::set_error_code(Command::Network_Command * com) {
 // Updates the unified_state
 // Calls MotionModel::calculate()
 void Pod::update_unified_state() {
-  unified_state->adc_data = SourceManager::ADC.Get();
-  unified_state->can_data = SourceManager::CAN.Get();
-  unified_state->i2c_data = SourceManager::I2C.Get();
-  unified_state->pru_data = SourceManager::PRU.Get();
-  unified_state->state = state_machine->get_current_state();
+  unified_state.adc_data = SourceManager::ADC.Get();
+  unified_state.can_data = SourceManager::CAN.Get();
+  unified_state.i2c_data = SourceManager::I2C.Get();
+  unified_state.pru_data = SourceManager::PRU.Get();
+  unified_state.state = state_machine->get_current_state();
   // unified_state->errors is already updated, see 'set_error_code`
 
   // Update motion_data
   // Pass current state into Motion Model
   #ifndef SIM
-  motion_model->calculate(unified_state);
+  motion_model->calculate(&unified_state);
   #else
-  motion_model->calculate_sim(unified_state);
+  motion_model->calculate_sim(&unified_state);
   #endif
-}
-
-// Helper function to write Unified state data to the TCP write thread, where
-// That thread will deal with sending it to the front end.
-void Pod::send_data_to_tcp() {
-  std::lock_guard<std::mutex> guard(TCPManager::data_mutex);  // Protect access to TCPManger::data_to_send
-  TCPManager::data_to_send = unified_state;
 }
 
 // Pod constructor
@@ -158,13 +151,7 @@ Pod::Pod(const std::string & config_to_open) {
   // Setup any other member variables here
   state_machine = make_shared<Pod_State>();
   motion_model = make_shared<MotionModel>();
-  unified_state = make_shared<UnifiedState>();
-  unified_state->motion_data = make_shared<MotionData>();
-  unified_state->adc_data = make_shared<ADCData>();
-  unified_state->can_data = make_shared<CANData>();
-  unified_state->i2c_data = make_shared<I2CData>();
-  unified_state->pru_data = make_shared<PRUData>();
-  unified_state->errors = make_shared<Errors>();
+  Utils::init_unified_state(&unified_state);
   running.store(false);
   switchVal = false;
 }
@@ -196,7 +183,8 @@ void Pod::run() {
 
   // Start Network and main loop thread.
   // I don't know how to use member functions as a thread function, but lambdas work
-  thread tcp_thread([&](){ TCPManager::tcp_loop(tcp_addr.c_str(), tcp_port.c_str()); });
+  // std::lock_guard<std::mutex> guard(TCPManager::data_mutex);  // Protect access to TCPManger::data_to_send
+  thread tcp_thread([&](){ TCPManager::tcp_loop(tcp_addr.c_str(), tcp_port.c_str(), &unified_state); });
   thread udp_thread([&](){ UDPManager::connection_monitor(udp_addr.c_str(), udp_send.c_str(), udp_recv.c_str()); });
   running.store(true);
   thread logic_thread([&](){ logic_loop(); });  
