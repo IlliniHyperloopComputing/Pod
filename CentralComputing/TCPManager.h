@@ -40,8 +40,14 @@ extern TCPSendIDs TCPID;
 extern int socketfd;
 extern std::atomic<bool> running;
 
-extern std::shared_ptr<UnifiedState> data_to_send;
-extern std::shared_ptr<UnifiedState> local_to_send;
+extern UnifiedState * unified_state;
+extern ADCData adc_data;
+extern CANData can_data;
+extern I2CData i2c_data;
+extern PRUData pru_data;
+extern MotionData motion_data;
+extern Errors  error_data;
+extern E_States state;
 extern int64_t stagger_times[3];  // Used to stagger how frequently data is sent to tcp server 
 extern int64_t last_sent_times[3];   // Used to store the last time a data type was sent
 extern std::mutex data_mutex;  
@@ -84,7 +90,7 @@ void write_loop();
  * @param hostname the IP address to connect to
  * @param port the port to connect to
  **/
-void tcp_loop(const char * hostname, const char * port);
+void tcp_loop(const char * hostname, const char * port, UnifiedState * unified_state);
 
 /**
  * Closes the socket, ending all transmission
