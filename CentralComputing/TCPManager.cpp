@@ -114,7 +114,7 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
        ConfiguratorManager::config.getValue("tcp_stagger_time2", stagger_times[0]) &&
        ConfiguratorManager::config.getValue("tcp_stagger_time3", stagger_times[2]))){
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: Missing necessary configuration");
-    running.store(false);
+    exit(1);  // Crash hard on this error
   }
 
   while (running) {
