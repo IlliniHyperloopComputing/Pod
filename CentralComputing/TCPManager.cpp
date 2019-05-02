@@ -14,9 +14,6 @@ Event TCPManager::closing;
 std::atomic<bool> TCPManager::running(false);
 std::mutex TCPManager::mutex;
 
-int64_t TCPManager::stagger_times[3];  
-int64_t TCPManager::last_sent_times[3];  
-
 // I'm not sure how to get the unified state to the TCPManager
 SafeQueue<shared_ptr<UnifiedState>> TCPManager::write_queue;  
 
@@ -61,23 +58,7 @@ int TCPManager::read_command(uint32_t * ID, uint32_t * Command) {
 int TCPManager::write_data() {
   int64_t cur_time = Utils::microseconds();
   vector<int32_t> vals;
-  if(cur_time - last_sent_times[0] > stagger_times[0]){  //  This is the first time threshold
-    vals.push_back(Command::POD_STATE);
-    vals.push_back(Command::POSITION); 
-    vals.push_back(Command::VELOCITY);
-    vals.push_back(Command::ACCELERATION);
-    last_sent_times[0] = cur_time;
-  }
-  if(cur_time - last_sent_times[1] > stagger_times[1]){  //  This is the second time threshold 
-    vals.push_back(Command::TEMPERATURE);
-    last_sent_times[1] = cur_time;
-  }
-  if(cur_time - last_sent_times[2] > stagger_times[2]){  //  This is the third time threshold 
-    vals.push_back(Command::BRAKE_STATUS);
-    vals.push_back(Command::MOTOR_STATUS);
-    last_sent_times[2] = cur_time;
-  }  
-  return write(socketfd, vals.data(), vals.size() * sizeof(int32_t));
+  return 1;  //write(socketfd, vals.data(), vals.size() * sizeof(int32_t));
 }
 
 void TCPManager::read_loop() {
@@ -111,16 +92,6 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
   closing.reset();
   running.store(true);
   
-  if (!(ConfiguratorManager::config.getValue("tcp_stagger_time1", stagger_times[0]) &&
-       ConfiguratorManager::config.getValue("tcp_stagger_time2", stagger_times[1]) &&
-       ConfiguratorManager::config.getValue("tcp_stagger_time3", stagger_times[2]))){
-    print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: Missing necessary configuration");
-    exit(1);  // Crash hard on this error
-  }
-  last_sent_times[0] = -1000000;  // Initialize these times to a large negative number, so sending happens right away
-  last_sent_times[1] = -1000000;
-  last_sent_times[2] = -1000000;
-
   while (running) {
     int fd = connect_to_server(hostname, port);
     if (fd > 0) {
