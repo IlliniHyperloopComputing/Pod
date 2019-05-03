@@ -20,7 +20,7 @@ bool Command::get(Network_Command * com) {
 
 void Command::flush() {
   uint64_t tmp;
-  while (command_queue.dequeue(&tmp));
+  while (command_queue.dequeue(&tmp)) {}
 }
 
 // Used in set_error_flag to not flood the command queue

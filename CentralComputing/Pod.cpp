@@ -201,7 +201,7 @@ void Pod::run() {
   Command::Network_Command com;
   com.id = Command::Network_Command_ID::SET_NETWORK_ERROR;
   com.value = NETWORKErrors::TCP_DISCONNECT_ERROR;
-  set_error_code(&com); // Initially have an error set that the network isn't connected
+  set_error_code(&com);  // Initially have an error set that the network isn't connected
   // Start Network and main loop thread.
   // I don't know how to use member functions as a thread function, but lambdas work
   // std::lock_guard<std::mutex> guard(TCPManager::data_mutex);  // Protect access to TCPManger::data_to_send
