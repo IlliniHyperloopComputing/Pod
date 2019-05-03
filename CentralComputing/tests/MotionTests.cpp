@@ -18,7 +18,7 @@ using Utils::LogLevel;
         unified_state->adc_data->accel[1] = 0; \
         unified_state->adc_data->accel[2] = 0; \
         unified_state->can_data = make_shared<CANData>(); \
-        unified_state->can_data->wheel_distance = 0; \
+        unified_state->can_data->position_val = 0; \
         unified_state->i2c_data = make_shared<I2CData>(); \
         unified_state->pru_data = make_shared<PRUData>(); \
         unified_state->pru_data->orange_distance[0] = 0; \
@@ -48,7 +48,7 @@ TEST(MotionTests, distance_no_faults) {
         }
         unified_state->pru_data->wheel_distance[0] = i;
         unified_state->pru_data->wheel_distance[1] = i;
-        unified_state->can_data->wheel_distance = i;
+        unified_state->can_data->position_val = i;
 
         mm.calculate(unified_state);
         EXPECT_EQ(unified_state->motion_data->x[0], i);
@@ -70,7 +70,7 @@ TEST(MotionTests, distance_orange_fault) {
         }
         unified_state->pru_data->wheel_distance[0] = i;
         unified_state->pru_data->wheel_distance[1] = i;
-        unified_state->can_data->wheel_distance = i;
+        unified_state->can_data->position_val = i;
 
         mm.calculate(unified_state);
         EXPECT_EQ(unified_state->motion_data->x[0], i);
@@ -92,7 +92,7 @@ TEST(MotionTests, distance_wheel_orange_fault) {
         }
         unified_state->pru_data->wheel_distance[0] = i;
         unified_state->pru_data->wheel_distance[1] = 0; // FAULT
-        unified_state->can_data->wheel_distance = i;
+        unified_state->can_data->position_val = i;
 
         mm.calculate(unified_state);
         EXPECT_EQ(unified_state->motion_data->x[0], i);
@@ -116,7 +116,7 @@ TEST(MotionTests, distance_wheel_diverge) {
         }
         unified_state->pru_data->wheel_distance[0] += 1;
         unified_state->pru_data->wheel_distance[1] += 1; 
-        unified_state->can_data->wheel_distance = i;
+        unified_state->can_data->position_val = i;
 
         mm.calculate(unified_state);
         EXPECT_EQ(unified_state->motion_data->x[0], unified_state->pru_data->wheel_distance[0]);
@@ -140,7 +140,7 @@ TEST(MotionTests, distance_wheel_diverge_orange_fault) {
         }
         unified_state->pru_data->wheel_distance[0] += 1;
         unified_state->pru_data->wheel_distance[1] += 1; 
-        unified_state->can_data->wheel_distance = i;
+        unified_state->can_data->position_val = i;
 
         mm.calculate(unified_state);
         EXPECT_EQ(unified_state->motion_data->x[0], unified_state->pru_data->wheel_distance[1]);
@@ -164,7 +164,7 @@ TEST(MotionTests, distance_wheel_diverge_orange_double_fault) {
         }
         unified_state->pru_data->wheel_distance[0] += 1;
         unified_state->pru_data->wheel_distance[1] += 1; 
-        unified_state->can_data->wheel_distance = i;
+        unified_state->can_data->position_val = i;
 
         mm.calculate(unified_state);
         EXPECT_EQ(unified_state->motion_data->x[0], unified_state->pru_data->wheel_distance[1]);
@@ -189,7 +189,7 @@ TEST(MotionTests, distance_motor_slip) {
         }
         unified_state->pru_data->wheel_distance[0] = i;
         unified_state->pru_data->wheel_distance[1] = i;
-        unified_state->can_data->wheel_distance = i+1;
+        unified_state->can_data->position_val = i+1;
 
         mm.calculate(unified_state);
         EXPECT_GE(unified_state->motion_data->x[0], i);

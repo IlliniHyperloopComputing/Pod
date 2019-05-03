@@ -31,7 +31,7 @@ void MotionModel::calculate(std::shared_ptr<UnifiedState> state) {
   // POSITION
   int32_t orange_dist = std::max(state->pru_data->orange_distance[0], state->pru_data->orange_distance[1]);
   int32_t wheel_dist = std::max(state->pru_data->wheel_distance[0], state->pru_data->wheel_distance[1]);
-  int32_t motor_dist = state->can_data->wheel_distance;
+  int32_t motor_dist = state->can_data->position_val;
 
   // Take our minimum distance to be the maximum orange and wheel dist
   int32_t dist = std::max(orange_dist, wheel_dist);
