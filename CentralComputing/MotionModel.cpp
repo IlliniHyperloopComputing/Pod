@@ -27,7 +27,7 @@ MotionModel::MotionModel() {
 // Trust Orange tape and Wheel Encoder distances the most. 
 //        Motor can add a bounded ammount of extra distance
 // We trust the wheel encoder velocity the most
-void MotionModel::calculate(std::shared_ptr<UnifiedState> state) {
+void MotionModel::calculate(UnifiedState * state) {
   // POSITION
   int32_t orange_dist = std::max(state->pru_data->orange_distance[0], state->pru_data->orange_distance[1]);
   int32_t wheel_dist = std::max(state->pru_data->wheel_distance[0], state->pru_data->wheel_distance[1]);
@@ -59,7 +59,7 @@ void MotionModel::calculate(std::shared_ptr<UnifiedState> state) {
 }
 
 // get MotionData object
-void MotionModel::calculate_sim(std::shared_ptr<UnifiedState> state) {
+void MotionModel::calculate_sim(UnifiedState * state) {
   #ifdef SIM
   state->motion_data = SimulatorManager::sim.sim_get_motion(this, state);
   #endif

@@ -5,7 +5,7 @@
 
 class MotionModel;
 
-enum E_States {
+enum E_States : uint32_t {
   ST_SAFE_MODE,
   ST_FUNCTIONAL_TEST,
   ST_LOADING,

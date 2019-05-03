@@ -4,9 +4,14 @@ can_manager_timeout 100000.0 # Units are microseconds
 adc_manager_timeout 100000.0 # Units are microseconds
 pru_manager_timeout 100000.0 # Units are microseconds
 logic_loop_timeout  1000.0   # Units are microseconds
+tcp_write_loop_timeout 1000000 # Units are microseconds
 
 tcp_port 8001
 tcp_addr 127.0.0.1
+
+tcp_stagger_time1 1000000 # Units are microseconds
+tcp_stagger_time2 3000000 # Units are microseconds
+tcp_stagger_time3 6000000 # Units are microseconds
 
 udp_send_port 5004
 udp_recv_port 5005
@@ -47,7 +52,7 @@ error_battery_box_under_pressure 2000
 error_orange_diff 20
 error_encoder_wheel_diff 30
 
-acceleration_timeout 10000000 # Units are microseconds
+acceleration_timeout 1000000 # Units are microseconds
 coast_timeout 200000          # Units are microseconds
 brake_timeout 10000000        # Units are microseconds
 
