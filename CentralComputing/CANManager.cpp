@@ -226,22 +226,75 @@ void CANManager::set_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
 }
 
 void CANManager::set_motor_state(bool enable) {  // TODO: Need to Send controlword 3 at startup
+  char bufferArray[8];
   if (enable) {
-    uint32_t pdo_val = can_id_p1;
-    char* bufferArray;
-    uint16_t value = 4;
-    u16_to_bytes(value, bufferArray);
-    int length = sizeof(bufferArray) / sizeof(bufferArray[0]);
-    send_frame(pdo_val, bufferArray, length);
+    bufferArray[0] = (char) 0x80;
+    bufferArray[1] = 0x00;
+    send_frame(0, bufferArray, 2);  // Send pre-operational
+
+    bufferArray[0] = (char) 0x10;
+    bufferArray[1] = 0x00;
+    send_frame(0, bufferArray, 2);  // Send operational
+
+    bufferArray[0] = (char) 0x60;
+    bufferArray[1] = 0x00;
+    bufferArray[2] = 0x00;
+    bufferArray[3] = 0x00;
+    bufferArray[4] = 0x00;
+    bufferArray[5] = 0x00;
+    bufferArray[6] = 0x00;
+    bufferArray[7] = 0x00;
+    send_frame(0x201, bufferArray, 8);  // Move motor  to read-to-switch on
+
+    bufferArray[0] = (char) 0x70;
+    bufferArray[1] = 0x00;
+    bufferArray[2] = 0x00;
+    bufferArray[3] = 0x00;
+    bufferArray[4] = 0x00;
+    bufferArray[5] = 0x00;
+    bufferArray[6] = 0x00;
+    bufferArray[7] = 0x00;
+    send_frame(0x201, bufferArray, 8);  // Move motor  to switched-on
+
+    bufferArray[0] = (char) 0xF0;
+    bufferArray[1] = 0x00;
+    bufferArray[2] = 0x00;
+    bufferArray[3] = 0x00;
+    bufferArray[4] = 0x00;
+    bufferArray[5] = 0x00;
+    bufferArray[6] = 0x00;
+    bufferArray[7] = 0x00;
+    send_frame(0x201, bufferArray, 8);  // Move motor operation enabled with/ PWM on
+  } else {
+
+    bufferArray[0] = (char) 0x60;
+    bufferArray[1] = 0x00;
+    bufferArray[2] = 0x00;
+    bufferArray[3] = 0x00;
+    bufferArray[4] = 0x00;
+    bufferArray[5] = 0x00;
+    bufferArray[6] = 0x00;
+    bufferArray[7] = 0x00;
+    send_frame(0x201, bufferArray, 8);  // Exit motor enabled
+
+    bufferArray[0] = (char) 0x80;
+    bufferArray[1] = 0x00;
+    send_frame(0, bufferArray, 2);  // Send pre-operational
   }
+  
 }
 
 void CANManager::set_motor_throttle(int16_t value) {  // Using Throttle Value Here
-  uint32_t pdo_val = can_id_p1;
-  char* bufferArray;
-  i16_to_bytes(value, bufferArray); 
-  int length = sizeof(bufferArray) / sizeof(bufferArray[0]);
-  send_frame(pdo_val, bufferArray, length); 
+  char bufferArray[8];
+  bufferArray[0] = (char) 0xF0;
+  bufferArray[1] = 0x00;
+  bufferArray[2] = 0x00;
+  bufferArray[3] = 0x00;
+  bufferArray[4] = 0x00;
+  bufferArray[5] = 0x00;
+  bufferArray[6] = ((char *)&value)[0];
+  bufferArray[7] = ((char *)&value)[1];
+  send_frame(0x201, bufferArray, 8);  // Move motor operation enabled with/ PWM on
 }
 
 void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_data) {

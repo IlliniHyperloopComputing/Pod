@@ -257,7 +257,9 @@ void Pod_State::ST_Flight_Accel() {
   acceleration_start_time = microseconds();
   brakes.disable_brakes();
   motor.enable_motors();
-  // motor.set_throttle(100);
+  #ifdef SIM
+  motor.set_throttle(100);
+  #endif
 }
 
 void Pod_State::ST_Flight_Coast() {

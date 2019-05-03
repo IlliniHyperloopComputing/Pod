@@ -31,13 +31,13 @@ void Command::set_error_flag(Network_Command_ID id, uint8_t value) {
     first_time = 0;
   }
 
-  for (uint i = 0, j = 1; i < 24; i++, j*=2) {  // Go through each bit of the flag  
+  for (int i = 0, j = 1; i < 24; i++, j*=2) {  // Go through each bit of the flag  
     if (value & j) {  // if the specific bit is on
       // Determine the time delta, use the error_flag_timers
       int64_t delta = Utils::microseconds() - error_flag_timers[(id-Command::SET_ADC_ERROR) * 8 + i]; 
       if (delta > 1000000) {  // Delta is greater than 1 second. This means we only send once per second!
         error_flag_timers[(id-Command::SET_ADC_ERROR) * 8 + i] = Utils::microseconds();
-        Command::put(id, (value & j));  // put command on queue
+        Command::put(id, (value & (uint32_t)j));  // put command on queue
       }
     }
   }
