@@ -85,14 +85,15 @@ class Simulator {
   void logging(bool enable);
 
   /*
-    * Simulates arming the motor
+    * Simulate setting the relay state 
     */
-  void sim_motor_enable();
+  void sim_relay_state(HV_Relay_Select, HV_Relay_State);
 
   /*
-    * Simulates disarming the motor
+    * Simulates arming the motor (true)
+    * Simulates disarming the motr (false)
     */
-  void sim_motor_disable();
+  void sim_motor_state(bool enable);
 
   /*
     * Simulates setting the motor throttle to a specific value
