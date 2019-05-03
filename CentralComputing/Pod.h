@@ -33,6 +33,7 @@ class Pod {
   UnifiedState unified_state;
   Event ready;
   Event processing_command;
+  Event processing_error;
   Event closing;
 
  private:

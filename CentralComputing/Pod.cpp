@@ -16,6 +16,7 @@ using std::shared_ptr;
 void Pod::logic_loop() {
   #ifdef SIM  // Used to indicate to the Simulator we have processed a command
   bool command_processed = false;
+  bool error_processed = false;
   #endif
 
   // Start processing/pod logic
@@ -28,7 +29,12 @@ void Pod::logic_loop() {
       auto transition = state_machine->get_transition_function(&com);
       ((*state_machine).*(transition))(); 
       #ifdef SIM  // Used to indicate to the Simulator that we have processed a command
-      command_processed = true;
+      if (!(com.id >= Command::Network_Command_ID::SET_ADC_ERROR &&
+            com.id <= Command::Network_Command_ID::CLR_OTHER_ERROR)) {
+        command_processed = true;
+      } else {
+        error_processed = true;
+      }
       #endif
       print(LogLevel::LOG_INFO, "Command : %d %d\n", com.id, com.value);
     } else {  // Create a "do nothing" command. This will be passed into the steady state caller below
@@ -64,6 +70,11 @@ void Pod::logic_loop() {
       processing_command.invoke(); 
     }
     command_processed = false;
+
+    if (error_processed) {
+      processing_error.invoke(); 
+    }
+    error_processed = false;
     #endif 
 
     // Sleep for the given timeout
@@ -187,6 +198,10 @@ void Pod::run() {
 
   signal(SIGPIPE, SIG_IGN);  // Ignore SIGPIPE
 
+  Command::Network_Command com;
+  com.id = Command::Network_Command_ID::SET_NETWORK_ERROR;
+  com.value = NETWORKErrors::TCP_DISCONNECT_ERROR;
+  set_error_code(&com); // Initially have an error set that the network isn't connected
   // Start Network and main loop thread.
   // I don't know how to use member functions as a thread function, but lambdas work
   // std::lock_guard<std::mutex> guard(TCPManager::data_mutex);  // Protect access to TCPManger::data_to_send

@@ -168,15 +168,15 @@ void TCPManager::tcp_loop(const char * hostname, const char * port, UnifiedState
   last_sent_times[1] = -1000000;
   last_sent_times[2] = -1000000;
 
-  data_mutex.lock();
-  data_mutex.unlock();
-  
   while (running) {
     int fd = connect_to_server(hostname, port);
     if (fd > 0) {
       print(LogLevel::LOG_INFO, "TCP Starting network threads\n");
       thread read_thread(read_loop);
       thread write_thread(write_loop);
+
+      // Clear network error, we are connected!
+      Command::put(Command::CLR_NETWORK_ERROR, NETWORKErrors::TCP_DISCONNECT_ERROR);
 
       connected.invoke();  // Threads started, show simulator we are connected
 
@@ -187,7 +187,10 @@ void TCPManager::tcp_loop(const char * hostname, const char * port, UnifiedState
 
     } else {
       closing.wait_for(write_loop_timeout);
+      print(LogLevel::LOG_INFO, "TCP Retry Connection \n");
     }
+    // Set that there is an error
+    Command::set_error_flag(Command::SET_NETWORK_ERROR, NETWORKErrors::TCP_DISCONNECT_ERROR);
   }   
 
   close(socketfd);  // At last, close the socket
