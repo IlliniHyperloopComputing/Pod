@@ -14,8 +14,8 @@ class MotionModel {
   MotionModel();
 
   // Source Manager methods
-  void calculate(std::shared_ptr<UnifiedState> state);
-  void calculate_sim(std::shared_ptr<UnifiedState> state);
+  void calculate(UnifiedState * state);
+  void calculate_sim(UnifiedState * state);
 
   // Basic digital lowpass filter. 
   // A higher lowpass_percent means you take less of the new value 

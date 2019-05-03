@@ -17,8 +17,15 @@ std::mutex TCPManager::setup_shutdown_mutex;
 
 TCPManager::TCPSendIDs TCPManager::TCPID;
 
-shared_ptr<UnifiedState> TCPManager::data_to_send;  
-shared_ptr<UnifiedState> TCPManager::local_to_send;
+UnifiedState * TCPManager::unified_state;
+ADCData TCPManager::adc_data;
+CANData TCPManager::can_data;
+I2CData TCPManager::i2c_data;
+PRUData TCPManager::pru_data;
+MotionData TCPManager::motion_data;
+Errors   TCPManager::error_data;
+E_States TCPManager::state;
+
 std::mutex TCPManager::data_mutex;  
 int64_t TCPManager::write_loop_timeout;
 
@@ -57,50 +64,52 @@ int TCPManager::connect_to_server(const char * hostname, const char * port) {
 
 int TCPManager::write_data() {
   int64_t cur_time = Utils::microseconds();
-
-  // Determine if anything is going to want to send data
-  bool do_update = false;
-  for (int i = 0; i < 3 && !do_update; i++) {
-    do_update |= (cur_time - last_sent_times[i] > stagger_times[i]);
-  }
-
-  if (!do_update) {
-    return 1;  // Return early, since we are not sending data
-  }
   
   // There must be an update, copy in data
-  data_mutex.lock();  // Protect access to TCPManger::data_to_send
-  local_to_send = data_to_send;
-  data_mutex.unlock();
   //  This is the first time threshold
   if (cur_time - last_sent_times[0] > stagger_times[0]) {
+    data_mutex.lock();  // Protect access to TCPManger::data_to_send
+    memcpy(&motion_data, unified_state->motion_data.get(), sizeof(MotionData));
+    memcpy(&error_data, unified_state->errors.get(), sizeof(Errors));
+    state = unified_state->state;
+    data_mutex.unlock();
+
     last_sent_times[0] = cur_time;
-    if ((write_all_to_socket(socketfd, &TCPID.motion_id, sizeof(uint8_t))) ||
-        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t *>(local_to_send->motion_data.get()), sizeof(MotionData)) <= 0) ||  // NOLINT
-        (write_all_to_socket(socketfd, &TCPID.error_id, sizeof(uint8_t))) ||
-        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(local_to_send->errors.get()), sizeof(Errors)) <= 0) ||  // NOLINT  
-        (write_all_to_socket(socketfd, &TCPID.state_id, sizeof(uint8_t))) ||
-        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&local_to_send->state), sizeof(uint32_t)) <= 0)) {  // NOLINT
+    if ((write_all_to_socket(socketfd, &TCPID.motion_id, sizeof(uint8_t)) <= 0) ||
+        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t *>(&motion_data), sizeof(MotionData)) <= 0) ||  // NOLINT
+        (write_all_to_socket(socketfd, &TCPID.error_id, sizeof(uint8_t)) <= 0) ||
+        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&error_data), sizeof(Errors)) <= 0) ||  // NOLINT  
+        (write_all_to_socket(socketfd, &TCPID.state_id, sizeof(uint8_t)) <= 0) ||
+        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&state), sizeof(uint32_t)) <= 0)) {  // NOLINT
       return -1;
     }
   }
   //  This is the second time threshold 
   if (cur_time - last_sent_times[1] > stagger_times[1]) {  
+    data_mutex.lock();  // Protect access to TCPManger::data_to_send
+    memcpy(&can_data, unified_state->can_data.get(), sizeof(CANData));
+    data_mutex.unlock();
+
     last_sent_times[1] = cur_time;
-    if ((write_all_to_socket(socketfd, &TCPID.can_id, sizeof(uint8_t))) ||
-        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(local_to_send->can_data.get()), sizeof(MotionData)) <= 0)) {  //NOLINT
+    if ((write_all_to_socket(socketfd, &TCPID.can_id, sizeof(uint8_t)) <= 0) ||
+        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&can_data), sizeof(CANData)) <= 0)) {  //NOLINT
       return -1;
     }
   }
   //  This is the third time threshold 
   if (cur_time - last_sent_times[2] > stagger_times[2]) {  
+    data_mutex.lock();  // Protect access to TCPManger::data_to_send
+    memcpy(&pru_data, unified_state->pru_data.get(), sizeof(PRUData));
+    memcpy(&i2c_data, unified_state->i2c_data.get(), sizeof(I2CData));
+    memcpy(&pru_data, unified_state->adc_data.get(), sizeof(ADCData));
+    data_mutex.unlock();
     last_sent_times[2] = cur_time;
-    if ((write_all_to_socket(socketfd, &TCPID.pru_id, sizeof(uint8_t))) ||
-        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(local_to_send->pru_data.get()), sizeof(PRUData)) <= 0) ||  //NOLINT
-        (write_all_to_socket(socketfd, &TCPID.i2c_id, sizeof(uint8_t))) ||
-        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(local_to_send->i2c_data.get()), sizeof(I2CData)) <= 0) ||  //NOLINT
-        (write_all_to_socket(socketfd, &TCPID.adc_id, sizeof(uint8_t))) ||
-        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(local_to_send->adc_data.get()), sizeof(ADCData))<= 0)) {  //NOLINT
+    if ((write_all_to_socket(socketfd, &TCPID.pru_id, sizeof(uint8_t)) <= 0) ||
+        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&pru_data), sizeof(PRUData)) <= 0) ||  //NOLINT
+        (write_all_to_socket(socketfd, &TCPID.i2c_id, sizeof(uint8_t)) <= 0) ||
+        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&i2c_data), sizeof(I2CData)) <= 0) ||  //NOLINT
+        (write_all_to_socket(socketfd, &TCPID.adc_id, sizeof(uint8_t)) <= 0) ||
+        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&adc_data), sizeof(ADCData))<= 0)) {  //NOLINT
       return -1;
     }
   }  
@@ -141,10 +150,12 @@ void TCPManager::read_loop() {
   print(LogLevel::LOG_INFO, "TCP read Loop exiting.\n");
 }
 
-void TCPManager::tcp_loop(const char * hostname, const char * port) {
+void TCPManager::tcp_loop(const char * hostname, const char * port, UnifiedState * uni_state) {
   connected.reset();
   closing.reset();
   running.store(true);
+
+  unified_state = uni_state;
 
   if (!( ConfiguratorManager::config.getValue("tcp_write_loop_timeout", write_loop_timeout) &&
       ConfiguratorManager::config.getValue("tcp_stagger_time1", stagger_times[0]) &&
@@ -156,6 +167,9 @@ void TCPManager::tcp_loop(const char * hostname, const char * port) {
   last_sent_times[0] = -1000000;  // Initialize these times to a large negative number, so sending happens right away
   last_sent_times[1] = -1000000;
   last_sent_times[2] = -1000000;
+
+  data_mutex.lock();
+  data_mutex.unlock();
   
   while (running) {
     int fd = connect_to_server(hostname, port);
