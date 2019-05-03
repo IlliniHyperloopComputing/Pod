@@ -75,7 +75,7 @@ void TCPManager::read_loop() {
     int bytes_read = read_command(&ID, &Command);
     active_connection = bytes_read > 0;
     if (bytes_read > 0) {
-      print(LogLevel::LOG_EDEBUG, "Bytes read: %d Read command %d %d\n", bytes_read, ID, Command);
+      // print(LogLevel::LOG_EDEBUG, "Bytes read: %d Read command %d %d\n", bytes_read, ID, Command);
       Command::put(ID, Command);
     }
   }
