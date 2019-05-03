@@ -18,6 +18,11 @@ bool Command::get(Network_Command * com) {
   return true;
 }
 
+void Command::flush() {
+  uint64_t tmp;
+  while (command_queue.dequeue(&tmp));
+}
+
 // Used in set_error_flag to not flood the command queue
 // See the .h for more explanation
 void Command::set_error_flag(uint32_t id, uint32_t value) {

@@ -21,6 +21,7 @@ extern SafeQueue<uint64_t> command_queue;
 struct Network_Command;
 void put(uint32_t id, uint32_t value);
 bool get(Network_Command * com);
+void flush();
   
 enum Network_Command_ID {
   // state transitions
