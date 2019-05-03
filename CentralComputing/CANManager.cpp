@@ -1,6 +1,7 @@
 #include "CANManager.h"
 
 bool CANManager::initialize_source() {
+  memset(&stored_data, 0, sizeof(CANData));
   #ifndef BBB
   print(LogLevel::LOG_ERROR, "CAN Manager setup failed, not on BBB\n");
   return false;
@@ -111,6 +112,7 @@ bool CANManager::recv_frame() {
 
 std::shared_ptr<CANData> CANManager::refresh() {
   std::shared_ptr<CANData> new_data = std::make_shared<CANData>();
+  memcpy(new_data.get(), &stored_data, sizeof(CANData));   // This way, most of the data isn't zeros all of the time
 
   int64_t a = Utils::microseconds();
   // Send HV battery relay state frame
@@ -212,6 +214,7 @@ std::shared_ptr<CANData> CANManager::refresh() {
     print(LogLevel::LOG_INFO, "CAN msg: id: %d, len: %d, data: %s\n", r_frame.can_id, r_frame.len, buff); 
   } while (r_frame.len != 0);
 
+  memcpy(&stored_data, new_data.get(), sizeof(CANData));   // Copy new data to stored data
   return new_data;
 }
 

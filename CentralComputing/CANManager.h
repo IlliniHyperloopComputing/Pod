@@ -34,6 +34,8 @@ class CANManager : public SourceManagerBase<CANData> {
   void initialize_sensor_error_configs();
   void check_for_sensor_error(const std::shared_ptr<CANData> &);
 
+  CANData stored_data;
+
   // Heavily inspired by: https://github.com/linux-can/can-utils/blob/master/candump.c
   // https://www.can-cia.org/fileadmin/resources/documents/proceedings/2012_kleine-budde.pdf
 
