@@ -143,7 +143,7 @@ class Simulator {
     * Motion is normally derived from the ADC/I2C/CAN/PRU values, so we could calculate it that way.
     * Or we can simply inject arbitary motion values (using the scenario)
     */
-  std::shared_ptr<MotionData> sim_get_motion(MotionModel * mm, std::shared_ptr<UnifiedState> state);
+  std::shared_ptr<MotionData> sim_get_motion(MotionModel * mm, UnifiedState * state);
 
   std::atomic<bool> active_connection;
   Event closed;

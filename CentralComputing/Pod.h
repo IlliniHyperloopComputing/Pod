@@ -30,13 +30,14 @@ class Pod {
   std::shared_ptr<Pod_State> state_machine;
   std::shared_ptr<MotionModel> motion_model;
   std::atomic<bool> running;
-  std::shared_ptr<UnifiedState> unified_state;
+  UnifiedState unified_state;
   Event ready;
   Event processing_command;
+  Event processing_error;
   Event closing;
 
  private:
-  void logic_loop();
+  void logic_loop();  
   void update_unified_state();
   // IF the command is an error command, set the unified state appropriatly
   void set_error_code(Command::Network_Command * com);    

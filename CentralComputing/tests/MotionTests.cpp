@@ -11,7 +11,8 @@ using Utils::LogLevel;
 
 #define MOTION_TEST_SETUP \
         MotionModel mm; \
-        std::shared_ptr<UnifiedState> unified_state = make_shared<UnifiedState>(); \
+        UnifiedState unified_state1; \
+        UnifiedState * unified_state = &unified_state1; \
         unified_state->motion_data = make_shared<MotionData>(); \
         unified_state->adc_data = make_shared<ADCData>(); \
         unified_state->adc_data->accel[0] = 0; \

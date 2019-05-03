@@ -228,7 +228,7 @@ std::shared_ptr<PRUData> Simulator::sim_get_pru() {
   }
 }
 
-std::shared_ptr<MotionData> Simulator::sim_get_motion(MotionModel * mm, std::shared_ptr<UnifiedState> state) {
+std::shared_ptr<MotionData> Simulator::sim_get_motion(MotionModel * mm, UnifiedState * state) {
   std::lock_guard<std::mutex> guard(mutex);
   // Either go to the scenario for motion data
   if (scenario != nullptr && (scenario->use_motion_model())) {

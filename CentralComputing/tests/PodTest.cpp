@@ -21,6 +21,9 @@ class PodTest : public ::testing::Test
     // Create the Pod object
     pod = std::make_shared<Pod>(podtest_global::config_to_open);
 
+    // Reset this event, used to make sure we have connected
+    pod->processing_error.reset();
+
     // Set the Pod running in its own thread
     pod_thread = std::thread([&](){ pod->run();});
 
@@ -40,6 +43,7 @@ class PodTest : public ::testing::Test
     // then when the simulation tried to send data it failed.
     UDPManager::setup.wait();
     TCPManager::connected.wait();
+    pod->processing_error.wait();  // Wait for signal that we have processed the CLR_NETWORK_ERROR 
     SimulatorManager::sim.connected.wait();
 
     print(LogLevel::LOG_DEBUG, "Sim - Setup finished, running test\n");
@@ -51,6 +55,7 @@ class PodTest : public ::testing::Test
     sim_thread.join();
     pod->trigger_shutdown();
     pod_thread.join();
+    Command::flush();  // Flush command queue
     print(LogLevel::LOG_DEBUG, "Test teardown complete\n");
   }
 
