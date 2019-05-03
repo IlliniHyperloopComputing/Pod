@@ -38,53 +38,53 @@ struct ADCData {
 
 struct CANData {
   // Motor Controller
-  uint16_t status_word;
-  int32_t position_val;
-  int16_t torque_val;
-  uint8_t controller_temp;
-  uint8_t motor_temp;
-  int32_t dc_link_voltage;
-  int16_t logic_power_supply_voltage;
-  int16_t current_demand;
-  uint8_t motor_current_val;
-  int16_t electrical_angle;
-  int16_t phase_a_current;
-  int16_t phase_b_current;
+  uint32_t status_word;                 // actually a uint16_t
+  uint32_t position_val;                 // actually an int32_t
+  uint32_t torque_val;                   // actually a int16_t
+  uint32_t controller_temp;              // actually a uin8_t
+  uint32_t motor_temp;                   // actually a uint8_t
+  uint32_t dc_link_voltage;              // actually a int32_t
+  uint32_t logic_power_supply_voltage;   // actually a int16_t
+  uint32_t current_demand;               // actually a int16_t
+  uint32_t motor_current_val;            // actually a uint8_t
+  uint32_t electrical_angle;             // actually a int16_t
+  uint32_t phase_a_current;              // actually a int16_t
+  uint32_t phase_b_current;              // actually a int16_t
 
   // BMS
-  uint32_t internal_relay_state;  // Used within the CANManager to set BMS relay states
-  int relay_state;           // This should agree with the above (given a small delay)
-  int rolling_counter;
-  int fail_safe_sate;
-  int peak_current;
-  int pack_voltage_inst;
-  int pack_voltage_open;
-  int pack_soc;
-  int pack_amphours;
-  int pack_resistance;
-  int pack_dod;
-  int pack_soh;
-  int current_limit_status;
-  int max_pack_dcl;
-  int avg_pack_current;
-  int highest_temp;
-  int highest_temp_id;
-  int avg_temp;
-  int internal_temp;
-  int low_cell_voltge;
-  int low_cell_voltage_id; 
-  int high_cell_voltage;
-  int high_cell_voltage_id;
-  int low_cell_internalR;
-  int low_cell_internalR_id;
-  int high_cell_internalR;
-  int high_cell_internalR_id;
-  int power_voltage_input;
-  int dtc_status_one;
-  int dtc_status_two;
-  int adaptive_total_cap;
-  int adaptive_amphours;
-  int adaptive_soc;
+  uint32_t internal_relay_state;        // Used within the CANManager to set BMS relay states
+  uint32_t relay_state;                 // uint16_t This should agree with the above (given a small delay)
+  uint32_t rolling_counter;             // uint8_t 
+  uint32_t fail_safe_state;             // uint16_t
+  uint32_t pack_current;                // int16_t
+  uint32_t pack_voltage_inst;           // uint16_t       
+  uint32_t pack_voltage_open;           // uint16_t
+  uint32_t pack_soc;                    // uint8_t
+  uint32_t pack_amphours;               // uint16_t
+  uint32_t pack_resistance;             // uint16_t
+  uint32_t pack_dod;                    // uint8_t
+  uint32_t pack_soh;                    // uint8_t
+  uint32_t current_limit_status;        // uint16_t
+  uint32_t max_pack_dcl;                // uint16_t
+  uint32_t avg_pack_current;            // int16_t
+  uint32_t highest_temp;                // uint8_t
+  uint32_t highest_temp_id;             // uint8_t
+  uint32_t avg_temp;                    // uint8_t
+  uint32_t internal_temp;               // uint8_t
+  uint32_t low_cell_voltge;             // uint16_t
+  uint32_t low_cell_voltage_id;         // uint8_t
+  uint32_t high_cell_voltage;           // uint16_t
+  uint32_t high_cell_voltage_id;        // uint8_t
+  uint32_t low_cell_internalR;          // uint16_t
+  uint32_t low_cell_internalR_id;       // uint8_t
+  uint32_t high_cell_internalR;         // uint16_t
+  uint32_t high_cell_internalR_id;      // uint8_t
+  uint32_t power_voltage_input;         // uint16_t
+  uint32_t dtc_status_one;              // uint16_t
+  uint32_t dtc_status_two;              // uint16_t
+  uint32_t adaptive_total_cap;          // uint16_t
+  uint32_t adaptive_amphours;           // uint16_t
+  uint32_t adaptive_soc;                // uint8_t
 };
 
 struct I2CData {
