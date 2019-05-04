@@ -222,16 +222,34 @@ void Pod_State::no_transition() {
 
 void Pod_State::ST_Safe_Mode() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  // brakes.disable_brakes();  // Enable only when ready
+  motor.disable_motors();
+  motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
+  motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
+  motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
 }
 
 void Pod_State::ST_Functional_Test() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  // brakes.disable_brakes();  // Enable only when ready
+  motor.disable_motors();
+  motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
+  motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
+  motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
 }
 void Pod_State::ST_Loading() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  motor.disable_motors();
+  motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
+  motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
+  motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
 }
 void Pod_State::ST_Launch_Ready() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  // motor.disable_motors();
+  // motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
+  // motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
+  // motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
 }
 
 void Pod_State::ST_Flight_Accel() {
@@ -239,7 +257,9 @@ void Pod_State::ST_Flight_Accel() {
   acceleration_start_time = microseconds();
   brakes.disable_brakes();
   motor.enable_motors();
+  #ifdef SIM
   motor.set_throttle(100);
+  #endif
 }
 
 void Pod_State::ST_Flight_Coast() {
@@ -265,12 +285,12 @@ void Pod_State::ST_Error() {
 // STEADY STATE FUNCTIONS //
 ///////////////////////////
 void Pod_State::steady_safe_mode(Command::Network_Command * command, 
-                                  std::shared_ptr<UnifiedState> state) {
+                                  UnifiedState * state) {
   // not much special stuff to do here  
 }
 
 void Pod_State::steady_functional(Command::Network_Command * command, 
-                                  std::shared_ptr<UnifiedState> state) {
+                                  UnifiedState * state) {
   // process command, let manual commands go through
   switch (command->id) {
     case Command::ENABLE_MOTOR: 
@@ -281,6 +301,30 @@ void Pod_State::steady_functional(Command::Network_Command * command,
       break;
     case Command::SET_MOTOR_SPEED:
       motor.set_throttle(command->value); 
+      break;
+    case Command::SET_HV_RELAY_HV_POLE:
+      if (command->value == 0) {
+        motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
+      }
+      else if (command->value == 1) {
+        motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_ON);
+      }
+      break;
+    case Command::SET_HV_RELAY_LV_POLE:
+      if (command->value == 0) {
+        motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
+      }
+      else if (command->value == 1) {
+        motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
+      }
+      break;
+    case Command::SET_HV_RELAY_PRE_CHARGE:
+      if (command->value == 0) {
+        motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
+      }
+      else if (command->value == 1) {
+        motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_ON);
+      }
       break;
     case Command::ENABLE_BRAKE:
       // activate brakes
@@ -296,15 +340,15 @@ void Pod_State::steady_functional(Command::Network_Command * command,
 }
 
 void Pod_State::steady_loading(Command::Network_Command * command, 
-                                std::shared_ptr<UnifiedState> state) {
+                                UnifiedState* state) {
 }
 
 void Pod_State::steady_launch_ready(Command::Network_Command * command, 
-                                    std::shared_ptr<UnifiedState> state) {
+                                    UnifiedState* state) {
 }
 
 void Pod_State::steady_flight_accelerate(Command::Network_Command * command, 
-                                        std::shared_ptr<UnifiedState> state) {
+                                        UnifiedState* state) {
   // Access Pos, Vel, and Accel from Motion Model
   int32_t pos = state->motion_data->x[0];
   int32_t vel = state->motion_data->x[1];
@@ -319,7 +363,7 @@ void Pod_State::steady_flight_accelerate(Command::Network_Command * command,
 }
 
 void Pod_State::steady_flight_coast(Command::Network_Command * command, 
-                                    std::shared_ptr<UnifiedState> state) {
+                                    UnifiedState* state) {
   // Transition after we exceed our timeout
   int64_t timeout_check = microseconds() - coast_start_time;
   if (timeout_check >= coast_timeout) {
@@ -329,7 +373,7 @@ void Pod_State::steady_flight_coast(Command::Network_Command * command,
 }
 
 void Pod_State::steady_flight_brake(Command::Network_Command * command, 
-                                    std::shared_ptr<UnifiedState> state) {
+                                    UnifiedState* state) {
   int32_t acc = state->motion_data->x[2];
   int32_t vel = state->motion_data->x[1];
   int64_t timeout_check = microseconds() - brake_start_time;
@@ -356,5 +400,5 @@ bool Pod_State::shouldBrake(int64_t vel, int64_t pos) {
 }
 
 void Pod_State::steady_abort_state(Command::Network_Command * command, 
-                                    std::shared_ptr<UnifiedState> state) {
+                                    UnifiedState * state) {
 }

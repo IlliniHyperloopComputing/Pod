@@ -21,6 +21,7 @@ extern SafeQueue<uint64_t> command_queue;
 struct Network_Command;
 void put(uint32_t id, uint32_t value);
 bool get(Network_Command * com);
+void flush();
   
 enum Network_Command_ID {
   // state transitions
@@ -50,6 +51,9 @@ enum Network_Command_ID {
   CLR_PRU_ERROR = 23,
   CLR_NETWORK_ERROR = 24,
   CLR_OTHER_ERROR = 25,
+  SET_HV_RELAY_HV_POLE = 26,
+  SET_HV_RELAY_LV_POLE = 27,
+  SET_HV_RELAY_PRE_CHARGE = 28,
 };
 
 // enum specifying what data is sent
@@ -77,7 +81,7 @@ struct Network_Command {
 // But then it send another command to the Unified Queue once every second. 
 // This helper function, and the int64_t array of timers makes that possible
 extern int64_t error_flag_timers[8*6];  // 8 flags per error ID, 6 errors
-void set_error_flag(uint32_t id, uint32_t value);
+void set_error_flag(Network_Command_ID id, uint8_t value);
 
 }  // namespace Command
 

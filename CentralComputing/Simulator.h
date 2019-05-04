@@ -85,14 +85,15 @@ class Simulator {
   void logging(bool enable);
 
   /*
-    * Simulates arming the motor
+    * Simulate setting the relay state 
     */
-  void sim_motor_enable();
+  void sim_relay_state(HV_Relay_Select, HV_Relay_State);
 
   /*
-    * Simulates disarming the motor
+    * Simulates arming the motor (true)
+    * Simulates disarming the motr (false)
     */
-  void sim_motor_disable();
+  void sim_motor_state(bool enable);
 
   /*
     * Simulates setting the motor throttle to a specific value
@@ -142,7 +143,7 @@ class Simulator {
     * Motion is normally derived from the ADC/I2C/CAN/PRU values, so we could calculate it that way.
     * Or we can simply inject arbitary motion values (using the scenario)
     */
-  std::shared_ptr<MotionData> sim_get_motion(MotionModel * mm, std::shared_ptr<UnifiedState> state);
+  std::shared_ptr<MotionData> sim_get_motion(MotionModel * mm, UnifiedState * state);
 
   std::atomic<bool> active_connection;
   Event closed;

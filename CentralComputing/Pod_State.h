@@ -12,7 +12,7 @@
 
 class Pod_State;
 typedef void (Pod_State::*steady_state_function) (Command::Network_Command * command, 
-                                                  std::shared_ptr<UnifiedState> state);
+                                                  UnifiedState* state);
 typedef void (Pod_State::*transition_function) ();
 
 class Pod_State : public StateMachine {
@@ -68,14 +68,14 @@ class Pod_State : public StateMachine {
   * Each function call acts as a "frame"
   * Each frame, the function will proces the command, 
   **/
-  void steady_safe_mode(Command::Network_Command*, std::shared_ptr<UnifiedState>);
-  void steady_functional(Command::Network_Command*, std::shared_ptr<UnifiedState>);
-  void steady_loading(Command::Network_Command*, std::shared_ptr<UnifiedState>);
-  void steady_launch_ready(Command::Network_Command*, std::shared_ptr<UnifiedState>);
-  void steady_flight_accelerate(Command::Network_Command*, std::shared_ptr<UnifiedState>);
-  void steady_flight_coast(Command::Network_Command*, std::shared_ptr<UnifiedState>);
-  void steady_flight_brake(Command::Network_Command*, std::shared_ptr<UnifiedState>);
-  void steady_abort_state(Command::Network_Command*, std::shared_ptr<UnifiedState>);
+  void steady_safe_mode(Command::Network_Command*,         UnifiedState *);
+  void steady_functional(Command::Network_Command*,        UnifiedState *);
+  void steady_loading(Command::Network_Command*,           UnifiedState *);
+  void steady_launch_ready(Command::Network_Command*,      UnifiedState *);
+  void steady_flight_accelerate(Command::Network_Command*, UnifiedState *);
+  void steady_flight_coast(Command::Network_Command*,      UnifiedState *);
+  void steady_flight_brake(Command::Network_Command*,      UnifiedState *);
+  void steady_abort_state(Command::Network_Command*,       UnifiedState *);
 
   /*
   * Gets the steady state function for the current state

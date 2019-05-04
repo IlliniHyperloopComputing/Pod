@@ -128,19 +128,27 @@ void Simulator::logging(bool enable) {
   }
 }
 
-void Simulator::sim_motor_enable() {
+void Simulator::sim_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
   std::lock_guard<std::mutex> guard(mutex);
-  print(LogLevel::LOG_DEBUG, "Sim - Motors Enabled\n");
+  if (state) {
+    print(LogLevel::LOG_DEBUG, "Sim - Relay %d Enabled\n", relay);
+  } else {
+    print(LogLevel::LOG_DEBUG, "Sim - Relay %d Disabled\n", relay);
+  }
   if (scenario != nullptr) {
-    scenario->sim_motor_enable();
+    scenario->sim_relay_state(relay, state);
   }
 }
 
-void Simulator::sim_motor_disable() {
+void Simulator::sim_motor_state(bool enable) {
   std::lock_guard<std::mutex> guard(mutex);
-  print(LogLevel::LOG_DEBUG, "Sim - Motors Disabled\n");
+  if (enable) {
+    print(LogLevel::LOG_DEBUG, "Sim - Motors Enabled\n");
+  } else {
+    print(LogLevel::LOG_DEBUG, "Sim - Motors Disabled\n");
+  }
   if (scenario != nullptr) {
-    scenario->sim_motor_disable();
+    scenario->sim_motor_state(enable);
   }
 }
 
@@ -220,7 +228,7 @@ std::shared_ptr<PRUData> Simulator::sim_get_pru() {
   }
 }
 
-std::shared_ptr<MotionData> Simulator::sim_get_motion(MotionModel * mm, std::shared_ptr<UnifiedState> state) {
+std::shared_ptr<MotionData> Simulator::sim_get_motion(MotionModel * mm, UnifiedState * state) {
   std::lock_guard<std::mutex> guard(mutex);
   // Either go to the scenario for motion data
   if (scenario != nullptr && (scenario->use_motion_model())) {

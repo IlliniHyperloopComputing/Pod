@@ -1,11 +1,10 @@
-#ifndef STRUCTS_H_
-#define STRUCTS_H_
-
+#ifndef DEFINES_HPP
+#define DEFINES_HPP
 #include <memory>
 
 class MotionModel;
 
-enum E_States {
+enum E_States : uint32_t {
   ST_SAFE_MODE,
   ST_FUNCTIONAL_TEST,
   ST_LOADING,
@@ -17,17 +16,75 @@ enum E_States {
   ST_MAX_STATES
 };
 
+// Defines for selecting a particular relay
+enum HV_Relay_Select {
+  RELAY_PRE_CHARGE = 1,  // Pre-charge relay of the High-Voltage battery
+  RELAY_LV_POLE = 2,  // Low Voltage pole of the High-Voltage battery
+  RELAY_HV_POLE = 3,  // High Voltage pole of the High-Voltage battery
+};
+
+// Defines for selecting a particular relay state
+enum HV_Relay_State {
+  RELAY_ON = 0x01,
+  RELAY_OFF = 0x00,
+};
+
 #define NUM_ACCEL 3
 struct ADCData {
   int32_t accel[NUM_ACCEL];
   int dummy_data;
 };
 
+
 struct CANData {
-  // replace with actual data structure
-  int dummy_data;
-  int32_t wheel_distance;
-  int32_t drive_wheel_velocity;
+  // Motor Controller
+  uint32_t status_word;                 // actually a uint16_t
+  uint32_t position_val;                 // actually an int32_t
+  uint32_t torque_val;                   // actually a int16_t
+  uint32_t controller_temp;              // actually a uin8_t
+  uint32_t motor_temp;                   // actually a uint8_t
+  uint32_t dc_link_voltage;              // actually a int32_t
+  uint32_t logic_power_supply_voltage;   // actually a int16_t
+  uint32_t current_demand;               // actually a int16_t
+  uint32_t motor_current_val;            // actually a uint8_t
+  uint32_t electrical_angle;             // actually a int16_t
+  uint32_t phase_a_current;              // actually a int16_t
+  uint32_t phase_b_current;              // actually a int16_t
+
+  // BMS
+  uint32_t internal_relay_state;        // Used within the CANManager to set BMS relay states
+  uint32_t relay_state;                 // uint16_t This should agree with the above (given a small delay)
+  uint32_t rolling_counter;             // uint8_t 
+  uint32_t fail_safe_state;             // uint16_t
+  uint32_t pack_current;                // int16_t
+  uint32_t pack_voltage_inst;           // uint16_t       
+  uint32_t pack_voltage_open;           // uint16_t
+  uint32_t pack_soc;                    // uint8_t
+  uint32_t pack_amphours;               // uint16_t
+  uint32_t pack_resistance;             // uint16_t
+  uint32_t pack_dod;                    // uint8_t
+  uint32_t pack_soh;                    // uint8_t
+  uint32_t current_limit_status;        // uint16_t
+  uint32_t max_pack_dcl;                // uint16_t
+  uint32_t avg_pack_current;            // int16_t
+  uint32_t highest_temp;                // uint8_t
+  uint32_t highest_temp_id;             // uint8_t
+  uint32_t avg_temp;                    // uint8_t
+  uint32_t internal_temp;               // uint8_t
+  uint32_t low_cell_voltge;             // uint16_t
+  uint32_t low_cell_voltage_id;         // uint8_t
+  uint32_t high_cell_voltage;           // uint16_t
+  uint32_t high_cell_voltage_id;        // uint8_t
+  uint32_t low_cell_internalR;          // uint16_t
+  uint32_t low_cell_internalR_id;       // uint8_t
+  uint32_t high_cell_internalR;         // uint16_t
+  uint32_t high_cell_internalR_id;      // uint8_t
+  uint32_t power_voltage_input;         // uint16_t
+  uint32_t dtc_status_one;              // uint16_t
+  uint32_t dtc_status_two;              // uint16_t
+  uint32_t adaptive_total_cap;          // uint16_t
+  uint32_t adaptive_amphours;           // uint16_t
+  uint32_t adaptive_soc;                // uint8_t
 };
 
 struct I2CData {
