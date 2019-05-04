@@ -19,6 +19,7 @@ class App extends Component {
       command: "",
       value: 0,
       command_response: "",
+      runSetup: 0,
     };
     this.getColorFor = this.getColorFor.bind(this);
     this.stopPressed = this.stopPressed.bind(this);
@@ -26,6 +27,12 @@ class App extends Component {
 
   componentDidMount() {
     this.interval = setInterval(() => this.getInfo(), 500); //Update every half second
+      this.serverRequest = 
+      axios
+        .get("http://localhost:8000/api/commands/servers")
+        .then(function(result) {}).catch(function (error) {
+          console.log("caught")
+        })
   }
   
   getInfo() { //Updating code
@@ -34,36 +41,10 @@ class App extends Component {
       axios
         .get("http://localhost:8000/api/data/latest")
         .then(function(result) {    
-          var XMLParser = require('react-xml-parser');
-          var xml = new XMLParser().parseFromString(result.data);
-          xml.children[0].children.forEach(element => {
-            var name = element.attributes.name;
-            if (name === "position") {
-              let col = _this.getColorFor(element.value);
-              _this.setState({
-                posPercent: element.value,
-                posColor: col,
-              });
-            }
-            else if (name === "velocity") {
-              let col = _this.getColorFor(element.value);
-              _this.setState({
-                speedPercent: element.value,
-                speedColor: col,
-              });
-            }
-            else if (name === "acceleration") {
-              let col = _this.getColorFor(element.value);
-              _this.setState({
-                accelPercent: element.value,
-                accelColor: col,
-              });
-            }
-            _this.setState({
-              connectionText: "",
-            });
-          });
-        }).catch(function (error) {
+          _this.setState({
+            command_response: result.data
+          })
+          }).catch(function (error) {
           _this.setState({
             connectionText: "BACKEND CONNECTION LOST",
           });
@@ -149,9 +130,10 @@ class App extends Component {
                     <p>{ command_response }</p>
                     <form id="Command-Form" onSubmit={this.handleCommandSubmit}>
                       <select form="Command-Form" onChange={this.handleCommandChange}>
-                        <option value="-1">Select Command</option>
-                        <option value="1">Command 1</option>
-                        <option value="2">Command 2</option>
+                        { /* Adjust this to add commands to send */ }
+                        <option value={-1}>Select Command</option>
+                        <option value={1}>Set State</option>
+                        <option value={2}>Command 2</option>
                       </select>
                       Value: <input type="number" name="value" onChange={this.handleValueChange}></input><br></br>
                       <input type="submit" value="Submit"></input>

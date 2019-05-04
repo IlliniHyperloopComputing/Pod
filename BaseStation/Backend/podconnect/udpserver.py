@@ -1,5 +1,5 @@
 from threading import Thread, Lock, Event
-from podconnect.models import DataPacket
+from . import models
 import socket
 
 def serve():
@@ -43,7 +43,7 @@ def serve():
             except:
                 print("Error in UDP received message")
 
-        e.wait(timeout=0.3);
+        e.wait(timeout=0.3)
                 
 def start():
     t1 = Thread(target=serve)
