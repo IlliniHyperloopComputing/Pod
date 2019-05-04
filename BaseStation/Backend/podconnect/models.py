@@ -46,12 +46,14 @@ class CANData(models.Model):
     avg_pack_current = models.IntegerField()
     highest_temp = models.IntegerField()
     highest_temp_id = models.IntegerField()
+
     avg_temp = models.IntegerField()
     internal_temp = models.IntegerField()
     low_cell_voltage = models.IntegerField()
     low_cell_voltage_id = models.IntegerField()
     high_cell_voltage = models.IntegerField()
     high_cell_voltage_id = models.IntegerField()
+
     low_cell_internalR = models.IntegerField()
     low_cell_internalR_id = models.IntegerField()
     high_cell_internalR = models.IntegerField()

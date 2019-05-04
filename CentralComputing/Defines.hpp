@@ -18,9 +18,9 @@ enum E_States : uint32_t {
 
 // Defines for selecting a particular relay
 enum HV_Relay_Select {
-  RELAY_PRE_CHARGE = 1,  // Pre-charge relay of the High-Voltage battery
-  RELAY_LV_POLE = 2,  // Low Voltage pole of the High-Voltage battery
-  RELAY_HV_POLE = 3,  // High Voltage pole of the High-Voltage battery
+  RELAY_PRE_CHARGE = 0,  // Pre-charge relay of the High-Voltage battery
+  RELAY_LV_POLE = 1,  // Low Voltage pole of the High-Voltage battery
+  RELAY_HV_POLE = 2,  // High Voltage pole of the High-Voltage battery
 };
 
 // Defines for selecting a particular relay state

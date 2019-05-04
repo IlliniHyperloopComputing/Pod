@@ -72,7 +72,8 @@ def devCommand(request):
             tcpserver.addToCommandQueue([7, 0])
         if command == 8:
             print(mess)
-            tcpserver.addToCommandQueue([8, 0])
+            value = int(mess["value"])
+            tcpserver.addToCommandQueue([8, value])
         if command == 26:
             print(mess)
             value = int(mess["value"])

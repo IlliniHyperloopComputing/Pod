@@ -34,6 +34,9 @@ Pod_State::Pod_State()
   transition_map[Command::CLR_PRU_ERROR] = &Pod_State::no_transition;
   transition_map[Command::CLR_NETWORK_ERROR] = &Pod_State::no_transition;
   transition_map[Command::CLR_OTHER_ERROR] = &Pod_State::no_transition;
+  transition_map[Command::SET_HV_RELAY_HV_POLE] = &Pod_State::no_transition;
+  transition_map[Command::SET_HV_RELAY_LV_POLE] = &Pod_State::no_transition;
+  transition_map[Command::SET_HV_RELAY_PRE_CHARGE] = &Pod_State::no_transition;
   steady_state_map[ST_SAFE_MODE] = &Pod_State::steady_safe_mode;
   steady_state_map[ST_FUNCTIONAL_TEST] = &Pod_State::steady_functional;
   steady_state_map[ST_LOADING] = &Pod_State::steady_loading;
@@ -315,7 +318,7 @@ void Pod_State::steady_functional(Command::Network_Command * command,
         motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
       }
       else if (command->value == 1) {
-        motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
+        motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_ON);
       }
       break;
     case Command::SET_HV_RELAY_PRE_CHARGE:
