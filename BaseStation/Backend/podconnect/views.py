@@ -35,18 +35,45 @@ def devCommand(request):
         mess = json.loads(message)
         command = int(mess["command"])
         print("Command " + str(command))
+        if command == 0:
+            print(mess)
+            value = int(mess["value"])
+            tcpserver.addToCommandQueue([0, 0])
         if command == 1:
             print(mess)
             value = int(mess["value"])
-            if value > 8 or value < 0:
-                return HttpResponse("Failed")
-            tcpserver.addToCommandQueue([1, value])
-        if command == 2:
+            tcpserver.addToCommandQueue([1, 0])
+        if command == 6:
             print(mess)
             value = int(mess["value"])
-            if value > 8 or value < 0:
-                return HttpResponse("Failed")
-            tcpserver.addToCommandQueue([1, value])
+            tcpserver.addToCommandQueue([6, 0])
+        if command == 7:
+            print(mess)
+            value = int(mess["value"])
+            tcpserver.addToCommandQueue([7, 0])
+        if command == 8:
+            print(mess)
+            value = int(mess["value"])
+            tcpserver.addToCommandQueue([8, 0])
+        if command == 26:
+            print(mess)
+            value = int(mess["value"])
+            if value != 0 and value != 1:
+                return HttpResponse("Value out of range")
+            tcpserver.addToCommandQueue([26, value])
+        if command == 27:
+            print(mess)
+            value = int(mess["value"])
+            if value != 0 and value != 1:
+                return HttpResponse("Value out of range")
+            tcpserver.addToCommandQueue([27, value])
+        if command == 28:
+            print(mess)
+            value = int(mess["value"])
+            if value != 0 and value != 1:
+                return HttpResponse("Value out of range")
+            tcpserver.addToCommandQueue([28, value])
+
         return HttpResponse()
 
 def startupServers(request):

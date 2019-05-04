@@ -3,6 +3,7 @@ from . import models
 import socket
 import queue
 import time
+import numpy as np
 
 # TCP IDs:
 # uint8_t adc_id = 0;
@@ -84,7 +85,8 @@ def sendData():
             try:
                 print("Sending " + str(command))
                 for message in command:
-                    conn.sendall(str(message).encode())
+                    convmessage = np.uint32(message)
+                    conn.sendall(convmessage)
             except Exception as e:
                 print(e)
                 COMMAND_QUEUE.put(command)
