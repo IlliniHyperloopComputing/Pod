@@ -20,6 +20,7 @@ class App extends Component {
       value: 0,
       command_response: "",
       runSetup: 0,
+      dev_data: ""
     };
     this.getColorFor = this.getColorFor.bind(this);
     this.stopPressed = this.stopPressed.bind(this);
@@ -27,12 +28,6 @@ class App extends Component {
 
   componentDidMount() {
     this.interval = setInterval(() => this.getInfo(), 500); //Update every half second
-      this.serverRequest = 
-      axios
-        .get("http://localhost:8000/api/commands/servers")
-        .then(function(result) {}).catch(function (error) {
-          console.log("caught")
-        })
   }
   
   getInfo() { //Updating code
@@ -42,7 +37,7 @@ class App extends Component {
         .get("http://localhost:8000/api/data/latest")
         .then(function(result) {    
           _this.setState({
-            command_response: result.data
+            dev_data: result.data
           })
           }).catch(function (error) {
           _this.setState({
@@ -110,15 +105,16 @@ class App extends Component {
       value: this.state.value
     })
       .then(res => {
-        console.log(res);
-        console.log(res.data);
+        this.setState({
+          command_response: res.data
+        })
       }).catch(function (error) {
-        console.log("Ready failed!!")
+        console.log("Command send failed!!")
       })
   }
 
   render() {
-    const { speedPercent, speedColor, posPercent, posColor, accelColor, accelPercent, connectionText, command_response } = this.state;
+    const { dev_data, speedPercent, speedColor, posPercent, posColor, accelColor, accelPercent, connectionText, command_response } = this.state;
     return (
       <div className="App">
         <header className="App-header">
@@ -127,16 +123,23 @@ class App extends Component {
               <Route path="/dev" render={(props) => {
                 return(
                   <div>
+                    <p>{ dev_data }</p>
                     <p>{ command_response }</p>
-                    <form id="Command-Form" onSubmit={this.handleCommandSubmit}>
+                    <form id="Command-Form">
                       <select form="Command-Form" onChange={this.handleCommandChange}>
                         { /* Adjust this to add commands to send */ }
                         <option value={-1}>Select Command</option>
-                        <option value={1}>Set State</option>
-                        <option value={2}>Command 2</option>
+                        <option value={0}>TRANS_SAFE_MODE</option>
+                        <option value={1}>TRANS_FUNCTIONAL_TEST</option>
+                        <option value={6}>ENABLE_MOTOR</option>
+                        <option value={7}>DISABLE_MOTOR</option>
+                        <option value={8}>SET_MOTOR_SPEED</option>
+                        <option value={26}>SET_HV_RELAY_HV_POLE</option>
+                        <option value={27}>SET_HV_RELAY_LV_POLE</option>
+                        <option value={28}>SET_HV_RELAY_PRE_CHARGE</option>
                       </select>
                       Value: <input type="number" name="value" onChange={this.handleValueChange}></input><br></br>
-                      <input type="submit" value="Submit"></input>
+                      <input type="button" value="Submit" onClick={this.handleCommandSubmit}></input>
                     </form>
                   </div>
                 );

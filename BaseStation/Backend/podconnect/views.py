@@ -17,7 +17,28 @@ def getLatest(request):
     # can_data = models.CANData.objects.latest("date_time")
     # error_data = models.Errors.objects.latest("date_time")
     state_data = models.State.objects.latest("date_time")
-    return HttpResponse("State: " + state_data.state)
+    can_data = models.CANData.objects.latest("date_time")
+    return HttpResponse("State: " 
+        + str(state_data.state)
+        + ", Status_Word: " + str(hex(can_data.status_word))
+        + ", Torque_Val: " + str(can_data.torque_val)
+        + ", Controller_Temp: " + str(can_data.controller_temp)
+        + ", Motor_Temp: " + str(can_data.motor_temp)
+        + ", DC_Link_Voltage: " + str(can_data.dc_link_voltage)
+        + ", Internal_Relay_State: " + str(hex(can_data.internal_relay_state))
+        + ", Relay_State: " + str(hex(can_data.relay_state))
+        + ", Rolling_Counter: " + str(can_data.rolling_counter)
+        + ", Fail_Safe_State: " + str(hex(can_data.fail_safe_state))
+        + ", Peak_Current: " + str(can_data.peak_current)
+        + ", Pack_Voltage_Inst " + str(can_data.pack_voltage_inst)
+        + ", Highest_Temp: " + str(can_data.highest_temp)
+        + ", Avg_Temp: " + str(can_data.avg_temp)
+        + ", Internal_Temp: " + str(can_data.internal_temp)
+        + ", Low_Cell_Voltage: " + str(can_data.low_cell_voltage)
+        + ", High_Cell_Voltage: " + str(can_data.high_cell_voltage)
+        + ", High_Cell_InternalR: " + str(can_data.high_cell_internalR)
+        + ", DTC_Status_One: " + str(hex(can_data.dtc_status_one))
+        + ", DTC_Status_Two: " + str(hex(can_data.dtc_status_two)))
 
 def stopPressed(request):
     if request.method == "POST":
@@ -34,26 +55,23 @@ def devCommand(request):
         message = request.body.decode()
         mess = json.loads(message)
         command = int(mess["command"])
+        if command == -1:
+            return HttpResponse()
         print("Command " + str(command))
         if command == 0:
             print(mess)
-            value = int(mess["value"])
             tcpserver.addToCommandQueue([0, 0])
         if command == 1:
             print(mess)
-            value = int(mess["value"])
             tcpserver.addToCommandQueue([1, 0])
         if command == 6:
             print(mess)
-            value = int(mess["value"])
             tcpserver.addToCommandQueue([6, 0])
         if command == 7:
             print(mess)
-            value = int(mess["value"])
             tcpserver.addToCommandQueue([7, 0])
         if command == 8:
             print(mess)
-            value = int(mess["value"])
             tcpserver.addToCommandQueue([8, 0])
         if command == 26:
             print(mess)
@@ -75,6 +93,7 @@ def devCommand(request):
             tcpserver.addToCommandQueue([28, value])
 
         return HttpResponse()
+    return HttpResponse()
 
 def startupServers(request):
     global TCPUp, UDPUp

@@ -32,7 +32,7 @@ class CANData(models.Model):
     internal_relay_state = models.IntegerField()  # Used within the CANManager to set BMS relay states
     relay_state = models.IntegerField()           # This should agree with the above (given a small delay)
     rolling_counter = models.IntegerField()
-    fail_safe_sate = models.IntegerField()
+    fail_safe_state = models.IntegerField()
     peak_current = models.IntegerField()
     pack_voltage_inst = models.IntegerField()
     pack_voltage_open = models.IntegerField()
@@ -48,7 +48,7 @@ class CANData(models.Model):
     highest_temp_id = models.IntegerField()
     avg_temp = models.IntegerField()
     internal_temp = models.IntegerField()
-    low_cell_voltge = models.IntegerField()
+    low_cell_voltage = models.IntegerField()
     low_cell_voltage_id = models.IntegerField()
     high_cell_voltage = models.IntegerField()
     high_cell_voltage_id = models.IntegerField()
