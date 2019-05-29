@@ -1,5 +1,5 @@
 from threading import Thread
-from . import models
+from . import tcpsaver, tcphelper
 import socket
 import queue
 import time
@@ -15,7 +15,7 @@ import numpy as np
 # uint8_t state_id = 6;
 
 # TCP global variables
-TCP_IP = '192.168.7.1' #'127.0.0.1'
+TCP_IP = '127.0.0.1'
 TCP_PORT = 8001
 BUFFER_SIZE = 300
 
@@ -24,12 +24,6 @@ addr = None
 
 # Initialize command queue
 COMMAND_QUEUE = queue.Queue()
-
-def bytes_to_int(bytes, length):
-    new_bytes = []
-    for x in range(0, length):
-        new_bytes.append(int.from_bytes(bytes[(x*4):(x*4+4)], byteorder='little', signed=False))
-    return new_bytes;
 
 def serve():
     global TCP_IP, TCP_PORT, BUFFER_SIZE, conn, addr
@@ -46,7 +40,6 @@ def serve():
     print("TCP Port = {port}".format(port=TCP_PORT))
     s.listen(1)
 
-    # Receiving and sending data
     while (True):
         conn, addr = s.accept()
         print('Connection address:', addr)
@@ -63,10 +56,8 @@ def serve():
                     pass
                 elif id == 1: # CAN Data
                     data = conn.recv(45*4)
-                    data = bytes_to_int(data, 45)
-                    # print("parsing CAN")
-                    # print(data);
-                    if saveCANData(data) == -1:
+                    data = tcphelper.bytes_to_int(data, 45)
+                    if tcpsaver.saveCANData(data) == -1:
                         print("CAN data failure")
                 elif id == 2: # I2C Data
                     # ToDo
@@ -79,17 +70,17 @@ def serve():
                     pass
                 elif id == 5: # Error Data
                     data = conn.recv(6)
-                    # print("parsing ERROR data")
-                    if saveErrorData(data) == -1:
+                    if tcpsaver.saveErrorData(data) == -1:
                         print("ADC data failure")
                 elif id == 6: # State Data
                     data = conn.recv(4)
-                    data = bytes_to_int(data, 1)
-                    # print("parsing STATE data")
-                    if saveStateData(data) == -1:
+                    data = tcphelper.bytes_to_int(data, 1)
+                    if tcpsaver.saveStateData(data) == -1:
                         print("State data failure")
             except:
                 print("Error in TCP Received message")
+        print("Disconnected from Pod!!")
+        # Add this to event logger
 
 def sendData():
     global conn, COMMAND_QUEUE
@@ -107,102 +98,8 @@ def sendData():
                 COMMAND_QUEUE.put(command)
         time.sleep(0.2)
 
-def saveStateData(data):
-    if len(data) < 1:
-        return -1
-    state_model = models.State(
-        state = data[0]
-    )
-    state_model.save()
-
-# Input: data array
-# Function: saves data as a error data model
-# Returns: -1 if the array is too small
-# Returns: 1 on success
-def saveErrorData(data):
-    if len(data) < 6:
-        return -1
-    error_model = models.Errors(
-        ADCError = data[0],
-        CANError = data[1],
-        I2CError = data[2],
-        PRUError = data[3],
-        NetworkError = data[4],
-        OtherError = data[5],
-    )
-    error_model.save()
-
-# There has to be a better way to do this
-# Input: data array
-# Function: saves data as a can data model
-# Returns: -1 if the array is too small
-# Returns: 1 on success
-def saveCANData(data):
-    # print("len data:")
-    # print(len(data))
-    if len(data) < 45:
-        return -1
-    can_model = models.CANData(
-        # Motor Controller
-        data = data[0],
-        status_word = data[1],
-        position_val = data[2],
-        torque_val  = data[3],
-        controller_temp = data[4],
-        motor_temp = data[5],
-        dc_link_voltage = data[6],
-        logic_power_supply_voltage = data[6],
-        current_demand = data[7],
-        motor_current_val = data[8],
-        electrical_angle = data[9],
-        phase_a_current = data[10],
-        phase_b_current = data[11],
-
-        ## BMS
-        internal_relay_state = data[12],  # Used witdatain tdatae CANManager to set BMS relay states
-        relay_state = data[13],           # Tdatais sdataould agree witdata tdatae above (given a small delay)
-        rolling_counter = data[14],
-        fail_safe_state = data[15],
-        peak_current = data[16],
-        pack_voltage_inst = data[17],
-        pack_voltage_open = data[18],
-        pack_soc = data[19],
-        pack_amphours = data[20],
-        pack_resistance = data[21],
-        pack_dod = data[22],
-        pack_soh = data[23],
-        current_limit_status = data[24],
-
-        max_pack_dcl = data[25],
-        avg_pack_current = data[26],
-        highest_temp = data[27],
-        highest_temp_id = data[28],
-
-        avg_temp = data[29],
-        internal_temp = data[30],
-        low_cell_voltage = data[31],
-        low_cell_voltage_id = data[32],
-        high_cell_voltage = data[33],
-        high_cell_voltage_id = data[34],
-
-        low_cell_internalR = data[35],
-        low_cell_internalR_id = data[36],
-        high_cell_internalR = data[37],
-        high_cell_internalR_id = data[38],
-        power_voltage_input = data[39],
-        dtc_status_one = data[40],
-        dtc_status_two = data[41],
-        adaptive_total_cap = data[42],
-        adaptive_amphours = data[43],
-        adaptive_soc = data[44]
-    )
-
-    can_model.save()
-    return 1
-
-# Starts thread for tcp server
+# Starts thread for tcp server and processor
 def start():
-    print("FUCKKKKKKK")
     t1 = Thread(target=serve)
     t1.start()
     t2 = Thread(target=sendData)
