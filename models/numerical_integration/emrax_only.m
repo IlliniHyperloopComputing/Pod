@@ -6,10 +6,11 @@ runlength = 1200; %Assume 1.25 km track, want to leave 50 meter buffer at the en
 %%%%%%%%%
 %Emrax Specific
 %%%%%%%%%
-EmraxGear = 2.7:0.1:2.8;%2.79;%2.6:0.01:2.9;%[2.79];
+EmraxGear = [2.79];%2.79;%2.6:0.01:2.9;%[2.79];
 EmraxRadius = 0.2032/2; %wheel Radius (meters)
-EmraxMaxMechPower    = [60]; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT go over this value
-EmraxMaxBatteryPower = [96]; % Max BATTERY OUTPUT in kw. THIS THROTTLES THE EMRAX. The BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
+EmraxMaxMechPower    = [40]; %PEAK MECHANICAL power, in kW. Mechanical power WILL NOT go over this value
+EmraxMaxBatteryPower = [60]; %    Max BATTERY OUTPUT in kw. THIS THROTTLES THE EMRAX. The BATTERY OUTPUT WILL NOT GO OVER THIS VALUE
+EmraxMaxAmps = 500;
 EmraxPeakTorque = 230; %Peak torque, in Nm. 
 EmraxMaxRPM = 4400; %Max possible RPM under load. Past this RPM we assume 0 output power
 EmraxKV = 34;
@@ -18,24 +19,24 @@ EmraxBatteryAH = 16;
 CellResistance = 0.004; %From 0.002 to 0.006
 CellsInSeries = 30;
 CellsInParallel = 4.0;
-EmraxBatteryResistance = [CellsInSeries * CellResistance/CellsInParallel]; % P = I^2 * R
+EmraxBatteryResistance = [CellsInSeries * CellResistance/CellsInParallel];%0.57; % % P = I^2 * R
 EmraxControllerEfficiency = 0.95;
 
 
 %%%%%%%%%
 %Pod Mass (kg)
-mass = 135; 
+mass = 120;
 
 
 %%%%%%%%%
 %Pod Braking parameters
-BrakingForce = 1500; % In N
+BrakingForce = 967.2%1500; % In N
 MaxBrakingGs = BrakingForce/mass/9.80665;
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %%%%%%
 %Numerical integration delta time
-dt = 0.05; %delta time
+dt = 0.1; %delta time
 %%%%%%
 
 % Key variables to keep track of
@@ -80,7 +81,8 @@ for emraxGear = EmraxGear
     vec_emraxCurrent = [];
     vec_emraxVoltage = [];
 
-    emraxBatteryVoltage = EmraxBatteryVoltage;
+    emraxBatteryVoltage = EmraxBatteryVoltage; 
+    emraxBatteryAH = EmraxBatteryAH;
     
     heatEmrax = 0;
     heatEmsiso = 0;
@@ -96,13 +98,13 @@ for emraxGear = EmraxGear
         emraxWheelRPM = v * 60 /(2*pi*EmraxRadius); %calculate wheel RPM at point in time
         emraxRPM = emraxWheelRPM / emraxGear;
         
-        battery_voltage_including_sag = emraxBatteryVoltage - emraxCurrent *emraxBatteryResistance;
+        battery_voltage_including_sag = emraxBatteryVoltage - emraxCurrent * emraxBatteryResistance;
         maxRPM_at_voltage = EmraxKV * battery_voltage_including_sag;
           
         % Apply motor dynamics. This will throttle the power output
         [emraxTorque, emraxMechPower, emraxMotorInputPower, emraxControllerInputPower, emraxCurrent] = ...
-          Motor_Dynamics(emraxRPM, emraxMaxMechPower, EmraxPeakTorque, maxRPM_at_voltage, EmraxControllerEfficiency...
-                          ,emraxBatteryVoltage, emraxBatteryResistance, emraxMaxBatteryPower, true);
+          Motor_Dynamics(emraxRPM, emraxMaxMechPower, EmraxPeakTorque, EmraxMaxAmps, maxRPM_at_voltage, EmraxControllerEfficiency...
+                          ,battery_voltage_including_sag, emraxBatteryResistance, emraxMaxBatteryPower, true);
       
         heatEmrax        = heatEmrax        + (emraxMotorInputPower - emraxMechPower) * dt;
         heatEmsiso       = heatEmsiso       + (emraxControllerInputPower - emraxMotorInputPower) * dt;
@@ -118,7 +120,9 @@ for emraxGear = EmraxGear
         end
         
         % Update battery voltage
-        emraxBatteryVoltage = emraxBatteryVoltage  - 1.0/(EmraxBatteryAH*3600) * emraxCurrent*dt;
+        %% I think this is wrong: emraxBatteryVoltage = emraxBatteryVoltage  - 1.0/(EmraxBatteryAH*3600) * emraxCurrent*dt;
+        emraxBatteryAH = (emraxBatteryAH - dt/3600.0*abs(emraxCurrent));
+        emraxBatteryVoltage = EmraxBatteryVoltage * emraxBatteryAH/EmraxBatteryAH;
         
         % Determine torque at the wheel
         emraxTorqueWheel = emraxTorque / emraxGear;
