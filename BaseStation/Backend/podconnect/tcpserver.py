@@ -71,7 +71,7 @@ def serve():
                 elif id == 5: # Error Data
                     data = conn.recv(6)
                     if tcpsaver.saveErrorData(data) == -1:
-                        print("ADC data failure")
+                        print("Error data failure")
                 elif id == 6: # State Data
                     data = conn.recv(4)
                     data = tcphelper.bytes_to_int(data, 1)
