@@ -19,7 +19,7 @@ class PodTest : public ::testing::Test
     sim_thread = std::thread([&](){ SimulatorManager::sim.sim_connect();});
 
     // Create the Pod object
-    pod = std::make_shared<Pod>(podtest_global::config_to_open);
+    pod = std::make_shared<Pod>(podtest_global::config_to_open, podtest_global::flight_plan_to_open);
 
     // Reset this event, used to make sure we have connected
     pod->processing_error.reset();
