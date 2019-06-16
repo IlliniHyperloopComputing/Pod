@@ -143,7 +143,7 @@ Pod::Pod(const std::string & config_to_open) {
   #endif
 
   // Open configuration file
-  if (!ConfiguratorManager::config.openConfigFile(config_to_open)) {
+  if (!ConfiguratorManager::config.openConfigFile(config_to_open, false)) {
     print(LogLevel::LOG_ERROR, "Config missing. File: %s\n", config_to_open.c_str());
     exit(1);
   }
@@ -202,7 +202,11 @@ void Pod::run() {
   com.id = Command::Network_Command_ID::SET_NETWORK_ERROR;
   com.value = NETWORKErrors::TCP_DISCONNECT_ERROR;
   set_error_code(&com);  // Initially have an error set that the network isn't connected
+
   // Start Network and main loop thread.
+  print(LogLevel::LOG_INFO, "tcp_addr: %s, tcp_port: %s \n", tcp_addr.c_str(), tcp_port.c_str()); 
+  print(LogLevel::LOG_INFO, "upd_addr: %s, upd_send: %s, udp_recv: %s\n", udp_addr.c_str(), udp_send.c_str(), udp_recv.c_str());    
+
   // I don't know how to use member functions as a thread function, but lambdas work
   // std::lock_guard<std::mutex> guard(TCPManager::data_mutex);  // Protect access to TCPManger::data_to_send
   thread tcp_thread([&](){ TCPManager::tcp_loop(tcp_addr.c_str(), tcp_port.c_str(), &unified_state); });
@@ -210,7 +214,7 @@ void Pod::run() {
   running.store(true);
   thread logic_thread([&](){ logic_loop(); });  
   print(LogLevel::LOG_INFO, "Finished Initialization\n");
-  print(LogLevel::LOG_INFO, "================\n\n");
+  print(LogLevel::LOG_INFO, "================\n");
   
   // signal to test suite that we are ready to begin testing
   ready.invoke();

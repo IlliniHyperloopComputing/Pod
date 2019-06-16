@@ -4,8 +4,8 @@
 using namespace std;
 //Test Configurator without Pod
 TEST(ConfiguratorTest, LoadOutputVariables) {
-  EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/test.txt"), true);
-  EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/notrealfile.txt"), false);
+  EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/test.txt", false), true);
+  EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/notrealfile.txt", false), false);
 
   int64_t val;
   ConfiguratorManager::config.getValue("Variable", val);

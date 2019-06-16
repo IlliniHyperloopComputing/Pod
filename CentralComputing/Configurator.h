@@ -5,15 +5,17 @@
 #include <string>
 #include <iostream>
 #include <map>
+#include <vector>
 
 using std::string;
 using std::ifstream;
 using std::map;
+using std::vector;
 using std::pair;
 
 class Configurator {
  public:
-  bool openConfigFile(const string&);
+  bool openConfigFile(const string&, bool is_flight_plan);
   void clear();
   bool getValue(const string&, string&);
   bool getValue(const string&, int64_t&);
@@ -22,9 +24,10 @@ class Configurator {
   bool getValue(const string&, double&); 
 
  private:
-  void loadValues();
+  void loadValues(bool is_flight_plan);
   ifstream inFile;
   map <string, string> mapVals;
+  vector <pair<int64_t, int64_t>> flightPlan;
 };
 
 namespace ConfiguratorManager {

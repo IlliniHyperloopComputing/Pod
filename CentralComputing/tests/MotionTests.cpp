@@ -32,7 +32,7 @@ using Utils::LogLevel;
 
 TEST(MotionTests, distance_no_faults) {
     // Create state with all zeros
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Test that with no input, nothing happens
@@ -60,7 +60,7 @@ TEST(MotionTests, distance_no_faults) {
 
 TEST(MotionTests, distance_orange_fault) {
     // Create state with all zeros
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic distance calculation.
@@ -82,7 +82,7 @@ TEST(MotionTests, distance_orange_fault) {
 
 TEST(MotionTests, distance_wheel_orange_fault) {
     // Create state with all zeros
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic distance calculation.
@@ -104,7 +104,7 @@ TEST(MotionTests, distance_wheel_orange_fault) {
 
 TEST(MotionTests, distance_wheel_diverge) {
     // Create state with all zeros
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic distance calculation.
@@ -128,7 +128,7 @@ TEST(MotionTests, distance_wheel_diverge) {
 
 TEST(MotionTests, distance_wheel_diverge_orange_fault) {
     // Create state with all zeros
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic distance calculation.
@@ -152,7 +152,7 @@ TEST(MotionTests, distance_wheel_diverge_orange_fault) {
 
 TEST(MotionTests, distance_wheel_diverge_orange_double_fault) {
     // Create state with all zeros
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic distance calculation.
@@ -178,7 +178,7 @@ TEST(MotionTests, distance_motor_slip) {
     // Create state with all zeros
     // Load test.txt, it defines motor_distance_clamp as 10
     ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/test.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/test.txt", false), true);
     MOTION_TEST_SETUP;
 
 
@@ -204,7 +204,7 @@ TEST(MotionTests, velocity_basic){
     // Create state with all zeros
     // Load test.txt, it defines motor_distance_clamp as 10
     ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_basic.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_basic.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic velocity calculation.
@@ -223,7 +223,7 @@ TEST(MotionTests, velocity_low_pass){
     // Create state with all zeros
     // Load test.txt, it defines motor_distance_clamp as 10
     ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_low_pass.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_low_pass.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic velocity calculation.
@@ -247,7 +247,7 @@ TEST(MotionTests, velocity_random_noise){
     // Create state with all zeros
     // Load test.txt, it defines motor_distance_clamp as 10
     ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_low_pass.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_low_pass.txt", false), true);
     MOTION_TEST_SETUP;
     // https://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution
     std::random_device rd;  //Will be used to obtain a seed for the random number engine
@@ -271,7 +271,7 @@ TEST(MotionTests, velocity_diverge){
     // Create state with all zeros
     // Load test.txt, it defines motor_distance_clamp as 10
     ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_low_pass.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_low_pass.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic velocity calculation.
@@ -291,7 +291,7 @@ TEST(MotionTests, acceleration_basic){
     // Create state with all zeros
     // Load test.txt, it defines motor_distance_clamp as 10
     ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_basic.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_basic.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic velocity calculation.
@@ -311,7 +311,7 @@ TEST(MotionTests, acceleration_one_failure){
     // Create state with all zeros
     // Load test.txt, it defines motor_distance_clamp as 10
     ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_basic.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_basic.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic velocity calculation.
@@ -330,7 +330,7 @@ TEST(MotionTests, acceleration_one_failure){
 TEST(MotionTests, acceleration_select_median){
     // Create state with all zeros
     ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_basic.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_basic.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic velocity calculation.

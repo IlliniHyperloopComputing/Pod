@@ -3,23 +3,29 @@
 
 Configurator ConfiguratorManager::config;
 
-bool Configurator::openConfigFile(const string& fileName) {
+bool Configurator::openConfigFile(const string& fileName, bool is_flight_plan) {
   inFile.open(fileName);
   if (!inFile) {
     return false;
   }
-  loadValues();
+  loadValues(is_flight_plan);
   inFile.close();
   return true;
 }
 
-void Configurator::loadValues() {
+void Configurator::loadValues(bool is_flight_plan) {
   string varName;
   string val;
   while (inFile >> varName) {
     inFile >> val;
-    mapVals.insert(pair<string, string> (varName, val));
-    inFile.ignore(200, '\n');
+    if (is_flight_plan) {
+      flightPlan.push_back(std::make_pair<int64_t, int64_t>(std::stoll(varName), std::stoll(val)));
+    }
+    else {
+      // Normal case, just add pair to map
+      mapVals.insert(pair<string, string> (varName, val));
+    }
+    inFile.ignore(200, '\n');  // This ignores characters at the end of the line. allows for comments
   }
 }
 
