@@ -47,6 +47,7 @@ Pod_State::Pod_State()
   steady_state_map[ST_ERROR] = &Pod_State::steady_abort_state;
 
   if (!(ConfiguratorManager::config.getValue("acceleration_timeout", acceleration_timeout) && 
+      ConfiguratorManager::config.getValue("precharge_timeout", launch_ready_precharge_timeout) &&
       ConfiguratorManager::config.getValue("coast_timeout", coast_timeout) &&
       ConfiguratorManager::config.getValue("brake_timeout", brake_timeout) &&
       ConfiguratorManager::config.getValue("estimated_brake_deceleration", estimated_brake_deceleration) &&
@@ -226,7 +227,7 @@ void Pod_State::no_transition() {
 
 void Pod_State::ST_Safe_Mode() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
-  // brakes.disable_brakes();  // Enable only when ready
+  brakes.disable_brakes(); 
   motor.disable_motors();
   motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
   motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
@@ -235,7 +236,7 @@ void Pod_State::ST_Safe_Mode() {
 
 void Pod_State::ST_Functional_Test() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
-  // brakes.disable_brakes();  // Enable only when ready
+  brakes.disable_brakes();  
   motor.disable_motors();
   motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
   motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
@@ -243,6 +244,7 @@ void Pod_State::ST_Functional_Test() {
 }
 void Pod_State::ST_Loading() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  brakes.disable_brakes();  
   motor.disable_motors();
   motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
   motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
@@ -250,20 +252,20 @@ void Pod_State::ST_Loading() {
 }
 void Pod_State::ST_Launch_Ready() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
-  // motor.disable_motors();
-  // motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
-  // motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
-  // motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
+  launch_ready_start_time = microseconds();
+  ready_for_launch = false;  // used in conjunction with the pre-charge timer.
+
+  brakes.disable_brakes();
+  motor.enable_motors();
+
+  motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_ON);
+  motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_ON);
 }
 
 void Pod_State::ST_Flight_Accel() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
   acceleration_start_time = microseconds();
-  brakes.disable_brakes();
-  motor.enable_motors();
-  #ifdef SIM
-  motor.set_throttle(100);
-  #endif
+  flight_plan_index = 0;
 }
 
 void Pod_State::ST_Flight_Coast() {
@@ -349,6 +351,13 @@ void Pod_State::steady_loading(Command::Network_Command * command,
 
 void Pod_State::steady_launch_ready(Command::Network_Command * command, 
                                     UnifiedState* state) {
+  // check if precharge complete
+  int64_t timeout_check = microseconds() - acceleration_start_time;
+  if (timeout_check > launch_ready_precharge_timeout && !ready_for_launch){
+    motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
+    motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_ON);
+    ready_for_launch = true;  // Set true so we can't get into this IF again
+  }
 }
 
 void Pod_State::steady_flight_accelerate(Command::Network_Command * command, 
@@ -358,6 +367,9 @@ void Pod_State::steady_flight_accelerate(Command::Network_Command * command,
   int32_t vel = state->motion_data->x[1];
   int32_t acc = state->motion_data->x[2];
   int64_t timeout_check = microseconds() - acceleration_start_time;
+
+  int16_t motor_throttle = ConfiguratorManager::config.getFlightPlan(timeout_check, &flight_plan_index);
+  motor.set_throttle(motor_throttle);
   
   // Transition if kinematics demand it, or we exceed our timeout
   if (shouldBrake(vel, pos) || timeout_check >= acceleration_timeout) {
