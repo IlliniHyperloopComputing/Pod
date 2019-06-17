@@ -93,7 +93,6 @@ class Pod_State : public StateMachine {
     return transition_map[(Command::Network_Command_ID)com->id];
   }
 
-
   Motor motor;
   Brakes brakes;
   Event auto_transition_coast;
@@ -103,7 +102,7 @@ class Pod_State : public StateMachine {
   // variables used to measure time in a state, and configurable timeout values
   bool ready_for_launch;
   int64_t launch_ready_start_time, launch_ready_precharge_timeout;
-  int flight_plan_index;
+  unsigned int flight_plan_index;
   int64_t acceleration_start_time, acceleration_timeout;
   int64_t coast_start_time, coast_timeout;
   int64_t brake_start_time, brake_timeout;

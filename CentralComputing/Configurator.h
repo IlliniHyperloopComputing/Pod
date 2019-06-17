@@ -22,7 +22,7 @@ class Configurator {
   bool getValue(const string&, int32_t&);
   bool getValue(const string&, float&); 
   bool getValue(const string&, double&); 
-  int16_t getFlightPlan(int64_t time, int * start_index);
+  int16_t getFlightPlan(int64_t time, unsigned int * start_index);
 
  private:
   void loadValues(bool is_flight_plan);

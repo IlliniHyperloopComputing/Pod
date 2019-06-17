@@ -86,16 +86,16 @@ bool Configurator::getValue(const string& varName, double& value) {
   return true;
 }
 
-int16_t Configurator::getFlightPlan(int64_t time, int * start_index) {
+int16_t Configurator::getFlightPlan(int64_t time, unsigned int * start_index) {
   int16_t candidate = 0;
   // Iterate over the flight plan to find the appropriate motor setting
-  for (int i = *start_index; i < flightPlan.size(); i++) {
+  for (unsigned int i = *start_index; i < flightPlan.size(); i++) {
     pair<int64_t, int16_t> & el = flightPlan[i];
     if (el.first <= time) {
       // We are greater than or equal to this time index
       // This is a possible motor speed
       candidate = el.second;
-      // This is a slight hack, to improve performance. 
+      // This is improves performance. 
       // dont have to iterate over the entire list next time
       *start_index = i;  
     } else {
