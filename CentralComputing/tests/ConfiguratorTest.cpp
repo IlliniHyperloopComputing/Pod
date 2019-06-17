@@ -2,6 +2,7 @@
 #include "PodTest.cpp"
 #include <string>
 using namespace std;
+
 //Test Configurator without Pod
 TEST(ConfiguratorTest, LoadOutputVariables) {
   EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/test.txt", false), true);
@@ -25,6 +26,93 @@ TEST(ConfiguratorTest, LoadOutputVariables) {
   EXPECT_EQ(ConfiguratorManager::config.getValue("FakeName", val), false);
 
 }
+
+//Test Flight Plan Configurator without Pod
+TEST(ConfiguratorTest, FlightPlanTest) {
+  EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/fakeFlightPlan.txt", true), false);
+  EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/basicFlightPlan.txt", true), true);
+
+  unsigned int idx = 0;
+
+  int16_t val = ConfiguratorManager::config.getFlightPlan(0, &idx);
+  EXPECT_EQ(val, 100);
+  EXPECT_EQ(idx,(unsigned int) 0);
+
+  idx = 1;
+  val = ConfiguratorManager::config.getFlightPlan(0, &idx); // test on a higher index, should return 0
+  EXPECT_EQ(val, 0);
+  EXPECT_EQ(idx, (unsigned int) 1);
+
+
+  EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/basicFlightPlan1.txt", true), true);
+
+  idx = 0;
+  val = ConfiguratorManager::config.getFlightPlan(0,   &idx);
+  EXPECT_EQ(val, 105);
+  EXPECT_EQ(idx, (unsigned int)0);
+  idx = 0;
+
+  val = ConfiguratorManager::config.getFlightPlan(200, &idx); 
+  EXPECT_EQ(val, 200);
+  EXPECT_EQ(idx, (unsigned int)1);
+  idx = 1;
+  val = ConfiguratorManager::config.getFlightPlan(200, &idx); 
+  EXPECT_EQ(val, 200);
+  EXPECT_EQ(idx, (unsigned int)1);
+  idx = 0;
+
+  val = ConfiguratorManager::config.getFlightPlan(300, &idx); 
+  EXPECT_EQ(val, 400);
+  EXPECT_EQ(idx, (unsigned int)2);
+  idx = 1;
+  val = ConfiguratorManager::config.getFlightPlan(300, &idx); 
+  EXPECT_EQ(idx, (unsigned int)2);
+  idx = 2;
+  EXPECT_EQ(val, 400);
+  val = ConfiguratorManager::config.getFlightPlan(300, &idx); 
+  EXPECT_EQ(val, 400);
+  EXPECT_EQ(idx, (unsigned int)2);
+  idx = 0;
+
+  val = ConfiguratorManager::config.getFlightPlan(400, &idx); 
+  EXPECT_EQ(val, 300);
+  EXPECT_EQ(idx, (unsigned int)3);
+  idx = 1;
+  val = ConfiguratorManager::config.getFlightPlan(400, &idx); 
+  EXPECT_EQ(val, 300);
+  EXPECT_EQ(idx, (unsigned int)3);
+  idx = 2;
+  val = ConfiguratorManager::config.getFlightPlan(400, &idx); 
+  EXPECT_EQ(val, 300);
+  EXPECT_EQ(idx,(unsigned int) 3);
+  idx = 3;
+  val = ConfiguratorManager::config.getFlightPlan(400, &idx); 
+  EXPECT_EQ(val, 300);
+  EXPECT_EQ(idx, (unsigned int)3);
+  idx = 0;
+
+  val = ConfiguratorManager::config.getFlightPlan(500, &idx); 
+  EXPECT_EQ(val, 900);
+  EXPECT_EQ(idx, (unsigned int)4);
+  idx = 1;
+  val = ConfiguratorManager::config.getFlightPlan(500, &idx); 
+  EXPECT_EQ(val, 900);
+  EXPECT_EQ(idx, (unsigned int)4);
+  idx = 2;
+  val = ConfiguratorManager::config.getFlightPlan(500, &idx); 
+  EXPECT_EQ(val, 900);
+  EXPECT_EQ(idx, (unsigned int)4);
+  idx = 3;
+  val = ConfiguratorManager::config.getFlightPlan(500, &idx); 
+  EXPECT_EQ(val, 900);
+  EXPECT_EQ(idx, (unsigned int)4);
+  idx = 4;
+  val = ConfiguratorManager::config.getFlightPlan(500, &idx); 
+  EXPECT_EQ(val, 900);
+  EXPECT_EQ(idx, (unsigned int)4);
+
+}
+
 // Test Configurator as it is loaded on startup
 TEST_F(PodTest, ConfigManagerTimeouts) {
   string val = "";
