@@ -266,6 +266,7 @@ void Pod_State::ST_Flight_Accel() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
   acceleration_start_time = microseconds();
   flight_plan_index = 0;
+  old_motor_throttle = -1;
 }
 
 void Pod_State::ST_Flight_Coast() {
@@ -366,7 +367,10 @@ void Pod_State::steady_flight_accelerate(Command::Network_Command * command,
   int64_t timeout_check = microseconds() - acceleration_start_time;
 
   int16_t motor_throttle = ConfiguratorManager::config.getFlightPlan(timeout_check, &flight_plan_index);
-  motor.set_throttle(motor_throttle);
+  if (motor_throttle != old_motor_throttle) {
+    old_motor_throttle = motor_throttle;
+    motor.set_throttle(motor_throttle);
+  }
   
   // Transition if kinematics demand it, or we exceed our timeout
   if (shouldBrake(vel, pos) || timeout_check >= acceleration_timeout) {

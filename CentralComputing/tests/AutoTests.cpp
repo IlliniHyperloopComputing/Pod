@@ -7,6 +7,7 @@
 using std::make_shared;
 
 TEST_F(PodTest, AutomaticTransitionBasic) {
+  ConfiguratorManager::config.openConfigFile("tests/basicFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioBasic>());
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
@@ -37,6 +38,7 @@ TEST_F(PodTest, AutomaticTransitionBasic) {
 }
 
 TEST_F(PodTest, AutomaticTransitionSensors) {
+  ConfiguratorManager::config.openConfigFile("tests/basicFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioRealNoFault>());
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
@@ -67,6 +69,7 @@ TEST_F(PodTest, AutomaticTransitionSensors) {
 }
 
 TEST_F(PodTest, AutomaticTransitionLong) {
+  ConfiguratorManager::config.openConfigFile("tests/basicFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioRealLong>());
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
@@ -97,6 +100,7 @@ TEST_F(PodTest, AutomaticTransitionLong) {
 }
 
 TEST_F(PodTest, AutomaticTransitionTestTimeouts) {
+  ConfiguratorManager::config.openConfigFile("tests/basicFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioTestTimeouts>());
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
