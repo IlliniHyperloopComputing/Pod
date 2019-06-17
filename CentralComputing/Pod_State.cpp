@@ -89,6 +89,7 @@ void Pod_State::move_functional_tests() {
 
 /**
  * Can enter (transition into) SAFE_MODE from: 
+ * --Safe Mode (Why?? To re-trigger the safing actions that ST_Safe_Mode() does)
  * --Functional test
  * --Loading
  * --Launch Ready
@@ -96,7 +97,7 @@ void Pod_State::move_functional_tests() {
  **/
 void Pod_State::move_safe_mode() {
   BEGIN_TRANSITION_MAP              /* Current state */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safe Mode */
+    TRANSITION_MAP_ENTRY(ST_SAFE_MODE)     /* Safe Mode */
     TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Functional test */
     TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Loading */
     TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Launch ready */

@@ -31,9 +31,9 @@ void Pod::logic_loop() {
       #ifdef SIM  // Used to indicate to the Simulator that we have processed a command
       if (!(com.id >= Command::Network_Command_ID::SET_ADC_ERROR &&
             com.id <= Command::Network_Command_ID::CLR_OTHER_ERROR)) {
-        command_processed = true;
+        command_processed = true;  // Processed a command, not an error
       } else {
-        error_processed = true;
+        error_processed = true;  // Processed an error, not a command
       }
       #endif
       print(LogLevel::LOG_INFO, "Command : %d %d\n", com.id, com.value);
@@ -142,15 +142,15 @@ Pod::Pod(const std::string & config_to_open, const std::string & flight_plan_to_
   print(LogLevel::LOG_INFO, "CPU freq set to 1GHz\n");    
   #endif
 
-  // Open configuration file
-  if (!ConfiguratorManager::config.openConfigFile(config_to_open, false)) {
-    print(LogLevel::LOG_ERROR, "Config missing. File: %s\n", config_to_open.c_str());
-    exit(1);
-  }
-
   // Open flight plan file
   if (!ConfiguratorManager::config.openConfigFile(flight_plan_to_open, true)) {
     print(LogLevel::LOG_ERROR, "Flight Plan missing. File: %s\n", flight_plan_to_open.c_str());
+    exit(1);
+  }
+
+  // Open configuration file
+  if (!ConfiguratorManager::config.openConfigFile(config_to_open, false)) {
+    print(LogLevel::LOG_ERROR, "Config missing. File: %s\n", config_to_open.c_str());
     exit(1);
   }
 
@@ -202,12 +202,26 @@ void Pod::run() {
   SourceManager::ADC.initialize();
   SourceManager::I2C.initialize();
 
-  signal(SIGPIPE, SIG_IGN);  // Ignore SIGPIPE
-
+  // Transition into SafeMode
+  // technically we are already in SafeMode. However, when initialized the 
+  // ST_Safe_Mode() transition function isn't called. 
+  // This function turns off the motor, and safes the HV power system
+  // There could be instances where doing this is beneficial, to remove any sort
+  // of transients. 
   Command::Network_Command com;
+  com.id = Command::Network_Command_ID::TRANS_SAFE_MODE;
+  com.value = 0;
+  auto transition = state_machine->get_transition_function(&com);
+  ((*state_machine).*(transition))(); 
+
+  // Ignore SIGPIPE. Generated from networking events, and can cause crashes if not ignored.
+  signal(SIGPIPE, SIG_IGN);  
+
+  // Initially have an error set that the network isn't connected
+  // Connecting to the network will clear this error
   com.id = Command::Network_Command_ID::SET_NETWORK_ERROR;
   com.value = NETWORKErrors::TCP_DISCONNECT_ERROR;
-  set_error_code(&com);  // Initially have an error set that the network isn't connected
+  set_error_code(&com);  
 
   // Start Network and main loop thread.
   print(LogLevel::LOG_INFO, "tcp_addr: %s, tcp_port: %s \n", tcp_addr.c_str(), tcp_port.c_str()); 
