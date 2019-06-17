@@ -52,9 +52,10 @@ error_battery_box_under_pressure 2000
 error_orange_diff 20
 error_encoder_wheel_diff 30
 
-acceleration_timeout 1000000 # Units are microseconds
-coast_timeout 200000          # Units are microseconds
-brake_timeout 10000000        # Units are microseconds
+precharge_timeout     30000000    # 30 second precharge delay
+acceleration_timeout  1000000     # Units are microseconds
+coast_timeout         200000      # Units are microseconds
+brake_timeout         10000000    # Units are microseconds
 
 estimated_brake_deceleration 9810 # Units are mm/s/s
 
