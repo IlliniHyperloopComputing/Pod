@@ -311,24 +311,21 @@ void Pod_State::steady_functional(Command::Network_Command * command,
     case Command::SET_HV_RELAY_HV_POLE:
       if (command->value == 0) {
         motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
-      }
-      else if (command->value == 1) {
+      } else if (command->value == 1) {
         motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_ON);
       }
       break;
     case Command::SET_HV_RELAY_LV_POLE:
       if (command->value == 0) {
         motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
-      }
-      else if (command->value == 1) {
+      } else if (command->value == 1) {
         motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_ON);
       }
       break;
     case Command::SET_HV_RELAY_PRE_CHARGE:
       if (command->value == 0) {
         motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
-      }
-      else if (command->value == 1) {
+      } else if (command->value == 1) {
         motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_ON);
       }
       break;
@@ -353,7 +350,7 @@ void Pod_State::steady_launch_ready(Command::Network_Command * command,
                                     UnifiedState* state) {
   // check if precharge complete
   int64_t timeout_check = microseconds() - acceleration_start_time;
-  if (timeout_check > launch_ready_precharge_timeout && !ready_for_launch){
+  if (timeout_check > launch_ready_precharge_timeout && !ready_for_launch) {
     motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
     motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_ON);
     ready_for_launch = true;  // Set true so we can't get into this IF again

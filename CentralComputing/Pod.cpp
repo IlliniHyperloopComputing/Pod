@@ -224,8 +224,10 @@ void Pod::run() {
   set_error_code(&com);  
 
   // Start Network and main loop thread.
-  print(LogLevel::LOG_INFO, "tcp_addr: %s, tcp_port: %s \n", tcp_addr.c_str(), tcp_port.c_str()); 
-  print(LogLevel::LOG_INFO, "upd_addr: %s, upd_send: %s, udp_recv: %s\n", udp_addr.c_str(), udp_send.c_str(), udp_recv.c_str());    
+  print(LogLevel::LOG_INFO, "tcp_addr: %s, tcp_port: %s \n", 
+                            tcp_addr.c_str(), tcp_port.c_str()); 
+  print(LogLevel::LOG_INFO, "upd_addr: %s, upd_send: %s, udp_recv: %s\n", 
+                            udp_addr.c_str(), udp_send.c_str(), udp_recv.c_str());    
 
   // I don't know how to use member functions as a thread function, but lambdas work
   // std::lock_guard<std::mutex> guard(TCPManager::data_mutex);  // Protect access to TCPManger::data_to_send
@@ -286,8 +288,7 @@ void parse_command_line_args(int argc, char **argv, string * config_to_open, str
         print(LogLevel::LOG_ERROR, "Invalid command line option\n");
         exit(1);
       }
-    }
-    else {
+    } else {
       print(LogLevel::LOG_ERROR, "Not a real file / Invalid command line option\n");
       exit(1);
     }

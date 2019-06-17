@@ -30,7 +30,7 @@ void Configurator::loadValues(bool is_flight_plan) {
 
     if (is_flight_plan) {
       // In case of flight plan, add times to flightPlan array
-      flightPlan.push_back(std::make_pair<int64_t, int16_t>(std::stoll(varName), (int16_t)std::stoi(val)));
+      flightPlan.push_back(std::make_pair(std::stoll(varName), (int16_t)std::stoi(val)));
     } else {
       // Normal case, just add pair to map
       mapVals.insert(pair<string, string> (varName, val));
