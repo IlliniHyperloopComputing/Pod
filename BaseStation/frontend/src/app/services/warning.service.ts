@@ -12,7 +12,7 @@ export class WarningService {
 
   getWarningStatus(): Observable<warningInfo> {
     const warn:warningInfo = {
-      warnings: ["Something"],
+      warnings: ["Something", "Not so bad!"],
       topWarning: "Not so bad!",
       warningColor: "LimeGreen",
       textColor: "black"

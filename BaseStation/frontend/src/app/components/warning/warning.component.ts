@@ -25,8 +25,12 @@ export class WarningComponent implements OnInit {
   }
 
   applyStyles() {
-    const styles = {'background-color': this.info.warningColor, 'color': this.info.textColor};
+    const styles = {'cursor':'pointer', 'background-color': this.info.warningColor, 'color': this.info.textColor};
     return styles;
+  }
+
+  openDialog() {
+    alert(this.info.warnings)
   }
 
 }

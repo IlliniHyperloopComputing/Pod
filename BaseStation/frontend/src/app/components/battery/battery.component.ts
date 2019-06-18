@@ -9,7 +9,6 @@ import { BatteryService } from '../../services/battery.service';
 })
 export class BatteryComponent implements OnInit {
   value:string;
-  name:string = "Battery %";
 
   constructor(private batteryService: BatteryService) { }
 
