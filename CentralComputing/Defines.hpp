@@ -29,7 +29,7 @@ struct CANData {
 #define NUM_TMP 4
 struct I2CData {
   // replace with actual data structure
-  int16_t temp[NUM_TMP]
+  int16_t temp[NUM_TMP];
 };
 
 #define NUM_ORANGE_INPUTS 2
