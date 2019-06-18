@@ -17,7 +17,6 @@ enum E_States {
 #define NUM_ACCEL 3
 struct ADCData {
   int32_t accel[NUM_ACCEL];
-  int dummy_data;
 };
 
 struct CANData {
@@ -27,9 +26,10 @@ struct CANData {
   int32_t drive_wheel_velocity;
 };
 
+#define NUM_TMP 4
 struct I2CData {
   // replace with actual data structure
-  int dummy_data;
+  int16_t temp[NUM_TMP]
 };
 
 #define NUM_ORANGE_INPUTS 2

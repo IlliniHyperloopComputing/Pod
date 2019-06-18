@@ -25,8 +25,7 @@ class I2CManager : public SourceManagerBase<I2CData, false> {
     return "i2c";
   }
 
-  // iterator for testing purposes, remove
-  int i = 5;
+  int i = 0;
   int i2c_fd;
   int length;
   unsigned char buffer[16];

@@ -98,24 +98,38 @@ bool I2CManager::single_shot(int fd, int port, int16_t *value) {
 
 std::shared_ptr<I2CData> I2CManager::refresh() {
   std::shared_ptr<I2CData> new_data = std::make_shared<I2CData>();
-  new_data->dummy_data = i;
-  i++;
+  if (i == 3) {
+    i = 0;
+  } else {
+    i++;
+  }
+  int port;
+  int addr;
+  if (i == 0) {
+    port = ANC0;
+    addr = 0x48;
+  } else if (i == 1) {
+    port = ANC1;
+    addr = 0x49;
+  } else if (i == 2) {
+    port = ANC2;
+    addr = 0x50;
+  } else {
+    port = ANC3;
+    addr = 0x51;
+  }
   int64_t a = Utils::microseconds(); 
   int16_t value = 0;
-  if (!set_i2c_addr(i2c_fd, 0x48)) {
+  
+  if (!set_i2c_addr(i2c_fd, addr)) {
     return false;
   }
-  if (single_shot(i2c_fd, ANC0, &value)) {
+  if (single_shot(i2c_fd, port, &value)) {
     int64_t b = Utils::microseconds(); 
-    print(LogLevel::LOG_INFO, "i2c val1: %d, in micros: %lu\n", value, b-a);
+    print(LogLevel::LOG_INFO, "i2c val: %d, in micros: %lu\n", value, b-a);
   }
-
-  if (!set_i2c_addr(i2c_fd, 0x49)) {
-    return false;
-  }
-  if (single_shot(i2c_fd, ANC1, &value)) {
-    print(LogLevel::LOG_INFO, "i2c val2: %d\n", value);
-  }
+  
+  new_data->temp[i] = value;
 
   // myfloat = val * VPS; // convert to voltage
   return new_data;
