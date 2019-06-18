@@ -1,0 +1,13 @@
+.battery {
+    width: 33%;
+    float: left;
+}
+
+.main {
+    width: 33%;
+    float: left;
+}
+
+.warning {
+    float: right;
+}
