@@ -11,10 +11,6 @@ ScenarioRealNoFault::ScenarioRealNoFault(){
   can_delta_seconds = pru_delta_seconds;
 }
 
-bool ScenarioRealNoFault::use_motion_model() {
-  return false;
-}
-
 std::shared_ptr<ADCData> ScenarioRealNoFault::sim_get_adc() {
   std::shared_ptr<ADCData> d = std::make_shared<ADCData>();
   if (motorsOn) {
