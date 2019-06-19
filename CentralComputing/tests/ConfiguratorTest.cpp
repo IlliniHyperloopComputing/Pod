@@ -12,6 +12,9 @@ TEST(ConfiguratorTest, LoadOutputVariables) {
   ConfiguratorManager::config.getValue("Variable", val);
   EXPECT_EQ(val, (int64_t) 12);
 
+  ConfiguratorManager::config.getValue("Variable1", val);
+  EXPECT_EQ(val, (int64_t) -12);
+
   ConfiguratorManager::config.getValue("Number", val);
   EXPECT_EQ(val, (int64_t) 2342);
 
@@ -21,6 +24,9 @@ TEST(ConfiguratorTest, LoadOutputVariables) {
   float val2;
   ConfiguratorManager::config.getValue("MaxAccel", val2);
   EXPECT_EQ(val2, (float) 1231.23);
+
+  ConfiguratorManager::config.getValue("MaxAccel1", val2);
+  EXPECT_EQ(val2, (float) -1231.23);
 
 
   EXPECT_EQ(ConfiguratorManager::config.getValue("FakeName", val), false);
