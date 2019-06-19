@@ -71,3 +71,5 @@ scn_mass 112                    # For scenario Units are kg
 scn_brake_deceleration -8.06    # For scenario Units are m/s/s
 scn_drive_wheel_radius 0.1016   # For scenario, Units are m
 scn_rated_torque 230            # For scenario. Target Torque = rated_torque * throttle / 1000
+scn_rear_wheel_circ 0.319186    # For scenario. meters.
+scn_dist_between_orange 30.48   # Distance between orange tapes (100 feet) meters.

@@ -18,6 +18,8 @@ class Scenario{
           ConfiguratorManager::config.getValue("scn_mass", mass) && 
           ConfiguratorManager::config.getValue("scn_brake_deceleration", brake_deceleration) && 
           ConfiguratorManager::config.getValue("scn_rated_torque", rated_torque) && 
+          ConfiguratorManager::config.getValue("scn_rear_wheel_circ", rear_wheel_circumfrence) && 
+          ConfiguratorManager::config.getValue("scn_dist_between_orange", dist_between_orange) && 
         ConfiguratorManager::config.getValue("scn_drive_wheel_radius", drive_wheel_radius))) {
       print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: (SCENARIO) Missing necessary configuration\n");
       exit(1);  // Crash hard on this error
@@ -125,6 +127,7 @@ class Scenario{
   double mass = 0;
   double brake_deceleration= 0;
   double rated_torque= 0;
-
+  double rear_wheel_circumfrence = 0;
+  double dist_between_orange = 0;
 };
 #endif 
