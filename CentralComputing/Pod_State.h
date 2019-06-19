@@ -97,6 +97,7 @@ class Pod_State : public StateMachine {
   Brakes brakes;
   Event auto_transition_coast;
   Event auto_transition_brake;
+  Event auto_transition_safe_mode;
     
  private:
   // variables used to measure time in a state, and configurable timeout values

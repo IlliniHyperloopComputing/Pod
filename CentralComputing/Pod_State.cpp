@@ -133,6 +133,7 @@ void Pod_State::move_launch_ready() {
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     // Error State
   END_TRANSITION_MAP(NULL)
 
+  auto_transition_safe_mode.reset();
   auto_transition_brake.reset();
   auto_transition_coast.reset();
 }
@@ -399,8 +400,8 @@ void Pod_State::steady_flight_brake(Command::Network_Command * command,
   if (std::abs(acc) < not_moving_velocity 
       && std::abs(vel) < not_moving_velocity 
       && timeout_check >= brake_timeout) {
-    Command::put(Command::Network_Command_ID::TRANS_FLIGHT_BRAKE, 0);
-    auto_transition_brake.invoke();
+    Command::put(Command::Network_Command_ID::TRANS_SAFE_MODE, 0);
+    auto_transition_safe_mode.invoke();
   }
 }
 
