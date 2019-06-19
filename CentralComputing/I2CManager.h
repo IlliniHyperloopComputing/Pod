@@ -26,8 +26,7 @@ class I2CManager : public SourceManagerBase<I2CData, false> {
   }
 
   int i = 0;
-  int addr_num = 0;
-  int port_num = 0;
+  int j = 0;
   int i2c_fd;
   int length;
   unsigned char buffer[16];

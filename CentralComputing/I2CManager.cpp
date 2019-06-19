@@ -98,35 +98,36 @@ bool I2CManager::single_shot(int fd, int port, int16_t *value) {
 
 std::shared_ptr<I2CData> I2CManager::refresh() {
   std::shared_ptr<I2CData> new_data = std::make_shared<I2CData>();
-  if (i == 15) {
+
+  if (i == 3) {
     i = 0;
+    if (j == 3) {
+      j = 0;
+    } else {
+      j++;
+    }
   } else {
     i++;
   }
-  addr_num = (int) i / 4;
-  port_num = i % 4;
+
   int port;
   int addr;
 
-  if (port_num == 0) {
+  if (i == 0) {
     port = ANC0;
-    addr = 0x48;
-  } else if (port_num == 1) {
+  } else if (i == 1) {
     port = ANC1;
-    addr = 0x49;
-  } else if (port_num == 2) {
+  } else if (i == 2) {
     port = ANC2;
-    addr = 0x50;
   } else {
     port = ANC3;
-    addr = 0x51;
   }
 
-  if (addr_num == 0) {
+  if (j == 0) {
     addr = 0x48;
-  } else if (addr_num == 1) {
+  } else if (j == 1) {
     addr = 0x49;
-  } else if (addr_num == 2) {
+  } else if (j == 2) {
     addr = 0x50;
   } else {
     addr = 0x51;
