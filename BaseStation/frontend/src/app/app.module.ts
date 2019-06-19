@@ -8,6 +8,7 @@ import { PositionComponent } from './components/position/position.component';
 import { DiagnosticsComponent } from './components/diagnostics/diagnostics.component';
 import { WarningComponent } from './components/warning/warning.component';
 import { StatsComponent } from './components/stats/stats.component';
+import { ButtonsComponent } from './components/buttons/buttons.component';
 
 @NgModule({
   declarations: [
@@ -16,7 +17,8 @@ import { StatsComponent } from './components/stats/stats.component';
     PositionComponent,
     DiagnosticsComponent,
     WarningComponent,
-    StatsComponent
+    StatsComponent,
+    ButtonsComponent
   ],
   imports: [
     BrowserModule,
