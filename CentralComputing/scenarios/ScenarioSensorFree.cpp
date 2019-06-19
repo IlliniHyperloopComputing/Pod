@@ -1,14 +1,17 @@
 #ifdef SIM
-#include "ScenarioBasic.h"
+#include "ScenarioSensorFree.h"
 
 #define MAX_ACCEL 9.81
 #define MAX_DECEL -9.81
 
-bool ScenarioBasic::use_motion_model() {
+bool ScenarioBasic::use_sensor_free_motion() {
   return true;
 }
 
-// This test is designed to do the same thing that the original code in Simulator.cpp did
+// 
+// This test is designed to do the same thing that the original code in Simulator.cpp did 
+// Really just for testing different transitions.
+// 
 std::shared_ptr<MotionData> ScenarioBasic::sim_get_motion() {
   // FOR FIRST CALL
   if (timeLast == -1) {
