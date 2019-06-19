@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
-import { WarningService } from '../../services/warning.service';
 import { warningInfo } from '../../models/warning';
+import { WarningService } from '../../services/warning.service';
 
 @Component({
   selector: 'app-warning',
@@ -9,28 +9,29 @@ import { warningInfo } from '../../models/warning';
   styleUrls: ['./warning.component.css']
 })
 export class WarningComponent implements OnInit {
-  info:warningInfo;
-  //warningColor:string = "LawnGreen";
-  //textColor:string = "black";
-  //text:string = "All Clear";
-
+  value:warningInfo;
   constructor(private warningService: WarningService) { }
 
   ngOnInit() {
-    this.getInfo()
+    this.getValue();
   }
 
-  getInfo() {
-    this.warningService.getWarningStatus().subscribe(info => this.info = info)
+  getValue() {
+    this.warningService.getWarningStatus().subscribe(value => this.value = value);
   }
 
-  applyStyles() {
-    const styles = {'cursor':'pointer', 'background-color': this.info.warningColor, 'color': this.info.textColor};
+  setMyStyles() {
+    let styles = {
+      'background-color': this.value.warningColor,
+      'color': this.value.textColor,
+      'cursor': 'pointer'
+    }
+
     return styles;
   }
 
-  openDialog() {
-    alert(this.info.warnings)
+  onClick() {
+    alert(this.value.warnings);
   }
 
 }

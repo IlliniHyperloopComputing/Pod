@@ -11,3 +11,26 @@
 .warning {
     float: right;
 }
+
+.position {
+    float: left;
+    clear: both;
+    padding: 20%;
+}
+
+.stop {
+    position: absolute;
+    bottom: 8px;
+    right: 16px;
+}
+
+.launch {
+    position: absolute;
+    bottom: 8px;
+    left: 16px;
+}
+
+.velocity {
+    float: left;
+    clear: both;
+}
