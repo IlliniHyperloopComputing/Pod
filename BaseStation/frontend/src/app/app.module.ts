@@ -7,6 +7,7 @@ import { BatteryComponent } from './components/battery/battery.component';
 import { PositionComponent } from './components/position/position.component';
 import { DiagnosticsComponent } from './components/diagnostics/diagnostics.component';
 import { WarningComponent } from './components/warning/warning.component';
+import { StatsComponent } from './components/stats/stats.component';
 
 @NgModule({
   declarations: [
@@ -14,7 +15,8 @@ import { WarningComponent } from './components/warning/warning.component';
     BatteryComponent,
     PositionComponent,
     DiagnosticsComponent,
-    WarningComponent
+    WarningComponent,
+    StatsComponent
   ],
   imports: [
     BrowserModule,
