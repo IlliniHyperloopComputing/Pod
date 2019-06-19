@@ -25,6 +25,7 @@ void Pod::logic_loop() {
     bool loaded = Command::get(&com);
 
     if (loaded) {
+      print(LogLevel::LOG_INFO, "Command : %d %d\n", com.id, com.value);
       // Parse the command and call the appropriate state machine function
       auto transition = state_machine->get_transition_function(&com);
       ((*state_machine).*(transition))(); 
@@ -36,7 +37,6 @@ void Pod::logic_loop() {
         error_processed = true;  // Processed an error, not a command
       }
       #endif
-      print(LogLevel::LOG_INFO, "Command : %d %d\n", com.id, com.value);
     } else {  // Create a "do nothing" command. This will be passed into the steady state caller below
       com.id = 0;
       com.value = 0;
