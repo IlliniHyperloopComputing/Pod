@@ -17,6 +17,11 @@ udp_send_port 5004
 udp_recv_port 5005
 udp_addr 127.0.0.1
 
+precharge_timeout     30000000    # 30 second precharge delay
+acceleration_timeout  15000000     # 15 second. Units are microseconds
+coast_timeout         200000      # .2 second. Units are microseconds
+brake_timeout         10000000    # 10 second. Units are microseconds
+
 low_pass_filter_velocity 0.90
 low_pass_filter_acceleration 0.90
 motor_distance_clamp 60960
@@ -52,10 +57,6 @@ error_battery_box_under_pressure 2000
 error_orange_diff 20
 error_encoder_wheel_diff 30
 
-precharge_timeout     30000000    # 30 second precharge delay
-acceleration_timeout  1000000     # Units are microseconds
-coast_timeout         200000      # Units are microseconds
-brake_timeout         10000000    # Units are microseconds
 
 estimated_brake_deceleration 9810 # Units are mm/s/s
 
@@ -65,3 +66,8 @@ brake_buffer_length 50000    # Units are mm
 not_moving_velocity     200  # Units are mm/s
 not_moving_acceleration 200  # Units are mm/s
 
+scn_gear_ratio 2.79             # For scenario 
+scn_mass 112                    # For scenario Units are kg
+scn_brake_deceleration -8.06    # For scenario Units are m/s/s
+scn_drive_wheel_radius 0.1016   # For scenario, Units are m
+scn_rated_torque 230            # For scenario. Target Torque = rated_torque * throttle / 1000

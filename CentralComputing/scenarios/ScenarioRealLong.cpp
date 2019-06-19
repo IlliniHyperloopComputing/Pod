@@ -13,14 +13,27 @@ void ScenarioRealLong::true_motion() {
   timeDelta = Utils::microseconds() - timeLast;
   double deltaSeconds = static_cast<double>(timeDelta) / 1000000.0;
 
+  acceleration = 0;
+
+  // Paremters are loaded using constructor defined in Scenario.hpp
   if (motorsOn) {
-    acceleration = 9 - 2.5 * clamp((microseconds() - motors_on_time)/10000000.0, 0.0, 1.0);
-  } else if (brakesOn) {
-    acceleration = -20;
-  } else {
-    acceleration = 0;
+    // Motor throttle is in thousandths of the rated torque. Throttle ranges from 0 to 1000
+    double emrax_torque = rated_torque * throttle / 1000.0;  // units are now Nm
+    double wheel_torque = emrax_torque / gear_ratio; 
+    double force_at_wheel_edge = wheel_torque = wheel_torque / drive_wheel_radius;
+
+    acceleration += force_at_wheel_edge / mass;
   }
 
+  if (brakesOn && velocity > 0) {
+    acceleration += brake_deceleration;
+  }
+  else if (velocity < 0) {
+    lastVelocity = 0;
+    velocity = 0;
+  }
+
+  // Apply kinematics
   velocity = lastVelocity + (acceleration * deltaSeconds);
   position = lastPosition + ((lastVelocity + velocity)/2 * deltaSeconds) 
               + (0.5 * acceleration * deltaSeconds * deltaSeconds);
@@ -28,10 +41,6 @@ void ScenarioRealLong::true_motion() {
   lastVelocity = velocity;
 
   timeLast = Utils::microseconds();
-}
-
-bool ScenarioRealLong::use_motion_model() {
-  return false;
 }
 
 std::shared_ptr<ADCData> ScenarioRealLong::sim_get_adc() {
