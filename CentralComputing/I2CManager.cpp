@@ -128,9 +128,9 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
   } else if (j == 1) {
     addr = 0x49;
   } else if (j == 2) {
-    addr = 0x50;
+    addr = 0x4A;
   } else {
-    addr = 0x51;
+    addr = 0x4B;
   }
 
   int64_t a = Utils::microseconds(); 
