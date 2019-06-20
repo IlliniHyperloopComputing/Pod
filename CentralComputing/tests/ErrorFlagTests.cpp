@@ -11,7 +11,7 @@ TEST(ErrorFlagTest, ErrorFlagTestBasic) {
   microseconds();
   // Need to run this (especially if we are not the only test running)
   // To make sure that we can set error flags at will
-  for (int i = 0; i < 8*6; i++) {
+  for (int i = 0; i < FLAGS_PER_ERROR * 6; i++) {
       Command::error_flag_timers[i] = -1000000;  // negative 1 second. 
   }
   Command::Network_Command com;

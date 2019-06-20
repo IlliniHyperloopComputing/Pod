@@ -31,7 +31,7 @@ class PodTest : public ::testing::Test
     pod->ready.wait();
 
     // Reset error timeout flags
-    for (int i = 0; i < 8*6; i++) {
+    for (int i = 0; i < FLAGS_PER_ERROR * 6; i++) {
         Command::error_flag_timers[i] = -1000000;  // negative 1 second. 
     }
    
