@@ -3,57 +3,70 @@
 using Utils::print;
 using Utils::LogLevel;
 using Utils::microseconds;
+using Utils::clamp;
 
-void MotionModel::calculate(std::shared_ptr<UnifiedState> state) {
+MotionModel::MotionModel() {
+  if (!(ConfiguratorManager::config.getValue("low_pass_filter_velocity", lpfv) &&
+      ConfiguratorManager::config.getValue("low_pass_filter_acceleration", lpfa) &&
+      ConfiguratorManager::config.getValue("motor_distance_clamp", motor_distance_clamp))) {
+    print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: MOTION_MODEL Missing necessary configuration\n");
+    exit(1);
+  }
+}
+
+// Orange tape sensor: Counts orange strips every 100 feet (41 stips in total). Position and velocity
+//        Could undershoot, not overshoot. Assume 
+//        Assume no "overcounting" of orange tape. Assume it could miss
+// Wheel encoder: Counts rotations of the back suspension wheel, uses an optical encoder. Pos. and Vel.
+//        Could undershoot, not overshoot. 
+//        Assume wheel does not slip, or slips very little. 
+//        Assume no "overcounting" of rotations. Assume it could miss
+// Emrax (motor): Rotations and RPM (velocity) of the Emrax motor. Slip possible.
+//        Could overshoot, not undershoot, due to slip while powered. 
+// 
+// Trust Orange tape and Wheel Encoder distances the most. 
+//        Motor can add a bounded ammount of extra distance
+// We trust the wheel encoder velocity the most
+void MotionModel::calculate(UnifiedState * state) {
   // POSITION
-  double w1 = 1.0;
-  double w2 = 1.0;
-  double w3 = 1.0;
-  double w4 = 1.0;
-  double w5 = 1.0;
-  double w6 = 1.0;
-  // The values w1, w2 and w3 will sum to 1 and will be tuned
-  // w1 + w2 + w3 = 1, w4 + w5 = 1 and w5 + w6 = 1. All values will be tuned
   int32_t orange_dist = std::max(state->pru_data->orange_distance[0], state->pru_data->orange_distance[1]);
   int32_t wheel_dist = std::max(state->pru_data->wheel_distance[0], state->pru_data->wheel_distance[1]);
-  int32_t motor_dist = state->can_data->wheel_distance;
+  int32_t motor_dist = state->can_data->position_val;
 
-  int32_t dist = orange_dist;
-  if (wheel_dist > dist && motor_dist > dist) {
-    dist = wheel_dist * w1 + dist * w2 + motor_dist * w3;
-  } else if (wheel_dist > dist) {
-    dist = wheel_dist * w4 + dist * w5;
-  } else if (motor_dist > dist) {
-    dist = motor_dist * w5 + dist * w6;
-  } 
+  // Take our minimum distance to be the maximum orange and wheel dist
+  int32_t dist = std::max(orange_dist, wheel_dist);
+  // Will accept that the motor is outputing a higher value, up to a certain limit
+  dist = clamp(motor_dist, dist, dist + motor_distance_clamp);
 
   // VELOCITY
-  int32_t vels[3];
-  vels[0] = std::max(state->pru_data->orange_velocity[0], state->pru_data->orange_velocity[1]);
-  vels[1] = std::max(state->pru_data->wheel_velocity[0], state->pru_data->wheel_velocity[1]);
-  vels[2] = state->can_data->drive_wheel_velocity;
-  // TODO:  Take median? Take Max? Take average?
-  int32_t vel = Median(vels, 3);
-
+  // TODO: Refine this further. Incorporate other sensor inputs??
+  // int32_t orange_vel = (state->pru_data->orange_velocity[0] + state->pru_data->orange_velocity[1]) / 2;  // average
+  int32_t wheel_vel = (state->pru_data->wheel_velocity[0] + state->pru_data->wheel_velocity[1]) / 2;    // average
+  // int32_t motor_vel = state->can_data->drive_wheel_velocity;
+  // This is using low_pass_filter as a weighted average. 
+  // int32_t vel = low_pass_filter(wheel_vel, orange_vel, 0.90);
+  // vel = low_pass_filter(vel, motor_vel, 0.90);
+  int32_t vel = wheel_vel;
 
   // ACCELERATION
+  // Simply take the median of the three inputs.
   int32_t accl = Median(state->adc_data.get()->accel, NUM_ACCEL); 
 
   // Set state
   state->motion_data->x[0] = dist;
-  state->motion_data->x[1] = vel;   
-  state->motion_data->x[2] = accl;
+  state->motion_data->x[1] = low_pass_filter(state->motion_data->x[1], vel, lpfv);    
+  state->motion_data->x[2] = low_pass_filter(state->motion_data->x[2], accl, lpfa);
 }
 
 // get MotionData object
-void MotionModel::calculate_sim(std::shared_ptr<UnifiedState> state) {
+void MotionModel::calculate_sim(UnifiedState * state) {
   #ifdef SIM
-  state->motion_data = SimulatorManager::sim.sim_get_motion();
+  state->motion_data = SimulatorManager::sim.sim_get_motion(this, state);
   #endif
 }
 
-double MotionModel::LowPass(double t_old, double t_new) {
-  return t_old * LOWPASS_PERCENT + t_new * (1.0 - LOWPASS_PERCENT);
+float MotionModel::low_pass_filter(float t_old, float t_new, float lowpass_percent) {
+  return t_old * lowpass_percent + t_new * (static_cast<float>(1.0) - lowpass_percent);
 }
 
 template<class T>
@@ -66,7 +79,7 @@ T MotionModel::Median(T * input, unsigned size) {
     T sum = input[size/2] + input[size/2+1];
     return sum/2;
   } else {
-    std::nth_element(input, input+size/2+1, input + size);
-    return input[size/2 + 1];
+    std::nth_element(input, input+size/2, input + size);
+    return input[size/2];
   }
 }

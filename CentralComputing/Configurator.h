@@ -14,8 +14,11 @@ using std::pair;
 class Configurator {
  public:
   bool openConfigFile(const string&);
+  void clear();
   bool getValue(const string&, string&);
   bool getValue(const string&, int64_t&);
+  bool getValue(const string&, int32_t&);
+  bool getValue(const string&, float&); 
   bool getValue(const string&, double&); 
 
  private:

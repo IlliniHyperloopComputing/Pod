@@ -11,7 +11,7 @@
 #define ANC2 0x6  // 0b110
 #define ANC3 0x7  // 0b111
 
-class I2CManager : public SourceManagerBase<I2CData, false> {
+class I2CManager : public SourceManagerBase<I2CData> {
  private:
   bool initialize_source();
   void stop_source();
@@ -20,6 +20,12 @@ class I2CManager : public SourceManagerBase<I2CData, false> {
   bool single_shot(int fd, int port, int16_t * value);
   bool open_i2c(int * fd);
   bool set_i2c_addr(int fd, int addr);
+  void initialize_sensor_error_configs();
+  void check_for_sensor_error(const std::shared_ptr<I2CData> &);
+
+  int32_t error_general_1_over_temp;
+  int32_t error_general_2_over_temp;
+  int32_t error_general_3_over_temp;
 
   std::string name() {
     return "i2c";
