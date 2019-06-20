@@ -3,6 +3,8 @@
 
 #include "SourceManagerBase.hpp"
 #include "Defines.hpp"
+#include "Configurator.h"
+#include "Pod.h"
 #include <fcntl.h>
 #include <linux/i2c-dev.h>  // I2C bus definitions
 
@@ -35,7 +37,12 @@ class I2CManager : public SourceManagerBase<I2CData> {
   int j = 0;
   int i2c_fd;
   int length;
-  unsigned char buffer[16];
+  string max_temp_one = ""; 
+  string max_temp_two = ""; 
+  string max_temp_three = ""; 
+
+
+  unsigned char buffer[NUM_TMP];
 };
 
 #endif  // I2CMANAGER_H_

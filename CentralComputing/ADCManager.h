@@ -4,9 +4,6 @@
 #include "SourceManagerBase.hpp"
 #include "Defines.hpp"
 
-struct RawADCData {
-  int dummy_data;
-};
 
 class ADCManager : public SourceManagerBase<ADCData> {
  private:

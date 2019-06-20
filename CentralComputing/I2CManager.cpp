@@ -170,4 +170,16 @@ void I2CManager::initialize_sensor_error_configs() {
 }
 
 void I2CManager::check_for_sensor_error(const std::shared_ptr<I2CData> & check_data) {
+  auto temp_arr = check_data->temp; 
+  for (int index = 0; index < NUM_TMP; index++) {
+    if (temp_arr[index] > (int) error_general_1_over_temp) {
+      // Send error 1 here
+    }
+    if (temp_arr[index] > (int) error_general_2_over_temp) {
+      // Send error 2 over here
+    }
+    if (temp_arr[index] > (int) error_general_3_over_temp) {
+      // Send error 3 over here
+    }
+  }
 }
