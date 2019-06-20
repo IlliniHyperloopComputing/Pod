@@ -26,7 +26,7 @@ struct CANData {
   int32_t drive_wheel_velocity;
 };
 
-#define NUM_TMP 4
+#define NUM_TMP 16
 struct I2CData {
   // replace with actual data structure
   int16_t temp[NUM_TMP];

@@ -143,8 +143,8 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
     int64_t b = Utils::microseconds(); 
     print(LogLevel::LOG_INFO, "i2c val: %d, in micros: %lu\n", value, b-a);
   }
-  
-  new_data->temp[i] = value;
+  int index = (j * 4) + i; 
+  new_data->temp[index] = value;
 
   // myfloat = val * VPS; // convert to voltage
   return new_data;
