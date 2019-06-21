@@ -75,9 +75,9 @@ std::shared_ptr<PRUData> ScenarioRealLong::sim_get_pru() {
   d->wheel_velocity[0] =  velocity * 1000; // multiply by 1000 to convert to millimeters
   d->wheel_velocity[1] =  velocity * 1000;
 
-  d->orange_distance[0] =  std::floor( position * 1000 / rear_wheel_circumfrence) * rear_wheel_circumfrence; // multiply by 1000 to convert to millimeters
+  d->orange_distance[0] =  std::floor( position / rear_wheel_circumfrence) * rear_wheel_circumfrence * 1000; // multiply by 1000 to convert to millimeters
   d->orange_distance[1] = d->orange_distance[0];
-  d->wheel_distance[0] =  std::floor( position * 1000 / dist_between_orange) * dist_between_orange; 
+  d->wheel_distance[0] =  std::floor( position / dist_between_orange) * dist_between_orange * 1000; 
   d->wheel_distance[1] =  d->orange_distance[0];
 
   return d;

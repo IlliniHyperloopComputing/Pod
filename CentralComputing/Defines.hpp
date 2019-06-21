@@ -153,7 +153,7 @@ enum OTHERErrors {
 };
 
 struct Errors{
-  uint8_t error_vector[6]; 
+  uint32_t error_vector[6]; 
   // [0] ADC errors
   // [1] CAN errors
   // [2] I2C errors
