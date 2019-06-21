@@ -2,6 +2,13 @@ progress[value] {
     -webkit-appearance: none;
     appearance: none;
 
-    width: 250px;
-    height: 20px;
+    position: absolute;
+    top: 1%;
+    width: 20%;
+    height: 2.5%;
+}
+
+.batteryTitle {
+    position: absolute;
+    top: 3.5%;
 }

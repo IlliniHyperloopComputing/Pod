@@ -1,36 +1,9 @@
-.battery {
-    width: 33%;
-    float: left;
-}
-
 .main {
-    width: 33%;
-    float: left;
+    position: absolute;
+    left: 30%;
+    width: 40%;
 }
 
 .warning {
     float: right;
-}
-
-.position {
-    float: left;
-    clear: both;
-    padding: 10%;
-}
-
-.stop {
-    position: absolute;
-    bottom: 8px;
-    right: 16px;
-}
-
-.launch {
-    position: absolute;
-    bottom: 8px;
-    left: 16px;
-}
-
-.stats {
-    float: left;
-    clear: both;
 }

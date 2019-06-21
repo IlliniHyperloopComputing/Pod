@@ -2,3 +2,9 @@
     border-style: groove;
     float: left;
 }
+
+.stats {
+    position: absolute;
+    top: 10%;
+    left: 5%;
+}

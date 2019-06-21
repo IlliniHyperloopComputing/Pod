@@ -1,0 +1,21 @@
+.leftButton  {
+    position: absolute;
+    bottom: 8px;
+    left: 16px;
+    width: 10%;
+    height: 10%;
+    border-radius: 7%;
+    cursor: pointer;
+    background-color:lightgreen;
+}
+
+.rightButton {
+    position: absolute;
+    bottom: 8px;
+    right: 16px;
+    width: 10%;
+    height: 10%;
+    border-radius: 7%;
+    cursor: pointer;
+    background-color:red;
+}

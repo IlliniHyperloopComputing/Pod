@@ -1,6 +1,8 @@
-<div *ngFor="let value of stats">
-  <p class="acceleration">
-    {{ value.name }}
-    {{ value.value }}
-  </p>
-</div>
+<table class="stats">
+  <tr>
+    <td *ngFor="let value of stats" class="acceleration">
+      {{ value.name }}
+      {{ value.value }}
+    </td>
+  </tr>
+</table>
