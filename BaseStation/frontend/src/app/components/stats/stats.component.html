@@ -1,7 +1,17 @@
 <table class="stats">
   <tr>
-    <td *ngFor="let value of stats" class="acceleration">
+    <th>
+      Name
+    </th>
+    <th>
+      Value
+    </th>
+  </tr>
+  <tr *ngFor="let value of stats">
+    <td>
       {{ value.name }}
+    </td>
+    <td style="background-color: green;">
       {{ value.value }}
     </td>
   </tr>
