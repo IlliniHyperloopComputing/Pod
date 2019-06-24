@@ -17,9 +17,9 @@ WARNINGS 	:= -Wall -Wextra -pedantic -Wdouble-promotion -Wcast-align -Wcast-qual
 
 
 INCLUDE_DIRS	:= -IStateMachineCompact -I${GTEST_DIR}/include -I. -Iscenarios
-CFLAGS_RELEASE 	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG
-CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG 
+CFLAGS_RELEASE 		:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG
 CFLAGS_RELEASE_NA	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG -DNO_ACTION
+CFLAGS_DEBUG   		:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG 
 CFLAGS_DEBUG_NA 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG  -DNO_ACTION
 CFLAGS_SIM 		:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG  -DNO_ACTION -DSIM 
 CFLAGS_BBB      := -DBBB
@@ -36,9 +36,7 @@ LD_BBB  := $(CXX_BBB)
 
 # Define all executables
 POD 		= build
-POD_NA 		= build-na
 POD_D 		= dbuild
-POD_D_NA 	= dbuild-na
 POD_T 		= sbuild
 POD_CROSS 	= cross
 POD_CROSS_NA 	= cross-na
@@ -50,7 +48,7 @@ ARM_COMPILER_EXISTS := $(shell command -v $(CXX_BBB) 2> /dev/null)
 
 
 .PHONY: all
-all : msg mkdir_obj ${LIB_DIR}/gtest-all.o ${LIB_DIR}/gtest-all-arm.o msg_d $(POD_D_NA)-tsan msg_s $(POD_T)-tsan
+all : msg mkdir_obj ${LIB_DIR}/gtest-all.o ${LIB_DIR}/gtest-all-arm.o msg_d $(POD_D)-tsan msg_s $(POD_T)-tsan
 	$(info  =   ___ _   _  ___ ___ ___  ___ ___  )
 	$(info	=  / __| | | |/ __/ __/ _ \/ __/ __| )
 	${info	=  \__ \ |_| | (_| (_|  __/\__ \__ \ }
@@ -148,7 +146,7 @@ $(POD)-asan : CXX_NORM := $(CXX_NORM) -fsanitize=address
 $(POD)-asan : $(POD)  #JUMP TO POD to continue compiling
 
 $(POD) : CXX 	= $(CXX_NORM)
-$(POD) : CFLAGS = $(CFLAGS_RELEASE) $(CFLAGS_NORM)
+$(POD) : CFLAGS = $(CFLAGS_RELEASE_NA) $(CFLAGS_NORM)
 $(POD) : LD  	= $(LD_NORM)
 $(POD) : mkdir_obj build-$(POD)
 build-$(POD) : $(OBJ:%.o=$(OBJ_DIR)/%-build.o)
@@ -157,26 +155,6 @@ build-$(POD) : $(OBJ:%.o=$(OBJ_DIR)/%-build.o)
 $(OBJ_DIR)/%-build.o : %.cpp
 	$(CXX) $? $(CFLAGS) -o $@
 
-#####
-# build-na
-#####
-$(POD_NA)-tsan : LD_NORM := $(LD_NORM) -fsanitize=thread
-$(POD_NA)-tsan : CXX_NORM := $(CXX_NORM) -fsanitize=thread -fPIE -pie
-$(POD_NA)-tsan : $(POD)  #JUMP TO POD to continue compiling
-
-$(POD_NA)-asan : LD_NORM := $(LD_NORM) -fsanitize=address
-$(POD_NA)-asan : CXX_NORM := $(CXX_NORM) -fsanitize=address 
-$(POD_NA)-asan : $(POD)  #JUMP TO POD to continue compiling
-
-$(POD_NA) : CXX 	= $(CXX_NORM)
-$(POD_NA) : CFLAGS 	= $(CFLAGS_RELEASE_NA) $(CFLAGS_NORM)
-$(POD_NA) : LD  	= $(LD_NORM)
-$(POD_NA) : mkdir_obj build-$(POD_NA)
-build-$(POD_NA) : $(OBJ:%.o=$(OBJ_DIR)/%-build.o)
-	$(LD) $? $(LDFLAGS) $(LD_TEST_NORM)  -o $(POD_NA)
-
-$(OBJ_DIR)/%-build.o : %.cpp
-	$(CXX) $? $(CFLAGS) -o $@
 
 #####
 # build-debug
@@ -190,32 +168,11 @@ $(POD_D)-asan : CXX_NORM := $(CXX_NORM) -fsanitize=address
 $(POD_D)-asan : $(POD_D)  #JUMP TO POD to continue compiling
 
 $(POD_D) : CXX		= $(CXX_NORM)
-$(POD_D) : CFLAGS  	= $(CFLAGS_DEBUG) $(CFLAGS_NORM)
+$(POD_D) : CFLAGS  	= $(CFLAGS_DEBUG_NA) $(CFLAGS_NORM)
 $(POD_D) : LD  		= $(LD_NORM)
 $(POD_D) : mkdir_obj build-$(POD_D)
 build-$(POD_D) : $(OBJ:%.o=$(OBJ_DIR)/%-build-debug.o)
 	$(LD) $? $(LDFLAGS) $(LD_TEST_NORM) -o $(POD_D)
-
-$(OBJ_DIR)/%-build-debug.o : %.cpp
-	$(CXX) $? $(CFLAGS) -o $@
-
-#####
-# build-debug-na
-#####
-$(POD_D_NA)-tsan : LD_NORM := $(LD_NORM) -fsanitize=thread
-$(POD_D_NA)-tsan : CXX_NORM := $(CXX_NORM) -fsanitize=thread -fPIE -pie
-$(POD_D_NA)-tsan : $(POD_D)  #JUMP TO POD to continue compiling
-
-$(POD_D_NA)-asan : LD_NORM := $(LD_NORM) -fsanitize=address
-$(POD_D_NA)-asan : CXX_NORM := $(CXX_NORM) -fsanitize=address 
-$(POD_D_NA)-asan : $(POD_D)  #JUMP TO POD to continue compiling
-
-$(POD_D_NA) : CXX		= $(CXX_NORM)
-$(POD_D_NA) : CFLAGS  		= $(CFLAGS_DEBUG_NA) $(CFLAGS_NORM)
-$(POD_D_NA) : LD  		= $(LD_NORM)
-$(POD_D_NA) : mkdir_obj build-$(POD_D_NA)
-build-$(POD_D_NA) : $(OBJ:%.o=$(OBJ_DIR)/%-build-debug.o)
-	$(LD) $? $(LDFLAGS) $(LD_TEST_NORM) -o $(POD_D_NA)
 
 $(OBJ_DIR)/%-build-debug.o : %.cpp
 	$(CXX) $? $(CFLAGS) -o $@
@@ -262,10 +219,10 @@ $(POD_CROSS_NA) : CXX 		= $(CXX_BBB)
 $(POD_CROSS_NA) : CFLAGS  	= $(CFLAGS_RELEASE_NA) $(CFLAGS_BBB)
 $(POD_CROSS_NA) : LD  		= $(LD_BBB)
 $(POD_CROSS_NA) : mkdir_obj build-$(POD_CROSS_NA)
-build-$(POD_CROSS_NA) : $(OBJ:%.o=$(OBJ_DIR)/%-cross.o)
+build-$(POD_CROSS_NA) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-na.o)
 	$(LD) $? $(LDFLAGS) $(LD_TEST_ARM) -o $(POD_CROSS_NA)
 
-$(OBJ_DIR)/%-cross.o : %.cpp
+$(OBJ_DIR)/%-cross-na.o : %.cpp
 	$(CXX) $? $(CFLAGS) -o $@
 
 #####
@@ -287,11 +244,11 @@ $(OBJ_DIR)/%-cross-debug.o : %.cpp
 $(POD_CROSS_D_NA) : CXX 	= $(CXX_BBB)
 $(POD_CROSS_D_NA) : CFLAGS 	= $(CFLAGS_DEBUG_NA) $(CFLAGS_BBB)
 $(POD_CROSS_D_NA) : LD     	= $(LD_BBB)
-$(POD_CROSS_D_NA) : mkdir_obj build-$(POD_CROSS_D)
-build-$(POD_CROSS_D_NA) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-debug.o)
-	$(CXX) $? $(LDFLAGS) $(LD_TEST_ARM) -o $(POD_CROSS_D)
+$(POD_CROSS_D_NA) : mkdir_obj build-$(POD_CROSS_D_NA)
+build-$(POD_CROSS_D_NA) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-debug-na.o)
+	$(CXX) $? $(LDFLAGS) $(LD_TEST_ARM) -o $(POD_CROSS_D_NA)
 
-$(OBJ_DIR)/%-cross-debug.o : %.cpp
+$(OBJ_DIR)/%-cross-debug-na.o : %.cpp
 	$(LD) $? $(CFLAGS) -o $@
 
 #####
@@ -309,7 +266,7 @@ $(OBJ_DIR)/%-cross-sim.o : %.cpp
 
 .PHONY: clean
 clean:
-	rm -f $(POD) $(POD_D) $(POD_T) $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T) $(POD_NA) $(POD_D_NA) $(POD_CROSS_NA) $(POD_CROSS_D_NA)
+	rm -f $(POD) $(POD_D) $(POD_T) $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T) $(POD_CROSS_NA) $(POD_CROSS_D_NA)
 	rm -rf $(OBJ_DIR)/  
 
 .PHONY: clean_lib
