@@ -8,7 +8,7 @@ import { Position } from '../../models/position';
   styleUrls: ['./position.component.css']
 })
 export class PositionComponent implements OnInit {
-  position: Position;
+  position: Position = { currentDistance:0, totalDistance:100};
 
   constructor(private positionService: PositionService) { }
 

@@ -7,6 +7,6 @@ urlpatterns = [
     path('commands/stop', views.stopPressed, name='stopButton'),
     path('commands/ready', views.readyPressed, name='readyButton'),
     path('commands/dev', views.devCommand, name='devCommand'),
-    path('commands/servers', views.startupServers, name='startServers')
+    path('commands/servers', views.startupServers, name='startServers'),
+    path('commands/test', views.test, name="test")
 ]
-

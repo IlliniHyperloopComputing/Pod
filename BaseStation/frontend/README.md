@@ -1,6 +1,7 @@
 # ToDo
 
 * Implement warnings indicator as well as buttons
+* Get live updating information
 
 # Frontend
 

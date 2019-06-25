@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from . import models
 from . import tcpserver, udpserver
-from django.http import HttpResponse, HttpRequest
+from django.http import HttpResponse, HttpRequest, JsonResponse
 from django.core.serializers import serialize
 import pickle
 import struct
@@ -11,6 +11,13 @@ import json
 
 TCPUp = False
 UDPUp = False
+
+def test(request):
+    toReturn = [{
+        "name":"Test",
+        "value": 50
+    }]
+    return JsonResponse(toReturn, safe=False)
 
 # Might need mutex locks if db doesnt handle concurrency
 def getLatest(request):

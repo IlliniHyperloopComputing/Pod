@@ -12,6 +12,6 @@ export class StatsService {
   constructor(private http: HttpClient) {}
 
    getStatStatus(): Observable<Stat[]> {
-     return this.http.get<Stat[]>("http://www.mocky.io/v2/5d117e513100000a1e08ccc3");
+     return this.http.get<Stat[]>("http://localhost:8000/api/commands/test");
    }
 }
