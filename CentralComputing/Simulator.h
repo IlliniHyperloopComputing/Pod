@@ -30,17 +30,17 @@ class Simulator {
    * @param hostname the hostname to connect to
    * @param port the port to connect to
    */
-  int start_server(const char * hostname, const char * port);
+  int start_server_tcp(const char * hostname, const char * port);
 
   /**
-   * A helper function for sim_connect()
+   * A helper function for sim_connect_tcp()
    */
-  int accept_client();
+  int accept_client_tcp();
 
   /**
    * Allows connection from a client. Spawns Read and Write threads
    */
-  void sim_connect();
+  void sim_connect_tcp();
   
   /**
    * Sends the given command to the client (the connected pod)
@@ -51,12 +51,31 @@ class Simulator {
   /**
    * Thread function, reads continually and updates the internal simulate state variables
    */
-  void read_loop();
+  void read_loop_tcp();
 
   /**
-   * Close the active connection and free any owned variables
+   * Close the active tcp connection and free any owned variables
    */
-  void disconnect();
+  void disconnect_tcp();
+
+  /**
+   * Sets up the UDP part of the connection
+   */
+  bool start_udp(const char * hostname, const char * send_port, const char * recv_port);
+
+  int udp_recv(uint8_t* recv_buf, uint8_t len);  // receives data and is put into a buffer
+  int udp_send(uint8_t* buf, uint8_t len);       // send data from the buffer passed in
+  bool udp_parse(uint8_t* buf, uint8_t len);     // parse the data in the buffer
+
+  /**
+   * Gets the udp heartbeat going 
+   */
+  void sim_connect_udp();
+
+  /**
+   * Close the active udp connection and free any owned variables
+   */
+  void disconnect_udp();
 
   /**
    * Shutdown the simulator and prepare for the next test cycle
@@ -146,13 +165,21 @@ class Simulator {
   std::shared_ptr<MotionData> sim_get_motion(MotionModel * mm, UnifiedState * state);
 
   std::atomic<bool> active_connection;
-  Event closed;
-  Event connected;
+  std::atomic<bool> udp_running;
+  Event closed_tcp;
+  Event closed_udp;
+  Event connected_tcp;
+  Event connected_udp;
   std::thread read_thread;
   std::mutex mutex;  // To get rid of data races when accessing motion data
 
-  int socketfd;
-  int clientfd;
+  // used with udp stuff
+  struct addrinfo hints_udp;
+  struct addrinfo * sendinfo_udp = NULL;
+  struct addrinfo * recvinfo_udp = NULL;
+
+  int socketfd_tcp, socketfd_udp;
+  int clientfd_tcp, clientfd_udp;
 
   std::shared_ptr<Scenario> scenario;
 };

@@ -201,14 +201,28 @@ void Pod::run() {
   Command::Network_Command com;
   com.id = Command::Network_Command_ID::SET_NETWORK_ERROR;
   com.value = NETWORKErrors::TCP_DISCONNECT_ERROR;
-  set_error_code(&com);  // Initially have an error set that the network isn't connected
-  // Start Network and main loop thread.
+  set_error_code(&com);  // Initially have an error set that TCP isn't connected
+
+  com.value = NETWORKErrors::UDP_DISCONNECT_ERROR;
+  set_error_code(&com);  // Initially have an error set that UDP isn't connected
+
+  // Start main loop thread
   // I don't know how to use member functions as a thread function, but lambdas work
-  // std::lock_guard<std::mutex> guard(TCPManager::data_mutex);  // Protect access to TCPManger::data_to_send
-  thread tcp_thread([&](){ TCPManager::tcp_loop(tcp_addr.c_str(), tcp_port.c_str(), &unified_state); });
-  thread udp_thread([&](){ UDPManager::connection_monitor(udp_addr.c_str(), udp_send.c_str(), udp_recv.c_str()); });
   running.store(true);
   thread logic_thread([&](){ logic_loop(); });  
+
+  // Start Network threads
+  // TCP
+  thread tcp_thread([&](){ TCPManager::tcp_loop(tcp_addr.c_str(), tcp_port.c_str(), &unified_state); });
+  #ifdef SIM
+  tcp_fully_setup.wait();  // Wait for the simulator to give the go-ahead
+  #endif 
+  // UDP
+  thread udp_thread([&](){ UDPManager::connection_monitor(udp_addr.c_str(), udp_send.c_str(), udp_recv.c_str()); });
+  #ifdef SIM
+  udp_fully_setup.wait();  // Wait for the simulator to give the go-ahead
+  #endif 
+
   print(LogLevel::LOG_INFO, "Finished Initialization\n");
   print(LogLevel::LOG_INFO, "================\n\n");
   
