@@ -1,12 +1,13 @@
 #ifdef SIM // Only compile if building test executable
 #include "PodTest.cpp"
-#include "ScenarioBasic.h"
+#include "ScenarioSensorFree.h"
 #include "ScenarioRealNoFault.h"
 #include "ScenarioRealLong.h"
 #include "ScenarioTestTimeouts.h"
 using std::make_shared;
 
 TEST_F(PodTest, AutomaticTransitionBasic) {
+  ConfiguratorManager::config.openConfigFile("tests/basicFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioBasic>());
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
@@ -37,6 +38,7 @@ TEST_F(PodTest, AutomaticTransitionBasic) {
 }
 
 TEST_F(PodTest, AutomaticTransitionSensors) {
+  ConfiguratorManager::config.openConfigFile("tests/basicFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioRealNoFault>());
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
@@ -67,6 +69,7 @@ TEST_F(PodTest, AutomaticTransitionSensors) {
 }
 
 TEST_F(PodTest, AutomaticTransitionLong) {
+  ConfiguratorManager::config.openConfigFile("tests/realFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioRealLong>());
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
@@ -94,9 +97,15 @@ TEST_F(PodTest, AutomaticTransitionLong) {
   pod->processing_command.wait();
   EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_FLIGHT_BRAKE);
 
+  pod->processing_command.reset();
+  pod->state_machine->auto_transition_safe_mode.wait();
+  pod->processing_command.wait();
+  EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
+
 }
 
 TEST_F(PodTest, AutomaticTransitionTestTimeouts) {
+  ConfiguratorManager::config.openConfigFile("tests/basicFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioTestTimeouts>());
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);

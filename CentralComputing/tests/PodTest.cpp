@@ -16,7 +16,7 @@ class PodTest : public ::testing::Test
     // Create the Pod object
     // This will load the configuration manager, so we can use those config values for
     //    starting up our simulation tcp and udp servers
-    pod = std::make_shared<Pod>(podtest_global::config_to_open);
+    pod = std::make_shared<Pod>(podtest_global::config_to_open, podtest_global::flight_plan_to_open);
 
     // Grab these configuration values for the network setup
     string tcp_port, tcp_addr, udp_send, udp_recv, udp_addr;
@@ -72,7 +72,7 @@ class PodTest : public ::testing::Test
     pod->ready.wait();
 
     // Reset error timeout flags
-    for (int i = 0; i < 8*6; i++) {
+    for (int i = 0; i < FLAGS_PER_ERROR * 6; i++) {
         Command::error_flag_timers[i] = -1000000;  // negative 1 second. 
     }
 

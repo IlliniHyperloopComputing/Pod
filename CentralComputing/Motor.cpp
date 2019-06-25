@@ -3,8 +3,9 @@ using Utils::print;
 using Utils::LogLevel;
 
 Motor::Motor() {
-  throttle = 0;
-  set_motor_state(false);
+  // Do nothing here. At the time the constructor is called,
+  // the motor class can't do anything, since the sensors/ controls are not
+  // yet connected
 }
 
 void Motor::enable_motors() {

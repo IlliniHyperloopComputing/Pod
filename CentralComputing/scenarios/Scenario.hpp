@@ -2,17 +2,36 @@
 #define SCENARIO_H_
 #include "Defines.hpp"
 #include "Utils.h"
+#include "Configurator.h"
 
 using Utils::print;
 using Utils::microseconds;
 using Utils::LogLevel;
 
-// Abstract class 
+// Base class 
 class Scenario{
  public:
-  
-  // User must extend this class to implement this function
-  virtual bool use_motion_model() = 0;
+
+  // Use this to load in parameters from config file
+  Scenario() {
+    if (!(ConfiguratorManager::config.getValue("scn_gear_ratio", gear_ratio) && 
+          ConfiguratorManager::config.getValue("scn_mass", mass) && 
+          ConfiguratorManager::config.getValue("scn_brake_deceleration", brake_deceleration) && 
+          ConfiguratorManager::config.getValue("scn_rated_torque", rated_torque) && 
+          ConfiguratorManager::config.getValue("scn_rear_wheel_circ", rear_wheel_circumfrence) && 
+          ConfiguratorManager::config.getValue("scn_dist_between_orange", dist_between_orange) && 
+        ConfiguratorManager::config.getValue("scn_drive_wheel_radius", drive_wheel_radius))) {
+      print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: (SCENARIO) Missing necessary configuration\n");
+      exit(1);  // Crash hard on this error
+    }
+  }
+
+  // If true, don't use the "sim_get_..." functions. 
+  // This was derived from the most basic tests, before we used all of the
+  // different sensor values to create our motion model.
+  virtual bool use_sensor_free_motion() {
+    return false;
+  }
 
   // By default, all functions return "empty data"
   virtual std::shared_ptr<ADCData> sim_get_adc() {
@@ -83,20 +102,32 @@ class Scenario{
   }
 
   bool enable_logging = true;
+  bool motorsOn = false;
+  bool brakesOn = false;
+
   int64_t timeLast = -1;
   int64_t timeDelta = 0.000;
   uint32_t relay_state_buf = 0;
-  bool motorsOn = false;
-  bool brakesOn = false;
-  int16_t throttle = 0.000;
-  uint8_t pressure = 0.000;
+
+  int16_t throttle = 0;
+  uint8_t pressure = 0;
+  int64_t motors_on_time = 0;
+  int64_t brakes_on_time= 0;
+
   double position = 0.000;
   double lastPosition = 0.000;
   double velocity = 0.000;
   double lastVelocity = 0.000;
   double acceleration = 0.000;
-  int64_t motors_on_time = 0;
-  int64_t brakes_on_time= 0;
 
+
+  // Config values:
+  double gear_ratio = 0;
+  double drive_wheel_radius = 0;
+  double mass = 0;
+  double brake_deceleration= 0;
+  double rated_torque= 0;
+  double rear_wheel_circumfrence = 0;
+  double dist_between_orange = 0;
 };
 #endif 
