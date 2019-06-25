@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { BatteryService } from '../../services/battery.service';
+import { Battery } from '../../models/battery';
 
 @Component({
   selector: 'app-battery',
@@ -8,7 +9,7 @@ import { BatteryService } from '../../services/battery.service';
   styleUrls: ['./battery.component.css']
 })
 export class BatteryComponent implements OnInit {
-  value:string;
+  battery:Battery = { "value": 0 };
 
   constructor(private batteryService: BatteryService) { }
 
@@ -17,7 +18,7 @@ export class BatteryComponent implements OnInit {
   }
 
   getValue() {
-    this.batteryService.getBatteryStatus().subscribe(value => this.value = value);
+    this.batteryService.getBatteryStatus().subscribe((data: Battery) => this.battery = { ...data })
   }
 
 }

@@ -9,6 +9,7 @@ import { DiagnosticsComponent } from './components/diagnostics/diagnostics.compo
 import { WarningComponent } from './components/warning/warning.component';
 import { StatsComponent } from './components/stats/stats.component';
 import { ButtonsComponent } from './components/buttons/buttons.component';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
   declarations: [
@@ -22,7 +23,8 @@ import { ButtonsComponent } from './components/buttons/buttons.component';
   ],
   imports: [
     BrowserModule,
-    AppRoutingModule
+    AppRoutingModule,
+    HttpClientModule
   ],
   providers: [],
   bootstrap: [AppComponent]

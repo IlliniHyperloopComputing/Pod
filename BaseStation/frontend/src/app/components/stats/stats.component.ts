@@ -1,7 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 
 import { StatsService } from '../../services/stats.service';
-import { stat } from '../../models/stat';
+import { Stat } from '../../models/stat';
 
 @Component({
   selector: 'app-stats',
@@ -9,7 +9,7 @@ import { stat } from '../../models/stat';
   styleUrls: ['./stats.component.css']
 })
 export class StatsComponent implements OnInit {
-  stats:stat[];
+  stats:Stat[];
 
   constructor(private statsService: StatsService) { }
 
@@ -18,7 +18,6 @@ export class StatsComponent implements OnInit {
   }
 
   getValues() {
-    this.statsService.getStatStatus().subscribe(value => this.stats = value)
+    this.statsService.getStatStatus().subscribe((data: Stat[]) => this.stats = data)
   }
-
 }

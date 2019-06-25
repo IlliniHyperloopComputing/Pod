@@ -1,4 +1,4 @@
-export class stat {
+export class Stat {
     name:string;
     value:number;
 }

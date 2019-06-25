@@ -1,17 +1,22 @@
 import { Component, OnInit } from '@angular/core';
 
+import { PositionService } from '../../services/position.service';
+import { Position } from '../../models/position';
 @Component({
   selector: 'app-position',
   templateUrl: './position.component.html',
   styleUrls: ['./position.component.css']
 })
 export class PositionComponent implements OnInit {
-  position:number = 500;
-  totalDistance:number = 1000;
+  position: Position;
 
-  constructor() { }
+  constructor(private positionService: PositionService) { }
 
   ngOnInit() {
+    this.getPosition()
   }
 
+  getPosition() {
+    this.positionService.getPositionStatus().subscribe((data: Position) => this.position = data)
+  }
 }
