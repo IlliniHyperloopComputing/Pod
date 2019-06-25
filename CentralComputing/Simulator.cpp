@@ -192,7 +192,6 @@ RETURN_ERROR:
   freeaddrinfo(sendinfo_udp);
   freeaddrinfo(recvinfo_udp);
   return false;
-
 }
 
 int Simulator::udp_recv(uint8_t* recv_buf, uint8_t len) {
