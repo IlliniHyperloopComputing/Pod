@@ -11,7 +11,7 @@ TEST(ErrorFlagTest, ErrorFlagTestBasic) {
   microseconds();
   // Need to run this (especially if we are not the only test running)
   // To make sure that we can set error flags at will
-  for (int i = 0; i < 8*6; i++) {
+  for (int i = 0; i < FLAGS_PER_ERROR * 6; i++) {
       Command::error_flag_timers[i] = -1000000;  // negative 1 second. 
   }
   Command::Network_Command com;
@@ -39,13 +39,22 @@ TEST(ErrorFlagTest, ErrorFlagTestBasic) {
   EXPECT_EQ(com.value, TCP_DISCONNECT_ERROR);
 
   // Set different flag
-  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_ERROR);
+  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_INTERNAL_ERROR);
   EXPECT_TRUE(Command::get(&com));
   EXPECT_EQ(com.id, Command::SET_CAN_ERROR);
-  EXPECT_EQ(com.value, CAN_MOTOR_CONTROLLER_ERROR);
+  EXPECT_EQ(com.value, CAN_MOTOR_CONTROLLER_INTERNAL_ERROR);
 
   // Cant set same error again that quickly
-  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_ERROR);
+  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_INTERNAL_ERROR);
+  EXPECT_FALSE(Command::get(&com));
+
+  // Set different flag
+  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  EXPECT_TRUE(Command::get(&com));
+  EXPECT_EQ(com.id, Command::SET_CAN_ERROR);
+  EXPECT_EQ(com.value, CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  // Cant set same error again that quickly
+  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
   EXPECT_FALSE(Command::get(&com));
 
 }
@@ -64,30 +73,30 @@ TEST_F(PodTest, ErrorFlagTestWithPodUnifiedState) {
 
   // Send a different error
   pod->processing_error.reset();
-  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_ERROR);
+  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_INTERNAL_ERROR);
   pod->processing_error.wait();
   // copy unified state and check it
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
-  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_ERROR);
+  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_ERROR);
 
   // Send a different error of same type
   pod->processing_error.reset();
-  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_OVER_TEMPERATURE);
+  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE);
   pod->processing_error.wait();
   // copy unified state and check it
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
-  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_ERROR | CAN_OVER_TEMPERATURE);
+  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_ERROR | CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE);
 
   // Send a different error of same type
   pod->processing_error.reset();
-  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_OVER_CURRENT);
+  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_OVER_CURRENT);
   pod->processing_error.wait();
   // copy unified state and check it
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
-  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_ERROR | CAN_OVER_TEMPERATURE | CAN_OVER_CURRENT);
+  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_ERROR | CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE | CAN_MOTOR_CONTROLLER_OVER_CURRENT);
 
   // Send a different error 
   pod->processing_error.reset();
@@ -96,7 +105,7 @@ TEST_F(PodTest, ErrorFlagTestWithPodUnifiedState) {
   // copy unified state and check it
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
-  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_ERROR | CAN_OVER_TEMPERATURE | CAN_OVER_CURRENT);
+  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_ERROR | CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE | CAN_MOTOR_CONTROLLER_OVER_CURRENT);
   EXPECT_EQ(unified_state->errors->error_vector[2], I2C_READ_ERROR);
 
   // Send a different error 
@@ -106,7 +115,7 @@ TEST_F(PodTest, ErrorFlagTestWithPodUnifiedState) {
   // copy unified state and check it
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
-  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_ERROR | CAN_OVER_TEMPERATURE | CAN_OVER_CURRENT);
+  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_ERROR | CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE | CAN_MOTOR_CONTROLLER_OVER_CURRENT);
   EXPECT_EQ(unified_state->errors->error_vector[2], I2C_READ_ERROR);
   EXPECT_EQ(unified_state->errors->error_vector[5], GPIO_SWITCH_ERROR);
 
@@ -117,7 +126,7 @@ TEST_F(PodTest, ErrorFlagTestWithPodUnifiedState) {
   // copy unified state and check it
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
-  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_ERROR | CAN_OVER_TEMPERATURE | CAN_OVER_CURRENT);
+  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_ERROR | CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE | CAN_MOTOR_CONTROLLER_OVER_CURRENT);
   EXPECT_EQ(unified_state->errors->error_vector[2], I2C_READ_ERROR);
   EXPECT_EQ(unified_state->errors->error_vector[3], 0);
   EXPECT_EQ(unified_state->errors->error_vector[4], UDP_DISCONNECT_ERROR);
@@ -133,46 +142,72 @@ TEST_F(PodTest, ErrorFlagTestWithPodClearFlag) {
 
   // Send a different error
   pod->processing_error.reset();
-  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_ERROR);
+  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_INTERNAL_ERROR);
   pod->processing_error.wait();
 
   // Send a different error of same type
   pod->processing_error.reset();
-  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_OVER_TEMPERATURE);
+  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  pod->processing_error.wait();
+
+  // Send a different error of same type
+  pod->processing_error.reset();
+  Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE);
   pod->processing_error.wait();
   // copy unified state and check it
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
-  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_ERROR | CAN_OVER_TEMPERATURE);
+  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_ERROR 
+                                                    | CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE 
+                                                    | CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
 
   pod->processing_error.reset();
-  Command::put(Command::CLR_CAN_ERROR, CAN_OVER_TEMPERATURE);
+  Command::put(Command::CLR_CAN_ERROR, CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE);
   pod->processing_error.wait();
   // copy unified state and check it
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
-  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_ERROR );
+  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_ERROR 
+                                                    | CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
 
   pod->processing_error.reset();
-  Command::put(Command::CLR_CAN_ERROR, CAN_MOTOR_CONTROLLER_ERROR);
+  Command::put(Command::CLR_CAN_ERROR, CAN_MOTOR_CONTROLLER_INTERNAL_ERROR);
   pod->processing_error.wait();
   // copy unified state and check it
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
-  EXPECT_EQ(unified_state->errors->error_vector[1], 0);
+  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
 
   // Do it again, nothing should happen
   pod->processing_error.reset();
-  Command::put(Command::CLR_CAN_ERROR, CAN_MOTOR_CONTROLLER_ERROR);
+  Command::put(Command::CLR_CAN_ERROR, CAN_MOTOR_CONTROLLER_INTERNAL_ERROR);
   pod->processing_error.wait();
   // copy unified state and check it
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
-  EXPECT_EQ(unified_state->errors->error_vector[1], 0);
+  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
 
   // Do it again, nothing should happen
   pod->processing_error.reset();
   Command::put(Command::CLR_ADC_ERROR, ADC_SETUP_FAILURE);
+  pod->processing_error.wait();
+  // copy unified state and check it
+  unified_state = &pod->unified_state;
+  EXPECT_EQ(unified_state->errors->error_vector[0], 0);
+  EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+
+  // Clear 
+  pod->processing_error.reset();
+  Command::put(Command::CLR_CAN_ERROR, CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  pod->processing_error.wait();
+  // copy unified state and check it
+  unified_state = &pod->unified_state;
+  EXPECT_EQ(unified_state->errors->error_vector[0], 0);
+  EXPECT_EQ(unified_state->errors->error_vector[1], 0);
+
+  // Do it again, nothing should happen
+  pod->processing_error.reset();
+  Command::put(Command::CLR_CAN_ERROR, CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
   pod->processing_error.wait();
   // copy unified state and check it
   unified_state = &pod->unified_state;

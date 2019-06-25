@@ -80,8 +80,9 @@ struct Network_Command {
 // Say something is faulting every cycle. Initially it will set the error flag
 // But then it send another command to the Unified Queue once every second. 
 // This helper function, and the int64_t array of timers makes that possible
-extern int64_t error_flag_timers[8*6];  // 8 flags per error ID, 6 errors
-void set_error_flag(Network_Command_ID id, uint8_t value);
+#define FLAGS_PER_ERROR 32
+extern int64_t error_flag_timers[FLAGS_PER_ERROR * 6];  // 32 flags per error ID, 6 errors
+void set_error_flag(Network_Command_ID id, uint32_t value);
 
 }  // namespace Command
 

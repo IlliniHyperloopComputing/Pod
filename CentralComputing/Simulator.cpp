@@ -186,7 +186,7 @@ void Simulator::sim_brake_set_pressure(uint8_t value) {
 
 std::shared_ptr<ADCData> Simulator::sim_get_adc() {
   std::lock_guard<std::mutex> guard(mutex);
-  if (scenario != nullptr && (!scenario->use_motion_model())) {
+  if (scenario != nullptr && (!scenario->use_sensor_free_motion())) {
     return scenario->sim_get_adc();
   } else {
     std::shared_ptr<ADCData> d = std::make_shared<ADCData>();
@@ -197,7 +197,7 @@ std::shared_ptr<ADCData> Simulator::sim_get_adc() {
 
 std::shared_ptr<CANData> Simulator::sim_get_can() {
   std::lock_guard<std::mutex> guard(mutex);
-  if (scenario != nullptr && (!scenario->use_motion_model())) {
+  if (scenario != nullptr && (!scenario->use_sensor_free_motion())) {
     return scenario->sim_get_can();
   } else {
     std::shared_ptr<CANData> d = std::make_shared<CANData>();
@@ -208,7 +208,7 @@ std::shared_ptr<CANData> Simulator::sim_get_can() {
 
 std::shared_ptr<I2CData> Simulator::sim_get_i2c() {
   std::lock_guard<std::mutex> guard(mutex);
-  if (scenario != nullptr && (!scenario->use_motion_model())) {
+  if (scenario != nullptr && (!scenario->use_sensor_free_motion())) {
     return scenario->sim_get_i2c();
   } else {
     std::shared_ptr<I2CData> d = std::make_shared<I2CData>();
@@ -219,7 +219,7 @@ std::shared_ptr<I2CData> Simulator::sim_get_i2c() {
 
 std::shared_ptr<PRUData> Simulator::sim_get_pru() {
   std::lock_guard<std::mutex> guard(mutex);
-  if (scenario != nullptr && (!scenario->use_motion_model())) {
+  if (scenario != nullptr && (!scenario->use_sensor_free_motion())) {
     return scenario->sim_get_pru();
   } else {
     std::shared_ptr<PRUData> d = std::make_shared<PRUData>();
@@ -231,7 +231,7 @@ std::shared_ptr<PRUData> Simulator::sim_get_pru() {
 std::shared_ptr<MotionData> Simulator::sim_get_motion(MotionModel * mm, UnifiedState * state) {
   std::lock_guard<std::mutex> guard(mutex);
   // Either go to the scenario for motion data
-  if (scenario != nullptr && (scenario->use_motion_model())) {
+  if (scenario != nullptr && (scenario->use_sensor_free_motion())) {
     return scenario->sim_get_motion();
   } else {
     // Or just call the MotionModel's usual calculate() function
