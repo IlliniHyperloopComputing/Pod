@@ -11,41 +11,41 @@
 Utils::LogLevel Utils::loglevel = LOG_ERROR;
 
 void Utils::print(LogLevel level, const char * format, ...) {
-      if (loglevel <= level) {
-        char buffer[256];
-        if (level == LOG_ERROR) {
-          snprintf(buffer, sizeof(buffer), "%s[ERROR]:%s %s", ANSI_COLOR_RED, ANSI_COLOR_RESET, format);
-        } else if (level == LOG_INFO) {
-          snprintf(buffer, sizeof(buffer), "%s[INFO ]:%s %s", ANSI_COLOR_GREEN, ANSI_COLOR_RESET, format);
-        } else if (level == LOG_DEBUG) {
-          snprintf(buffer, sizeof(buffer), "%s[DEBUG]:%s %s", ANSI_COLOR_YELLOW, ANSI_COLOR_RESET, format);
-        } else if (level == LOG_EDEBUG) {
-          snprintf(buffer, sizeof(buffer), "%s", format);
-        }
+  if (loglevel <= level) {
+    char buffer[256];
+    if (level == LOG_ERROR) {
+      snprintf(buffer, sizeof(buffer), "%s[ERROR]:%s %s", ANSI_COLOR_RED, ANSI_COLOR_RESET, format);
+    } else if (level == LOG_INFO) {
+      snprintf(buffer, sizeof(buffer), "%s[INFO ]:%s %s", ANSI_COLOR_GREEN, ANSI_COLOR_RESET, format);
+    } else if (level == LOG_DEBUG) {
+      snprintf(buffer, sizeof(buffer), "%s[DEBUG]:%s %s", ANSI_COLOR_YELLOW, ANSI_COLOR_RESET, format);
+    } else if (level == LOG_EDEBUG) {
+      snprintf(buffer, sizeof(buffer), "%s", format);
+    }
 
-        va_list args;
-        va_start(args, format);
-        vfprintf(stdout, buffer, args);
-        va_end(args);
-      }
+    va_list args;
+    va_start(args, format);
+    vfprintf(stdout, buffer, args);
+    va_end(args);
+  }
 }
 
 bool Utils::set_GPIO(int GPIONumber, bool switchVal) {
-    std::string start = "/sys/class/gpio/gpio";
-    std::string integer = std::to_string(GPIONumber);
-    std::string end = "/value";
-    std::string path = start + integer + end;
-    std::ofstream out(path, std::ofstream::trunc);
-    if (!out.is_open()) {
-        return false;
-    }
-    if (switchVal == true) {
-        out << "1";
-    } else {
-        out << "0";
-    }
-    out.close();
-    return true;  // Have it return 1 if it works and zero otherwise
+  std::string start = "/sys/class/gpio/gpio";
+  std::string integer = std::to_string(GPIONumber);
+  std::string end = "/value";
+  std::string path = start + integer + end;
+  std::ofstream out(path, std::ofstream::trunc);
+  if (!out.is_open()) {
+      return false;
+  }
+  if (switchVal == true) {
+      out << "1";
+  } else {
+      out << "0";
+  }
+  out.close();
+  return true;  // Have it return 1 if it works and zero otherwise
 }
 
 int64_t Utils::microseconds() {
@@ -78,6 +78,7 @@ void Utils::busyWait(int64_t microseconds) {
   return;
 }
 
+// Returns a number > 0 if success. Otherwise, there was a write failure
 ssize_t Utils::write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
   size_t bytes_written = 0;
   while (bytes_written != count) {
@@ -85,13 +86,12 @@ ssize_t Utils::write_all_to_socket(int socket, uint8_t *buffer, size_t count) {
     if (bytes > 0) {
       bytes_written += (size_t)bytes;
     } else if (bytes == 0) {
-      fprintf(stderr, "Disconnected\n");
+      Utils::print(LogLevel::LOG_DEBUG, "write_all_to_socket() failure\n");
       return 0;
     } else if (bytes == -1 && errno != EINTR) {
-      fprintf(stderr, "Write failure!\n");
+      Utils::print(LogLevel::LOG_DEBUG, "write_all_to_socket() failure\n");
       return -1;
     }
   }
   return (ssize_t)bytes_written;
 }
-

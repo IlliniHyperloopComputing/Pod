@@ -48,12 +48,13 @@ Specifically we use `cpplint.py` for easy linting of the most obvious errors. We
 
 
 # Building the project using the Makefile
+* Simply run `make` to get started. This will first compile the GTest library, and then the debug and test versions of the codebase.
 
 ### There are two types of executables
 * The `build` uses whatever default version of `g++` is installed on your system
 * The `cross` uses the `arm-linux-gnueabihf-g++` compiler and associated tool chain, so it can be compiled on a host machine and copied over to the 32-bit ARM Beaglebone Black
 
-### There are three modes
+### There are several compile time flag options
 * Release: 
   * defines `NDEBUG`, and compiles with optimizations
   * `build` and `cross`
@@ -63,14 +64,19 @@ Specifically we use `cpplint.py` for easy linting of the most obvious errors. We
 * Simulation:
   * defines `DEBUG` and `SIM`, and compiles without optimizations
   * `sbuild` and `scross`
+* BeagleBoneBlack:
+  * defines `BBB` when cross compiling, along with one of the above modes
+  * Note: No Sanitizers are used while compiling for the BBB. They are not implemented for 32-bit ARM.
 
-### Examples:
-* `make` will compile two things:
-  * `dbuild` and `sbuild`
-* `make [exe name]` will compile a specific executable
-  * `build` `dbuild` `sbuild` `cross` `dcross` `scross` are valid options
+### All make options
+* `make`, will compile the debug and test versions of the code, with the ThreadSanitizer already enabled.
+* `make build`, `make dbuild`, `make sbuild`, will compile the release, debug, or test versions, respectively. 
+  * Can run `make [exe_name]-tsan` or `make [exe_name]-asan` to build with those sanitizers. Be sure to run `make clean` when switching between sanitizer options.
+* `make cross`, `make dcross`, `make scross`, will cross compile the release, debug, or test versions, respectively. 
+  * There are no Sanitizers for 32-bit ARM. 
 
 ### Other commands:
 * `make clean` cleans up all executables and objects
+* `make clean_lib` cleans up the GTest library
 * `make push` uses scp to copy all `cross` executables over to a Beaglebone
 

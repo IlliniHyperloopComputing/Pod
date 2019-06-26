@@ -1,0 +1,3 @@
+motor_distance_clamp 10
+low_pass_filter_velocity 0.00
+low_pass_filter_acceleration 0.00

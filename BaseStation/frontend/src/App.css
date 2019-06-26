@@ -3,8 +3,10 @@
 }
 
 .App-logo {
-  animation: App-logo-spin infinite 20s linear;
-  height: 40vmin;
+  position: absolute;
+  bottom: 10px;
+  height: 100px;
+  left: 700px;
 }
 
 .App-header {
@@ -22,11 +24,71 @@
   color: #61dafb;
 }
 
-@keyframes App-logo-spin {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
+.Accel-Circle {
+  position: absolute;
+  height: 100px;
+}
+
+.Pos-Line {
+  position: absolute;
+  bottom: 150px;
+  left: 0px;
+}
+
+.Pos-Text {
+  position: absolute;
+  bottom: 150px;
+  left: 920px;
+}
+
+.Speed-Circle {
+  position: absolute;
+  height: 200px;
+  bottom: 400px;
+  left: 100px;
+}
+
+.Speed-Text {
+  position: absolute;
+  bottom: 340px;
+  left: 155px;
+}
+
+.Accel-Circle {
+  position: absolute;
+  height: 200px;
+  bottom: 400px;
+  right: 100px;
+}
+
+.Accel-Text {
+  position: absolute;
+  bottom: 340px;
+  right: 125px;
+}
+
+.Stop-Button {
+  position: absolute;
+  bottom: 20px;
+  left: 20px;
+  height: 100px;
+  width: 350px;
+  background-color: red;
+  font-size: 25px;
+}
+
+.Ready-Button {
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+  height: 100px;
+  width: 350px;
+  background-color: green;
+  font-size: 25px;
+}
+
+.Connection-Text {
+  position: absolute;
+  top: 20px;
+  color: red;
 }

@@ -1,0 +1,34 @@
+ 000000    50  #Assuimg rated torque of 230Nm ->  50 throttle == 11.5Nm
+ 050000   100  #Target_torque = rated_torqe * throttle / 1000
+ 100000   150
+ 150000   200
+ 200000   250
+ 250000   300
+ 300000   350
+ 350000   400
+ 400000   450
+ 450000   500
+ 500000   550
+ 550000   600
+ 600000   650
+ 650000   700
+ 700000   750
+ 750000   800
+ 800000   850
+ 850000   900
+ 900000   950
+1000000  1000 #1 seconds in, full power
+
+7000000   860 #6 seconds in, start reducing power
+
+8000000   650 #8 seconds in
+
+9000000   625 #9 seconds in
+10000000  600 # Continue decreasing power 
+11000000  575 
+12000000  550 
+13000000  525
+14000000  500
+
+15000000  450 #15 seconds in
+
