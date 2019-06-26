@@ -7,7 +7,7 @@
 using std::ifstream;
 
 struct RawADCData {
-    double raw_accel[NUM_ACCEL];
+    double raw_accel[NUM_ADC];
 };
 
 class ADCManager : public SourceManagerBase<ADCData> {

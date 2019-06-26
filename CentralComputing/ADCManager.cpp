@@ -22,15 +22,17 @@ void ADCManager::stop_source(){
 }
 
 std::shared_ptr<ADCData> ADCManager::refresh() {
-  // this is where you would query the ADC and get new data
-  
     std::shared_ptr<ADCData> new_data = std::make_shared<ADCData>();
-    uint8_t buffer [NUM_ACCEL * 2];
-    inFile.read((char *) buffer, NUM_ACCEL * 2);
-    for (int i = 0; i < NUM_ACCEL; i++) {
-      uint16_t * val = (uint16_t * )(buffer + 2 * i);
-      new_data -> accel[i] = (*val) * 4096 / 1.8;
+    uint16_t buffer [NUM_ADC];
+    inFile.read((char *) buffer, NUM_ADC * 2);
+    for (int i = 0; i < NUM_ADC; i++) {
+      uint16_t * val = (buffer + i);
+      new_data -> accel[i] = (*val); //* 4096 / 1.8;
     }
+    print(Utils::LOG_ERROR, "%d \t%d\t%d\t %d\t%d\t%d\t%d\t\n", new_data->accel[0], 
+                            new_data->accel[1], new_data->accel[2], 
+                            new_data->accel[3], new_data->accel[4],
+                            new_data->accel[5], new_data->accel[6]);
     return new_data;
 }
 
