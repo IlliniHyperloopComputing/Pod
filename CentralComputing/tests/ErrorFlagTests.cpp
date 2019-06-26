@@ -232,4 +232,36 @@ TEST_F(PodTest, ErrorFlagTestWithPodMoveState) {
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
 }
 
+TEST_F(PodTest, ErrorFlagTestWithNetworkFailues) {
+  UnifiedState * unified_state;
+
+  pod->processing_command.reset();
+  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
+  pod->processing_command.wait();
+
+  // Kill tcp and wait for error to be processed
+  pod->processing_error.reset();
+  SimulatorManager::sim.disable_tcp();
+  pod->processing_error.wait();
+
+  // Should be back in safe mode
+  EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
+
+  // copy unified state, should have tcp disconnect error
+  unified_state = &pod->unified_state;
+  EXPECT_EQ(unified_state->errors->error_vector[4], TCP_DISCONNECT_ERROR);
+
+  // Restore tcp and wait for CLR error to be processed
+  pod->processing_error.reset();
+  SimulatorManager::sim.enable_tcp();
+  pod->processing_error.wait();
+
+  // Should be in safe mode
+  EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
+
+  // copy unified state, should have no tcp disconnect error
+  unified_state = &pod->unified_state;
+  EXPECT_EQ(unified_state->errors->error_vector[4], 0);
+}
+
 #endif

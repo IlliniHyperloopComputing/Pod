@@ -84,6 +84,26 @@ class Simulator {
    */
   void stop();
 
+  /**
+   * Disable/ enable the tcp connection. This should 
+   * allow us to test if the Pod can sense a disconnection and does the appropriate thing.
+   * 
+   * This uses some weird Event logic to pause it, hopefully it makes sense
+   */
+  void disable_tcp();
+  void enable_tcp();
+
+  /**
+   * Only works AFTER the connection is setup
+   * 
+   * Disable/ enable the udp connection. This should 
+   * allow us to test if the Pod can sense a disconnection and does the appropriate thing.
+   * 
+   * This uses some weird Event logic to pause it, hopefully it makes sense
+   */
+  void disable_udp();
+  void enable_udp();
+
   //
   // HOOK PART
   //
@@ -165,11 +185,14 @@ class Simulator {
   std::shared_ptr<MotionData> sim_get_motion(MotionModel * mm, UnifiedState * state);
 
   std::atomic<bool> active_connection;
+  std::atomic<bool> do_accept_client_tcp;
   std::atomic<bool> udp_running;
   Event closed_tcp;
   Event closed_udp;
   Event connected_tcp;
   Event connected_udp;
+  Event pause_tcp;
+  Event pause_udp;
   std::thread read_thread;
   std::mutex mutex;  // To get rid of data races when accessing motion data
 

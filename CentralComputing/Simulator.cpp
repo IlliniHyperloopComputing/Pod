@@ -76,16 +76,19 @@ int Simulator::accept_client_tcp() {
 
 void Simulator::sim_connect_tcp() {
   closed_tcp.reset();
+  pause_tcp.invoke();
 
   // try to connect to a client
-  if (accept_client_tcp() > 0) {
-    print(LogLevel::LOG_DEBUG, "Sim - Starting TCP network read thread\n");
+  print(LogLevel::LOG_DEBUG, "Sim - Starting TCP network read thread\n");
+  do_accept_client_tcp.store(true);
+  while(accept_client_tcp() > 0 && do_accept_client_tcp.load()) {
     active_connection.store(true);
     read_thread = std::thread([&]() { read_loop_tcp(); });
     connected_tcp.invoke();
     read_thread.join();
-    print(LogLevel::LOG_DEBUG, "Sim - Pod TCP client exited. \n");
+    pause_tcp.wait();  // Only waits if `pause_udp.reset()` is called
   } 
+  print(LogLevel::LOG_DEBUG, "Sim - Pod TCP client exited. \n");
 }
 
 bool Simulator::send_command(std::shared_ptr<Command::Network_Command> command) {
@@ -110,7 +113,9 @@ void Simulator::read_loop_tcp() {
 
 void Simulator::disconnect_tcp() {
   active_connection.store(false);  // stop the read loop
+  do_accept_client_tcp.store(false);  // stop the connection loop
 
+  pause_tcp.invoke();  // Ensure this event doesn't wait
   shutdown(clientfd_tcp, SHUT_RDWR);
   closed_tcp.wait();    // wait for sim_connect_tcp() to close, which was waiting on the read_loop_tcp
   close(clientfd_tcp);  // close TCP connection
@@ -233,6 +238,7 @@ int Simulator::udp_send(uint8_t* buf, uint8_t len) {
 
 void Simulator::sim_connect_udp() {
   closed_udp.reset();
+  pause_udp.invoke();
 
   // Setup variables for UDP loop
   bool is_connected = false;
@@ -287,6 +293,7 @@ void Simulator::sim_connect_udp() {
         timeout = connected_timeout;  // Set timeout to appropriate value
         byte_count = udp_recv(read_buffer, sizeof(read_buffer));  // Read message
         if (byte_count > 0 && udp_parse(read_buffer, byte_count)) {  // Check if PING. Returns true if message was PING
+          pause_udp.wait();  //  allows us to "pause" udp to simulate error
           byte_count = udp_send(send_buffer, sizeof(send_buffer));  // Respond with ACK
           if (!is_connected) {
             connected_udp.invoke();
@@ -310,12 +317,47 @@ void Simulator::disconnect_udp() {
   freeaddrinfo(sendinfo_udp);  // Free memory
 }
 
+
+//
+//
+//
+// CONTROL
+//
+//
+//
+
 void Simulator::stop() {
   logging(false);
+  print(LogLevel::LOG_ERROR, "SIM3 - FUCK\n");
   disconnect_tcp();
+  print(LogLevel::LOG_ERROR, "SIM3 - FUCK\n");
   disconnect_udp();
   std::lock_guard<std::mutex> guard(mutex);
   scenario = nullptr;
+}
+
+void Simulator::disable_tcp() {
+  pause_tcp.reset();  // Make sure that the tcp connection loop pauses
+
+  active_connection.store(false);  // stop the read loop
+  shutdown(clientfd_tcp, SHUT_RDWR);  // shutdown client
+  closed_tcp.wait();    // wait for sim_connect_tcp() to close, which was waiting on the read_loop_tcp
+  close(clientfd_tcp);  // close TCP connection
+}
+
+void Simulator::enable_tcp() {
+
+  closed_tcp.reset();  // Reset this event, it is used later during shutdown
+  pause_tcp.invoke();  // un-pause the TCP loop
+}
+
+void Simulator::disable_udp() {
+  // This causes the `pause_udp.wait()` to actually wait.
+  pause_udp.reset(); 
+}
+void Simulator::enable_udp() {
+  // This causes the pause_udp.wait() to no longer wait.
+  pause_udp.invoke();
 }
 
 //
