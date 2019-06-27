@@ -312,6 +312,7 @@ void Simulator::sim_connect_udp() {
 void Simulator::disconnect_udp() {
   udp_running.store(false);
   shutdown(socketfd_udp, SHUT_RDWR);
+  pause_udp.invoke();  // Trigger this just in case UDP was disabled
   closed_udp.wait();    // wait for udp loop to close
   close(socketfd_udp);  // close TCP connection
   freeaddrinfo(sendinfo_udp);  // Free memory
@@ -328,9 +329,7 @@ void Simulator::disconnect_udp() {
 
 void Simulator::stop() {
   logging(false);
-  print(LogLevel::LOG_ERROR, "SIM3 - FUCK\n");
   disconnect_tcp();
-  print(LogLevel::LOG_ERROR, "SIM3 - FUCK\n");
   disconnect_udp();
   std::lock_guard<std::mutex> guard(mutex);
   scenario = nullptr;

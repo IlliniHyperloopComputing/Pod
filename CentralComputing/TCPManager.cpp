@@ -184,7 +184,7 @@ void TCPManager::tcp_loop(const char * hostname, const char * port, UnifiedState
       read_thread.join();
       write_thread.join();
 
-      print(LogLevel::LOG_INFO, "TCP Connection lost\n");
+      print(LogLevel::LOG_ERROR, "TCP Connection lost\n");
 
     } else {
       closing.wait_for(write_loop_timeout);
