@@ -41,20 +41,20 @@ int TCPManager::connect_to_server(const char * hostname, const char * port) {
   int rv;
   if ((rv = getaddrinfo(hostname, port, &hints, &servinfo)) != 0) {
     freeaddrinfo(servinfo);
-    print(LogLevel::LOG_ERROR, "TCP Error get addrinfo\n");
+    print(LogLevel::LOG_ERROR, "TCP Error getaddrinfo()\n");
     return false;
   }
 
   if ((socketfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol)) == -1) {
     freeaddrinfo(servinfo);
-    print(LogLevel::LOG_ERROR, "TCP Error getting socket\n");
+    print(LogLevel::LOG_ERROR, "TCP Error getting socket: socket()\n");
     return false;
   }
 
   if (connect(socketfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1) {
     close(socketfd);
     freeaddrinfo(servinfo);
-    print(LogLevel::LOG_ERROR, "TCP Error connecting\n");
+    print(LogLevel::LOG_ERROR, "TCP Error connecting: connect()\n");
     return false;
   }
 
@@ -186,7 +186,11 @@ void TCPManager::tcp_loop(const char * hostname, const char * port, UnifiedState
 
       shutdown(socketfd, SHUT_RDWR);
       close(socketfd);
-      print(LogLevel::LOG_ERROR, "TCP Connection lost\n");
+      // Only print this error message if we _should_ be running
+      // Really this is just for a nice print-out during testing
+      if (running) {  
+        print(LogLevel::LOG_ERROR, "TCP Connection lost\n");
+      }
 
     } else {
       closing.wait_for(write_loop_timeout);

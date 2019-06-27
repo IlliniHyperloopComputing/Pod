@@ -5,10 +5,10 @@ bool TMPManager::initialize_source() {
   std::ifstream in(prefix + devices[idx] + suffix);
 
   if (in) {
-    print(LogLevel::LOG_DEBUG, "TMP Manger setup successful\n");
+    print(LogLevel::LOG_INFO, "TMP Manager setup successful\n");
     return true;
   } else {
-    print(LogLevel::LOG_ERROR, "TMP Manger setup failed\n");
+    print(LogLevel::LOG_ERROR, "TMP Manager setup failed\n");
     return false;
   }
 }
@@ -17,7 +17,7 @@ void TMPManager::initialize_sensor_error_configs() {
 }
 
 void TMPManager::stop_source() {
-  print(LogLevel::LOG_DEBUG, "TMP Manger stopped\n");
+  print(LogLevel::LOG_INFO, "TMP Manager stopped\n");
 }
 
 std::shared_ptr<TMPData> TMPManager::refresh() {

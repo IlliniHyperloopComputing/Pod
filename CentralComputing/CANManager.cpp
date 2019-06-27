@@ -47,13 +47,13 @@ bool CANManager::initialize_source() {
   msg.msg_iovlen = 1;
   msg.msg_control = &ctrlmsg;
 
-  print(LogLevel::LOG_DEBUG, "CAN Manger setup successful\n");
+  print(LogLevel::LOG_INFO, "CAN Manager setup successful\n");
   return true;
 }
 
 void CANManager::stop_source() {
   close(can_fd);
-  print(LogLevel::LOG_DEBUG, "CAN Manger stopped\n");
+  print(LogLevel::LOG_INFO, "CAN Manager stopped\n");
 }
 
 bool CANManager::send_frame(uint32_t can_id, const char * buf, int len) {

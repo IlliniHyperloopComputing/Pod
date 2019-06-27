@@ -1,12 +1,12 @@
 #include "ADCManager.h"
 
 bool ADCManager::initialize_source() {
-  print(LogLevel::LOG_DEBUG, "ADC Manger setup successful\n");
+  print(LogLevel::LOG_INFO, "ADC Manager setup successful\n");
   return true;
 }
 
 void ADCManager::stop_source() {
-  print(LogLevel::LOG_DEBUG, "ADC Manger stopped\n");
+  print(LogLevel::LOG_INFO, "ADC Manager stopped\n");
 }
 
 std::shared_ptr<ADCData> ADCManager::refresh() {
