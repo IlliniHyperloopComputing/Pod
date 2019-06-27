@@ -172,7 +172,7 @@ void TCPManager::tcp_loop(const char * hostname, const char * port, UnifiedState
   while (running) {
     int fd = connect_to_server(hostname, port);
     if (fd > 0) {
-      print(LogLevel::LOG_INFO, "TCP Starting network threads\n");
+      print(LogLevel::LOG_INFO, "TCP Connection Acquired, starting network threads\n");
       thread read_thread(read_loop);
       thread write_thread(write_loop);
 
@@ -184,6 +184,8 @@ void TCPManager::tcp_loop(const char * hostname, const char * port, UnifiedState
       read_thread.join();
       write_thread.join();
 
+      shutdown(socketfd, SHUT_RDWR);
+      close(socketfd);
       print(LogLevel::LOG_ERROR, "TCP Connection lost\n");
 
     } else {
@@ -192,9 +194,17 @@ void TCPManager::tcp_loop(const char * hostname, const char * port, UnifiedState
     }
     // Set that there is an error
     Command::set_error_flag(Command::SET_NETWORK_ERROR, NETWORKErrors::TCP_DISCONNECT_ERROR);
+
+    #ifdef SIM
+    // Only waits if `pause_tcp.reset()` is called
+    // This is used in testing, specifically when the TCP connection is disabled/ enabled
+    // This happens: https://stackoverflow.com/questions/2409277/
+    //                    can-connect-call-on-socket-return-successfully-without-server-calling-accept
+    // Which just kind of messes up testing because of the SET/ CLR error stuff
+    SimulatorManager::sim.pause_tcp.wait();  
+    #endif
   }   
 
-  close(socketfd);  // At last, close the socket
   connected.reset();  
   print(LogLevel::LOG_INFO, "TCP Exiting loop\n");
 }

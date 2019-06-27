@@ -11,13 +11,13 @@ Motor::Motor() {
 void Motor::enable_motors() {
   set_throttle(MOTOR_OFF);
   set_motor_state(true);
-  print(LogLevel::LOG_DEBUG, "Motors Enabled\n");
+  print(LogLevel::LOG_INFO, "Motors Enabled\n");
 }
 
 void Motor::disable_motors() {
   set_throttle(MOTOR_OFF);
   set_motor_state(false);
-  print(LogLevel::LOG_DEBUG, "Motors Disabled\n");
+  print(LogLevel::LOG_INFO, "Motors Disabled\n");
 }
 
 void Motor::set_motor_state(bool enable) {
@@ -46,7 +46,7 @@ void Motor::set_throttle(int16_t value) {
     SourceManager::CAN.set_motor_throttle(value);
     #endif
     
-    print(LogLevel::LOG_DEBUG, "Setting motor throttle: %d\n", value);
+    print(LogLevel::LOG_INFO, "Setting motor throttle: %d\n", value);
   }
 }
 

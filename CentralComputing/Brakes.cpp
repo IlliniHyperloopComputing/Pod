@@ -12,7 +12,7 @@ void Brakes::enable_brakes() {
 
   #endif
   enabled = true;
-  print(LogLevel::LOG_DEBUG, "Brakes Enabled\n");
+  print(LogLevel::LOG_INFO, "Brakes Enabled\n");
 }
 
 void Brakes::disable_brakes() {
@@ -22,7 +22,7 @@ void Brakes::disable_brakes() {
   #endif
 
   enabled = false;
-  print(LogLevel::LOG_DEBUG, "Brakes Disabled\n");
+  print(LogLevel::LOG_INFO, "Brakes Disabled\n");
 }
 
 void Brakes::set_enable(bool enable) {

@@ -336,4 +336,56 @@ TEST_F(PodTest, ErrorFlagTestUDPFailureRecov) {
   EXPECT_EQ(unified_state->errors->error_vector[4], 0);
 }
 
+TEST_F(PodTest, ErrorFlagTestTCPUDPFailureRecov) {
+  UnifiedState * unified_state;
+
+  // Check nothing is in the unified state
+  unified_state = &pod->unified_state;
+  EXPECT_EQ(unified_state->errors->error_vector[4], 0);
+
+  pod->processing_command.reset();
+  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
+  pod->processing_command.wait();
+
+  // Kill TCP and wait for error to be processed
+  pod->processing_error.reset();
+  SimulatorManager::sim.disable_udp();
+  pod->processing_error.wait();
+
+  pod->processing_error.reset();
+  SimulatorManager::sim.disable_tcp();
+  pod->processing_error.wait();
+
+  // Should be back in safe mode
+  EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
+
+  // copy unified state, should have both errors
+  unified_state = &pod->unified_state;
+  EXPECT_EQ(unified_state->errors->error_vector[4], UDP_DISCONNECT_ERROR | TCP_DISCONNECT_ERROR);
+
+  // Restore and wait for CLR error to be processed
+  pod->processing_error.reset();
+  SimulatorManager::sim.enable_udp();
+  pod->processing_error.wait();
+
+  // Should be in safe mode
+  EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
+
+  // copy unified state, should have no udp disconnect error
+  unified_state = &pod->unified_state;
+  EXPECT_EQ(unified_state->errors->error_vector[4], TCP_DISCONNECT_ERROR);
+
+  // Restore and wait for CLR error to be processed
+  pod->processing_error.reset();
+  SimulatorManager::sim.enable_tcp();
+  pod->processing_error.wait();
+
+  // Should be in safe mode
+  EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
+
+  // copy unified state, should have no udp disconnect error
+  unified_state = &pod->unified_state;
+  EXPECT_EQ(unified_state->errors->error_vector[4], 0);
+}
+
 #endif

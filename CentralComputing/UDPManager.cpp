@@ -181,6 +181,7 @@ void UDPManager::connection_monitor(const char * hostname, const char * send_por
           byte_count = udp_send(send_buffer, sizeof(send_buffer));  // Respond with ACK
           // print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count); 
           if (!is_connected) {
+            print(LogLevel::LOG_INFO, "UDP Connected! \n");
             Command::put(Command::CLR_NETWORK_ERROR, NETWORKErrors::UDP_DISCONNECT_ERROR);
             is_connected = true;
           }

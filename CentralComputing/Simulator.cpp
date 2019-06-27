@@ -81,7 +81,7 @@ void Simulator::sim_connect_tcp() {
   // try to connect to a client
   print(LogLevel::LOG_DEBUG, "Sim - Starting TCP network read thread\n");
   do_accept_client_tcp.store(true);
-  while(accept_client_tcp() > 0 && do_accept_client_tcp.load()) {
+  while( do_accept_client_tcp.load() && accept_client_tcp() > 0 ) {
     active_connection.store(true);
     read_thread = std::thread([&]() { read_loop_tcp(); });
     connected_tcp.invoke();
@@ -336,25 +336,30 @@ void Simulator::stop() {
 }
 
 void Simulator::disable_tcp() {
+  print(LogLevel::LOG_DEBUG, "Sim - Disable TCP\n");
   pause_tcp.reset();  // Make sure that the tcp connection loop pauses
 
   active_connection.store(false);  // stop the read loop
   shutdown(clientfd_tcp, SHUT_RDWR);  // shutdown client
   closed_tcp.wait();    // wait for sim_connect_tcp() to close, which was waiting on the read_loop_tcp
   close(clientfd_tcp);  // close TCP connection
+  print(LogLevel::LOG_DEBUG, "Sim - Disable TCP Finished\n");
 }
 
 void Simulator::enable_tcp() {
-
+  print(LogLevel::LOG_DEBUG, "Sim - Enable TCP\n");
   closed_tcp.reset();  // Reset this event, it is used later during shutdown
   pause_tcp.invoke();  // un-pause the TCP loop
 }
 
 void Simulator::disable_udp() {
+  print(LogLevel::LOG_DEBUG, "Sim - Disable UDP\n");
   // This causes the `pause_udp.wait()` to actually wait.
   pause_udp.reset(); 
 }
+
 void Simulator::enable_udp() {
+  print(LogLevel::LOG_DEBUG, "Sim - Enable UDP\n");
   // This causes the pause_udp.wait() to no longer wait.
   pause_udp.invoke();
 }
