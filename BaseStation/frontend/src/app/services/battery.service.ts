@@ -12,6 +12,6 @@ export class BatteryService {
   constructor(private http: HttpClient) { }
 
   getBatteryStatus(): Observable<Battery> {
-    return this.http.get<Battery>("http://www.mocky.io/v2/5d118051310000231908cccc");
+    return this.http.get<Battery>("http://localhost:8000/api/data/battery");
   }
 }

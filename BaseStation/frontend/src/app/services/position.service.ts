@@ -12,6 +12,6 @@ export class PositionService {
   constructor(private http: HttpClient) {}
 
   getPositionStatus(): Observable<Position> {
-    return this.http.get<Position>("http://www.mocky.io/v2/5d1184413100000a1e08ccdc");
+    return this.http.get<Position>("http://localhost:8000/api/data/position");
   }
 }

@@ -16,9 +16,24 @@ def test(request):
     toReturn = [{
         "name":"Test",
         "value": 50
+    }, {
+        "name":"Working",
+        "value":9999
     }]
     return JsonResponse(toReturn, safe=False)
 
+def battery(request):
+    toReturn = {
+        "value": 65
+    }
+    return JsonResponse(toReturn)
+
+def position(request):
+    toReturn = {
+        "currentDistance":10,
+        "totalDistance":1000
+    }
+    return JsonResponse(toReturn)
 # Might need mutex locks if db doesnt handle concurrency
 def getLatest(request):
     # can_data = models.CANData.objects.latest("date_time")
