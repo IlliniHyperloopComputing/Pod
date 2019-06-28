@@ -1,7 +1,9 @@
 #include "Brakes.h"
 
 Brakes::Brakes() {
-  enabled = false;
+  // Do nothing here. At the time the constructor is called,
+  // this class can't do anything, since the sensors/ controls are not
+  // yet connected
 }
 
 void Brakes::enable_brakes() {

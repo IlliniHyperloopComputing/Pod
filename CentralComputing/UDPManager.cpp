@@ -92,7 +92,7 @@ int UDPManager::udp_recv(uint8_t* recv_buf, uint8_t len) {
     return 0;
   }
   recv_buf[byte_count] = '\0';
-  print(LogLevel::LOG_DEBUG, "UDP recv %d bytes, they are: %s \n", byte_count, recv_buf);
+  // print(LogLevel::LOG_DEBUG, "UDP recv %d bytes, they are: %s \n", byte_count, recv_buf);
   
   return byte_count;
 }
@@ -168,7 +168,7 @@ void UDPManager::connection_monitor(const char * hostname, const char * send_por
         byte_count = udp_recv(read_buffer, sizeof(read_buffer));  // Read message
         if (byte_count > 0 && udp_parse(read_buffer, byte_count)) {  // Check if PING. Returns true if message was PING
           byte_count = udp_send(send_buffer, sizeof(send_buffer));  // Respond with ACK
-          print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count); 
+          // print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count); 
         }
       } else {
         // print(LogLevel::LOG_ERROR, "UDP poll event, but not on specified socket with specified event\n");

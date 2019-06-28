@@ -1,5 +1,5 @@
 from threading import Thread, Lock, Event
-from podconnect.models import DataPacket
+from . import models
 import socket
 
 def serve():
@@ -21,19 +21,29 @@ def serve():
         send_sock.sendto(MSG_TO_SEND.encode(), (UDP_IP, 5005))
         try:
             data, addr = recv_sock.recvfrom(1024) # buffer size is 1024 bytes
-            if data.decode() == MSG_TO_RECV:
-                print ("UDP: received correct message: ", data.decode())
-            else:
-                print ("UDP: received incorrect message: ", data.decode())
-                # TODO: Determine what to do in this case! 
-                # TODO: Does it mean the network is bad?
-                # TODO: Should we throw an error??
+            #if data.decode() == MSG_TO_RECV:
+            #    # print ("UDP: received correct message: ", data.decode())
+            #else:
+            #    print ("UDP: received incorrect message: ", data.decode())
+            #    # TODO: Determine what to do in this case! 
+            #    # TODO: Does it mean the network is bad?
+            #    # TODO: Should we throw an error??
         except:
-            # TODO: This means we are not connected!
-            # TODO: Do something about this!
-            print ("UDP: Never received message")
+            UDP_PORT = UDP_PORT + 1
+    print("UDP Port = {port}".format(port=UDP_PORT))
+    while (True):
+        while (True):
+            try:
+                data, addr = s.recvfrom(BUFFER_SIZE)
+                #print(data)
+                if not data or data == None:
+                    break
+                data = data.decode()
+                #print("UDP received data:", data, "From:", addr)
+            except:
+                print("Error in UDP received message")
 
-        e.wait(timeout=0.3);
+        e.wait(timeout=0.3)
                 
 def start():
     t1 = Thread(target=serve)

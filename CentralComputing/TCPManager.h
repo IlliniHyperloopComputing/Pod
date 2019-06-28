@@ -1,6 +1,7 @@
 #ifndef TCPMANAGER_H_
 #define TCPMANAGER_H_
 
+#include "Configurator.h"
 #include "Defines.hpp"
 #include "Utils.h"
 #include "SafeQueue.hpp"
@@ -24,54 +25,37 @@
 
 namespace TCPManager {
 
-enum Network_Command_ID {
-  // state transitions
-  TRANS_SAFE_MODE = 0,
-  TRANS_FUNCTIONAL_TEST = 1,
-  TRANS_LOADING = 2,
-  TRANS_LAUNCH_READY = 3,
-  LAUNCH = 4,
-  EMERGENCY_BRAKE = 5,
-  ENABLE_MOTOR = 6,
-  DISABLE_MOTOR = 7,
-  SET_MOTOR_SPEED = 8,
-  ENABLE_BRAKE = 9,
-  DISABLE_BRAKE = 10,
-  TRANS_FLIGHT_COAST = 11,
-  TRANS_FLIGHT_BRAKE = 12,
-  TRANS_ERROR_STATE = 13,
+struct TCPSendIDs {
+  uint8_t adc_id = 0;
+  uint8_t can_id = 1;
+  uint8_t i2c_id = 2;
+  uint8_t pru_id = 3;
+  uint8_t motion_id = 4;
+  uint8_t error_id = 5;
+  uint8_t state_id = 6;
 };
 
-// enum specifying what data is sent
-// [1 byte Data ID][4 byte size][size byte chunk]
-enum Network_Data_ID {
-  POD_STATE,
-  BRAKE_STATUS,
-  MOTOR_STATUS,
-  POSITION,
-  VELOCITY,
-  ACCELERATION,
-  TEMPERATURE
-};
-
-/**
-* A network command is returned by read and parsed within Pod.cpp
-**/
-struct Network_Command {
-  // state transtitions
-  uint8_t id;  // id is just a network command
-  uint8_t value;
-};
+extern TCPSendIDs TCPID;
 
 extern int socketfd;
-
 extern std::atomic<bool> running;
-extern SafeQueue<std::shared_ptr<TCPManager::Network_Command>> command_queue;
-extern SafeQueue<std::shared_ptr<UnifiedState>> write_queue;
+
+extern UnifiedState * unified_state;
+extern ADCData adc_data;
+extern CANData can_data;
+extern I2CData i2c_data;
+extern PRUData pru_data;
+extern MotionData motion_data;
+extern Errors  error_data;
+extern E_States state;
+extern int64_t stagger_times[3];  // Used to stagger how frequently data is sent to tcp server 
+extern int64_t last_sent_times[3];   // Used to store the last time a data type was sent
+extern std::mutex data_mutex;  
+extern int64_t write_loop_timeout;
 
 extern Event connected;  // Used within Simulator to check when TCP is connected
 extern Event closing;    // Used to wait between writes in the write_loop()
-extern std::mutex mutex;  // Used to eliminate TSan errors
+extern std::mutex setup_shutdown_mutex;  // Used to eliminate TSan errors
 
 int connect_to_server(const char * hostname, const char * port);
 
@@ -81,10 +65,10 @@ int connect_to_server(const char * hostname, const char * port);
  * @param buffer a pointer to the network command that was read
  * @return the number of bytes read
  **/
-int read_command(Network_Command * buffer);
-
+int read_command(uint32_t * ID, uint32_t * Command); 
 /** 
  * Collects data from sensor, writes to socket
+ * @param times timings for when to send specific data
  * @return bytes written or -1 if failed
  **/
 int write_data();
@@ -106,7 +90,7 @@ void write_loop();
  * @param hostname the IP address to connect to
  * @param port the port to connect to
  **/
-void tcp_loop(const char * hostname, const char * port);
+void tcp_loop(const char * hostname, const char * port, UnifiedState * unified_state);
 
 /**
  * Closes the socket, ending all transmission

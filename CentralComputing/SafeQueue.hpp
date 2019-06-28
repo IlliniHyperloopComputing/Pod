@@ -20,14 +20,15 @@ class SafeQueue {
   * Dequeues the object
   * @return the oldest object on the queue or nullptr if the queue is empty
   */
-  T dequeue() {
+  
+  bool dequeue(T * val) {
     std::lock_guard<std::mutex> guard(m_mutex);
     if (m_queue.empty()) {
-      return nullptr;
+      return false;
     } else {
-      T ret = m_queue.front();
+      *val = m_queue.front();
       m_queue.pop();
-      return ret;
+      return true;
     }
   }
 

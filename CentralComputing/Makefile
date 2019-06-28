@@ -16,21 +16,20 @@ CXX_BBB 	:= arm-linux-gnueabihf-g++
 WARNINGS 	:= -Wall -Wextra -pedantic -Wdouble-promotion -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Wdisabled-optimization -Wformat=2 -Winit-self -Wlogical-op -Wmissing-declarations -Wmissing-include-dirs -Wnoexcept -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-conversion -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=5 -Wswitch-default -Wno-unused
 
 
-INCLUDE_DIRS	:= -IStateMachineCompact -I${GTEST_DIR}/include -I.
+INCLUDE_DIRS	:= -IStateMachineCompact -I${GTEST_DIR}/include -I. -Iscenarios
 CFLAGS_RELEASE 	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG
 CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG 
 CFLAGS_SIM 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG -DSIM 
 CFLAGS_BBB      := -DBBB
-CFLAGS_NORM     := -fsanitize=thread -fPIE -pie
-
+CFLAGS_NORM     := 
 #Set up linker
-LDFLAGS := -pthread -lm  #-static-libgcc -static-libstdc++ 
+LDFLAGS := -pthread -lm #-static-libgcc -static-libstdc++ 
 # The 'static' flags might be necessary if the cross compiler and BBB have different versions of the libgcc and libstdc++ libraries. 
 # This is why these flags were intially included, but now the BBBs are running newer software such that these are no longer needed.
 # However, the 'static' flags will likely not work with any of the Sanitizers
 LD_TEST_NORM := ${LIB_DIR}/libgtest.a
 LD_TEST_ARM  := ${LIB_DIR}/libgtest-arm.a
-LD_NORM := $(CXX_NORM) -fsanitize=thread
+LD_NORM := $(CXX_NORM)
 LD_BBB  := $(CXX_BBB)
 
 # Define all executables
@@ -45,7 +44,7 @@ ARM_COMPILER_EXISTS := $(shell command -v $(CXX_BBB) 2> /dev/null)
 
 
 .PHONY: all
-all : msg mkdir_obj ${LIB_DIR}/gtest-all.o ${LIB_DIR}/gtest-all-arm.o msg_d $(POD_D) msg_s $(POD_T)
+all : msg mkdir_obj ${LIB_DIR}/gtest-all.o ${LIB_DIR}/gtest-all-arm.o msg_d $(POD_D)-tsan msg_s $(POD_T)-tsan
 	$(info  =   ___ _   _  ___ ___ ___  ___ ___  )
 	$(info	=  / __| | | |/ __/ __/ _ \/ __/ __| )
 	${info	=  \__ \ |_| | (_| (_|  __/\__ \__ \ }
@@ -88,6 +87,7 @@ mkdir_obj:
 	@mkdir -p $(LIB_DIR)
 	@mkdir -p $(OBJ_DIR)/StateMachineCompact
 	@mkdir -p $(OBJ_DIR)/tests
+	@mkdir -p $(OBJ_DIR)/scenarios
 
 # Compile libgtest
 ${LIB_DIR}/gtest-all.o : ${GTEST_DIR}/src/gtest-all.cc 
@@ -96,7 +96,7 @@ ${LIB_DIR}/gtest-all.o : ${GTEST_DIR}/src/gtest-all.cc
 
 ifdef ARM_COMPILER_EXISTS
 ${LIB_DIR}/gtest-all-arm.o : ${GTEST_DIR}/src/gtest-all.cc 
-	$(CXX_BBB) -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all-arm.o 
+	$(CXX_BBB) -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc -o ${LIB_DIR}/gtest-all-arm.o
 	ar -rv ${LIB_DIR}/libgtest-arm.a ${LIB_DIR}/gtest-all-arm.o
 endif
 
@@ -133,6 +133,14 @@ msg_p :
 #####
 # build
 #####
+$(POD)-tsan : LD_NORM := $(LD_NORM) -fsanitize=thread
+$(POD)-tsan : CXX_NORM := $(CXX_NORM) -fsanitize=thread -fPIE -pie
+$(POD)-tsan : $(POD)  #JUMP TO POD to continue compiling
+
+$(POD)-asan : LD_NORM := $(LD_NORM) -fsanitize=address
+$(POD)-asan : CXX_NORM := $(CXX_NORM) -fsanitize=address 
+$(POD)-asan : $(POD)  #JUMP TO POD to continue compiling
+
 $(POD) : CXX 	= $(CXX_NORM)
 $(POD) : CFLAGS = $(CFLAGS_RELEASE) $(CFLAGS_NORM)
 $(POD) : LD  	= $(LD_NORM)
@@ -146,6 +154,14 @@ $(OBJ_DIR)/%-build.o : %.cpp
 #####
 # build-debug
 #####
+$(POD_D)-tsan : LD_NORM := $(LD_NORM) -fsanitize=thread
+$(POD_D)-tsan : CXX_NORM := $(CXX_NORM) -fsanitize=thread -fPIE -pie
+$(POD_D)-tsan : $(POD_D)  #JUMP TO POD to continue compiling
+
+$(POD_D)-asan : LD_NORM := $(LD_NORM) -fsanitize=address
+$(POD_D)-asan : CXX_NORM := $(CXX_NORM) -fsanitize=address 
+$(POD_D)-asan : $(POD_D)  #JUMP TO POD to continue compiling
+
 $(POD_D) : CXX		= $(CXX_NORM)
 $(POD_D) : CFLAGS  	= $(CFLAGS_DEBUG) $(CFLAGS_NORM)
 $(POD_D) : LD  		= $(LD_NORM)
@@ -159,6 +175,14 @@ $(OBJ_DIR)/%-build-debug.o : %.cpp
 #####
 # build-test
 #####
+$(POD_T)-tsan : LD_NORM := $(LD_NORM) -fsanitize=thread
+$(POD_T)-tsan : CXX_NORM := $(CXX_NORM) -fsanitize=thread -fPIE -pie
+$(POD_T)-tsan : $(POD_T)  #JUMP TO POD to continue compiling
+
+$(POD_T)-asan : LD_NORM := $(LD_NORM) -fsanitize=address
+$(POD_T)-asan : CXX_NORM := $(CXX_NORM) -fsanitize=address 
+$(POD_T)-asan : $(POD_T)  #JUMP TO POD to continue compiling
+
 $(POD_T) : CXX 		= $(CXX_NORM)
 $(POD_T) : CFLAGS  	= $(CFLAGS_SIM) $(CFLAGS_NORM)
 $(POD_T) : LD  		= $(LD_NORM)
