@@ -81,7 +81,7 @@ void Simulator::sim_connect_tcp() {
   // try to connect to a client
   print(LogLevel::LOG_DEBUG, "Sim - Starting TCP network read thread\n");
   do_accept_client_tcp.store(true);
-  while( do_accept_client_tcp.load() && accept_client_tcp() > 0 ) {
+  while (do_accept_client_tcp.load() && accept_client_tcp() > 0) {
     active_connection.store(true);
     read_thread = std::thread([&]() { read_loop_tcp(); });
     connected_tcp.invoke();
