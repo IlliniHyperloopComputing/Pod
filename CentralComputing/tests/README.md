@@ -93,3 +93,19 @@ Test that `Sensor Data Errors` generate the appropriate internal error when cond
 9. Test that `Flight - Abort` transitions to:
     * Does not transition upon `Safety Critical Error`
     * Does not transition upon `Sensor Data Error`
+
+---
+
+## Parking Lot / Vacuum Chamber / External Sub Track / Hyperloop Test Track Open Air
+1. Sensor Tests. No Motor / No Brake
+    * Ability to test all sensors without any motor or brake actuation. 
+2. Automatic State Transitions with low thresholds. No Motor / No Brake
+    * Lower the thresholds that trigger state transitions.
+    * Push Pod on cart or rail, to test state transitions with accelerometer and optical encoders
+3. Test Brakes. No Motor / Brake Only 
+    * Pod is pushed up to speed manually, coasts, and brakes on its own
+    * Automatic transition thresholds are lowered
+4. Simulate Full Run. Motor / Brake 
+    * Pod accelerates for a brief period under its own power, coasts, and brakes on its own
+    * Automatic transition thresholds are lowered.
+    * This test can be scaled for different lengths and motor powers
