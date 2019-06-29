@@ -128,6 +128,9 @@ enum I2CErrors {
   I2C_SETUP_FAILURE = 0x1,
   I2C_WRITE_ERROR = 0x2,
   I2C_READ_ERROR = 0x4,
+  I2C_OVER_TEMP_ONE = 0x8,
+  I2C_OVER_TEMP_TWO = 0x10,
+  I2C_OVER_TEMP_THREE = 0x20,
 };
 
 enum PRUErrors {
