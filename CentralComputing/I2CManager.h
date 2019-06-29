@@ -4,7 +4,6 @@
 #include "SourceManagerBase.hpp"
 #include "Defines.hpp"
 #include "Configurator.h"
-#include "Pod.h"
 #include <fcntl.h>
 #include <linux/i2c-dev.h>  // I2C bus definitions
 
