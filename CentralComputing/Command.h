@@ -26,11 +26,11 @@ void flush();
 enum Network_Command_ID {
   // state transitions
   TRANS_SAFE_MODE = 0,
-  TRANS_FUNCTIONAL_TEST = 1,
+  TRANS_FUNCTIONAL_TEST_OUTSIDE = 1, 
   TRANS_LOADING = 2,
-  TRANS_LAUNCH_READY = 3,
-  LAUNCH = 4,
-  EMERGENCY_BRAKE = 5,
+  TRANS_FUNCTIONAL_TEST_INSIDE = 3,
+  TRANS_LAUNCH_READY = 4,
+  TRANS_FLIGHT_ACCEL = 5,
   ENABLE_MOTOR = 6,
   DISABLE_MOTOR = 7,
   SET_MOTOR_SPEED = 8,
@@ -38,7 +38,7 @@ enum Network_Command_ID {
   DISABLE_BRAKE = 10,
   TRANS_FLIGHT_COAST = 11,
   TRANS_FLIGHT_BRAKE = 12,
-  TRANS_ERROR_STATE = 13,
+  TRANS_ABORT = 13,    // Move to either safe mode, or flight abort
   SET_ADC_ERROR = 14,  // SET_XXX_ERROR defines must be one after another, in one block
   SET_CAN_ERROR = 15,
   SET_I2C_ERROR = 16,

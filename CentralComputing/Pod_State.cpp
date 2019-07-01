@@ -8,14 +8,14 @@ Pod_State::Pod_State()
   : StateMachine(ST_MAX_STATES),
   motor(), brakes() {
   transition_map[Command::TRANS_SAFE_MODE] = &Pod_State::move_safe_mode;  
-  transition_map[Command::TRANS_FUNCTIONAL_TEST] = &Pod_State::move_functional_tests;
+  transition_map[Command::TRANS_FUNCTIONAL_TEST_OUTSIDE] = &Pod_State::move_functional_tests_outside;
   transition_map[Command::TRANS_LOADING] = &Pod_State::move_loading;
+  transition_map[Command::TRANS_FUNCTIONAL_TEST_INSIDE] = &Pod_State::move_functional_tests_inside;
   transition_map[Command::TRANS_LAUNCH_READY] = &Pod_State::move_launch_ready;
-  transition_map[Command::LAUNCH] = &Pod_State::accelerate;
+  transition_map[Command::TRANS_FLIGHT_ACCEL] = &Pod_State::accelerate;
   transition_map[Command::TRANS_FLIGHT_COAST] = &Pod_State::coast;
   transition_map[Command::TRANS_FLIGHT_BRAKE] = &Pod_State::brake;
-  transition_map[Command::EMERGENCY_BRAKE] = &Pod_State::emergency_brake;
-  transition_map[Command::TRANS_ERROR_STATE]= &Pod_State::abort;
+  transition_map[Command::TRANS_ABORT]= &Pod_State::move_safe_mode_or_abort;
   // non state transition commands
   transition_map[Command::ENABLE_MOTOR] = &Pod_State::no_transition;
   transition_map[Command::DISABLE_MOTOR] = &Pod_State::no_transition;
@@ -38,13 +38,14 @@ Pod_State::Pod_State()
   transition_map[Command::SET_HV_RELAY_LV_POLE] = &Pod_State::no_transition;
   transition_map[Command::SET_HV_RELAY_PRE_CHARGE] = &Pod_State::no_transition;
   steady_state_map[ST_SAFE_MODE] = &Pod_State::steady_safe_mode;
-  steady_state_map[ST_FUNCTIONAL_TEST] = &Pod_State::steady_functional;
+  steady_state_map[ST_FUNCTIONAL_TEST_OUTSIDE] = &Pod_State::steady_function_outside;
   steady_state_map[ST_LOADING] = &Pod_State::steady_loading;
+  steady_state_map[ST_FUNCTIONAL_TEST_INSIDE] = &Pod_State::steady_function_inside;
   steady_state_map[ST_LAUNCH_READY] = &Pod_State::steady_launch_ready;
   steady_state_map[ST_FLIGHT_ACCEL] = &Pod_State::steady_flight_accelerate;
   steady_state_map[ST_FLIGHT_COAST] = &Pod_State::steady_flight_coast;
   steady_state_map[ST_FLIGHT_BRAKE] = &Pod_State::steady_flight_brake;
-  steady_state_map[ST_ERROR] = &Pod_State::steady_abort_state;
+  steady_state_map[ST_FLIGHT_ABORT] = &Pod_State::steady_flight_abort;
 
   if (!(ConfiguratorManager::config.getValue("acceleration_timeout", acceleration_timeout) && 
       ConfiguratorManager::config.getValue("precharge_timeout", launch_ready_precharge_timeout) &&
@@ -70,24 +71,6 @@ E_States Pod_State::get_current_state() {
  * For each TRANSITION_MAP_ENTRY(_STATE_), 
  * We can enter the _STATE_ from the commemented state on the right
 **/
-
-
-/**
- * Can enter (transition into) FUNCTIONAL_TEST only from Safe Mode
- **/
-void Pod_State::move_functional_tests() {
-  BEGIN_TRANSITION_MAP              /* Current state */
-    TRANSITION_MAP_ENTRY(ST_FUNCTIONAL_TEST)      /* Safe Mode */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Loading */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Launch ready */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight accel */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight coast */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight brake */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     // Error State
-  END_TRANSITION_MAP(NULL)
-}
-
 /**
  * Can enter (transition into) SAFE_MODE from: 
  * --Safe Mode (Why?? To re-trigger the safing actions that ST_Safe_Mode() does)
@@ -99,38 +82,73 @@ void Pod_State::move_functional_tests() {
 void Pod_State::move_safe_mode() {
   BEGIN_TRANSITION_MAP              /* Current state */
     TRANSITION_MAP_ENTRY(ST_SAFE_MODE)     /* Safe Mode */
-    TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Functional test */
+    TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Functional test outside*/
     TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Loading */
+    TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Functional test inside*/
     TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Launch ready */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight accel */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight coast */
     TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Flight brake */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     // Error State
+    TRANSITION_MAP_ENTRY(ST_SAFE_MODE)     /* Flight Abort */
+  END_TRANSITION_MAP(NULL)
+}
+
+/**
+ * Can enter (transition into) FUNCTIONAL_TEST_OUTSIDE only from Safe Mode
+ **/
+void Pod_State::move_functional_tests_outside() {
+  BEGIN_TRANSITION_MAP                      /* Current state */
+    TRANSITION_MAP_ENTRY(ST_FUNCTIONAL_TEST_OUTSIDE)      /* Safe Mode */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Loading */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test inside*/
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Launch ready */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight accel */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight coast */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight brake */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight Abort */
   END_TRANSITION_MAP(NULL)
 }
 
 void Pod_State::move_loading() {
-  BEGIN_TRANSITION_MAP              /* Current state */
+  BEGIN_TRANSITION_MAP                      /* Current state */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safe Mode */
     TRANSITION_MAP_ENTRY(ST_LOADING)        /* Functional test */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Loading */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test inside*/
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Launch ready */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight accel */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight coast */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight brake */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     // Error State
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight Abort */
   END_TRANSITION_MAP(NULL)
 }
-void Pod_State::move_launch_ready() {
-  BEGIN_TRANSITION_MAP              /* Current state */
+
+void Pod_State::move_functional_tests_inside() {
+  BEGIN_TRANSITION_MAP                      /* Current state */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safe Mode */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test */
-    TRANSITION_MAP_ENTRY(ST_LAUNCH_READY)   /* Loading */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test outside */
+    TRANSITION_MAP_ENTRY(ST_FUNCTIONAL_TEST_INSIDE) /* Loading */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test inside */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Launch ready */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight accel */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight coast */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight brake */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     // Error State
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight Abort */
+  END_TRANSITION_MAP(NULL)
+}
+
+void Pod_State::move_launch_ready() {
+  BEGIN_TRANSITION_MAP                      /* Current state */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safe Mode */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test outside */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Loading */
+    TRANSITION_MAP_ENTRY(ST_LAUNCH_READY)   /* Functional test inside */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Launch ready */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight accel */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight coast */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight brake */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight Abort */
   END_TRANSITION_MAP(NULL)
 
   auto_transition_safe_mode.reset();
@@ -138,87 +156,62 @@ void Pod_State::move_launch_ready() {
   auto_transition_coast.reset();
 }
 
-// it is important all states should move to braking when this function is called, this is for emergencies
-void Pod_State::emergency_brake() {
-  BEGIN_TRANSITION_MAP              /* Current state */
-    TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)     /* Safe Mode */
-    TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)     /* Functional test */
-    TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)     /* Loading */
-    TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)     /* Launch ready */
-    TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)     /* Flight accel */
-    TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)     /* Flight coast */
-    TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)     /* Flight brake */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     // Error State
-  END_TRANSITION_MAP(NULL)
-}
-
 /**
  * Software controlled events
  **/
-
 void Pod_State::accelerate() {
-  BEGIN_TRANSITION_MAP              /* Current state */
+  BEGIN_TRANSITION_MAP                      /* Current state */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safe Mode */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test outside */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Loading */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test inside */
     TRANSITION_MAP_ENTRY(ST_FLIGHT_ACCEL)   /* Launch ready */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight accel */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight coast */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight brake */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     // Error State
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight Abort */
   END_TRANSITION_MAP(NULL)
 }
 
 void Pod_State::coast() {
-  BEGIN_TRANSITION_MAP              /* Current state */
+  BEGIN_TRANSITION_MAP                      /* Current state */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safe Mode */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test outside */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Loading */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test inside */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Launch ready */
     TRANSITION_MAP_ENTRY(ST_FLIGHT_COAST)   /* Flight accel */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight coast */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight brake */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     // Error State
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight Abort */
   END_TRANSITION_MAP(NULL)
 }
 
 void Pod_State::brake() {
-  BEGIN_TRANSITION_MAP              /* Current state */
+  BEGIN_TRANSITION_MAP                      /* Current state */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safe Mode */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test outside */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Loading */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Functional test inside */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Launch ready */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight accel */
     TRANSITION_MAP_ENTRY(ST_FLIGHT_BRAKE)   /* Flight coast */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight brake */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     // Error State
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight Abort */
   END_TRANSITION_MAP(NULL)
 }
 
-void Pod_State::abort() {
-  BEGIN_TRANSITION_MAP              /* Current state */
-    TRANSITION_MAP_ENTRY(ST_ERROR)        /* Safe Mode */
-    TRANSITION_MAP_ENTRY(ST_ERROR)        /* Functional test */
-    TRANSITION_MAP_ENTRY(ST_ERROR)        /* Loading */
-    TRANSITION_MAP_ENTRY(ST_ERROR)        /* Launch ready */
-    TRANSITION_MAP_ENTRY(ST_ERROR)        /* Flight accel */
-    TRANSITION_MAP_ENTRY(ST_ERROR)        /* Flight coast */
-    TRANSITION_MAP_ENTRY(ST_ERROR)        /* Flight brake */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)   // Error State
-  END_TRANSITION_MAP(NULL)  
-}
-
 void Pod_State::move_safe_mode_or_abort() {
-  // Try moving to safemode first
-  BEGIN_TRANSITION_MAP              /* Current state */
+  BEGIN_TRANSITION_MAP                      /* Current state */
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safe Mode */
-    TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Functional test */
+    TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Functional test outside */
     TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Loading */
+    TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Functional test inside */
     TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Launch ready */
-    TRANSITION_MAP_ENTRY(ST_ERROR)          /* Flight accel */
-    TRANSITION_MAP_ENTRY(ST_ERROR)          /* Flight coast */
-    TRANSITION_MAP_ENTRY(ST_ERROR)          /* Flight brake */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     // Error State
+    TRANSITION_MAP_ENTRY(ST_FLIGHT_ABORT)   /* Flight accel */
+    TRANSITION_MAP_ENTRY(ST_FLIGHT_ABORT)   /* Flight coast */
+    TRANSITION_MAP_ENTRY(ST_FLIGHT_ABORT)   /* Flight brake */
+    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Flight Abort */
   END_TRANSITION_MAP(NULL)
 }
 
@@ -235,7 +228,7 @@ void Pod_State::ST_Safe_Mode() {
   motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
 }
 
-void Pod_State::ST_Functional_Test() {
+void Pod_State::ST_Functional_Test_Outside() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
   brakes.disable_brakes();  
   motor.disable_motors();
@@ -244,6 +237,14 @@ void Pod_State::ST_Functional_Test() {
   motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
 }
 void Pod_State::ST_Loading() {
+  print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  brakes.disable_brakes();  
+  motor.disable_motors();
+  motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
+  motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
+  motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
+}
+void Pod_State::ST_Functional_Test_Inside() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
   brakes.disable_brakes();  
   motor.disable_motors();
@@ -297,7 +298,7 @@ void Pod_State::steady_safe_mode(Command::Network_Command * command,
   // not much special stuff to do here  
 }
 
-void Pod_State::steady_functional(Command::Network_Command * command, 
+void Pod_State::steady_function_outside(Command::Network_Command * command, 
                                   UnifiedState * state) {
   // process command, let manual commands go through
   switch (command->id) {
@@ -346,6 +347,10 @@ void Pod_State::steady_functional(Command::Network_Command * command,
 
 void Pod_State::steady_loading(Command::Network_Command * command, 
                                 UnifiedState* state) {
+}
+
+void Pod_State::steady_function_inside(Command::Network_Command * command, 
+                                  UnifiedState * state) {
 }
 
 void Pod_State::steady_launch_ready(Command::Network_Command * command, 
@@ -417,6 +422,6 @@ bool Pod_State::shouldBrake(int64_t vel, int64_t pos) {
   }
 }
 
-void Pod_State::steady_abort_state(Command::Network_Command * command, 
+void Pod_State::steady_flight_abort(Command::Network_Command * command, 
                                     UnifiedState * state) {
 }

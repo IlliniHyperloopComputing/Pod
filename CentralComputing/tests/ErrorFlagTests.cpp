@@ -219,7 +219,7 @@ TEST_F(PodTest, ErrorFlagTestWithPodMoveState) {
   UnifiedState * unified_state;
 
   pod->processing_command.reset();
-  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   pod->processing_command.wait();
   // Send error that something went wrong 
   pod->processing_error.reset();
@@ -236,7 +236,7 @@ TEST_F(PodTest, ErrorFlagTestTCPFailureNoRecov) {
   UnifiedState * unified_state;
 
   pod->processing_command.reset();
-  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   pod->processing_command.wait();
 
   // Kill tcp and wait for error to be processed
@@ -256,7 +256,7 @@ TEST_F(PodTest, ErrorFlagTestTCPFailureRecov) {
   UnifiedState * unified_state;
 
   pod->processing_command.reset();
-  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   pod->processing_command.wait();
 
   // Kill tcp and wait for error to be processed
@@ -288,7 +288,7 @@ TEST_F(PodTest, ErrorFlagTestUDPFailureNoRecov) {
   UnifiedState * unified_state;
 
   pod->processing_command.reset();
-  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   pod->processing_command.wait();
 
   // Kill and wait for error to be processed
@@ -308,7 +308,7 @@ TEST_F(PodTest, ErrorFlagTestUDPFailureRecov) {
   UnifiedState * unified_state;
 
   pod->processing_command.reset();
-  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   pod->processing_command.wait();
 
   // Kill and wait for error to be processed
@@ -344,7 +344,7 @@ TEST_F(PodTest, ErrorFlagTestTCPUDPFailureRecov) {
   EXPECT_EQ(unified_state->errors->error_vector[4], 0);
 
   pod->processing_command.reset();
-  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   pod->processing_command.wait();
 
   // Kill TCP and wait for error to be processed
