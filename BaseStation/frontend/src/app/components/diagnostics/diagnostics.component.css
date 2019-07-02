@@ -1,0 +1,25 @@
+.value  {
+    position: absolute;
+    bottom: 1%;
+    width: 10%;
+    height: 3.5%;
+    left: 45%;
+    color: gray;
+}
+
+.commands {
+    position: absolute;
+    bottom: 1%;
+    width: 5%;
+    height: 4%;
+    left: 40%;
+    border-radius: 2px;
+}
+
+.submit {
+    position: absolute;
+    bottom: 1%;
+    width: 5%;
+    height: 4%;
+    left: 55.5%;
+}
