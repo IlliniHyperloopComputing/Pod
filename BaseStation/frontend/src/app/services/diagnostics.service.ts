@@ -1,5 +1,4 @@
 import { Injectable } from '@angular/core';
-import { Observable, of } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Diagnostics } from '../models/diagnostics';
 
@@ -20,6 +19,6 @@ export class DiagnosticsService {
       "value":diagnostic.currValue
     }
     console.log(toSend)
-    this.http.post<Diagnostics>("http://localhost:8000/api/commands/dev", toSend, this.httpOptions).subscribe();
+    this.http.post("http://localhost:8000/api/commands/dev", toSend, this.httpOptions).subscribe();
   }
 }

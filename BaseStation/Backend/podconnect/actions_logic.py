@@ -2,6 +2,17 @@ from . import tcpserver
 import json
 from django.http import HttpResponse, HttpRequest, JsonResponse
 
+def buttonPressed(request):
+    if request.method == "POST":
+        message = request.body.decode()
+        mess = json.loads(message)
+        if mess["button"] == "ready":
+            print("ready")
+        else:
+            print("e-stop")
+    return HttpResponse()
+
+
 def devCommand(request):
     if request.method == "POST":
         message = request.body.decode()
