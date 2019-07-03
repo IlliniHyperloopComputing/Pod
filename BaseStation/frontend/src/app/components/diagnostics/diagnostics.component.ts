@@ -1,30 +1,45 @@
 import { Component, OnInit } from '@angular/core';
 
+import { Diagnostics, Command } from '../../models/diagnostics';
+import { DiagnosticsService } from '../../services/diagnostics.service';
+
 @Component({
   selector: 'app-diagnostics',
   templateUrl: './diagnostics.component.html',
   styleUrls: ['./diagnostics.component.css']
 })
 export class DiagnosticsComponent implements OnInit {
-  commands:string[] = ["test", "test2"];
-  currValue:number;
-  currCommand:string = this.commands[0];
+  data:Diagnostics;
 
-  constructor() { }
+  constructor(private ds: DiagnosticsService) { }
 
   ngOnInit() {
-    console.log(this.commands[0]);
+    //console.log(this.data.commands[0]);
+    this.data = {
+      "commands": [{
+        "name":"test",
+        "value":1
+      }, 
+      {
+        "name":"test2",
+        "value":2
+      }],
+      "currValue": 0,
+      "currCommand": 1
+    }
   }
 
-  onSelect(currCommand:string) {
-    this.currCommand = currCommand;
+  onSelect(currCommand:number) {
+    this.data.currCommand = currCommand;
+    console.log(currCommand)
   }
 
   onEvent(currValue:number) {
-    this.currValue = currValue;
+    this.data.currValue = currValue;
   }
 
   onSubmit() {
-    console.log(this.currCommand + " " + this.currValue)
+    this.ds.sendStatus(this.data);
+    console.log("test")
   }
 }

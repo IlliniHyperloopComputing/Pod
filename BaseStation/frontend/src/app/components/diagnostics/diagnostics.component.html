@@ -1,7 +1,7 @@
 <div>
   <select class="commands" (change)="onSelect($event.target.value)">
-      <option *ngFor="let x of commands" value= {{x}}>
-        {{x}}
+      <option *ngFor="let x of data.commands" value={{x.value}}>
+        {{x.name}}
       </option>
     </select>
   <input type="number" name="value" class="value" (keyup)="onEvent($event.target.value)">
