@@ -28,26 +28,26 @@ TEST_F(PodTest, ConnectDisconnect) {
 
 
 // Testing access to Functional Test Outside
-TEST_F(PodTest, FunctionalTestOutside) {
+TEST_F(PodTest, AccessFunctionalTestOutside) {
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   MoveState(Command::Network_Command_ID::TRANS_LAUNCH_READY, E_States::ST_LAUNCH_READY, false); //this transition should fail because we cannot skip loading
 }
 
 // Testing acccess to Loading State
-TEST_F(PodTest, Loading) {
+TEST_F(PodTest, AccessLoading) {
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
 }
 
 // Testing acccess to Functional Test Inside
-TEST_F(PodTest, FunctionalTestInside) {
+TEST_F(PodTest, AccessFunctionalTestInside) {
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_INSIDE, E_States::ST_FUNCTIONAL_TEST_INSIDE, true);
 }
 
 // Testing acccess to Launch Ready
-TEST_F(PodTest, LaunchReady) {
+TEST_F(PodTest, AccessLaunchReady) {
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_INSIDE, E_States::ST_FUNCTIONAL_TEST_INSIDE, true);
@@ -55,7 +55,7 @@ TEST_F(PodTest, LaunchReady) {
 }
 
 // Testing acccess to Flight Accel
-TEST_F(PodTest, FlightAccel) {
+TEST_F(PodTest, AccessFlightAccel) {
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_INSIDE, E_States::ST_FUNCTIONAL_TEST_INSIDE, true);
@@ -65,7 +65,7 @@ TEST_F(PodTest, FlightAccel) {
 }
 
 // Testing access to  Flight Coast
-TEST_F(PodTest, FlightCoast) {
+TEST_F(PodTest, AccessFlightCoast) {
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_INSIDE, E_States::ST_FUNCTIONAL_TEST_INSIDE, true);
@@ -76,7 +76,7 @@ TEST_F(PodTest, FlightCoast) {
 }
 
 // Testing access to  Flight Brake
-TEST_F(PodTest, FlightBrake) {
+TEST_F(PodTest, AccessFlightBrake) {
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_INSIDE, E_States::ST_FUNCTIONAL_TEST_INSIDE, true);
@@ -95,7 +95,7 @@ TEST_F(PodTest, FlightBrake) {
  */
 
 // Testing access from Safe Mode to Abort
-TEST_F(PodTest, SafeModeBrake) {
+TEST_F(PodTest, SafeModeAbort) {
   MoveState(Command::Network_Command_ID::TRANS_ABORT, E_States::ST_SAFE_MODE , true);
 }
 
