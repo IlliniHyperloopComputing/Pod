@@ -12,13 +12,39 @@ import json
 TCPUp = False
 UDPUp = False
 
-def test(request):
+def state(request):
+    state_data = models.State.objects.latest("date_time")
+    toReturn = {
+        "value": state_data.state
+    }
+    return JsonResponse(toReturn)
+
+def stats(request):
+    state_data = models.State.objects.latest("date_time")
+    can_data = models.CANData.objects.latest("date_time")
     toReturn = [{
-        "name":"Test",
-        "value": 50
-    }, {
-        "name":"Working",
-        "value":9999
+        "name":"State",
+        "value": state_data.state
+    }, 
+    {
+        "name":"Status Word",
+        "value": str(hex(can_data.status_word))
+    },
+    {
+        "name": "Torque_Val",
+        "value": str(can_data.torque_val)
+    },
+    {
+        "name": "Controller_Temp",
+        "value": str(can_data.controller_temp)
+    },
+    {
+        "name":"Motor_Temp",
+        "value":str(can_data.motor_temp)
+    },
+    {
+        "name":"Internal_Relay_State",
+        "value":str(hex(can_data.internal_relay_state))
     }]
     return JsonResponse(toReturn, safe=False)
 
@@ -29,8 +55,9 @@ def battery(request):
     return JsonResponse(toReturn)
 
 def position(request):
+    can_data = models.CANData.objects.latest("date_time")
     toReturn = {
-        "currentDistance":10,
+        "currentDistance":can_data.position_val,
         "totalDistance":1000
     }
     return JsonResponse(toReturn)

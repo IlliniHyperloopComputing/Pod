@@ -12,7 +12,35 @@ def buttonPressed(request):
             print("e-stop")
     return HttpResponse()
 
-
+#  TRANS_SAFE_MODE = 0,
+#  TRANS_FUNCTIONAL_TEST = 1,
+#  TRANS_LOADING = 2,
+#  TRANS_LAUNCH_READY = 3,
+#  LAUNCH = 4,
+#  EMERGENCY_BRAKE = 5,
+#  ENABLE_MOTOR = 6,
+#  DISABLE_MOTOR = 7,
+#  SET_MOTOR_SPEED = 8,
+#  ENABLE_BRAKE = 9,
+#  DISABLE_BRAKE = 10,
+#  TRANS_FLIGHT_COAST = 11,
+#  TRANS_FLIGHT_BRAKE = 12,
+#  TRANS_ERROR_STATE = 13,
+#  SET_ADC_ERROR = 14,  // SET_XXX_ERROR defines must be one after another, in one block
+#  SET_CAN_ERROR = 15,
+#  SET_I2C_ERROR = 16,
+#  SET_PRU_ERROR = 17,
+#  SET_NETWORK_ERROR = 18,
+#  SET_OTHER_ERROR = 19,
+#  CLR_ADC_ERROR = 20,  // CLR_XXX_ERROR defines must be one after another, in one block
+#  CLR_CAN_ERROR = 21,
+#  CLR_I2C_ERROR = 22,
+#  CLR_PRU_ERROR = 23,
+#  CLR_NETWORK_ERROR = 24,
+#  CLR_OTHER_ERROR = 25,
+#  SET_HV_RELAY_HV_POLE = 26,
+#  SET_HV_RELAY_LV_POLE = 27,
+#  SET_HV_RELAY_PRE_CHARGE = 28,
 def devCommand(request):
     if request.method == "POST":
         message = request.body.decode()

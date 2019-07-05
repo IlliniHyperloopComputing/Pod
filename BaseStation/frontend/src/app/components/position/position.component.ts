@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { interval } from 'rxjs';
 
 import { PositionService } from '../../services/position.service';
 import { Position } from '../../models/position';
@@ -10,7 +11,11 @@ import { Position } from '../../models/position';
 export class PositionComponent implements OnInit {
   position: Position = { currentDistance:0, totalDistance:100};
 
-  constructor(private positionService: PositionService) { }
+  constructor(private positionService: PositionService) {
+    interval(500).subscribe(x => {
+      this.getPosition();
+    })
+   }
 
   ngOnInit() {
     this.getPosition()
