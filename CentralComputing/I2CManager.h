@@ -27,6 +27,7 @@ class I2CManager : public SourceManagerBase<I2CData> {
   int32_t error_general_1_over_temp;
   int32_t error_general_2_over_temp;
   int32_t error_general_3_over_temp;
+  std::shared_ptr<I2CData> old_data; 
 
   std::string name() {
     return "i2c";
@@ -34,12 +35,7 @@ class I2CManager : public SourceManagerBase<I2CData> {
 
   int i = 0;
   int j = 0;
-  int i2c_fd;
-  int length;
-  string max_temp_one = ""; 
-  string max_temp_two = ""; 
-  string max_temp_three = ""; 
-
+  int i2c_fd = 0;
 
   unsigned char buffer[NUM_TMP];
 };

@@ -24,11 +24,16 @@ bool I2CManager::initialize_source() {
   return false;
   #endif
 
+  // Setup this variable which we will re-use
+  old_data = std::make_shared<I2CData>();
+
   if (!open_i2c(&i2c_fd)) {
+    set_error_flag(Command::Network_Command_ID::SET_I2C_ERROR, I2CErrors::I2C_SETUP_FAILURE);
     return false;
   }
 
   if (!set_i2c_addr(i2c_fd, 0x48)) {
+    set_error_flag(Command::Network_Command_ID::SET_I2C_ERROR, I2CErrors::I2C_SETUP_FAILURE);
     return false;
   }
   
@@ -97,8 +102,6 @@ bool I2CManager::single_shot(int fd, int port, int16_t *value) {
 }
 
 std::shared_ptr<I2CData> I2CManager::refresh() {
-  std::shared_ptr<I2CData> new_data = std::make_shared<I2CData>();
-
   if (i == 3) {
     i = 0;
     if (j == 3) {
@@ -137,16 +140,25 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
   int16_t value = 0;
   
   if (!set_i2c_addr(i2c_fd, addr)) {
-    return false;
+    //TODO: @Anshul, add error here.
+    return empty_data();
   }
   if (single_shot(i2c_fd, port, &value)) {
     int64_t b = Utils::microseconds(); 
-    print(LogLevel::LOG_INFO, "i2c val: %d, in micros: %lu\n", value, b-a);
+    print(LogLevel::LOG_DEBUG, "(REMOVE) I2C: i=%d, j =%d, val: %d, took this long: micros: %lu\n", i, j, value, b-a);
+  } else {
+    //TODO: @Anshul, add error here.
+    return empty_data();
   }
   int index = (j * 4) + i; 
-  new_data->temp[index] = value;
 
-  // myfloat = val * VPS; // convert to voltage
+  // Update the "old" data with the new reading
+  old_data->temp[index] = value;  
+
+  // duplicate the "old_data" here into the "new_data"
+  std::shared_ptr<I2CData> new_data = std::make_shared<I2CData>(*old_data);  
+  
+  // new_data contains both the new and old readings.
   return new_data;
 }
 
@@ -165,8 +177,6 @@ void I2CManager::initialize_sensor_error_configs() {
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: I2CManager Missing necessary configuration\n");
     exit(1);
   }
-  // Over Temperature conditionns
-  // Possibly different thresholds for each measurement??
 }
 
 void I2CManager::check_for_sensor_error(const std::shared_ptr<I2CData> & check_data) {
