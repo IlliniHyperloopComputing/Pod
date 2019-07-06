@@ -37,7 +37,7 @@ TEST_F(PodTest, AutomaticTransitionBasic) {
 
 }
 
-TEST_F(PodTest, AutomaticTransitionEmergencyBrakeToSafeMode) {
+TEST_F(PodTest, AutomaticTransitionFlightBrakeToSafeMode) {
     MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
     MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
     MoveState(Command::Network_Command_ID::TRANS_LAUNCH_READY, E_States::ST_LAUNCH_READY, true);
@@ -49,7 +49,8 @@ TEST_F(PodTest, AutomaticTransitionEmergencyBrakeToSafeMode) {
     MoveState(Command::Network_Command_ID::EMERGENCY_BRAKE, E_States::ST_FLIGHT_BRAKE, true);
     EXPECT_FALSE(pod->state_machine->motor.is_enabled());
     EXPECT_TRUE(pod->state_machine->brakes.is_enabled());
-    
+
+    print(LogLevel::LOG_DEBUG, "Sim - Waiting for Brake timeout to complete...\n");    
     //after the brakes are hit, the pod should automatically transition into safe mode:
     pod->processing_command.reset();
     pod->state_machine->auto_transition_safe_mode.wait();
