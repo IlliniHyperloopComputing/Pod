@@ -67,13 +67,42 @@ def stats(request):
             {
                 "name":"Pack_Voltage_Inst",
                 "value": str(can_data.pack_voltage_inst)
-            }]},
+            }
+            ]},
             {
             "stats": [{
                 "name":"Highest_Temp",
                 "value": str(can_data.highest_temp)
-            }]}
-            ]
+            },
+            {
+                "name":"Avg_Temp",
+                "value": str(can_data.avg_temp)
+            },
+            {
+                "name":"Internal_Temp",
+                "value": str(can_data.internal_temp)
+            },
+            {
+                "name":"Low_Cell_Voltage",
+                "value": str(can_data.low_cell_voltage)
+            },
+            {
+                "name":"High_Cell_Voltage",
+                "value": str(can_data.high_cell_voltage)
+            },
+            {
+                "name":"High_Cell_InternalR",
+                "value": str(can_data.high_cell_internalR)
+            },
+            {
+                "name":"DTC_Status_One",
+                "value": str(hex(can_data.dtc_status_one))
+            },
+            {
+                "name":"DTC_Status_Two",
+                "value": str(hex(can_data.dtc_status_two))
+            }]
+            }]
     return JsonResponse(toReturn, safe=False)
 
 def battery(request):
@@ -89,34 +118,6 @@ def position(request):
         "totalDistance":1000
     }
     return JsonResponse(toReturn)
-
-# Might need mutex locks if db doesnt handle concurrency
-def getLatest(request):
-    # can_data = models.CANData.objects.latest("date_time")
-    # error_data = models.Errors.objects.latest("date_time")
-    state_data = models.State.objects.latest("date_time")
-    can_data = models.CANData.objects.latest("date_time")
-    return HttpResponse("State: " 
-        + str(state_data.state)
-        + ", Status_Word: " + str(hex(can_data.status_word))
-        + ", Torque_Val: " + str(can_data.torque_val)
-        + ", Controller_Temp: " + str(can_data.controller_temp)
-        + ", Motor_Temp: " + str(can_data.motor_temp)
-        + ", DC_Link_Voltage: " + str(can_data.dc_link_voltage)
-        + ", Internal_Relay_State: " + str(hex(can_data.internal_relay_state))
-        + ", Relay_State: " + str(hex(can_data.relay_state))
-        + ", Rolling_Counter: " + str(can_data.rolling_counter)
-        + ", Fail_Safe_State: " + str(hex(can_data.fail_safe_state))
-        + ", Peak_Current: " + str(can_data.peak_current)
-        + ", Pack_Voltage_Inst " + str(can_data.pack_voltage_inst)
-        + ", Highest_Temp: " + str(can_data.highest_temp)
-        + ", Avg_Temp: " + str(can_data.avg_temp)
-        + ", Internal_Temp: " + str(can_data.internal_temp)
-        + ", Low_Cell_Voltage: " + str(can_data.low_cell_voltage)
-        + ", High_Cell_Voltage: " + str(can_data.high_cell_voltage)
-        + ", High_Cell_InternalR: " + str(can_data.high_cell_internalR)
-        + ", DTC_Status_One: " + str(hex(can_data.dtc_status_one))
-        + ", DTC_Status_Two: " + str(hex(can_data.dtc_status_two)))
 
 def stopPressed(request):
     if request.method == "POST":

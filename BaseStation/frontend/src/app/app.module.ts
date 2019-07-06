@@ -10,6 +10,7 @@ import { WarningComponent } from './components/warning/warning.component';
 import { StatsComponent } from './components/stats/stats.component';
 import { ButtonsComponent } from './components/buttons/buttons.component';
 import { HttpClientModule } from '@angular/common/http';
+import { StateComponent } from './components/state/state.component';
 
 @NgModule({
   declarations: [
@@ -19,7 +20,8 @@ import { HttpClientModule } from '@angular/common/http';
     DiagnosticsComponent,
     WarningComponent,
     StatsComponent,
-    ButtonsComponent
+    ButtonsComponent,
+    StateComponent
   ],
   imports: [
     BrowserModule,
