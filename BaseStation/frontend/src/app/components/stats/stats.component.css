@@ -1,8 +1,15 @@
-.stats {
+.table1 {
     border-collapse: collapse;
     position: absolute;
     top: 10%;
     left: 5%;
+}
+
+.table2 {
+  border-collapse: collapse;
+  position: absolute;
+  top: 10%;
+  left: 20%;
 }
 
 tr, td, th {

@@ -23,29 +23,57 @@ def stats(request):
     state_data = models.State.objects.latest("date_time")
     can_data = models.CANData.objects.latest("date_time")
     toReturn = [{
-        "name":"State",
-        "value": state_data.state
-    }, 
-    {
-        "name":"Status Word",
-        "value": str(hex(can_data.status_word))
-    },
-    {
-        "name": "Torque_Val",
-        "value": str(can_data.torque_val)
-    },
-    {
-        "name": "Controller_Temp",
-        "value": str(can_data.controller_temp)
-    },
-    {
-        "name":"Motor_Temp",
-        "value":str(can_data.motor_temp)
-    },
-    {
-        "name":"Internal_Relay_State",
-        "value":str(hex(can_data.internal_relay_state))
-    }]
+        "stats":[
+            {
+                "name":"State",
+                "value": state_data.state
+            }, 
+            {
+                "name":"Status Word",
+                "value": str(hex(can_data.status_word))
+            },
+            {
+                "name": "Torque_Val",
+                "value": str(can_data.torque_val)
+            },
+            {
+                "name": "Controller_Temp",
+                "value": str(can_data.controller_temp)
+            },
+            {
+                "name":"Motor_Temp",
+                "value":str(can_data.motor_temp)
+            },
+            {
+                "name":"Internal_Relay_State",
+                "value":str(hex(can_data.internal_relay_state))
+            },
+            {
+                "name":"Relay_State",
+                "value": str(hex(can_data.relay_state))
+            },
+            {
+                "name":"Rolling_Counter",
+                "value": str(can_data.rolling_counter)
+            },
+            {
+                "name":"Fail_Safe_State",
+                "value": str(hex(can_data.fail_safe_state))
+            },
+            {
+                "name":"Peak_Current",
+                "value": str(can_data.peak_current)
+            },
+            {
+                "name":"Pack_Voltage_Inst",
+                "value": str(can_data.pack_voltage_inst)
+            }]},
+            {
+            "stats": [{
+                "name":"Highest_Temp",
+                "value": str(can_data.highest_temp)
+            }]}
+            ]
     return JsonResponse(toReturn, safe=False)
 
 def battery(request):

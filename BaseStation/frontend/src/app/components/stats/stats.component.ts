@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { interval } from 'rxjs';
 
 import { StatsService } from '../../services/stats.service';
-import { Stat } from '../../models/stat';
+import { Stat, Row } from '../../models/stat';
 
 @Component({
   selector: 'app-stats',
@@ -10,7 +10,7 @@ import { Stat } from '../../models/stat';
   styleUrls: ['./stats.component.css']
 })
 export class StatsComponent implements OnInit {
-  stats:Stat[];
+  stats:Row[];
 
   constructor(private statsService: StatsService) { 
     interval(500).subscribe(x => {
@@ -23,6 +23,6 @@ export class StatsComponent implements OnInit {
   }
 
   getValues() {
-    this.statsService.getStatStatus().subscribe((data: Stat[]) => this.stats = data)
+    this.statsService.getStatStatus().subscribe((data: Row[]) => this.stats = data)
   }
 }
