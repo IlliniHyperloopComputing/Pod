@@ -3,12 +3,13 @@
 
 #include "SourceManagerBase.hpp"
 #include "Defines.hpp"
-
-struct RawADCData {
-  int dummy_data;
-};
+#include <fstream>
+using std::ifstream;
 
 class ADCManager : public SourceManagerBase<ADCData> {
+ public:
+  void calculate_zero_g();
+
  private:
   bool initialize_source();
   void stop_source();
@@ -16,6 +17,18 @@ class ADCManager : public SourceManagerBase<ADCData> {
   std::shared_ptr<ADCData> refresh_sim();
   void initialize_sensor_error_configs();
   void check_for_sensor_error(const std::shared_ptr<ADCData> &);
+
+  int64_t calculate_zero_g_timeout;  // Calculate the zero g for X ammount of seconds
+  int64_t calculate_zero_g_time;  // variable used in timer
+  int64_t zero_g_sum[2];  // used while calculating average
+  int64_t zero_g_num_samples;  // used while calculating average
+  int64_t num_samples_zero_g;
+  bool do_calculate_zero_g;
+  int32_t default_zero_g;
+
+
+  int16_t accel1_zero_g;
+  int16_t accel2_zero_g;
 
   int32_t error_accel_diff;
   int32_t error_pneumatic_1_over_pressure;
@@ -29,8 +42,8 @@ class ADCManager : public SourceManagerBase<ADCData> {
     return "adc";
   }
 
-  // iterator for testing purposes, remove
-  int i = 5;
+  std::string fileName;
+  ifstream inFile;
 };
 
 #endif  // ADCMANAGER_H_

@@ -7,22 +7,32 @@ Brakes::Brakes() {
 }
 
 void Brakes::enable_brakes() {
-  #ifdef SIM
-  SimulatorManager::sim.sim_brake_enable();
-
+  #ifdef NO_ACTION
+    #ifdef SIM
+    SimulatorManager::sim.sim_brake_enable();
+    #else 
+    print(LogLevel::LOG_INFO, "NO_ACTION: Brakes Enabled\n");
+    #endif
+  #else
+  // Do actually something to enable brakes
+  print(LogLevel::LOG_DEBUG, "Brakes Enabled\n");
   #endif
   enabled = true;
-  print(LogLevel::LOG_DEBUG, "Brakes Enabled\n");
 }
 
 void Brakes::disable_brakes() {
-  #ifdef SIM
-  SimulatorManager::sim.sim_brake_disable();
-
+  #ifdef NO_ACTION
+    #ifdef SIM
+    SimulatorManager::sim.sim_brake_disable();
+    #else
+    print(LogLevel::LOG_INFO, "NO_ACTION: Brakes Disabled\n"); 
+    #endif
+  #else
+  // Do actually something to disable brakes
+  print(LogLevel::LOG_DEBUG, "Brakes Disabled\n");
   #endif
 
   enabled = false;
-  print(LogLevel::LOG_DEBUG, "Brakes Disabled\n");
 }
 
 void Brakes::set_enable(bool enable) {

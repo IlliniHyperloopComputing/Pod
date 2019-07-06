@@ -37,6 +37,7 @@ Pod_State::Pod_State()
   transition_map[Command::SET_HV_RELAY_HV_POLE] = &Pod_State::no_transition;
   transition_map[Command::SET_HV_RELAY_LV_POLE] = &Pod_State::no_transition;
   transition_map[Command::SET_HV_RELAY_PRE_CHARGE] = &Pod_State::no_transition;
+  transition_map[Command::CALC_ACCEL_ZERO_G] = &Pod_State::no_transition;
   steady_state_map[ST_SAFE_MODE] = &Pod_State::steady_safe_mode;
   steady_state_map[ST_FUNCTIONAL_TEST] = &Pod_State::steady_functional;
   steady_state_map[ST_LOADING] = &Pod_State::steady_loading;
@@ -340,6 +341,10 @@ void Pod_State::steady_functional(Command::Network_Command * command,
       // deactivate brakes
       brakes.disable_brakes();
       break;
+    case Command::CALC_ACCEL_ZERO_G:
+      // trigger calculate zero g
+      SourceManager::ADC.calculate_zero_g();
+      break;
     default:
       break;
   }
@@ -398,7 +403,7 @@ void Pod_State::steady_flight_brake(Command::Network_Command * command,
   int64_t timeout_check = microseconds() - brake_start_time;
 
   // Transition after we exceed our timeout AND acceleration AND Velocity are under a configurable value.
-  if (std::abs(acc) < not_moving_velocity 
+  if (std::abs(acc) < not_moving_acceleration
       && std::abs(vel) < not_moving_velocity 
       && timeout_check >= brake_timeout) {
     Command::put(Command::Network_Command_ID::TRANS_SAFE_MODE, 0);

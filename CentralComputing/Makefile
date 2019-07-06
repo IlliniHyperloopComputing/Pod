@@ -17,9 +17,11 @@ WARNINGS 	:= -Wall -Wextra -pedantic -Wdouble-promotion -Wcast-align -Wcast-qual
 
 
 INCLUDE_DIRS	:= -IStateMachineCompact -I${GTEST_DIR}/include -I. -Iscenarios
-CFLAGS_RELEASE 	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG
-CFLAGS_DEBUG   	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG 
-CFLAGS_SIM 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG -DSIM 
+CFLAGS_RELEASE 		:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG
+CFLAGS_RELEASE_NA	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG -DNO_ACTION
+CFLAGS_DEBUG   		:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG 
+CFLAGS_DEBUG_NA 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG  -DNO_ACTION
+CFLAGS_SIM 		:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG  -DNO_ACTION -DSIM 
 CFLAGS_BBB      := -DBBB
 CFLAGS_NORM     := 
 #Set up linker
@@ -33,12 +35,14 @@ LD_NORM := $(CXX_NORM)
 LD_BBB  := $(CXX_BBB)
 
 # Define all executables
-POD = build
-POD_D = dbuild
-POD_T = sbuild
-POD_CROSS = cross
-POD_CROSS_D = dcross
-POD_CROSS_T = scross
+POD 		= build
+POD_D 		= dbuild
+POD_T 		= sbuild
+POD_CROSS 	= cross
+POD_CROSS_NA 	= cross-na
+POD_CROSS_D 	= dcross
+POD_CROSS_D_NA 	= dcross-na
+POD_CROSS_T 	= scross
 
 ARM_COMPILER_EXISTS := $(shell command -v $(CXX_BBB) 2> /dev/null)
 
@@ -142,7 +146,7 @@ $(POD)-asan : CXX_NORM := $(CXX_NORM) -fsanitize=address
 $(POD)-asan : $(POD)  #JUMP TO POD to continue compiling
 
 $(POD) : CXX 	= $(CXX_NORM)
-$(POD) : CFLAGS = $(CFLAGS_RELEASE) $(CFLAGS_NORM)
+$(POD) : CFLAGS = $(CFLAGS_RELEASE_NA) $(CFLAGS_NORM)
 $(POD) : LD  	= $(LD_NORM)
 $(POD) : mkdir_obj build-$(POD)
 build-$(POD) : $(OBJ:%.o=$(OBJ_DIR)/%-build.o)
@@ -150,6 +154,7 @@ build-$(POD) : $(OBJ:%.o=$(OBJ_DIR)/%-build.o)
 
 $(OBJ_DIR)/%-build.o : %.cpp
 	$(CXX) $? $(CFLAGS) -o $@
+
 
 #####
 # build-debug
@@ -163,7 +168,7 @@ $(POD_D)-asan : CXX_NORM := $(CXX_NORM) -fsanitize=address
 $(POD_D)-asan : $(POD_D)  #JUMP TO POD to continue compiling
 
 $(POD_D) : CXX		= $(CXX_NORM)
-$(POD_D) : CFLAGS  	= $(CFLAGS_DEBUG) $(CFLAGS_NORM)
+$(POD_D) : CFLAGS  	= $(CFLAGS_DEBUG_NA) $(CFLAGS_NORM)
 $(POD_D) : LD  		= $(LD_NORM)
 $(POD_D) : mkdir_obj build-$(POD_D)
 build-$(POD_D) : $(OBJ:%.o=$(OBJ_DIR)/%-build-debug.o)
@@ -208,6 +213,19 @@ $(OBJ_DIR)/%-cross.o : %.cpp
 	$(CXX) $? $(CFLAGS) -o $@
 
 #####
+# cross-na
+#####
+$(POD_CROSS_NA) : CXX 		= $(CXX_BBB)
+$(POD_CROSS_NA) : CFLAGS  	= $(CFLAGS_RELEASE_NA) $(CFLAGS_BBB)
+$(POD_CROSS_NA) : LD  		= $(LD_BBB)
+$(POD_CROSS_NA) : mkdir_obj build-$(POD_CROSS_NA)
+build-$(POD_CROSS_NA) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-na.o)
+	$(LD) $? $(LDFLAGS) $(LD_TEST_ARM) -o $(POD_CROSS_NA)
+
+$(OBJ_DIR)/%-cross-na.o : %.cpp
+	$(CXX) $? $(CFLAGS) -o $@
+
+#####
 # cross-debug
 #####
 $(POD_CROSS_D) : CXX 	= $(CXX_BBB)
@@ -218,6 +236,19 @@ build-$(POD_CROSS_D) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-debug.o)
 	$(CXX) $? $(LDFLAGS) $(LD_TEST_ARM) -o $(POD_CROSS_D)
 
 $(OBJ_DIR)/%-cross-debug.o : %.cpp
+	$(LD) $? $(CFLAGS) -o $@
+
+#####
+# cross-debug-na
+#####
+$(POD_CROSS_D_NA) : CXX 	= $(CXX_BBB)
+$(POD_CROSS_D_NA) : CFLAGS 	= $(CFLAGS_DEBUG_NA) $(CFLAGS_BBB)
+$(POD_CROSS_D_NA) : LD     	= $(LD_BBB)
+$(POD_CROSS_D_NA) : mkdir_obj build-$(POD_CROSS_D_NA)
+build-$(POD_CROSS_D_NA) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-debug-na.o)
+	$(CXX) $? $(LDFLAGS) $(LD_TEST_ARM) -o $(POD_CROSS_D_NA)
+
+$(OBJ_DIR)/%-cross-debug-na.o : %.cpp
 	$(LD) $? $(CFLAGS) -o $@
 
 #####
@@ -235,7 +266,7 @@ $(OBJ_DIR)/%-cross-sim.o : %.cpp
 
 .PHONY: clean
 clean:
-	rm -f $(POD) $(POD_D) $(POD_T) $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T)
+	rm -f $(POD) $(POD_D) $(POD_T) $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T) $(POD_CROSS_NA) $(POD_CROSS_D_NA)
 	rm -rf $(OBJ_DIR)/  
 
 .PHONY: clean_lib
@@ -249,11 +280,14 @@ ADDR := 128.174.163.125
 push: 
 	$(info  ==============================================)
 	$(info  Ways to push to BBB:)
-	${info  (1) `make push_all`    for all of the following}
-	${info  (2) `make push_sim`    for sim build}
-	${info  (3) `make push_debug`  for debug build}
-	${info  (4) `make push_prod`   for optimized build}
-	${info  (5) `make push_config` for config file}
+	${info  Address is: $(BBB) @ $(ADDR) Modify Makefile to change address }
+	${info  (1) `make push_all`    	  for all of the following}
+	${info  (2) `make push_sim`    	  for sim build}
+	${info  (3) `make push_debug`  	  for debug build}
+	${info  (4) `make push_debug_na`  for debug build (no action) }
+	${info  (5) `make push_prod`      for optimized build}
+	${info  (6) `make push_prod_na`   for optimized build (no action) }
+	${info  (7) `make push_config`    for config file}
 	$(info  ==============================================)
 
 .PHONY: push_all
@@ -267,9 +301,17 @@ push_sim: msg_s mkdir_obj $(POD_CROSS_T)
 push_debug: msg_d mkdir_obj $(POD_CROSS_D) 
 	scp $(POD_CROSS_D) $(BBB)@$(ADDR):~/
 
+.PHONY: push_debug_na
+push_debug_na: msg_d mkdir_obj $(POD_CROSS_D_NA) 
+	scp $(POD_CROSS_D_NA) $(BBB)@$(ADDR):~/
+
 .PHONY: push_prod
 push_prod: msg_p mkdir_obj $(POD_CROSS)
 	scp $(POD_CROSS) $(BBB)@$(ADDR):~/
+
+.PHONY: push_prod_na
+push_prod_na: msg_p mkdir_obj $(POD_CROSS_NA)
+	scp $(POD_CROSS_NA) $(BBB)@$(ADDR):~/
 
 .PHONY: push_config
 push_config: 

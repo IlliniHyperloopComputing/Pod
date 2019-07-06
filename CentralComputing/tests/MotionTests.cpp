@@ -15,9 +15,9 @@ using Utils::LogLevel;
         UnifiedState * unified_state = &unified_state1; \
         unified_state->motion_data = make_shared<MotionData>(); \
         unified_state->adc_data = make_shared<ADCData>(); \
-        unified_state->adc_data->accel[0] = 0; \
-        unified_state->adc_data->accel[1] = 0; \
-        unified_state->adc_data->accel[2] = 0; \
+        unified_state->adc_data->data[0] = 0; \
+        unified_state->adc_data->data[1] = 0; \
+        unified_state->adc_data->data[2] = 0; \
         unified_state->can_data = make_shared<CANData>(); \
         unified_state->can_data->position_val = 0; \
         unified_state->i2c_data = make_shared<I2CData>(); \
@@ -296,9 +296,9 @@ TEST(MotionTests, acceleration_basic){
 
     // Iterate over 1000, test very basic velocity calculation.
     for(int i = 0; i< 1000; i++){
-        unified_state->adc_data->accel[0] = i;
-        unified_state->adc_data->accel[1] = i;
-        unified_state->adc_data->accel[2] = i;
+        unified_state->adc_data->data[0] = i;
+        unified_state->adc_data->data[1] = i;
+        unified_state->adc_data->data[2] = i;
 
         mm.calculate(unified_state);
         EXPECT_EQ(unified_state->motion_data->x[0], 0);
@@ -316,9 +316,9 @@ TEST(MotionTests, acceleration_one_failure){
 
     // Iterate over 1000, test very basic velocity calculation.
     for(int i = 0; i< 1000; i++){
-        unified_state->adc_data->accel[0] = 0;
-        unified_state->adc_data->accel[1] = i;
-        unified_state->adc_data->accel[2] = i;
+        unified_state->adc_data->data[0] = 0;
+        unified_state->adc_data->data[1] = i;
+        unified_state->adc_data->data[2] = i;
 
         mm.calculate(unified_state);
         EXPECT_EQ(unified_state->motion_data->x[0], 0);
@@ -327,48 +327,6 @@ TEST(MotionTests, acceleration_one_failure){
     }
 }
 
-TEST(MotionTests, acceleration_select_median){
-    // Create state with all zeros
-    ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_basic.txt", false), true);
-    MOTION_TEST_SETUP;
-
-    // Iterate over 1000, test very basic velocity calculation.
-    for(int i = 0; i< 1000; i++){
-        unified_state->adc_data->accel[0] = i+7;
-        unified_state->adc_data->accel[1] = i+2;
-        unified_state->adc_data->accel[2] = i+11;
-
-        mm.calculate(unified_state);
-        EXPECT_EQ(unified_state->motion_data->x[0], 0);
-        EXPECT_EQ(unified_state->motion_data->x[1], 0); 
-        EXPECT_EQ(unified_state->motion_data->x[2], i+7);
-    }
-
-    // Iterate over 1000, test very basic velocity calculation.
-    for(int i = 0; i< 1000; i++){
-        unified_state->adc_data->accel[0] = i+2;
-        unified_state->adc_data->accel[1] = i+7;
-        unified_state->adc_data->accel[2] = i+8;
-
-        mm.calculate(unified_state);
-        EXPECT_EQ(unified_state->motion_data->x[0], 0);
-        EXPECT_EQ(unified_state->motion_data->x[1], 0); 
-        EXPECT_EQ(unified_state->motion_data->x[2], i+7);
-    }
-
-    // Iterate over 1000, test very basic velocity calculation.
-    for(int i = 0; i< 1000; i++){
-        unified_state->adc_data->accel[0] = i+1;
-        unified_state->adc_data->accel[1] = i+9;
-        unified_state->adc_data->accel[2] = i+7;
-
-        mm.calculate(unified_state);
-        EXPECT_EQ(unified_state->motion_data->x[0], 0);
-        EXPECT_EQ(unified_state->motion_data->x[1], 0); 
-        EXPECT_EQ(unified_state->motion_data->x[2], i+7);
-    }
-}
 
 // case where motor distance is way ahead of all other distance measurements
 // case where one wheel optical encoder failes
