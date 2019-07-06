@@ -49,8 +49,8 @@ void MotionModel::calculate(UnifiedState * state) {
   int32_t vel = wheel_vel;
 
   // ACCELERATION
-  // Simply take the median of the three inputs.
-  int32_t accl = Median(state->adc_data.get()->accel, NUM_ACCEL); 
+  // Simply take the median  
+  int32_t accl = Median(state->adc_data.get()->data, NUM_ACCEL); 
 
   // Set state
   state->motion_data->x[0] = dist;

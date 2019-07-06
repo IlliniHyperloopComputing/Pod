@@ -46,9 +46,9 @@ void ScenarioRealLong::true_motion() {
 std::shared_ptr<ADCData> ScenarioRealLong::sim_get_adc() {
   true_motion();
   std::shared_ptr<ADCData> d = std::make_shared<ADCData>();
-  d->accel[0] =  acceleration * 1000; // multiply by 1000 to convert to millimeters
-  d->accel[1] =  acceleration * 1000;
-  d->accel[2] =  acceleration * 1000;
+  // Multiply by 455/ 9.80665 to convert m/s/s to adc "levels"
+  d->data[0] =  acceleration * 455/ 9.80665; 
+  d->data[1] =  acceleration * 455/ 9.80665;
   return d;
 }
 

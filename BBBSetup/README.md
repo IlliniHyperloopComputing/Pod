@@ -47,7 +47,7 @@ uboot_overlay_pru=/lib/firmware/AM335X-PRU-RPROC-4-14-TI-00A0.dtbo
 3. `ssh` into the BBB using `debian@192.168.137.100` with password `temppwd`
 4. Run `sudo ./setupOverlay`. Change the permissions of this file if necessary
 5. Restart the BBB and check the `dmesg` for success/ errors of overlays
-6. Run `sudo ./initPRU` to load the PRU firmware, and `sudo ./initCAN` to start the CAN interface, and `./initGPIO` to 'export' the gpio pins (any ordering works). **This must be run every time the BBB is restarted**
+6. Run `sudo ./initPRU` to load the PRU firmware, and `sudo ./initCAN` to start the CAN interface, and `./initGPIO` to 'export' the gpio pins (any ordering works), and `sudo ./initADC` to setup the internal ADC read buffer (see the `adc_testing/` folder for more information). **This must be run every time the BBB is restarted**
 
 # BBB Overlay and PRU information:
 * CAN Bus device tree overlay and kernel module setup
