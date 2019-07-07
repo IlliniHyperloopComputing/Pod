@@ -68,62 +68,75 @@ TEST_F(PodTest, ErrorFlagTestWithPodUnifiedState) {
   Command::set_error_flag(Command::SET_ADC_ERROR, ADC_SETUP_FAILURE);
   pod->processing_error.wait();
   // copy unified state and check it
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
+  TCPManager::data_mutex.unlock();   // MUST USE LOCK TO AVOID TSAN ERRORS
 
   // Send a different error
   pod->processing_error.reset();
   Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_INTERNAL_ERROR);
   pod->processing_error.wait();
   // copy unified state and check it
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
   EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_ERROR);
+  TCPManager::data_mutex.unlock();   // MUST USE LOCK TO AVOID TSAN ERRORS
 
   // Send a different error of same type
   pod->processing_error.reset();
   Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE);
   pod->processing_error.wait();
   // copy unified state and check it
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
   EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_ERROR | CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE);
+  TCPManager::data_mutex.unlock();   // MUST USE LOCK TO AVOID TSAN ERRORS
 
   // Send a different error of same type
   pod->processing_error.reset();
   Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_OVER_CURRENT);
   pod->processing_error.wait();
   // copy unified state and check it
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
   EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_ERROR | CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE | CAN_MOTOR_CONTROLLER_OVER_CURRENT);
+  TCPManager::data_mutex.unlock();   // MUST USE LOCK TO AVOID TSAN ERRORS
 
   // Send a different error 
   pod->processing_error.reset();
   Command::set_error_flag(Command::SET_I2C_ERROR, I2C_READ_ERROR);
   pod->processing_error.wait();
   // copy unified state and check it
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
   EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_ERROR | CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE | CAN_MOTOR_CONTROLLER_OVER_CURRENT);
   EXPECT_EQ(unified_state->errors->error_vector[2], I2C_READ_ERROR);
+  TCPManager::data_mutex.unlock();   // MUST USE LOCK TO AVOID TSAN ERRORS
 
   // Send a different error 
   pod->processing_error.reset();
   Command::set_error_flag(Command::SET_OTHER_ERROR, GPIO_SWITCH_ERROR);
   pod->processing_error.wait();
   // copy unified state and check it
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
   EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_ERROR | CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE | CAN_MOTOR_CONTROLLER_OVER_CURRENT);
   EXPECT_EQ(unified_state->errors->error_vector[2], I2C_READ_ERROR);
   EXPECT_EQ(unified_state->errors->error_vector[5], GPIO_SWITCH_ERROR);
+  TCPManager::data_mutex.unlock();   // MUST USE LOCK TO AVOID TSAN ERRORS
 
   // Send a different error 
   pod->processing_error.reset();
   Command::set_error_flag(Command::SET_NETWORK_ERROR, UDP_DISCONNECT_ERROR);
   pod->processing_error.wait();
   // copy unified state and check it
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
   EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_ERROR | CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE | CAN_MOTOR_CONTROLLER_OVER_CURRENT);
@@ -131,6 +144,7 @@ TEST_F(PodTest, ErrorFlagTestWithPodUnifiedState) {
   EXPECT_EQ(unified_state->errors->error_vector[3], 0);
   EXPECT_EQ(unified_state->errors->error_vector[4], UDP_DISCONNECT_ERROR);
   EXPECT_EQ(unified_state->errors->error_vector[5], GPIO_SWITCH_ERROR);
+  TCPManager::data_mutex.unlock();   // MUST USE LOCK TO AVOID TSAN ERRORS
 }
 
 TEST_F(PodTest, ErrorFlagTestWithPodClearFlag) {
@@ -155,64 +169,78 @@ TEST_F(PodTest, ErrorFlagTestWithPodClearFlag) {
   Command::set_error_flag(Command::SET_CAN_ERROR, CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE);
   pod->processing_error.wait();
   // copy unified state and check it
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
   EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_ERROR 
                                                     | CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE 
                                                     | CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  TCPManager::data_mutex.unlock();   // MUST USE LOCK TO AVOID TSAN ERRORS
 
   pod->processing_error.reset();
   Command::put(Command::CLR_CAN_ERROR, CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE);
   pod->processing_error.wait();
   // copy unified state and check it
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
   EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_ERROR 
                                                     | CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  TCPManager::data_mutex.unlock();   // MUST USE LOCK TO AVOID TSAN ERRORS
 
   pod->processing_error.reset();
   Command::put(Command::CLR_CAN_ERROR, CAN_MOTOR_CONTROLLER_INTERNAL_ERROR);
   pod->processing_error.wait();
   // copy unified state and check it
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
   EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  TCPManager::data_mutex.unlock();   
 
   // Do it again, nothing should happen
   pod->processing_error.reset();
   Command::put(Command::CLR_CAN_ERROR, CAN_MOTOR_CONTROLLER_INTERNAL_ERROR);
   pod->processing_error.wait();
   // copy unified state and check it
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
   EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  TCPManager::data_mutex.unlock();
 
   // Do it again, nothing should happen
   pod->processing_error.reset();
   Command::put(Command::CLR_ADC_ERROR, ADC_SETUP_FAILURE);
   pod->processing_error.wait();
   // copy unified state and check it
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], 0);
   EXPECT_EQ(unified_state->errors->error_vector[1], CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  TCPManager::data_mutex.unlock();
 
   // Clear 
   pod->processing_error.reset();
   Command::put(Command::CLR_CAN_ERROR, CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
   pod->processing_error.wait();
   // copy unified state and check it
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], 0);
   EXPECT_EQ(unified_state->errors->error_vector[1], 0);
+  TCPManager::data_mutex.unlock();   
 
   // Do it again, nothing should happen
   pod->processing_error.reset();
   Command::put(Command::CLR_CAN_ERROR, CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
   pod->processing_error.wait();
   // copy unified state and check it
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], 0);
   EXPECT_EQ(unified_state->errors->error_vector[1], 0);
+  TCPManager::data_mutex.unlock();   
 }
 
 TEST_F(PodTest, ErrorFlagTestWithPodMoveState) {
@@ -228,8 +256,10 @@ TEST_F(PodTest, ErrorFlagTestWithPodMoveState) {
   // Should be back in safe mode
   EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
   // copy unified state
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], ADC_SETUP_FAILURE);
+  TCPManager::data_mutex.unlock();   
 }
 
 TEST_F(PodTest, ErrorFlagTestTCPFailureNoRecov) {
@@ -248,8 +278,10 @@ TEST_F(PodTest, ErrorFlagTestTCPFailureNoRecov) {
   EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
 
   // copy unified state, should have tcp disconnect error
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[4], TCP_DISCONNECT_ERROR);
+  TCPManager::data_mutex.unlock();  
 }
 
 TEST_F(PodTest, ErrorFlagTestTCPFailureRecov) {
@@ -280,8 +312,10 @@ TEST_F(PodTest, ErrorFlagTestTCPFailureRecov) {
   EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
 
   // copy unified state, should have no tcp disconnect error
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[4], 0);
+  TCPManager::data_mutex.unlock();   
 }
 
 TEST_F(PodTest, ErrorFlagTestUDPFailureNoRecov) {
@@ -300,8 +334,10 @@ TEST_F(PodTest, ErrorFlagTestUDPFailureNoRecov) {
   EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
 
   // copy unified state, should have tcp disconnect error
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[4], UDP_DISCONNECT_ERROR);
+  TCPManager::data_mutex.unlock();   
 }
 
 TEST_F(PodTest, ErrorFlagTestUDPFailureRecov) {
@@ -320,8 +356,10 @@ TEST_F(PodTest, ErrorFlagTestUDPFailureRecov) {
   EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
 
   // copy unified state, should have tcp disconnect error
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[4], UDP_DISCONNECT_ERROR);
+  TCPManager::data_mutex.unlock();   
 
   // Restore and wait for CLR error to be processed
   pod->processing_error.reset();
@@ -332,8 +370,10 @@ TEST_F(PodTest, ErrorFlagTestUDPFailureRecov) {
   EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
 
   // copy unified state, should have no tcp disconnect error
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[4], 0);
+  TCPManager::data_mutex.unlock();   
 }
 
 TEST_F(PodTest, ErrorFlagTestTCPUDPFailureRecov) {
@@ -360,8 +400,10 @@ TEST_F(PodTest, ErrorFlagTestTCPUDPFailureRecov) {
   EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
 
   // copy unified state, should have both errors
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[4], UDP_DISCONNECT_ERROR | TCP_DISCONNECT_ERROR);
+  TCPManager::data_mutex.unlock();
 
   // Restore and wait for CLR error to be processed
   pod->processing_error.reset();
@@ -372,8 +414,10 @@ TEST_F(PodTest, ErrorFlagTestTCPUDPFailureRecov) {
   EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
 
   // copy unified state, should have no udp disconnect error
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[4], TCP_DISCONNECT_ERROR);
+  TCPManager::data_mutex.unlock();
 
   // Restore and wait for CLR error to be processed
   pod->processing_error.reset();
@@ -384,8 +428,10 @@ TEST_F(PodTest, ErrorFlagTestTCPUDPFailureRecov) {
   EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
 
   // copy unified state, should have no udp disconnect error
+  TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[4], 0);
+  TCPManager::data_mutex.unlock();
 }
 
 #endif
