@@ -15,7 +15,7 @@ class ADCManager : public SourceManagerBase<ADCData> {
   std::shared_ptr<ADCData> refresh();
   std::shared_ptr<ADCData> refresh_sim();
   void initialize_sensor_error_configs();
-  void check_for_sensor_error(const std::shared_ptr<ADCData> &);
+  void check_for_sensor_error(const std::shared_ptr<ADCData> &, E_States state);
 
   int32_t error_accel_diff;
   int32_t error_pneumatic_1_over_pressure;

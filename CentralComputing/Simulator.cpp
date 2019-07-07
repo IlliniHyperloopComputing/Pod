@@ -64,7 +64,8 @@ int Simulator::accept_client_tcp() {
   while (1) {
     ret = poll(&p, 1, 200);
     if (ret == 1) {  // there's something trying to connect, or we are exiting
-      clientfd_tcp = accept(socketfd_tcp, NULL, NULL);
+      int tmp_clientfd = accept(socketfd_tcp, NULL, NULL);
+      clientfd_tcp = tmp_clientfd;
       if (clientfd_tcp != -1) {
         print(LogLevel::LOG_DEBUG, "Sim - TCP Connected! \n"); 
       }

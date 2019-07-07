@@ -37,6 +37,16 @@ void Pod::logic_loop() {
         error_processed = true;  // Processed an error, not a command
       }
       #endif
+
+      // Set the currerent State in each Source Manager. 
+      // We do this here because only after a command would the state have changed - don't need to do this every loop
+      // 
+      E_States current_state = state_machine->get_current_state();
+      SourceManager::PRU.set_state(current_state);
+      SourceManager::CAN.set_state(current_state);
+      SourceManager::TMP.set_state(current_state);
+      SourceManager::ADC.set_state(current_state);
+      SourceManager::I2C.set_state(current_state);
     } else {  // Create a "do nothing" command. This will be passed into the steady state caller below
       com.id = 0;
       com.value = 0;
@@ -193,7 +203,6 @@ void Pod::run() {
   print(LogLevel::LOG_INFO, "==================\n");
   print(LogLevel::LOG_INFO, "ILLINI  HYPERLOOP \n");
   print(LogLevel::LOG_INFO, "==================\n");
-  print(LogLevel::LOG_INFO, "Pod State: %s\n", state_machine->get_current_state_string().c_str());
 
   // Start all SourceManager threads
   SourceManager::PRU.initialize();

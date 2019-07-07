@@ -35,5 +35,5 @@ void I2CManager::initialize_sensor_error_configs() {
   // Possibly different thresholds for each measurement??
 }
 
-void I2CManager::check_for_sensor_error(const std::shared_ptr<I2CData> & check_data) {
+void I2CManager::check_for_sensor_error(const std::shared_ptr<I2CData> & check_data, E_States state) {
 }

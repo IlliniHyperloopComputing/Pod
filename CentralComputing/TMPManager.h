@@ -35,7 +35,7 @@ class TMPManager : public SourceManagerBase<TMPData> {
 
     TMPData old_data;
 
-    void check_for_sensor_error(const std::shared_ptr<TMPData> &);
+    void check_for_sensor_error(const std::shared_ptr<TMPData> &, E_States state);
 };
 
 #endif  // TMPMANAGER_H_

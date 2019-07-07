@@ -125,5 +125,5 @@ void PRUManager::initialize_sensor_error_configs() {
   // Define some sort of difference / variance that indicates that shit broke
 }
 
-void PRUManager::check_for_sensor_error(const std::shared_ptr<PRUData> & check_data) {
+void PRUManager::check_for_sensor_error(const std::shared_ptr<PRUData> & check_data, E_States state) {
 }

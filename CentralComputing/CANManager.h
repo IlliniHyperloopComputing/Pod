@@ -32,7 +32,7 @@ class CANManager : public SourceManagerBase<CANData> {
   std::shared_ptr<CANData> refresh();
   std::shared_ptr<CANData> refresh_sim();
   void initialize_sensor_error_configs();
-  void check_for_sensor_error(const std::shared_ptr<CANData> &);
+  void check_for_sensor_error(const std::shared_ptr<CANData> &, E_States state);
 
   CANData stored_data;
 

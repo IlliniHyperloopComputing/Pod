@@ -11,7 +11,7 @@ class I2CManager : public SourceManagerBase<I2CData> {
   std::shared_ptr<I2CData> refresh();
   std::shared_ptr<I2CData> refresh_sim();
   void initialize_sensor_error_configs();
-  void check_for_sensor_error(const std::shared_ptr<I2CData> &);
+  void check_for_sensor_error(const std::shared_ptr<I2CData> &, E_States state);
 
   int32_t error_general_1_over_temp;
   int32_t error_general_2_over_temp;
