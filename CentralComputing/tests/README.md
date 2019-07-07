@@ -1,4 +1,11 @@
-# Pod Tests
+# Running tests
+  * `make clean`
+  * `make sbuild`
+  * `./sbuild --gtest_repeat=5 --gtest_break_on_failure --gtest_shuffle`
+
+---
+
+# Critical Software Tests
 
 All tests are written in C++, using the GoogleTest Framework. Run all tests using the `SIM` build of the codebase: `./sbuild` or `./scross`. Apply the usual `gtest` flags to filter specific tests or repeat. 
 
