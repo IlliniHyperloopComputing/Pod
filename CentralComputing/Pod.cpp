@@ -39,8 +39,11 @@ void Pod::logic_loop() {
       #endif
 
       // Set the currerent State in each Source Manager. 
+      // The SouceManagers use the state while checking for errors, to emit different errors at different times.
       // We do this here because only after a command would the state have changed - don't need to do this every loop
-      // 
+      // The SourceManagers don't have access to the StateMachine variable, and this is the easiest way of
+      // getting the state to the SMs. Also, this is the minimal ammount of updates required, and is better
+      // than the SMs accessing the state machine every single time they loop.
       E_States current_state = state_machine->get_current_state();
       SourceManager::PRU.set_state(current_state);
       SourceManager::CAN.set_state(current_state);
