@@ -140,14 +140,14 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
   int16_t value = 0;
   
   if (!set_i2c_addr(i2c_fd, addr)) {
-    Command::set_error_flag(Command::SET_I2C_ERROR,I2C_SETUP_FAILURE); 
+    Command::set_error_flag(Command::SET_I2C_ERROR, I2C_READ_ERROR); 
     return empty_data();
   }
   if (single_shot(i2c_fd, port, &value)) {
     int64_t b = Utils::microseconds(); 
     print(LogLevel::LOG_DEBUG, "(REMOVE) I2C: i=%d, j =%d, val: %d, took this long: micros: %lu\n", i, j, value, b-a);
   } else {
-    Command::set_error_flag(Command::SET_I2C_ERROR,I2C_READ_ERROR);
+    Command::set_error_flag(Command::SET_I2C_ERROR, I2C_READ_ERROR);
     return empty_data();
   }
   int index = (j * 4) + i; 
