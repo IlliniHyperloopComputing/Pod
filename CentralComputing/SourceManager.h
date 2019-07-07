@@ -3,7 +3,6 @@
 
 #include "PRUManager.h"
 #include "CANManager.h"
-#include "TMPManager.h"
 #include "ADCManager.h"
 #include "I2CManager.h"
 
@@ -11,14 +10,12 @@
 // include this .hpp in their files
 class PRUManager;
 class CANManager;
-class TMPManager;
 class ADCManager;
 class I2CManager;
 
 namespace SourceManager {
   extern PRUManager PRU;
   extern CANManager CAN;
-  extern TMPManager TMP;
   extern ADCManager ADC;
   extern I2CManager I2C;
 }

@@ -94,9 +94,10 @@ struct CANData {
   uint32_t adaptive_soc;                // uint8_t
 };
 
+#define NUM_TMP 16
 struct I2CData {
   // replace with actual data structure
-  int dummy_data;
+  int16_t temp[NUM_TMP];
 };
 
 #define NUM_ORANGE_INPUTS 2
@@ -138,6 +139,9 @@ enum I2CErrors {
   I2C_SETUP_FAILURE = 0x1,
   I2C_WRITE_ERROR = 0x2,
   I2C_READ_ERROR = 0x4,
+  I2C_OVER_TEMP_ONE = 0x8,
+  I2C_OVER_TEMP_TWO = 0x10,
+  I2C_OVER_TEMP_THREE = 0x20,
 };
 
 enum PRUErrors {
