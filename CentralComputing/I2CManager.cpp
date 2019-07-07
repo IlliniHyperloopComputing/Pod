@@ -140,14 +140,14 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
   int16_t value = 0;
   
   if (!set_i2c_addr(i2c_fd, addr)) {
-    //TODO: @Anshul, add error here.
+    Command::set_error_flag(Command::SET_I2C_ERROR,I2C_SETUP_FAILURE); 
     return empty_data();
   }
   if (single_shot(i2c_fd, port, &value)) {
     int64_t b = Utils::microseconds(); 
     print(LogLevel::LOG_DEBUG, "(REMOVE) I2C: i=%d, j =%d, val: %d, took this long: micros: %lu\n", i, j, value, b-a);
   } else {
-    //TODO: @Anshul, add error here.
+    Command::set_error_flag(Command::SET_I2C_ERROR,I2C_READ_ERROR);
     return empty_data();
   }
   int index = (j * 4) + i; 
@@ -181,14 +181,18 @@ void I2CManager::initialize_sensor_error_configs() {
 
 void I2CManager::check_for_sensor_error(const std::shared_ptr<I2CData> & check_data) {
   auto temp_arr = check_data->temp; 
-  for (int index = 0; index < NUM_TMP; index++) {
+  for (int index = 0; index < (int) (NUM_TMP / 3); index++) {
     if (temp_arr[index] > (int) error_general_1_over_temp) {
       Command::set_error_flag(Command::SET_I2C_ERROR,I2C_OVER_TEMP_ONE);
     }
-    if (temp_arr[index] > (int) error_general_2_over_temp) {
+  }
+  for (int index = (int) (NUM_TMP / 3); index < (int) (2 * (NUM_TMP / 3)); index++) {
+    if (temp_arr[index] > (int) error_general_1_over_temp) {
       Command::set_error_flag(Command::SET_I2C_ERROR,I2C_OVER_TEMP_TWO);
     }
-    if (temp_arr[index] > (int) error_general_3_over_temp) {
+  }
+  for (int index = (int) (2 * (NUM_TMP / 3)); index < NUM_TMP; index++) {
+    if (temp_arr[index] > (int) error_general_1_over_temp) {
       Command::set_error_flag(Command::SET_I2C_ERROR,I2C_OVER_TEMP_THREE);
     }
   }
