@@ -25,4 +25,8 @@ export class StatsComponent implements OnInit {
   getValues() {
     this.statsService.getStatStatus().subscribe((data: Row[]) => this.stats = data)
   }
+
+  applyStyle(color:string) {
+    return {"background-color": color};
+  }
 }

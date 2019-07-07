@@ -12,7 +12,7 @@
     <td>
       {{ stat.name }}
     </td>
-    <td style="background-color: rgb(23, 199, 23);">
+    <td [ngStyle]="applyStyle(stat.color)">
       {{ stat.value }}
     </td>
   </tr>
@@ -30,7 +30,7 @@
       <td>
         {{ stat.name }}
       </td>
-      <td style="background-color: rgb(23, 199, 23);">
+      <td [ngStyle]="applyStyle(stat.color)">
         {{ stat.value }}
       </td>
     </tr>
