@@ -1,20 +1,74 @@
 #include "ADCManager.h"
 
 bool ADCManager::initialize_source() {
-  print(LogLevel::LOG_INFO, "ADC Manager setup successful\n");
-  return true;
+  if (!(ConfiguratorManager::config.getValue("adc_filename", fileName) &&
+        ConfiguratorManager::config.getValue("adc_calc_zero_g_timeout", calculate_zero_g_timeout) &&
+        ConfiguratorManager::config.getValue("adc_default_zero_g", default_zero_g))) {
+    print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: ADC: Missing necessary configuration\n");
+    exit(1);  // Crash hard on this error
+  }
+
+  do_calculate_zero_g = false;  // By default, just use the default values
+  calculate_zero_g_time = 0;
+  accel1_zero_g = default_zero_g;  // Set the defaults
+  accel2_zero_g = default_zero_g;
+
+  // Open the ADC file
+  inFile.open(fileName, std::ifstream::in | std::ifstream::binary);
+  if (!inFile) {
+    print(LogLevel::LOG_DEBUG, "ADC Manager setup failed\n");
+    return false;
+  } else {
+    print(LogLevel::LOG_DEBUG, "ADC Manager setup successful\n");
+    return true;
+  }
 }
 
 void ADCManager::stop_source() {
-  print(LogLevel::LOG_INFO, "ADC Manager stopped\n");
+  if (inFile) {
+    inFile.close();
+    print(LogLevel::LOG_DEBUG, "ADC Manager stopped\n");
+  } 
+}
+
+void ADCManager::calculate_zero_g() {
+  do_calculate_zero_g = true;
+  zero_g_sum[0] = 0;  // Zero these values used in calculating
+  zero_g_sum[1] = 0;
+  zero_g_num_samples = 0;
+  calculate_zero_g_time = Utils::microseconds();
 }
 
 std::shared_ptr<ADCData> ADCManager::refresh() {
-  // this is where you would query the ADC and get new data
-  
   std::shared_ptr<ADCData> new_data = std::make_shared<ADCData>();
-  new_data->dummy_data = i;
-  i++;
+  uint16_t buffer[NUM_ADC];
+  inFile.read(reinterpret_cast<char *>(buffer), NUM_ADC * 2);
+  for (int i = 0; i < NUM_ADC; i++) {
+    uint16_t * val = (buffer + i);
+    new_data -> data[i] = (*val);
+  }
+  //  print(Utils::LOG_ERROR, "%d \t%d\t%d\t %d\t%d\t%d\t%d\t\n", new_data->data[0], 
+  //                          new_data->data[1], new_data->data[2], 
+  //                          new_data->data[3], new_data->data[4],
+  //                          new_data->data[5], new_data->data[6]);
+
+  if (do_calculate_zero_g) { 
+    if ((calculate_zero_g_time + calculate_zero_g_timeout) > Utils::microseconds()) {
+      zero_g_sum[0] += new_data->data[0];  
+      zero_g_sum[1] += new_data->data[1];
+      zero_g_num_samples++;
+    } else {  // Time is up, time to calculate
+      accel1_zero_g = zero_g_sum[0] / zero_g_num_samples; 
+      accel2_zero_g = zero_g_sum[1] / zero_g_num_samples;
+      do_calculate_zero_g = false;
+      print(Utils::LOG_DEBUG, "ADC - Accel1 zero g %d\n", accel1_zero_g);
+      print(Utils::LOG_DEBUG, "ADC - Accel2 zero g %d\n", accel2_zero_g);
+    }
+  }
+
+  // Apply the zero g location to each of the accelerometer's data
+  new_data -> data[0] -= accel1_zero_g;
+  new_data -> data[1] -= accel2_zero_g;
 
   return new_data;
 }

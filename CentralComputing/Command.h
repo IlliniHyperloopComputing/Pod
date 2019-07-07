@@ -54,6 +54,7 @@ enum Network_Command_ID {
   SET_HV_RELAY_HV_POLE = 26,
   SET_HV_RELAY_LV_POLE = 27,
   SET_HV_RELAY_PRE_CHARGE = 28,
+  CALC_ACCEL_ZERO_G = 29,
 };
 
 // enum specifying what data is sent

@@ -387,11 +387,7 @@ void Simulator::logging(bool enable) {
 
 void Simulator::sim_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
   std::lock_guard<std::mutex> guard(mutex);
-  if (state) {
-    print(LogLevel::LOG_DEBUG, "Sim - Relay %d Enabled\n", relay);
-  } else {
-    print(LogLevel::LOG_DEBUG, "Sim - Relay %d Disabled\n", relay);
-  }
+  print(LogLevel::LOG_DEBUG, "Sim - Relay %d %s\n", relay, state?"Enabled":"Disabled");
   if (scenario != nullptr) {
     scenario->sim_relay_state(relay, state);
   }
