@@ -1,22 +1,23 @@
-# Parking Lot / Vacuum Chamber / External Sub Track / Hyperloop Test Track Open Air
-1. Sensor Tests. No Motor / No Brake
+# Full Scale Tests
+  _These tests are designed for the: Parking Lot / Vacuum Chamber / External Sub Track / Hyperloop Test Track Open Air_
+1. Sensor Tests. **No Motor / No Brake**
     * Ability to test all sensors without any motor or brake actuation. 
     * **Run the "-na" version of the software**. 
       * This is the `NO_ACTION` version which prevents any actuation
-2. Automatic State Transitions with low thresholds. No Motor / No Brake
+2. Automatic State Transitions with low thresholds. **No Motor / No Brake**
     * Lower the thresholds that trigger state transitions.
     * Push Pod on cart or rail, to test state transitions with accelerometer and optical encoders
     * **Run the "-na" version of the software**. 
       * This is the `NO_ACTION` version which prevents any actuation
       * Modify Configuration file to lower transition thresholds.
-3. Test Brakes. No Motor / Brake Only 
+3. Test Brakes. **No Motor / Brake Only**
     * Pod is pushed up to speed manually, coasts, and brakes on its own
     * Automatic transition thresholds are lowered
     * **Run the normal version of the software**. 
       * Modify Flight Plan to ensure motor doesn't throttle up.
       * Brakes will actuate as normal
       * Modify Configuration file to lower transition thresholds.
-4. Simulate Full Run. Motor / Brake 
+4. Simulate Full Run. **Motor / Brake**
     * Pod accelerates for a brief period under its own power, coasts, and brakes on its own
     * Automatic transition thresholds are lowered.
     * This test can be scaled for different lengths and motor powers
@@ -27,7 +28,7 @@
 
 ---
 
-# Critical Software Unit Tests
+# Unit Tests
 
 All tests are written in C++, using the GoogleTest Framework. Run all tests using the `SIM` build of the codebase: `./sbuild` or `./scross`. Apply the usual `gtest` flags to filter specific tests or repeat. 
 
@@ -39,7 +40,7 @@ The `PodTest` Hierarchy defines a startup and cleanup method that runs before an
 
 **With this testing suite, all inputs and outputs are exposed, allowing for full testing of the Pod**
 
-## Running tests
+### Running Unit Tests
   * `make clean`
   * `make sbuild`
   * `./sbuild --gtest_repeat=5 --gtest_break_on_failure --gtest_shuffle`
@@ -50,7 +51,6 @@ The `PodTest` Hierarchy defines a startup and cleanup method that runs before an
 These tests automatically verify that the state machine cannot move into other states without having the correct transition requirements met.
 
 ### Proper mapping Unit Tests: 
-  _Try to transition to invalid states_
 
 1. Test that `Safe Mode` can only transition to:
     * `Functional Tests (outside)`
