@@ -15,9 +15,9 @@ using Utils::LogLevel;
         UnifiedState * unified_state = &unified_state1; \
         unified_state->motion_data = make_shared<MotionData>(); \
         unified_state->adc_data = make_shared<ADCData>(); \
-        unified_state->adc_data->accel[0] = 0; \
-        unified_state->adc_data->accel[1] = 0; \
-        unified_state->adc_data->accel[2] = 0; \
+        unified_state->adc_data->data[0] = 0; \
+        unified_state->adc_data->data[1] = 0; \
+        unified_state->adc_data->data[2] = 0; \
         unified_state->can_data = make_shared<CANData>(); \
         unified_state->can_data->position_val = 0; \
         unified_state->i2c_data = make_shared<I2CData>(); \
@@ -32,7 +32,7 @@ using Utils::LogLevel;
 
 TEST(MotionTests, distance_no_faults) {
     // Create state with all zeros
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Test that with no input, nothing happens
@@ -60,7 +60,7 @@ TEST(MotionTests, distance_no_faults) {
 
 TEST(MotionTests, distance_orange_fault) {
     // Create state with all zeros
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic distance calculation.
@@ -82,7 +82,7 @@ TEST(MotionTests, distance_orange_fault) {
 
 TEST(MotionTests, distance_wheel_orange_fault) {
     // Create state with all zeros
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic distance calculation.
@@ -104,7 +104,7 @@ TEST(MotionTests, distance_wheel_orange_fault) {
 
 TEST(MotionTests, distance_wheel_diverge) {
     // Create state with all zeros
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic distance calculation.
@@ -128,7 +128,7 @@ TEST(MotionTests, distance_wheel_diverge) {
 
 TEST(MotionTests, distance_wheel_diverge_orange_fault) {
     // Create state with all zeros
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic distance calculation.
@@ -152,7 +152,7 @@ TEST(MotionTests, distance_wheel_diverge_orange_fault) {
 
 TEST(MotionTests, distance_wheel_diverge_orange_double_fault) {
     // Create state with all zeros
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("defaultConfig.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic distance calculation.
@@ -178,7 +178,7 @@ TEST(MotionTests, distance_motor_slip) {
     // Create state with all zeros
     // Load test.txt, it defines motor_distance_clamp as 10
     ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/test.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/test.txt", false), true);
     MOTION_TEST_SETUP;
 
 
@@ -204,7 +204,7 @@ TEST(MotionTests, velocity_basic){
     // Create state with all zeros
     // Load test.txt, it defines motor_distance_clamp as 10
     ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_basic.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_basic.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic velocity calculation.
@@ -223,7 +223,7 @@ TEST(MotionTests, velocity_low_pass){
     // Create state with all zeros
     // Load test.txt, it defines motor_distance_clamp as 10
     ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_low_pass.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_low_pass.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic velocity calculation.
@@ -247,7 +247,7 @@ TEST(MotionTests, velocity_random_noise){
     // Create state with all zeros
     // Load test.txt, it defines motor_distance_clamp as 10
     ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_low_pass.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_low_pass.txt", false), true);
     MOTION_TEST_SETUP;
     // https://en.cppreference.com/w/cpp/numeric/random/uniform_int_distribution
     std::random_device rd;  //Will be used to obtain a seed for the random number engine
@@ -271,7 +271,7 @@ TEST(MotionTests, velocity_diverge){
     // Create state with all zeros
     // Load test.txt, it defines motor_distance_clamp as 10
     ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_low_pass.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_low_pass.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic velocity calculation.
@@ -291,14 +291,14 @@ TEST(MotionTests, acceleration_basic){
     // Create state with all zeros
     // Load test.txt, it defines motor_distance_clamp as 10
     ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_basic.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_basic.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic velocity calculation.
     for(int i = 0; i< 1000; i++){
-        unified_state->adc_data->accel[0] = i;
-        unified_state->adc_data->accel[1] = i;
-        unified_state->adc_data->accel[2] = i;
+        unified_state->adc_data->data[0] = i;
+        unified_state->adc_data->data[1] = i;
+        unified_state->adc_data->data[2] = i;
 
         mm.calculate(unified_state);
         EXPECT_EQ(unified_state->motion_data->x[0], 0);
@@ -311,14 +311,14 @@ TEST(MotionTests, acceleration_one_failure){
     // Create state with all zeros
     // Load test.txt, it defines motor_distance_clamp as 10
     ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_basic.txt"), true);
+    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_basic.txt", false), true);
     MOTION_TEST_SETUP;
 
     // Iterate over 1000, test very basic velocity calculation.
     for(int i = 0; i< 1000; i++){
-        unified_state->adc_data->accel[0] = 0;
-        unified_state->adc_data->accel[1] = i;
-        unified_state->adc_data->accel[2] = i;
+        unified_state->adc_data->data[0] = 0;
+        unified_state->adc_data->data[1] = i;
+        unified_state->adc_data->data[2] = i;
 
         mm.calculate(unified_state);
         EXPECT_EQ(unified_state->motion_data->x[0], 0);
@@ -327,48 +327,6 @@ TEST(MotionTests, acceleration_one_failure){
     }
 }
 
-TEST(MotionTests, acceleration_select_median){
-    // Create state with all zeros
-    ConfiguratorManager::config.clear();
-    EXPECT_EQ(ConfiguratorManager::config.openConfigFile("tests/velocity_basic.txt"), true);
-    MOTION_TEST_SETUP;
-
-    // Iterate over 1000, test very basic velocity calculation.
-    for(int i = 0; i< 1000; i++){
-        unified_state->adc_data->accel[0] = i+7;
-        unified_state->adc_data->accel[1] = i+2;
-        unified_state->adc_data->accel[2] = i+11;
-
-        mm.calculate(unified_state);
-        EXPECT_EQ(unified_state->motion_data->x[0], 0);
-        EXPECT_EQ(unified_state->motion_data->x[1], 0); 
-        EXPECT_EQ(unified_state->motion_data->x[2], i+7);
-    }
-
-    // Iterate over 1000, test very basic velocity calculation.
-    for(int i = 0; i< 1000; i++){
-        unified_state->adc_data->accel[0] = i+2;
-        unified_state->adc_data->accel[1] = i+7;
-        unified_state->adc_data->accel[2] = i+8;
-
-        mm.calculate(unified_state);
-        EXPECT_EQ(unified_state->motion_data->x[0], 0);
-        EXPECT_EQ(unified_state->motion_data->x[1], 0); 
-        EXPECT_EQ(unified_state->motion_data->x[2], i+7);
-    }
-
-    // Iterate over 1000, test very basic velocity calculation.
-    for(int i = 0; i< 1000; i++){
-        unified_state->adc_data->accel[0] = i+1;
-        unified_state->adc_data->accel[1] = i+9;
-        unified_state->adc_data->accel[2] = i+7;
-
-        mm.calculate(unified_state);
-        EXPECT_EQ(unified_state->motion_data->x[0], 0);
-        EXPECT_EQ(unified_state->motion_data->x[1], 0); 
-        EXPECT_EQ(unified_state->motion_data->x[2], i+7);
-    }
-}
 
 // case where motor distance is way ahead of all other distance measurements
 // case where one wheel optical encoder failes

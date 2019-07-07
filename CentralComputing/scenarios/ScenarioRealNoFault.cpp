@@ -11,33 +11,25 @@ ScenarioRealNoFault::ScenarioRealNoFault(){
   can_delta_seconds = pru_delta_seconds;
 }
 
-bool ScenarioRealNoFault::use_motion_model() {
-  return false;
-}
-
 std::shared_ptr<ADCData> ScenarioRealNoFault::sim_get_adc() {
   std::shared_ptr<ADCData> d = std::make_shared<ADCData>();
   if (motorsOn) {
-    d->accel[0] =  MAX_ACCEL * throttle;
-    d->accel[1] =  MAX_ACCEL * throttle;
-    d->accel[2] =  MAX_ACCEL * throttle;
+    d->data[0] =  MAX_ACCEL * throttle;
+    d->data[1] =  MAX_ACCEL * throttle;
     acceleration = MAX_ACCEL * throttle;
   } else if (brakesOn) {
-    d->accel[0] =  MAX_ACCEL * pressure;
-    d->accel[1] =  MAX_ACCEL * pressure;
-    d->accel[2] =  MAX_ACCEL * pressure;
+    d->data[0] =  MAX_ACCEL * pressure;
+    d->data[1] =  MAX_ACCEL * pressure;
     acceleration = MAX_ACCEL * pressure;
   } else {
-    d->accel[0] =  0;
-    d->accel[1] =  0;
-    d->accel[2] =  0;
+    d->data[0] =  0;
+    d->data[1] =  0;
     acceleration = 0;
   }
 
-  // Multiply by 1000 to convert to millimeters
-  d->accel[0] *= 1000;
-  d->accel[1] *= 1000;
-  d->accel[2] *= 1000; 
+  // Multiply by 455/ 9.80665 to convert m/s/s to adc "levels"
+  d->data[0] *= 455/ 9.80665;
+  d->data[1] *= 455/ 9.80665;
   return d;
 }
 

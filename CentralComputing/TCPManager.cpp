@@ -69,14 +69,15 @@ int TCPManager::write_data() {
   //  This is the first time threshold
   if (cur_time - last_sent_times[0] > stagger_times[0]) {
     data_mutex.lock();  // Protect access to TCPManger::data_to_send
-    memcpy(&motion_data, unified_state->motion_data.get(), sizeof(MotionData));
+    // memcpy(&motion_data, unified_state->motion_data.get(), sizeof(MotionData));
     memcpy(&error_data, unified_state->errors.get(), sizeof(Errors));
     state = unified_state->state;
     data_mutex.unlock();
 
     last_sent_times[0] = cur_time;
-    if ((write_all_to_socket(socketfd, &TCPID.motion_id, sizeof(uint8_t)) <= 0) ||
-        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t *>(&motion_data), sizeof(MotionData)) <= 0) ||  // NOLINT
+    if (
+        // (write_all_to_socket(socketfd, &TCPID.motion_id, sizeof(uint8_t)) <= 0) ||
+        // (write_all_to_socket(socketfd, reinterpret_cast<uint8_t *>(&motion_data), sizeof(MotionData)) <= 0) ||  // NOLINT
         (write_all_to_socket(socketfd, &TCPID.error_id, sizeof(uint8_t)) <= 0) ||
         (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&error_data), sizeof(Errors)) <= 0) ||  // NOLINT  
         (write_all_to_socket(socketfd, &TCPID.state_id, sizeof(uint8_t)) <= 0) ||
@@ -99,19 +100,19 @@ int TCPManager::write_data() {
   //  This is the third time threshold 
   if (cur_time - last_sent_times[2] > stagger_times[2]) {  
     data_mutex.lock();  // Protect access to TCPManger::data_to_send
-    memcpy(&pru_data, unified_state->pru_data.get(), sizeof(PRUData));
-    memcpy(&i2c_data, unified_state->i2c_data.get(), sizeof(I2CData));
-    memcpy(&pru_data, unified_state->adc_data.get(), sizeof(ADCData));
+    // memcpy(&pru_data, unified_state->pru_data.get(), sizeof(PRUData));
+    // memcpy(&i2c_data, unified_state->i2c_data.get(), sizeof(I2CData));
+    // memcpy(&pru_data, unified_state->adc_data.get(), sizeof(ADCData));
     data_mutex.unlock();
     last_sent_times[2] = cur_time;
-    if ((write_all_to_socket(socketfd, &TCPID.pru_id, sizeof(uint8_t)) <= 0) ||
-        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&pru_data), sizeof(PRUData)) <= 0) ||  //NOLINT
-        (write_all_to_socket(socketfd, &TCPID.i2c_id, sizeof(uint8_t)) <= 0) ||
-        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&i2c_data), sizeof(I2CData)) <= 0) ||  //NOLINT
-        (write_all_to_socket(socketfd, &TCPID.adc_id, sizeof(uint8_t)) <= 0) ||
-        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&adc_data), sizeof(ADCData))<= 0)) {  //NOLINT
-      return -1;
-    }
+    // if ((write_all_to_socket(socketfd, &TCPID.pru_id, sizeof(uint8_t)) <= 0) ||
+    //     (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&pru_data), sizeof(PRUData)) <= 0) ||  //NOLINT
+    //     (write_all_to_socket(socketfd, &TCPID.i2c_id, sizeof(uint8_t)) <= 0) ||
+    //     (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&i2c_data), sizeof(I2CData)) <= 0) ||  //NOLINT
+    //     (write_all_to_socket(socketfd, &TCPID.adc_id, sizeof(uint8_t)) <= 0) ||
+    //     (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&adc_data), sizeof(ADCData))<= 0)) {  //NOLINT
+    //   return -1;
+    // }
   }  
   return 1;  // Return success
 }

@@ -25,18 +25,18 @@ void Pod::logic_loop() {
     bool loaded = Command::get(&com);
 
     if (loaded) {
+      print(LogLevel::LOG_INFO, "Command : %d %d\n", com.id, com.value);
       // Parse the command and call the appropriate state machine function
       auto transition = state_machine->get_transition_function(&com);
       ((*state_machine).*(transition))(); 
       #ifdef SIM  // Used to indicate to the Simulator that we have processed a command
       if (!(com.id >= Command::Network_Command_ID::SET_ADC_ERROR &&
             com.id <= Command::Network_Command_ID::CLR_OTHER_ERROR)) {
-        command_processed = true;
+        command_processed = true;  // Processed a command, not an error
       } else {
-        error_processed = true;
+        error_processed = true;  // Processed an error, not a command
       }
       #endif
-      print(LogLevel::LOG_INFO, "Command : %d %d\n", com.id, com.value);
     } else {  // Create a "do nothing" command. This will be passed into the steady state caller below
       com.id = 0;
       com.value = 0;
@@ -119,10 +119,10 @@ void Pod::update_unified_state() {
 }
 
 // Pod constructor
-// Takes a config file as an argument
+// Takes config files as arguments
 // Setsup variables, loads configurations, does some other initialization work. 
 // Does NOT start any threads.
-Pod::Pod(const std::string & config_to_open) {
+Pod::Pod(const std::string & config_to_open, const std::string & flight_plan_to_open) {
   // Setup "0" time. All further calls to microseconds() use this as the base time
   microseconds();
 
@@ -142,8 +142,14 @@ Pod::Pod(const std::string & config_to_open) {
   print(LogLevel::LOG_INFO, "CPU freq set to 1GHz\n");    
   #endif
 
+  // Open flight plan file
+  if (!ConfiguratorManager::config.openConfigFile(flight_plan_to_open, true)) {
+    print(LogLevel::LOG_ERROR, "Flight Plan missing. File: %s\n", flight_plan_to_open.c_str());
+    exit(1);
+  }
+
   // Open configuration file
-  if (!ConfiguratorManager::config.openConfigFile(config_to_open)) {
+  if (!ConfiguratorManager::config.openConfigFile(config_to_open, false)) {
     print(LogLevel::LOG_ERROR, "Config missing. File: %s\n", config_to_open.c_str());
     exit(1);
   }
@@ -195,13 +201,33 @@ void Pod::run() {
   SourceManager::ADC.initialize();
   SourceManager::I2C.initialize();
 
-  signal(SIGPIPE, SIG_IGN);  // Ignore SIGPIPE
-
+  // Transition into SafeMode
+  // technically we are already in SafeMode. However, when initialized the 
+  // ST_Safe_Mode() transition function isn't called. 
+  // This function turns off the motor, and safes the HV power system
+  // There could be instances where doing this is beneficial, to remove any sort
+  // of transients. 
   Command::Network_Command com;
+  com.id = Command::Network_Command_ID::TRANS_SAFE_MODE;
+  com.value = 0;
+  auto transition = state_machine->get_transition_function(&com);
+  ((*state_machine).*(transition))(); 
+
+  // Ignore SIGPIPE. Generated from networking events, and can cause crashes if not ignored.
+  signal(SIGPIPE, SIG_IGN);  
+
+  // Initially have an error set that the network isn't connected
+  // Connecting to the network will clear this error
   com.id = Command::Network_Command_ID::SET_NETWORK_ERROR;
   com.value = NETWORKErrors::TCP_DISCONNECT_ERROR;
-  set_error_code(&com);  // Initially have an error set that the network isn't connected
+  set_error_code(&com);  
+
   // Start Network and main loop thread.
+  print(LogLevel::LOG_INFO, "tcp_addr: %s, tcp_port: %s \n", 
+                            tcp_addr.c_str(), tcp_port.c_str()); 
+  print(LogLevel::LOG_INFO, "upd_addr: %s, upd_send: %s, udp_recv: %s\n", 
+                            udp_addr.c_str(), udp_send.c_str(), udp_recv.c_str());    
+
   // I don't know how to use member functions as a thread function, but lambdas work
   // std::lock_guard<std::mutex> guard(TCPManager::data_mutex);  // Protect access to TCPManger::data_to_send
   thread tcp_thread([&](){ TCPManager::tcp_loop(tcp_addr.c_str(), tcp_port.c_str(), &unified_state); });
@@ -209,7 +235,7 @@ void Pod::run() {
   running.store(true);
   thread logic_thread([&](){ logic_loop(); });  
   print(LogLevel::LOG_INFO, "Finished Initialization\n");
-  print(LogLevel::LOG_INFO, "================\n\n");
+  print(LogLevel::LOG_INFO, "================\n");
   
   // signal to test suite that we are ready to begin testing
   ready.invoke();
@@ -236,14 +262,33 @@ void Pod::trigger_shutdown() {
 
 // Parse any command line arguments passed into the Pod
 // Used right now to load the configuration file if specified, or use the default
-void parse_command_line_args(int argc, char **argv, string * config_to_open);
-void parse_command_line_args(int argc, char **argv, string * config_to_open) {
-  *config_to_open = "defaultConfig.txt";
-  if (argc > 1) {  // If the first argument is a file, use it as the config file
-    ifstream test_if_file(argv[1]);
+void parse_command_line_args(int argc, char **argv, string * config_to_open, string * flight_plan_to_open);
+void parse_command_line_args(int argc, char **argv, string * config_to_open, string * flight_plan_to_open) {
+  *config_to_open      = "defaultConfig.txt";
+  *flight_plan_to_open = "defaultFlightPlan.txt";
+  for (int i = 1; i < argc; i+=2) {
+    // basic help
+    if (strncmp(argv[i], "-h", 2) == 0 || strncmp(argv[i], "--help", 6) == 0 ||  strncmp(argv[i], "--h", 3) == 0) {
+      print(LogLevel::LOG_INFO, "-c [config_file.txt]\n -f [flight_plan_file.txt]\n");
+      exit(1);
+    }
+
+    ifstream test_if_file(argv[i+1]);
     if (test_if_file.is_open()) {
       test_if_file.close();
-      *config_to_open = argv[1];
+      if (strncmp(argv[i], "-c", 2) == 0) {
+        // Configuration file
+        *config_to_open = argv[i+1];
+      } else if (strncmp(argv[i], "-f", 2) == 0) {
+        // Flight plan
+        *flight_plan_to_open = argv[i+1];
+      } else {
+        print(LogLevel::LOG_ERROR, "Invalid command line option\n");
+        exit(1);
+      }
+    } else {
+      print(LogLevel::LOG_ERROR, "Not a real file / Invalid command line option\n");
+      exit(1);
     }
   }
 }
@@ -256,13 +301,14 @@ void signal_handler(int signal) {shutdown_handler(signal); }
 // Starts the Pod up, or the GTest suite, depending on compiler flags
 int main(int argc, char **argv) {
   std::string config_to_open;
+  std::string flight_plan_to_open;
 
   #ifndef SIM
     Utils::loglevel = LogLevel::LOG_EDEBUG;
     // Load the configuration file if specified, or use the default
-    parse_command_line_args(argc, argv, &config_to_open);
+    parse_command_line_args(argc, argv, &config_to_open, &flight_plan_to_open);
     // Create the pod object
-    auto pod = make_shared<Pod>(config_to_open);
+    auto pod = make_shared<Pod>(config_to_open, flight_plan_to_open);
     // Setup some handlers
     signal(SIGINT, signal_handler);  // ctrl-c handler
     shutdown_handler = [&](int signal) { pod->trigger_shutdown(); };
@@ -272,8 +318,9 @@ int main(int argc, char **argv) {
   #else
     Utils::loglevel = LogLevel::LOG_EDEBUG;
     testing::InitGoogleTest(&argc, argv);  // after calling this, all argc/v related to gtest are removed
-    parse_command_line_args(argc, argv, &config_to_open);
+    parse_command_line_args(argc, argv, &config_to_open, &flight_plan_to_open);
     podtest_global::config_to_open = config_to_open;
+    podtest_global::flight_plan_to_open = flight_plan_to_open;
     return RUN_ALL_TESTS();
   #endif
 }
@@ -284,4 +331,5 @@ int main(int argc, char **argv) {
 // See Pod.h for where this namespace is declared.
 namespace podtest_global {
   std::string config_to_open;
+  std::string flight_plan_to_open;
 }  // namespace podtest_global

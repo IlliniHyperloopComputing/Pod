@@ -19,7 +19,7 @@ class PodTest : public ::testing::Test
     sim_thread = std::thread([&](){ SimulatorManager::sim.sim_connect();});
 
     // Create the Pod object
-    pod = std::make_shared<Pod>(podtest_global::config_to_open);
+    pod = std::make_shared<Pod>(podtest_global::config_to_open, podtest_global::flight_plan_to_open);
 
     // Reset this event, used to make sure we have connected
     pod->processing_error.reset();
@@ -31,7 +31,7 @@ class PodTest : public ::testing::Test
     pod->ready.wait();
 
     // Reset error timeout flags
-    for (int i = 0; i < 8*6; i++) {
+    for (int i = 0; i < FLAGS_PER_ERROR * 6; i++) {
         Command::error_flag_timers[i] = -1000000;  // negative 1 second. 
     }
    

@@ -34,6 +34,10 @@ Pod_State::Pod_State()
   transition_map[Command::CLR_PRU_ERROR] = &Pod_State::no_transition;
   transition_map[Command::CLR_NETWORK_ERROR] = &Pod_State::no_transition;
   transition_map[Command::CLR_OTHER_ERROR] = &Pod_State::no_transition;
+  transition_map[Command::SET_HV_RELAY_HV_POLE] = &Pod_State::no_transition;
+  transition_map[Command::SET_HV_RELAY_LV_POLE] = &Pod_State::no_transition;
+  transition_map[Command::SET_HV_RELAY_PRE_CHARGE] = &Pod_State::no_transition;
+  transition_map[Command::CALC_ACCEL_ZERO_G] = &Pod_State::no_transition;
   steady_state_map[ST_SAFE_MODE] = &Pod_State::steady_safe_mode;
   steady_state_map[ST_FUNCTIONAL_TEST] = &Pod_State::steady_functional;
   steady_state_map[ST_LOADING] = &Pod_State::steady_loading;
@@ -44,6 +48,7 @@ Pod_State::Pod_State()
   steady_state_map[ST_ERROR] = &Pod_State::steady_abort_state;
 
   if (!(ConfiguratorManager::config.getValue("acceleration_timeout", acceleration_timeout) && 
+      ConfiguratorManager::config.getValue("precharge_timeout", launch_ready_precharge_timeout) &&
       ConfiguratorManager::config.getValue("coast_timeout", coast_timeout) &&
       ConfiguratorManager::config.getValue("brake_timeout", brake_timeout) &&
       ConfiguratorManager::config.getValue("estimated_brake_deceleration", estimated_brake_deceleration) &&
@@ -86,6 +91,7 @@ void Pod_State::move_functional_tests() {
 
 /**
  * Can enter (transition into) SAFE_MODE from: 
+ * --Safe Mode (Why?? To re-trigger the safing actions that ST_Safe_Mode() does)
  * --Functional test
  * --Loading
  * --Launch Ready
@@ -93,7 +99,7 @@ void Pod_State::move_functional_tests() {
  **/
 void Pod_State::move_safe_mode() {
   BEGIN_TRANSITION_MAP              /* Current state */
-    TRANSITION_MAP_ENTRY(EVENT_IGNORED)     /* Safe Mode */
+    TRANSITION_MAP_ENTRY(ST_SAFE_MODE)     /* Safe Mode */
     TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Functional test */
     TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Loading */
     TRANSITION_MAP_ENTRY(ST_SAFE_MODE)      /* Launch ready */
@@ -128,8 +134,10 @@ void Pod_State::move_launch_ready() {
     TRANSITION_MAP_ENTRY(EVENT_IGNORED)     // Error State
   END_TRANSITION_MAP(NULL)
 
+  auto_transition_safe_mode.reset();
   auto_transition_brake.reset();
   auto_transition_coast.reset();
+  auto_transition_safe_mode.reset();
 }
 
 // it is important all states should move to braking when this function is called, this is for emergencies
@@ -222,7 +230,7 @@ void Pod_State::no_transition() {
 
 void Pod_State::ST_Safe_Mode() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
-  // brakes.disable_brakes();  // Enable only when ready
+  brakes.disable_brakes(); 
   motor.disable_motors();
   motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
   motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
@@ -231,7 +239,7 @@ void Pod_State::ST_Safe_Mode() {
 
 void Pod_State::ST_Functional_Test() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
-  // brakes.disable_brakes();  // Enable only when ready
+  brakes.disable_brakes();  
   motor.disable_motors();
   motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
   motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
@@ -239,6 +247,7 @@ void Pod_State::ST_Functional_Test() {
 }
 void Pod_State::ST_Loading() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
+  brakes.disable_brakes();  
   motor.disable_motors();
   motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
   motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
@@ -246,20 +255,21 @@ void Pod_State::ST_Loading() {
 }
 void Pod_State::ST_Launch_Ready() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
-  // motor.disable_motors();
-  // motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
-  // motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
-  // motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
+  launch_ready_start_time = microseconds();
+  ready_for_launch = false;  // used in conjunction with the pre-charge timer.
+
+  brakes.disable_brakes();
+  motor.enable_motors();
+
+  motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_ON);
+  motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_ON);
 }
 
 void Pod_State::ST_Flight_Accel() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
   acceleration_start_time = microseconds();
-  brakes.disable_brakes();
-  motor.enable_motors();
-  #ifdef SIM
-  motor.set_throttle(100);
-  #endif
+  flight_plan_index = 0;
+  old_motor_throttle = -1;
 }
 
 void Pod_State::ST_Flight_Coast() {
@@ -305,24 +315,21 @@ void Pod_State::steady_functional(Command::Network_Command * command,
     case Command::SET_HV_RELAY_HV_POLE:
       if (command->value == 0) {
         motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
-      }
-      else if (command->value == 1) {
+      } else if (command->value == 1) {
         motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_ON);
       }
       break;
     case Command::SET_HV_RELAY_LV_POLE:
       if (command->value == 0) {
         motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
-      }
-      else if (command->value == 1) {
-        motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
+      } else if (command->value == 1) {
+        motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_ON);
       }
       break;
     case Command::SET_HV_RELAY_PRE_CHARGE:
       if (command->value == 0) {
         motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
-      }
-      else if (command->value == 1) {
+      } else if (command->value == 1) {
         motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_ON);
       }
       break;
@@ -333,6 +340,10 @@ void Pod_State::steady_functional(Command::Network_Command * command,
     case Command::DISABLE_BRAKE:
       // deactivate brakes
       brakes.disable_brakes();
+      break;
+    case Command::CALC_ACCEL_ZERO_G:
+      // trigger calculate zero g
+      SourceManager::ADC.calculate_zero_g();
       break;
     default:
       break;
@@ -345,6 +356,13 @@ void Pod_State::steady_loading(Command::Network_Command * command,
 
 void Pod_State::steady_launch_ready(Command::Network_Command * command, 
                                     UnifiedState* state) {
+  // check if precharge complete
+  int64_t timeout_check = microseconds() - acceleration_start_time;
+  if (timeout_check > launch_ready_precharge_timeout && !ready_for_launch) {
+    motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
+    motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_ON);
+    ready_for_launch = true;  // Set true so we can't get into this IF again
+  }
 }
 
 void Pod_State::steady_flight_accelerate(Command::Network_Command * command, 
@@ -354,6 +372,12 @@ void Pod_State::steady_flight_accelerate(Command::Network_Command * command,
   int32_t vel = state->motion_data->x[1];
   int32_t acc = state->motion_data->x[2];
   int64_t timeout_check = microseconds() - acceleration_start_time;
+
+  int16_t motor_throttle = ConfiguratorManager::config.getFlightPlan(timeout_check, &flight_plan_index);
+  if (motor_throttle != old_motor_throttle) {
+    old_motor_throttle = motor_throttle;
+    motor.set_throttle(motor_throttle);
+  }
   
   // Transition if kinematics demand it, or we exceed our timeout
   if (shouldBrake(vel, pos) || timeout_check >= acceleration_timeout) {
@@ -379,11 +403,11 @@ void Pod_State::steady_flight_brake(Command::Network_Command * command,
   int64_t timeout_check = microseconds() - brake_start_time;
 
   // Transition after we exceed our timeout AND acceleration AND Velocity are under a configurable value.
-  if (std::abs(acc) < not_moving_velocity 
+  if (std::abs(acc) < not_moving_acceleration
       && std::abs(vel) < not_moving_velocity 
       && timeout_check >= brake_timeout) {
-    Command::put(Command::Network_Command_ID::TRANS_FLIGHT_BRAKE, 0);
-    auto_transition_brake.invoke();
+    Command::put(Command::Network_Command_ID::TRANS_SAFE_MODE, 0);
+    auto_transition_safe_mode.invoke();
   }
 }
 

@@ -18,9 +18,9 @@ enum E_States : uint32_t {
 
 // Defines for selecting a particular relay
 enum HV_Relay_Select {
-  RELAY_PRE_CHARGE = 1,  // Pre-charge relay of the High-Voltage battery
-  RELAY_LV_POLE = 2,  // Low Voltage pole of the High-Voltage battery
-  RELAY_HV_POLE = 3,  // High Voltage pole of the High-Voltage battery
+  RELAY_PRE_CHARGE = 0,  // Pre-charge relay of the High-Voltage battery
+  RELAY_LV_POLE = 1,  // Low Voltage pole of the High-Voltage battery
+  RELAY_HV_POLE = 2,  // High Voltage pole of the High-Voltage battery
 };
 
 // Defines for selecting a particular relay state
@@ -29,9 +29,17 @@ enum HV_Relay_State {
   RELAY_OFF = 0x00,
 };
 
-#define NUM_ACCEL 3
+#define NUM_ADC 7
+#define NUM_ACCEL 2
 struct ADCData {
-  int32_t accel[NUM_ACCEL];
+  int32_t data[NUM_ADC];
+  // [0]  
+  // [1]  
+  // [2]  
+  // [3]  
+  // [4]  
+  // [5]  
+  // [6]  
 };
 
 
@@ -117,11 +125,14 @@ enum CANErrors {
   CAN_SETUP_FAILURE = 0x1,
   CAN_SEND_FRAME_ERROR = 0x2,
   CAN_RECV_FRAME_ERROR = 0x4,
-  CAN_OVER_VOLTAGE_ERROR = 0x8,
-  CAN_UNDER_VOLTAGE_ERROR = 0x10,
-  CAN_OVER_CURRENT = 0x20,
-  CAN_OVER_TEMPERATURE = 0x40,
-  CAN_MOTOR_CONTROLLER_ERROR = 0x80,
+  CAN_MOTOR_CONTROLLER_HV_OVER_VOLTAGE_ERROR = 0x8,
+  CAN_MOTOR_CONTROLLER_HV_UNDER_VOLTAGE_ERROR = 0x10,
+  CAN_MOTOR_CONTROLLER_OVER_CURRENT = 0x20,
+  CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE = 0x40,
+  CAN_MOTOR_CONTROLLER_INTERNAL_ERROR = 0x80,
+  CAN_MOTOR_CONTROLLER_LV_OVER_VOLTAGE_ERROR = 0x100,
+  CAN_MOTOR_CONTROLLER_LV_UNDER_VOLTAGE_ERROR = 0x200,
+  CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE = 0x400,
 };
 
 enum I2CErrors {
@@ -153,7 +164,7 @@ enum OTHERErrors {
 };
 
 struct Errors{
-  uint8_t error_vector[6]; 
+  uint32_t error_vector[6]; 
   // [0] ADC errors
   // [1] CAN errors
   // [2] I2C errors

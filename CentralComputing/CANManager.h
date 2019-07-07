@@ -80,7 +80,9 @@ class CANManager : public SourceManagerBase<CANData> {
   const unsigned int can_id_bms_two = 53;
   const unsigned int can_id_bms_relay = 0x6A0;
 
-  uint32_t relay_state_buf;  // used while sending CAN Frames to BMS
+  // uint32_t relay_state_buf;  // used while sending CAN Frames to BMS
+  char relay_state_buf[3];
+  // (reinterpret_cast<char*>(&relay_state_buf))[relay] = state;
 
   int32_t error_motor_ctrl_over_temp;
   int32_t error_motor_over_temp;
@@ -95,6 +97,8 @@ class CANManager : public SourceManagerBase<CANData> {
   int32_t error_battery_over_voltage;
   int32_t error_battery_under_voltage;
   int32_t error_battery_over_current;
+
+  std::mutex send_mutex;
 
   std::string name(){
     return "can";
