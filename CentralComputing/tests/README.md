@@ -1,11 +1,33 @@
-# Running tests
-  * `make clean`
-  * `make sbuild`
-  * `./sbuild --gtest_repeat=5 --gtest_break_on_failure --gtest_shuffle`
+# Parking Lot / Vacuum Chamber / External Sub Track / Hyperloop Test Track Open Air
+1. Sensor Tests. No Motor / No Brake
+    * Ability to test all sensors without any motor or brake actuation. 
+    * **Run the "-na" version of the software**. 
+      * This is the `NO_ACTION` version which prevents any actuation
+2. Automatic State Transitions with low thresholds. No Motor / No Brake
+    * Lower the thresholds that trigger state transitions.
+    * Push Pod on cart or rail, to test state transitions with accelerometer and optical encoders
+    * **Run the "-na" version of the software**. 
+      * This is the `NO_ACTION` version which prevents any actuation
+      * Modify Configuration file to lower transition thresholds.
+3. Test Brakes. No Motor / Brake Only 
+    * Pod is pushed up to speed manually, coasts, and brakes on its own
+    * Automatic transition thresholds are lowered
+    * **Run the normal version of the software**. 
+      * Modify Flight Plan to ensure motor doesn't throttle up.
+      * Brakes will actuate as normal
+      * Modify Configuration file to lower transition thresholds.
+4. Simulate Full Run. Motor / Brake 
+    * Pod accelerates for a brief period under its own power, coasts, and brakes on its own
+    * Automatic transition thresholds are lowered.
+    * This test can be scaled for different lengths and motor powers
+    * **Run the normal version of the software**. 
+      * Modify Flight Plan for whatever motor power is desired 
+      * Brakes will actuate as normal
+      * Modify Configuration file to whatever transition thresholds.
 
 ---
 
-# Critical Software Tests
+# Critical Software Unit Tests
 
 All tests are written in C++, using the GoogleTest Framework. Run all tests using the `SIM` build of the codebase: `./sbuild` or `./scross`. Apply the usual `gtest` flags to filter specific tests or repeat. 
 
@@ -16,6 +38,12 @@ The `PodTest` Hierarchy defines a startup and cleanup method that runs before an
   * Sensor values for any sensors can be injected at anytime into the Pod. 
 
 **With this testing suite, all inputs and outputs are exposed, allowing for full testing of the Pod**
+
+## Running tests
+  * `make clean`
+  * `make sbuild`
+  * `./sbuild --gtest_repeat=5 --gtest_break_on_failure --gtest_shuffle`
+  * Use `--gtest_filter=` as appropriate
 
 ## Unit Tests verifying state diagram:
 
@@ -91,7 +119,7 @@ These tests automatically verify that the state machine cannot move into other s
       * `PodTest.FlightAbortToSafe`
 
 ### Automatic Transition Tests (Without Errors)
-  _Ensure that automatic transitions work, assuming no Error conditions. These are larger scale scenarios that test the overall behavior of the software._
+  _Ensure that automatic transitions work, assuming no Error conditions._
 
 1. Test that `Flight - Acceleration` transitions to:
     * `Flight - Coast` 
@@ -152,18 +180,3 @@ These tests automatically verify that the state machine cannot move into other s
     * Does not transition upon `Safety Critical Error`
     * Does not transition upon `Sensor Data Error`
 
----
-
-## Parking Lot / Vacuum Chamber / External Sub Track / Hyperloop Test Track Open Air
-1. Sensor Tests. No Motor / No Brake
-    * Ability to test all sensors without any motor or brake actuation. 
-2. Automatic State Transitions with low thresholds. No Motor / No Brake
-    * Lower the thresholds that trigger state transitions.
-    * Push Pod on cart or rail, to test state transitions with accelerometer and optical encoders
-3. Test Brakes. No Motor / Brake Only 
-    * Pod is pushed up to speed manually, coasts, and brakes on its own
-    * Automatic transition thresholds are lowered
-4. Simulate Full Run. Motor / Brake 
-    * Pod accelerates for a brief period under its own power, coasts, and brakes on its own
-    * Automatic transition thresholds are lowered.
-    * This test can be scaled for different lengths and motor powers
