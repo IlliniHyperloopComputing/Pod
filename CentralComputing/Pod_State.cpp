@@ -137,6 +137,7 @@ void Pod_State::move_launch_ready() {
   auto_transition_safe_mode.reset();
   auto_transition_brake.reset();
   auto_transition_coast.reset();
+  auto_transition_safe_mode.reset();
 }
 
 // it is important all states should move to braking when this function is called, this is for emergencies
