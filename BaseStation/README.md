@@ -36,10 +36,12 @@ To start the dev page perform the following steps:
 # ToDo
 * UDP port is not detecting if it is in use. Needs to be fixed.
     * [Issue 101 on github](https://github.com/IlliniHyperloopComputing/Pod/issues/101) has data that needs to be processed.
-* Warning needs to have real data
-* Ready button needs to change text for current state
+* Warning needs to have real data or be deleted
 * State needs to be shown more prominently
-* Buttons clicks need to result in tcp/udp commands
-* Battery percentage needs to be calculated
-* New launcher needs to be created
+* More stats need to be shown
+* Stat danger calculations
+* This file needs to be updated
+* Battery percentage needs to be calculated/ obtained from the BMS
 * Testing on heavy load
+* Create Dockerfile
+* Beautify
