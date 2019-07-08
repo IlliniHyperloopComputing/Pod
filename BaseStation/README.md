@@ -1,5 +1,4 @@
 # How to start the backend
-BROKEN
 
 In the backend folder run `python manage.py runserver`
 * This requires python3, Django, and django-cors-headers to be installed
@@ -35,5 +34,12 @@ To start the dev page perform the following steps:
 5. You are now ready to go. Send commands by selecting one from the drop down and enter a value if needed. Data should be displaying assuming there is at least one row in the database.
 
 # ToDo
-UDP port is not detecting if it is in use. Needs to be fixed.
-[Issue 101 on github](https://github.com/IlliniHyperloopComputing/Pod/issues/101) has data that needs to be processed.
+* UDP port is not detecting if it is in use. Needs to be fixed.
+    * [Issue 101 on github](https://github.com/IlliniHyperloopComputing/Pod/issues/101) has data that needs to be processed.
+* Warning needs to have real data
+* Ready button needs to change text for current state
+* State needs to be shown more prominently
+* Buttons clicks need to result in tcp/udp commands
+* Battery percentage needs to be calculated
+* New launcher needs to be created
+* Testing on heavy load

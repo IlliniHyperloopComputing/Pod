@@ -19,14 +19,17 @@ export class ButtonsService {
       "button":"ready"
     }
     console.log(toSend)
-    this.http.post("http://localhost:8000/api/commands/button", toSend, this.httpOptions).subscribe();
+    return this.http.post("http://localhost:8000/api/commands/button", toSend, this.httpOptions);
   }
 
   clickRight() {
     const toSend = {
       "button":"e-stop"
     }
-    console.log(toSend)
-    this.http.post("http://localhost:8000/api/commands/button", toSend, this.httpOptions).subscribe();
+    return this.http.post("http://localhost:8000/api/commands/button", toSend, this.httpOptions);
+  }
+
+  getState() {
+    return this.http.get<number>("http://localhost:8000/api/data/state");
   }
 }

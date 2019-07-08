@@ -1,6 +1,5 @@
 from django.shortcuts import render
-from . import models
-from . import tcpserver, udpserver
+from . import models, tcpserver, udpserver
 from django.http import HttpResponse, HttpRequest, JsonResponse
 from django.core.serializers import serialize
 import pickle
@@ -14,10 +13,8 @@ UDPUp = False
 
 def state(request):
     state_data = models.State.objects.latest("date_time")
-    toReturn = {
-        "value": state_data.state
-    }
-    return JsonResponse(toReturn)
+    toReturn = state_data.state
+    return HttpResponse(toReturn)
 
 def stats(request):
     state_data = models.State.objects.latest("date_time")

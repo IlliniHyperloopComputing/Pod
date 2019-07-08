@@ -1,16 +1,31 @@
-from . import tcpserver
+from . import tcpserver, models
 import json
 from django.http import HttpResponse, HttpRequest, JsonResponse
 
 def buttonPressed(request):
+    state_data = models.State.objects.latest("date_time")
     if request.method == "POST":
         message = request.body.decode()
         mess = json.loads(message)
         if mess["button"] == "ready":
-            print("ready")
+            if state_data.state == 0:
+                print("Transitioning to Test")
+                tcpserver.addToCommandQueue([1, 0])
+            elif state_data.state == 1:
+                print("Transitioning to Loading")
+                tcpserver.addToCommandQueue([2, 0])
+            elif state_data.state == 2:
+                print("Transitioning to Launch Ready")
+                tcpserver.addToCommandQueue([3, 0])
+            elif state_data.state == 3:
+                print("Transitioning to Launch")
+                tcpserver.addToCommandQueue([4, 0])
+            else:
+                print("State out of left button range")
         else:
-            print("e-stop")
-    return HttpResponse()
+            print("AGGHHHH STOP FAST")
+            tcpserver.addToCommandQueue([5, 0])
+    return HttpResponse(state_data.state)
 
 #  TRANS_SAFE_MODE = 0,
 #  TRANS_FUNCTIONAL_TEST = 1,
