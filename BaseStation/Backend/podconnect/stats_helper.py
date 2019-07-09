@@ -1,0 +1,239 @@
+from . import models
+
+def getStats():
+    state_data = models.State.objects.latest("date_time")
+    can_data = models.CANData.objects.latest("date_time")
+
+    can_data_motor = {
+        "stats": [
+            {
+                "name": "Status Word",
+                "value": str(hex(can_data.status_word)),
+                "color": "limegreen"
+            },
+            {
+                "name": "Position_Val",
+                "value": str(can_data.position_val),
+                "color": "limegreen"
+            },
+            {
+                "name": "Torque_Val",
+                "value": str(can_data.torque_val),
+                "color": "limegreen"
+            },
+            {
+                "name": "Controller_Temp",
+                "value": str(can_data.controller_temp),
+                "color": "limegreen"
+            },
+            {
+                "name": "Motor_Temp",
+                "value": str(can_data.motor_temp),
+                "color": "limegreen"
+            },
+            {
+                "name": "DC_Link_Voltage",
+                "value": str(can_data.dc_link_voltage),
+                "color": "limegreen"
+            },
+            {
+                "name": "Logic_Power_Supply_Voltage",
+                "value": str(can_data.logic_power_supply_voltage),
+                "color": "limegreen"
+            },
+            {
+                "name": "Current_Demand",
+                "value": str(can_data.current_demand),
+                "color": "limegreen"
+            },
+            {
+                "name": "Motor_Current_Val",
+                "value": str(can_data.motor_current_val),
+                "color": "limegreen"
+            },
+            {
+                "name": "Electrical_Angle",
+                "value": str(can_data.electrical_angle),
+                "color": "limegreen"
+            },
+            {
+                "name": "Phase_A_Current",
+                "value": str(can_data.phase_a_current),
+                "color": "limegreen"
+            },
+            {
+                "name": "Phase_B_Current",
+                "value": str(can_data.phase_b_current),
+                "color": "limegreen"
+            }
+        ]}
+    can_data_bms = {
+        "stats": [
+            {
+                "name": "Internal_Relay_State",
+                "value": str(hex(can_data.internal_relay_state)),
+                "color": "limegreen"
+            },
+            {
+                "name": "Relay_State",
+                "value": str(hex(can_data.relay_state)),
+                "color": "limegreen"
+            },
+            {
+                "name": "Rolling_Counter",
+                "value": str(can_data.rolling_counter),
+                "color": "limegreen"
+            },
+            {
+                "name": "Fail_Safe_State",
+                "value": str(hex(can_data.fail_safe_state)),
+                "color": "limegreen"
+            },
+            {
+                "name": "Peak_Current",
+                "value": str(can_data.peak_current),
+                "color": "limegreen"
+            },
+            {
+                "name": "Pack_Voltage_Inst",
+                "value": str(can_data.pack_voltage_inst),
+                "color": "limegreen"
+            },
+            {
+                "name": "Pack_Voltage_Open",
+                "value": str(can_data.pack_voltage_open),
+                "color": "limegreen"
+            },
+            {
+                "name": "Pack_SOC",
+                "value": str(can_data.pack_soc),
+                "color": "limegreen"
+            },
+            {
+                "name": "Pack_Amphours",
+                "value": str(can_data.pack_amphours),
+                "color": "limegreen"
+            },
+            {
+                "name": "Pack_Resistance",
+                "value": str(can_data.pack_resistance),
+                "color": "limegreen"
+            },
+            {
+                "name": "Pack_DOD",
+                "value": str(can_data.pack_dod),
+                "color": "limegreen"
+            },
+            {
+                "name": "Pack_SOH",
+                "value": str(can_data.pack_soh),
+                "color": "limegreen"
+            },
+            {
+                "name": "Current_Limit_Status",
+                "value": str(can_data.current_limit_status),
+                "color": "limegreen"
+            },
+            {
+                "name": "Max_Pack_DCL",
+                "value": str(can_data.max_pack_dcl),
+                "color": "limegreen"
+            },
+            {
+                "name": "Avg_Pack_Current",
+                "value": str(can_data.avg_pack_current),
+                "color": "limegreen"
+            },
+            {
+                "name": "Highest_Temp",
+                "value": str(can_data.highest_temp),
+                "color": "red"
+            },
+            {
+                "name": "Highest_Temp_ID",
+                "value": str(can_data.highest_temp_id),
+                "color": "red"
+            },
+            {
+                "name": "Avg_Temp",
+                "value": str(can_data.avg_temp),
+                "color": "limegreen"
+            },
+            {
+                "name": "Internal_Temp",
+                "value": str(can_data.internal_temp),
+                "color": "limegreen"
+            },
+            {
+                "name": "Low_Cell_Voltage",
+                "value": str(can_data.low_cell_voltage),
+                "color": "limegreen"
+            },
+            {
+                "name": "Low_Cell_Voltage_ID",
+                "value": str(can_data.low_cell_voltage_id),
+                "color": "limegreen"
+            },
+            {
+                "name": "High_Cell_Voltage",
+                "value": str(can_data.high_cell_voltage),
+                "color": "limegreen"
+            },
+            {
+                "name": "High_Cell_Voltage_ID",
+                "value": str(can_data.high_cell_voltage_id),
+                "color": "limegreen"
+            },
+            {
+                "name": "Low_Cell_InternalR",
+                "value": str(can_data.low_cell_internalR),
+                "color": "limegreen"
+            },
+            {
+                "name": "Low_Cell_InternalR_ID",
+                "value": str(can_data.low_cell_internalR_id),
+                "color": "limegreen"
+            },
+            {
+                "name": "High_Cell_InternalR",
+                "value": str(can_data.high_cell_internalR),
+                "color": "limegreen"
+            },
+            {
+                "name": "High_Cell_InternalR_ID",
+                "value": str(can_data.high_cell_internalR_id),
+                "color": "limegreen"
+            },
+            {
+                "name": "Power_Voltage_Input",
+                "value": str(can_data.power_voltage_input),
+                "color": "limegreen"
+            },
+            {
+                "name": "DTC_Status_One",
+                "value": str(hex(can_data.dtc_status_one)),
+                "color": "limegreen"
+            },
+            {
+                "name": "DTC_Status_Two",
+                "value": str(hex(can_data.dtc_status_two)),
+                "color": "limegreen"
+            },
+            {
+                "name": "Adaptive_Total_Cap",
+                "value": str(can_data.adaptive_total_cap),
+                "color": "limegreen"
+            },
+            {
+                "name": "Adaptive_Amphours",
+                "value": str(can_data.adaptive_amphours),
+                "color": "limegreen"
+            },
+            {
+                "name": "Adaptive_SOC",
+                "value": str(can_data.adaptive_soc),
+                "color": "limegreen"
+            }
+        ]}
+    toReturn = [can_data_motor, can_data_bms]
+    return toReturn

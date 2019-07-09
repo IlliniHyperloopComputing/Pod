@@ -1,3 +1,9 @@
+# How to automatically start everything
+* Make sure you have pip3 and nodejs installed
+* run `./install_requirements.sh` to install requirements
+* run `./start_basestation.sh` to start everything
+* run `./kill_basestation.sh` to kill everything
+
 # How to start the backend manually
 * First navigate to the Backend folder
 * Make sure all requirements are installed by running `pip install -r requirements.txt`
@@ -19,13 +25,10 @@ By default the HTTP server will run on port 8000.
 # ToDo
 * UDP port is not detecting if it is in use. Needs to be fixed.
     * [Issue 101 on github](https://github.com/IlliniHyperloopComputing/Pod/issues/101) has data that needs to be processed.
-* Warning needs to have real data or be deleted
 * Frontend does not detect if connection is lost
 * State needs to be shown more prominently
 * More stats need to be shown
 * Stat danger calculations
-* This file needs to be updated
-* Battery percentage needs to be calculated/ obtained from the BMS
+* Finish command code implementation
 * Testing on heavy load
-* Create Launcher
 * Beautify
