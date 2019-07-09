@@ -1,6 +1,9 @@
-from . import tcpserver, models
+from . import tcpserver, udpserver, models
 import json
 from django.http import HttpResponse, HttpRequest, JsonResponse
+
+TCPUp = False
+UDPUp = False
 
 def buttonPressed(request):
     state_data = models.State.objects.latest("date_time")
@@ -101,3 +104,14 @@ def devCommand(request):
 
         return HttpResponse()
     return HttpResponse()
+
+def startupServers(request):
+    global TCPUp, UDPUp
+    if request.method == "POST":
+        if not TCPUp:
+            tcpserver.start()
+            TCPUp = True
+        if not UDPUp:
+            udpserver.start()
+            UDPUp = True
+        return HttpResponse()
