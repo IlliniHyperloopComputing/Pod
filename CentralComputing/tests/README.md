@@ -121,22 +121,22 @@ These tests automatically verify that the state machine cannot move into other s
   _Ensure that automatic transitions work, assuming no Error conditions._
 
 1. Test that `Flight - Acceleration` transitions to:
-    * `Flight - Coast` 
+    * `Flight - Coast`  _(cond. below can be found in Pod_State::steady_flight_accelerate)_
     * when `accel_timeout` is exceeded
     * Tested in:
       * `PodTest.AutomaticTransitionTestTimeouts`
 2. Test that ` Flight - Acceleration ` transitions to:  
-    * `Flight - Coast`
-    * when `d+(v^2) / (2*A_b) ≥ D_t − D_b` is satisfied
+    * `Flight - Coast`  _(cond. below can be found in Pod_State::steady_flight_accelerate)_
+    * when `x+(v^2) / (2*Est_Brake_Decel) ≥ length_of_track - brake_buffer_length` is satisfied
       * `PodTest.AutomaticTransitionBasic`
       * `PodTest.AutomaticTransitionSensors`
       * `PodTest.AutomaticTransitionLong`
 3. Test that ` Flight - Coast ` transitions to:
-    * `Flight - Brake`
+    * `Flight - Brake`  _(cond. below can be found in Pod_State::steady_flight_coast)_
     * when `coast_timeout` is exceeded
       * `PodTest.AutomaticTransitionTestTimeouts`
 4. Test that `Flight - Brake` transitions to:
-    * `Safe Mode`
+    * `Safe Mode`  _(cond.s below can be found in Pod_State::steady_flight_brake)_
     * when `brake_timeout` is exceeded
     * AND
     * when `|accel| =< not_moving_accel` is satisfied
