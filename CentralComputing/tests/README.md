@@ -123,12 +123,18 @@ These tests automatically verify that the state machine cannot move into other s
 1. Test that `Flight - Acceleration` transitions to:
     * `Flight - Coast` 
     * when `accel_timeout` is exceeded
+    * Tested in:
+      * `PodTest.AutomaticTransitionTestTimeouts`
 2. Test that ` Flight - Acceleration ` transitions to:  
     * `Flight - Coast`
     * when `d+(v^2) / (2*A_b) ≥ D_t − D_b` is satisfied
+      * `PodTest.AutomaticTransitionBasic`
+      * `PodTest.AutomaticTransitionSensors`
+      * `PodTest.AutomaticTransitionLong`
 3. Test that ` Flight - Coast ` transitions to:
     * `Flight - Brake`
     * when `coast_timeout` is exceeded
+      * `PodTest.AutomaticTransitionTestTimeouts`
 4. Test that `Flight - Brake` transitions to:
     * `Safe Mode`
     * when `brake_timeout` is exceeded
@@ -136,6 +142,7 @@ These tests automatically verify that the state machine cannot move into other s
     * when `|accel| =< not_moving_accel` is satisfied
     * AND
     * when `|vel| =< not_moving_vel` is satisfied
+      * `PodTest.AutomaticTransitionFlightBrakeToSafeMode`
 
 ### Error Generation Unit Tests (Safety Critical Errors)
   _Test that `Safety Critical Errors` generate the appropriate internal error when conditions are met._
