@@ -1,5 +1,5 @@
 cd Backend
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 cd ../frontend
 npm install
 cd ..
