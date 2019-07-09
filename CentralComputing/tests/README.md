@@ -89,7 +89,6 @@ These tests automatically verify that the state machine cannot move into other s
       * `PodTest.LaunchReadyFailures`
       * `PodTest.LaunchReadyToSafe`
       * `PodTest.LaunchReadyAbort`
-   * Tested in:
 6. Test that `Flight - Acceleration` can only transition to:
     * `Flight - Coast`
     * `Flight - Abort`
