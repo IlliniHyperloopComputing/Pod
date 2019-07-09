@@ -1,12 +1,13 @@
 #ifdef SIM // Only compile if building test executable
 #include "PodTest.cpp"
-#include "ScenarioBasic.h"
+#include "ScenarioSensorFree.h"
 #include "ScenarioRealNoFault.h"
 #include "ScenarioRealLong.h"
 #include "ScenarioTestTimeouts.h"
 using std::make_shared;
 
 TEST_F(PodTest, AutomaticTransitionBasic) {
+  ConfiguratorManager::config.openConfigFile("tests/basicFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioBasic>());
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
@@ -36,7 +37,31 @@ TEST_F(PodTest, AutomaticTransitionBasic) {
 
 }
 
+TEST_F(PodTest, AutomaticTransitionFlightBrakeToSafeMode) {
+    MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
+    MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
+    MoveState(Command::Network_Command_ID::TRANS_LAUNCH_READY, E_States::ST_LAUNCH_READY, true);
+    MoveState(Command::Network_Command_ID::LAUNCH, E_States::ST_FLIGHT_ACCEL, true);
+    EXPECT_TRUE(pod->state_machine->motor.is_enabled());
+    EXPECT_FALSE(pod->state_machine->brakes.is_enabled());
+    
+    //okay, now we want to send the signal to brake:
+    MoveState(Command::Network_Command_ID::EMERGENCY_BRAKE, E_States::ST_FLIGHT_BRAKE, true);
+    EXPECT_FALSE(pod->state_machine->motor.is_enabled());
+    EXPECT_TRUE(pod->state_machine->brakes.is_enabled());
+
+    print(LogLevel::LOG_DEBUG, "Sim - Waiting for Brake timeout to complete...\n");    
+    //after the brakes are hit, the pod should automatically transition into safe mode:
+    pod->processing_command.reset();
+    pod->state_machine->auto_transition_safe_mode.wait();
+    pod->processing_command.wait();
+    EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
+    EXPECT_FALSE(pod->state_machine->motor.is_enabled());
+    EXPECT_FALSE(pod->state_machine->brakes.is_enabled());
+}
+
 TEST_F(PodTest, AutomaticTransitionSensors) {
+  ConfiguratorManager::config.openConfigFile("tests/basicFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioRealNoFault>());
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
@@ -67,6 +92,7 @@ TEST_F(PodTest, AutomaticTransitionSensors) {
 }
 
 TEST_F(PodTest, AutomaticTransitionLong) {
+  ConfiguratorManager::config.openConfigFile("tests/realFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioRealLong>());
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
@@ -94,9 +120,15 @@ TEST_F(PodTest, AutomaticTransitionLong) {
   pod->processing_command.wait();
   EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_FLIGHT_BRAKE);
 
+  pod->processing_command.reset();
+  pod->state_machine->auto_transition_safe_mode.wait();
+  pod->processing_command.wait();
+  EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_SAFE_MODE);
+
 }
 
 TEST_F(PodTest, AutomaticTransitionTestTimeouts) {
+  ConfiguratorManager::config.openConfigFile("tests/basicFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioTestTimeouts>());
   MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
@@ -138,6 +170,5 @@ TEST_F(PodTest, AutomaticTransitionTestTimeouts) {
   EXPECT_LT(microseconds()-c_start, coast_timeout*2); // test to make sure that we are bounded 
   pod->processing_command.wait();
   EXPECT_EQ(pod->state_machine->get_current_state(), E_States::ST_FLIGHT_BRAKE);
-
 }
 #endif

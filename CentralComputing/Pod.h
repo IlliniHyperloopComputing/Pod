@@ -21,7 +21,8 @@
 
 class Pod {
  public:
-  explicit Pod(const std::string & config_to_open);
+  explicit Pod(const std::string & config_to_open, const std::string & flight_plan_to_open);
+
   ~Pod();
 
   void run();
@@ -52,6 +53,7 @@ class Pod {
 
 namespace podtest_global {
   extern std::string config_to_open;
+  extern std::string flight_plan_to_open;
 }  // namespace podtest_global
 
 void signal_handler(int signal);

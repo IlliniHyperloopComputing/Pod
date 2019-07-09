@@ -6,8 +6,12 @@ pru_manager_timeout 100000.0 # Units are microseconds
 logic_loop_timeout  1000.0   # Units are microseconds
 tcp_write_loop_timeout 1000000 # Units are microseconds
 
+adc_filename /dev/iio:device0  # Internal ADC filename
+adc_calc_zero_g_timeout 2000000  # Units are microseconds 
+adc_default_zero_g       2048     # In ADC levels (12 bit). 0.9V of 1.8V, 12 bit, 2048
+
 tcp_port 8001
-tcp_addr 192.168.7.1 #127.0.0.1
+tcp_addr 127.0.0.1 #192.168.7.1 #127.0.0.1
 
 tcp_stagger_time1 1000000 # Units are microseconds
 tcp_stagger_time2 3000000 # Units are microseconds
@@ -16,6 +20,11 @@ tcp_stagger_time3 6000000 # Units are microseconds
 udp_send_port 5004
 udp_recv_port 5005
 udp_addr 127.0.0.1
+
+precharge_timeout     30000000    # 30 second precharge delay
+acceleration_timeout  15000000     # 15 second. Units are microseconds
+coast_timeout         200000      # .2 second. Units are microseconds
+brake_timeout         10000000    # 10 second. Units are microseconds
 
 low_pass_filter_velocity 0.90
 low_pass_filter_acceleration 0.90
@@ -52,9 +61,6 @@ error_battery_box_under_pressure 2000
 error_orange_diff 20
 error_encoder_wheel_diff 30
 
-acceleration_timeout 1000000 # Units are microseconds
-coast_timeout 200000          # Units are microseconds
-brake_timeout 10000000        # Units are microseconds
 
 estimated_brake_deceleration 9810 # Units are mm/s/s
 
@@ -62,5 +68,12 @@ length_of_track     1250000  # Units are mm
 brake_buffer_length 50000    # Units are mm
 
 not_moving_velocity     200  # Units are mm/s
-not_moving_acceleration 200  # Units are mm/s
+not_moving_acceleration 10   # Units are ADC levels. there are 455 levels per G, 46.4 levels per m/s/s
 
+scn_gear_ratio 2.79             # For scenario 
+scn_mass 112                    # For scenario Units are kg
+scn_brake_deceleration -8.06    # For scenario Units are m/s/s
+scn_drive_wheel_radius 0.1016   # For scenario, Units are m
+scn_rated_torque 230            # For scenario. Target Torque = rated_torque * throttle / 1000
+scn_rear_wheel_circ 0.319186    # For scenario. meters.
+scn_dist_between_orange 30.48   # Distance between orange tapes (100 feet) meters.

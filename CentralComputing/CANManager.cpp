@@ -59,12 +59,9 @@ void CANManager::stop_source() {
 bool CANManager::send_frame(uint32_t can_id, const char * buf, int len) {
   // Populate frame
   s_frame.can_id = can_id;
-  // strncpy((char *)(s_frame.data), buf, (size_t)len);
-  memcpy((char*) s_frame.data, buf, len);
-  // s_frame.data[0] = buf[0];
-  // s_frame.data[1] = buf[1];
-  // s_frame.data[2] = buf[2];
-  print(LogLevel::LOG_INFO, "CAN frame id: %x data:%x %x %x \n",can_id, s_frame.data[0], s_frame.data[1], s_frame.data[2]);
+  memcpy(reinterpret_cast<char*>(s_frame.data), buf, len);
+  print(LogLevel::LOG_INFO, "CAN frame id: %x data:%x %x %x \n",
+                            can_id, s_frame.data[0], s_frame.data[1], s_frame.data[2]);
   
   s_frame.can_dlc = len;
   // Write s_frame
@@ -125,7 +122,8 @@ std::shared_ptr<CANData> CANManager::refresh() {
 
   int64_t a = Utils::microseconds();
   // Send HV battery relay state frame
-  // print(LogLevel::LOG_INFO, "CAN relay state %d %d %d \n", relay_state_buf[0], relay_state_buf[1], relay_state_buf[2]);
+  // print(LogLevel::LOG_INFO, "CAN relay state %d %d %d \n", 
+  //                          relay_state_buf[0], relay_state_buf[1], relay_state_buf[2]);
 
   send_mutex.lock();  // Used to protect socketfd (TSan datarace)
   if (!send_frame(can_id_bms_relay, (relay_state_buf), 3)) {
@@ -284,17 +282,17 @@ void CANManager::set_motor_state(bool enable) {  // TODO: Need to Send controlwo
   std::lock_guard<std::mutex> guard(send_mutex);  // Used to protect socketfd (TSan datarace)
   char bufferArray[8];
   if (enable) {
-    bufferArray[0] = (char) 0x80;
+    bufferArray[0] = static_cast<char>(0x80);
     bufferArray[1] = 0x00;
     send_frame(0, bufferArray, 2);  // Send pre-operational
     Utils::busyWait(10000);
 
-    bufferArray[0] = (char) 0x01;
+    bufferArray[0] = static_cast<char>(0x01);
     bufferArray[1] = 0x00;
     send_frame(0, bufferArray, 2);  // Send operational
     Utils::busyWait(50000);
 
-    bufferArray[0] = (char) 0x06;
+    bufferArray[0] = static_cast<char>(0x06);
     bufferArray[1] = 0x00;
     bufferArray[2] = 0x00;
     bufferArray[3] = 0x00;
@@ -305,7 +303,7 @@ void CANManager::set_motor_state(bool enable) {  // TODO: Need to Send controlwo
     send_frame(0x201, bufferArray, 8);  // Move motor  to read-to-switch on
     Utils::busyWait(50000);
 
-    bufferArray[0] = (char) 0x07;
+    bufferArray[0] = static_cast<char>(0x07);
     bufferArray[1] = 0x00;
     bufferArray[2] = 0x00;
     bufferArray[3] = 0x00;
@@ -316,7 +314,7 @@ void CANManager::set_motor_state(bool enable) {  // TODO: Need to Send controlwo
     send_frame(0x201, bufferArray, 8);  // Move motor  to switched-on
     Utils::busyWait(50000);
 
-    bufferArray[0] = (char) 0x0F;
+    bufferArray[0] = static_cast<char>(0x0F);
     bufferArray[1] = 0x00;
     bufferArray[2] = 0x00;
     bufferArray[3] = 0x00;
@@ -326,8 +324,7 @@ void CANManager::set_motor_state(bool enable) {  // TODO: Need to Send controlwo
     bufferArray[7] = 0x00;
     send_frame(0x201, bufferArray, 8);  // Move motor operation enabled with/ PWM on
   } else {
-
-    bufferArray[0] = (char) 0x06;
+    bufferArray[0] = static_cast<char>(0x06);
     bufferArray[1] = 0x00;
     bufferArray[2] = 0x00;
     bufferArray[3] = 0x00;
@@ -338,24 +335,23 @@ void CANManager::set_motor_state(bool enable) {  // TODO: Need to Send controlwo
     send_frame(0x201, bufferArray, 8);  // Exit motor enabled
     Utils::busyWait(50000);
 
-    bufferArray[0] = (char) 0x80;
+    bufferArray[0] = static_cast<char>(0x80);
     bufferArray[1] = 0x00;
     send_frame(0, bufferArray, 2);  // Send pre-operational
   }
-  
 }
 
 void CANManager::set_motor_throttle(int16_t value) {  // Using Throttle Value Here
   std::lock_guard<std::mutex> guard(send_mutex);  // Used to protect socketfd (TSan datarace)
   char bufferArray[8];
-  bufferArray[0] = (char) 0x0F;
+  bufferArray[0] = static_cast<char>(0x0F);
   bufferArray[1] = 0x00;
   bufferArray[2] = 0x00;
   bufferArray[3] = 0x00;
   bufferArray[4] = 0x00;
   bufferArray[5] = 0x00;
-  bufferArray[6] = ((char *)&value)[0];
-  bufferArray[7] = ((char *)&value)[1];
+  bufferArray[6] = (reinterpret_cast<char *>(&value))[0];
+  bufferArray[7] = (reinterpret_cast<char *>(&value))[1];
   send_frame(0x201, bufferArray, 8);  // Move motor operation enabled with/ PWM on
 }
 

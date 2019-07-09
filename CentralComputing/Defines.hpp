@@ -29,10 +29,17 @@ enum HV_Relay_State {
   RELAY_OFF = 0x00,
 };
 
-#define NUM_ACCEL 3
+#define NUM_ADC 7
+#define NUM_ACCEL 2
 struct ADCData {
-  int32_t accel[NUM_ACCEL];
-  int dummy_data;
+  int32_t data[NUM_ADC];
+  // [0]  
+  // [1]  
+  // [2]  
+  // [3]  
+  // [4]  
+  // [5]  
+  // [6]  
 };
 
 
@@ -87,9 +94,10 @@ struct CANData {
   uint32_t adaptive_soc;                // uint8_t
 };
 
+#define NUM_TMP 16
 struct I2CData {
   // replace with actual data structure
-  int dummy_data;
+  int16_t temp[NUM_TMP];
 };
 
 #define NUM_ORANGE_INPUTS 2
@@ -117,17 +125,23 @@ enum CANErrors {
   CAN_SETUP_FAILURE = 0x1,
   CAN_SEND_FRAME_ERROR = 0x2,
   CAN_RECV_FRAME_ERROR = 0x4,
-  CAN_OVER_VOLTAGE_ERROR = 0x8,
-  CAN_UNDER_VOLTAGE_ERROR = 0x10,
-  CAN_OVER_CURRENT = 0x20,
-  CAN_OVER_TEMPERATURE = 0x40,
-  CAN_MOTOR_CONTROLLER_ERROR = 0x80,
+  CAN_MOTOR_CONTROLLER_HV_OVER_VOLTAGE_ERROR = 0x8,
+  CAN_MOTOR_CONTROLLER_HV_UNDER_VOLTAGE_ERROR = 0x10,
+  CAN_MOTOR_CONTROLLER_OVER_CURRENT = 0x20,
+  CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE = 0x40,
+  CAN_MOTOR_CONTROLLER_INTERNAL_ERROR = 0x80,
+  CAN_MOTOR_CONTROLLER_LV_OVER_VOLTAGE_ERROR = 0x100,
+  CAN_MOTOR_CONTROLLER_LV_UNDER_VOLTAGE_ERROR = 0x200,
+  CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE = 0x400,
 };
 
 enum I2CErrors {
   I2C_SETUP_FAILURE = 0x1,
   I2C_WRITE_ERROR = 0x2,
   I2C_READ_ERROR = 0x4,
+  I2C_OVER_TEMP_ONE = 0x8,
+  I2C_OVER_TEMP_TWO = 0x10,
+  I2C_OVER_TEMP_THREE = 0x20,
 };
 
 enum PRUErrors {
@@ -150,7 +164,7 @@ enum OTHERErrors {
 };
 
 struct Errors{
-  uint8_t error_vector[6]; 
+  uint32_t error_vector[6]; 
   // [0] ADC errors
   // [1] CAN errors
   // [2] I2C errors

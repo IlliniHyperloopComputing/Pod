@@ -1,0 +1,16 @@
+#!/bin/bash
+
+echo 0 > /sys/bus/iio/devices/iio\:device0/buffer/enable
+
+echo 1 > /sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage0_en
+echo 1 > /sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage1_en
+echo 1 > /sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage2_en
+echo 1 > /sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage3_en
+echo 1 > /sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage4_en
+echo 1 > /sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage5_en
+echo 1 > /sys/bus/iio/devices/iio\:device0/scan_elements/in_voltage6_en
+
+echo 1 > /sys/bus/iio/devices/iio\:device0/buffer/length
+
+echo 1 > /sys/bus/iio/devices/iio\:device0/buffer/enable
+
