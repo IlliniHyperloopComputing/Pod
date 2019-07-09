@@ -11,5 +11,5 @@ urlpatterns = [
     path('data/position', data_logic.position, name="data-position"),
     path('commands/button', actions_logic.buttonPressed, name="command-button"),
     path('commands/dev', actions_logic.devCommand, name="command-dev"),
-    #path('commands/servers', actions_logic.startupServers, name="startServers"),
+    path('commands/servers', actions_logic.startupServers, name="startServers"),
 ]

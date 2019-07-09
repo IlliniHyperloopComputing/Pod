@@ -8,9 +8,6 @@ import struct
 from threading import Lock
 import json
 
-TCPUp = False
-UDPUp = False
-
 def state(request):
     state_data = models.State.objects.latest("date_time")
     toReturn = state_data.state
@@ -144,15 +141,3 @@ def readyPressed(request):
     if request.method == "POST":
         print("Ready!")
         return HttpResponse()
-
-
-def startupServers(request):
-    global TCPUp, UDPUp
-
-    if not TCPUp:
-        tcpserver.start()
-        TCPUp = True
-    if not UDPUp:
-        udpserver.start()
-        UDPUp = True
-    return HttpResponse()
