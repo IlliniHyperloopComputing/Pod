@@ -210,7 +210,6 @@ void Pod::run() {
   // Start all SourceManager threads
   SourceManager::PRU.initialize();
   SourceManager::CAN.initialize();
-  SourceManager::TMP.initialize();
   SourceManager::ADC.initialize();
   SourceManager::I2C.initialize();
 
@@ -274,7 +273,6 @@ void Pod::run() {
   udp_thread.join();
   SourceManager::PRU.stop();
   SourceManager::CAN.stop();
-  SourceManager::TMP.stop();
   SourceManager::ADC.stop();
   SourceManager::I2C.stop();
   print(LogLevel::LOG_INFO, "All threads closed, Pod shutting down\n");
