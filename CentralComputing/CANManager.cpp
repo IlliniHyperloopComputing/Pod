@@ -182,7 +182,7 @@ std::shared_ptr<CANData> CANManager::refresh() {
       new_data->fail_safe_state       = cast_to_u32(0, 2, r_frame.data);
       new_data->current_limit_status  = cast_to_u32(2, 2, r_frame.data);
       new_data->high_cell_voltage     = cast_to_u32(4, 2, r_frame.data);
-      new_data->low_cell_voltge       = cast_to_u32(6, 2, r_frame.data);
+      new_data->low_cell_voltage       = cast_to_u32(6, 2, r_frame.data);
     } else if (r_frame.can_id == 0x6b2) {
       new_data->dtc_status_one        = cast_to_u32(0, 2, r_frame.data);
       new_data->dtc_status_two        = cast_to_u32(2, 2, r_frame.data);
@@ -363,7 +363,7 @@ void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_d
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE);
   }  
   if (check_data->dc_link_voltage > error_dc_link_over_voltage) {
-    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_HV_OVER_VOLTAGE_ERRROR);
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_HV_OVER_VOLTAGE_ERROR);
   } 
   if (check_data->dc_link_voltage < error_dc_link_under_voltage) {
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_HV_UNDER_VOLTAGE_ERROR);
@@ -375,22 +375,22 @@ void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_d
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_LV_UNDER_VOLTAGE_ERROR);
   }
   if (check_data->high_cell_voltage > error_cell_over_voltage) {
-    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_CELL_OVER_VOLTAGE);
   }
   if (check_data->low_cell_voltage < error_cell_under_voltage) {
-    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_CELL_UNDER_VOLTAGE);
   }
   if (check_data->highest_temp > error_cell_over_temp) {
-    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_CELL_OVER_TEMP);
   }
   if (check_data->pack_voltage_inst > error_battery_over_voltage) {
-    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_BATTERY_OVER_VOLTAGE);
   }
   if (check_data->pack_voltage_inst < error_battery_under_voltage) {
-    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_BATTERY_UNDER_VOLTAGE);
   }
   if (check_data->pack_current > error_battery_over_current) {
-    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_BATTERY_OVER_CURRENT);
   }
 }
 
