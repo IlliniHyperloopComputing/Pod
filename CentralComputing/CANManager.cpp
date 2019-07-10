@@ -356,6 +356,42 @@ void CANManager::set_motor_throttle(int16_t value) {  // Using Throttle Value He
 }
 
 void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_data) {
+  if (check_data->controller_temp > error_motor_ctrl_over_temp) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  }
+  if (check_data->motor_temp > error_motor_over_temp) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE);
+  }  
+  if (check_data->dc_link_voltage > error_dc_link_over_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_HV_OVER_VOLTAGE_ERRROR);
+  } 
+  if (check_data->dc_link_voltage < error_dc_link_under_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_HV_UNDER_VOLTAGE_ERROR);
+  }
+  if (check_data->logic_power_supply_voltage > error_motor_ctrl_logic_over_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_LV_OVER_VOLTAGE_ERROR);
+  }
+  if (check_data->logic_power_supply_voltage < error_motor_ctrl_logic_under_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_LV_UNDER_VOLTAGE_ERROR);
+  }
+  if (check_data->high_cell_voltage > error_cell_over_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  }
+  if (check_data->low_cell_voltage < error_cell_under_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  }
+  if (check_data->highest_temp > error_cell_over_temp) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  }
+  if (check_data->pack_voltage_inst > error_battery_over_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  }
+  if (check_data->pack_voltage_inst < error_battery_under_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  }
+  if (check_data->pack_current > error_battery_over_current) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  }
 }
 
 // This will convert Big Endian data types to Little Endian types

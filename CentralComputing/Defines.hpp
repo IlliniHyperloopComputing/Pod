@@ -78,7 +78,7 @@ struct CANData {
   uint32_t highest_temp_id;             // uint8_t
   uint32_t avg_temp;                    // uint8_t
   uint32_t internal_temp;               // uint8_t
-  uint32_t low_cell_voltge;             // uint16_t
+  uint32_t low_cell_voltage;             // uint16_t
   uint32_t low_cell_voltage_id;         // uint8_t
   uint32_t high_cell_voltage;           // uint16_t
   uint32_t high_cell_voltage_id;        // uint8_t
