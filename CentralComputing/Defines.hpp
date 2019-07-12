@@ -46,7 +46,7 @@ struct ADCData {
 
 struct CANData {
   // Motor Controller
-  uint32_t status_word;                 // actually a uint16_t
+  uint32_t status_word;                  // actually a uint16_t
   uint32_t position_val;                 // actually an int32_t
   uint32_t torque_val;                   // actually a int16_t
   uint32_t controller_temp;              // actually a uin8_t
@@ -79,7 +79,7 @@ struct CANData {
   uint32_t highest_temp_id;             // uint8_t
   uint32_t avg_temp;                    // uint8_t
   uint32_t internal_temp;               // uint8_t
-  uint32_t low_cell_voltage;             // uint16_t
+  uint32_t low_cell_voltage;            // uint16_t
   uint32_t low_cell_voltage_id;         // uint8_t
   uint32_t high_cell_voltage;           // uint16_t
   uint32_t high_cell_voltage_id;        // uint8_t
@@ -127,7 +127,7 @@ enum ADCErrors {
   ADC_BATTERY_BOX_OVER_PRESSURE_ERROR = 0x80,
   ADC_BATTERY_BOX_UNDER_PRESSURE_ERROR = 0x100,
   ADC_SENTINEL = 0x200  // Not an error, but a way to easily keep track of the number of errors
-  // Update Command.h with additional errors, or suffer segfaults
+  // Update Command.cpp with additional errors, or suffer segfaults
 };
 
 enum CANErrors {
@@ -148,8 +148,15 @@ enum CANErrors {
   CAN_BMS_BATTERY_OVER_VOLTAGE = 0x4000,
   CAN_BMS_BATTERY_UNDER_VOLTAGE = 0x8000,
   CAN_BMS_BATTERY_OVER_CURRENT = 0x10000,
-  CAN_SENTINEL = 0x20000  // Not an error, but a way to easily keep track of the number of errors
-  // Update Command.h with additional errors, or suffer segfaults
+  CAN_BMS_LV_OVER_VOLTAGE_ERROR = 0x20000,
+  CAN_BMS_LV_UNDER_VOLTAGE_ERROR = 0x40000,
+  CAN_BMS_INTERNAL_OVER_TEMPERATURE = 0x80000,
+  CAN_BMS_DTC1_FAULT = 0x100000,
+  CAN_BMS_DTC2_FAULT = 0x200000,
+  CAN_MOTOR_CONTROLLER_FAULT = 0x400000,
+  CAN_MOTOR_CONTROLLER_WARN = 0x800000,
+  CAN_SENTINEL = 0x1000000  // Not an error, but a way to easily keep track of the number of errors
+  // Update Command.cpp with additional errors, or suffer segfaults
 };
 
 enum I2CErrors {
@@ -160,7 +167,7 @@ enum I2CErrors {
   I2C_OVER_TEMP_TWO = 0x10,
   I2C_OVER_TEMP_THREE = 0x20,
   I2C_SENTINEL = 0x40  // Not an error, but a way to easily keep track of the number of errors
-  // Update Command.h with additional errors, or suffer segfaults
+  // Update Command.cpp with additional errors, or suffer segfaults
 };
 
 enum PRUErrors {
@@ -170,7 +177,7 @@ enum PRUErrors {
   PRU_ORANGE_DIFF_ERROR = 0x8,
   PRU_WHEEL_DIFF_ERROR = 0x10,
   PRU_SENTINEL = 0x20  // Not an error, but a way to easily keep track of the number of errors
-  // Update Command.h with additional errors, or suffer segfaults
+  // Update Command.cpp with additional errors, or suffer segfaults
 };
 
 enum NETWORKErrors {
@@ -181,13 +188,13 @@ enum NETWORKErrors {
   UDP_DISCONNECT_ERROR = 0x10, 
   TCP_DISCONNECT_ERROR = 0x20, 
   NET_SENTINEL = 0x40  // Not an error, but a way to easily keep track of the number of errors
-  // Update Command.h with additional errors, or suffer segfaults
+  // Update Command.cpp with additional errors, or suffer segfaults
 };
 
 enum OTHERErrors {
   GPIO_SWITCH_ERROR = 0x1,
   GPIO_SENTINEL = 0x2  // Not an error, but a way to easily keep track of the number of errors
-  // Update Command.h with additional errors, or suffer segfaults
+  // Update Command.cpp with additional errors, or suffer segfaults
 };
 
 struct Errors{
