@@ -24,6 +24,23 @@ class Scenario{
       print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: (SCENARIO) Missing necessary configuration\n");
       exit(1);  // Crash hard on this error
     }
+    position = 0.000;
+    lastPosition = 0.000;
+    velocity = 0.000;
+    lastVelocity = 0.000;
+    acceleration = 0.000;
+    enable_logging = true;
+    motorsOn = false;
+    brakesOn = false;
+
+    timeLast = microseconds();
+    timeDelta = 0.000;
+    relay_state_buf = 0;
+
+    throttle = 0;
+    pressure = 0;
+    motors_on_time = 0;
+    brakes_on_time= 0;
   }
 
   // If true, don't use the "sim_get_..." functions. 

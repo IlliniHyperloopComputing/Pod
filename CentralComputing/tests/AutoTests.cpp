@@ -9,10 +9,11 @@ using std::make_shared;
 TEST_F(PodTest, AutomaticTransitionBasic) {
   ConfiguratorManager::config.openConfigFile("tests/basicFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioBasic>());
-  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
+  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_INSIDE, E_States::ST_FUNCTIONAL_TEST_INSIDE, true);
   MoveState(Command::Network_Command_ID::TRANS_LAUNCH_READY, E_States::ST_LAUNCH_READY, true);
-  MoveState(Command::Network_Command_ID::LAUNCH, E_States::ST_FLIGHT_ACCEL, true);
+  MoveState(Command::Network_Command_ID::TRANS_FLIGHT_ACCEL, E_States::ST_FLIGHT_ACCEL, true);
   EXPECT_TRUE(pod->state_machine->motor.is_enabled());
 
   pod->processing_command.reset();
@@ -38,15 +39,17 @@ TEST_F(PodTest, AutomaticTransitionBasic) {
 }
 
 TEST_F(PodTest, AutomaticTransitionFlightBrakeToSafeMode) {
-    MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
+    MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
     MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
+    MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_INSIDE, E_States::ST_FUNCTIONAL_TEST_INSIDE, true);
     MoveState(Command::Network_Command_ID::TRANS_LAUNCH_READY, E_States::ST_LAUNCH_READY, true);
-    MoveState(Command::Network_Command_ID::LAUNCH, E_States::ST_FLIGHT_ACCEL, true);
+    MoveState(Command::Network_Command_ID::TRANS_FLIGHT_ACCEL, E_States::ST_FLIGHT_ACCEL, true);
     EXPECT_TRUE(pod->state_machine->motor.is_enabled());
     EXPECT_FALSE(pod->state_machine->brakes.is_enabled());
     
+    MoveState(Command::Network_Command_ID::TRANS_FLIGHT_COAST, E_States::ST_FLIGHT_COAST, true);
     //okay, now we want to send the signal to brake:
-    MoveState(Command::Network_Command_ID::EMERGENCY_BRAKE, E_States::ST_FLIGHT_BRAKE, true);
+    MoveState(Command::Network_Command_ID::TRANS_FLIGHT_BRAKE, E_States::ST_FLIGHT_BRAKE, true);
     EXPECT_FALSE(pod->state_machine->motor.is_enabled());
     EXPECT_TRUE(pod->state_machine->brakes.is_enabled());
 
@@ -63,10 +66,11 @@ TEST_F(PodTest, AutomaticTransitionFlightBrakeToSafeMode) {
 TEST_F(PodTest, AutomaticTransitionSensors) {
   ConfiguratorManager::config.openConfigFile("tests/basicFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioRealNoFault>());
-  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
+  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_INSIDE, E_States::ST_FUNCTIONAL_TEST_INSIDE, true);
   MoveState(Command::Network_Command_ID::TRANS_LAUNCH_READY, E_States::ST_LAUNCH_READY, true);
-  MoveState(Command::Network_Command_ID::LAUNCH, E_States::ST_FLIGHT_ACCEL, true);
+  MoveState(Command::Network_Command_ID::TRANS_FLIGHT_ACCEL, E_States::ST_FLIGHT_ACCEL, true);
   EXPECT_TRUE(pod->state_machine->motor.is_enabled());
 
   pod->processing_command.reset();
@@ -94,10 +98,11 @@ TEST_F(PodTest, AutomaticTransitionSensors) {
 TEST_F(PodTest, AutomaticTransitionLong) {
   ConfiguratorManager::config.openConfigFile("tests/realFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioRealLong>());
-  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
+  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_INSIDE, E_States::ST_FUNCTIONAL_TEST_INSIDE, true);
   MoveState(Command::Network_Command_ID::TRANS_LAUNCH_READY, E_States::ST_LAUNCH_READY, true);
-  MoveState(Command::Network_Command_ID::LAUNCH, E_States::ST_FLIGHT_ACCEL, true);
+  MoveState(Command::Network_Command_ID::TRANS_FLIGHT_ACCEL, E_States::ST_FLIGHT_ACCEL, true);
   EXPECT_TRUE(pod->state_machine->motor.is_enabled());
 
   pod->processing_command.reset();
@@ -130,8 +135,9 @@ TEST_F(PodTest, AutomaticTransitionLong) {
 TEST_F(PodTest, AutomaticTransitionTestTimeouts) {
   ConfiguratorManager::config.openConfigFile("tests/basicFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioTestTimeouts>());
-  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST, E_States::ST_FUNCTIONAL_TEST, true);
+  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_OUTSIDE, E_States::ST_FUNCTIONAL_TEST_OUTSIDE, true);
   MoveState(Command::Network_Command_ID::TRANS_LOADING, E_States::ST_LOADING, true);
+  MoveState(Command::Network_Command_ID::TRANS_FUNCTIONAL_TEST_INSIDE, E_States::ST_FUNCTIONAL_TEST_INSIDE, true);
   MoveState(Command::Network_Command_ID::TRANS_LAUNCH_READY, E_States::ST_LAUNCH_READY, true);
 
   // Get the times we are supposed to wait
@@ -143,7 +149,7 @@ TEST_F(PodTest, AutomaticTransitionTestTimeouts) {
         exit(1);
   }
   int64_t a_start = microseconds(); // time how long acceleration state takes
-  MoveState(Command::Network_Command_ID::LAUNCH, E_States::ST_FLIGHT_ACCEL, true); // launch into accel state
+  MoveState(Command::Network_Command_ID::TRANS_FLIGHT_ACCEL, E_States::ST_FLIGHT_ACCEL, true); // launch into accel state
   EXPECT_TRUE(pod->state_machine->motor.is_enabled()); // make sure motor is on
 
   pod->processing_command.reset();

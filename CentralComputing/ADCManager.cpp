@@ -104,5 +104,5 @@ void ADCManager::initialize_sensor_error_configs() {
   // Battery Box under pressure
 }
 
-void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_data) {
+void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_data, E_States state) {
 }

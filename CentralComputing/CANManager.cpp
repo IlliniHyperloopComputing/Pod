@@ -47,13 +47,13 @@ bool CANManager::initialize_source() {
   msg.msg_iovlen = 1;
   msg.msg_control = &ctrlmsg;
 
-  print(LogLevel::LOG_DEBUG, "CAN Manger setup successful\n");
+  print(LogLevel::LOG_INFO, "CAN Manager setup successful\n");
   return true;
 }
 
 void CANManager::stop_source() {
   close(can_fd);
-  print(LogLevel::LOG_DEBUG, "CAN Manger stopped\n");
+  print(LogLevel::LOG_INFO, "CAN Manager stopped\n");
 }
 
 bool CANManager::send_frame(uint32_t can_id, const char * buf, int len) {
@@ -355,7 +355,7 @@ void CANManager::set_motor_throttle(int16_t value) {  // Using Throttle Value He
   send_frame(0x201, bufferArray, 8);  // Move motor operation enabled with/ PWM on
 }
 
-void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_data) {
+void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_data, E_States state) {
 }
 
 // This will convert Big Endian data types to Little Endian types

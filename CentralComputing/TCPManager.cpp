@@ -41,20 +41,20 @@ int TCPManager::connect_to_server(const char * hostname, const char * port) {
   int rv;
   if ((rv = getaddrinfo(hostname, port, &hints, &servinfo)) != 0) {
     freeaddrinfo(servinfo);
-    print(LogLevel::LOG_ERROR, "TCP Error get addrinfo\n");
+    print(LogLevel::LOG_ERROR, "TCP Error getaddrinfo()\n");
     return false;
   }
 
   if ((socketfd = socket(servinfo->ai_family, servinfo->ai_socktype, servinfo->ai_protocol)) == -1) {
     freeaddrinfo(servinfo);
-    print(LogLevel::LOG_ERROR, "TCP Error getting socket\n");
+    print(LogLevel::LOG_ERROR, "TCP Error getting socket: socket()\n");
     return false;
   }
 
   if (connect(socketfd, servinfo->ai_addr, servinfo->ai_addrlen) == -1) {
     close(socketfd);
     freeaddrinfo(servinfo);
-    print(LogLevel::LOG_ERROR, "TCP Error connecting\n");
+    print(LogLevel::LOG_ERROR, "TCP Error connecting: connect()\n");
     return false;
   }
 
@@ -172,7 +172,7 @@ void TCPManager::tcp_loop(const char * hostname, const char * port, UnifiedState
   while (running) {
     int fd = connect_to_server(hostname, port);
     if (fd > 0) {
-      print(LogLevel::LOG_INFO, "TCP Starting network threads\n");
+      print(LogLevel::LOG_INFO, "TCP Connection Acquired, starting network threads\n");
       thread read_thread(read_loop);
       thread write_thread(write_loop);
 
@@ -184,7 +184,13 @@ void TCPManager::tcp_loop(const char * hostname, const char * port, UnifiedState
       read_thread.join();
       write_thread.join();
 
-      print(LogLevel::LOG_INFO, "TCP Connection lost\n");
+      shutdown(socketfd, SHUT_RDWR);
+      close(socketfd);
+      // Only print this error message if we _should_ be running
+      // Really this is just for a nice print-out during testing
+      if (running) {  
+        print(LogLevel::LOG_ERROR, "TCP Connection lost\n");
+      }
 
     } else {
       closing.wait_for(write_loop_timeout);
@@ -192,9 +198,17 @@ void TCPManager::tcp_loop(const char * hostname, const char * port, UnifiedState
     }
     // Set that there is an error
     Command::set_error_flag(Command::SET_NETWORK_ERROR, NETWORKErrors::TCP_DISCONNECT_ERROR);
+
+    #ifdef SIM
+    // Only waits if `pause_tcp.reset()` is called
+    // This is used in testing, specifically when the TCP connection is disabled/ enabled
+    // This happens: https://stackoverflow.com/questions/2409277/
+    //                    can-connect-call-on-socket-return-successfully-without-server-calling-accept
+    // Which just kind of messes up testing because of the SET/ CLR error stuff
+    SimulatorManager::sim.pause_tcp.wait();  
+    #endif
   }   
 
-  close(socketfd);  // At last, close the socket
   connected.reset();  
   print(LogLevel::LOG_INFO, "TCP Exiting loop\n");
 }

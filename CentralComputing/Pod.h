@@ -36,6 +36,8 @@ class Pod {
   Event processing_command;
   Event processing_error;
   Event closing;
+  Event tcp_fully_setup;
+  Event udp_fully_setup;
 
  private:
   void logic_loop();  

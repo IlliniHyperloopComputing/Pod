@@ -127,6 +127,7 @@ void UDPManager::connection_monitor(const char * hostname, const char * send_por
   }
 
   // Setup variables for UDP loop
+  bool is_connected = false;
   int rv;
   int byte_count;
   struct pollfd fds[1];
@@ -136,18 +137,26 @@ void UDPManager::connection_monitor(const char * hostname, const char * send_por
   uint8_t read_buffer[8];
 
   /*
-   * Timeout = -min(p) - min(D1) + T + max(D1) + max(p) 
+   * Timeout = -min(p) - min(D1) + heartbeat_period + max(D1) + max(p) 
    * p is processing time
-   * D1 is delta 1: the time to receive the python's ping
-   * T is the period at which this happens
+   * delta: the time to receive the python's ping
+   * heartbeat_period is the period at which this happens
    */
-  // TODO: Read in the following values from Config file, once that branch is merged into master
-  int T      = 1000;  // milliseconds. Period that Python sends pings 
-  int D1_max = 10;    // milliseconds. Max one way trip time, Python --to-> Pod
-  int D1_min = 2;     // milliseconds. Min one way trip time, Python --to-> Pod
-  int P_max  = 5;     // milliseconds. Max processing time on Pod
-  int P_min  = 1;     // milliseconds. Min processing time on Pod
-  int connected_timeout = T + D1_max + P_max - P_min - D1_min;
+  int heartbeat_period  = 0;  // milliseconds. Period that Python sends pings 
+  int max_delta         = 0;  // milliseconds. Max one way trip time, Python --to-> Pod
+  int min_delta         = 0;  // milliseconds. Min one way trip time, Python --to-> Pod
+  int max_p             = 0;  // milliseconds. Max processing time on Pod
+  int min_p             = 0;  // milliseconds. Min processing time on Pod
+  // Grab all configuration variables
+  if (!(ConfiguratorManager::config.getValue("udp_heartbeat_period", heartbeat_period) && 
+      ConfiguratorManager::config.getValue("udp_d1_max", max_delta) &&
+      ConfiguratorManager::config.getValue("udp_d1_min", min_delta) &&
+      ConfiguratorManager::config.getValue("udp_p_max", max_p) &&
+      ConfiguratorManager::config.getValue("udp_p_min", min_p))) {
+    print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR -UDP- Missing necessary configuration\n");
+    exit(1);  // Crash hard on this error
+  }
+  int connected_timeout = heartbeat_period + max_delta + max_p - min_p - min_delta;
   int timeout = -1; 
   
   running.store(true);
@@ -158,10 +167,12 @@ void UDPManager::connection_monitor(const char * hostname, const char * send_por
     rv = poll(fds, 1, timeout);  // http://beej.us/guide/bgnet/html/single/bgnet.html#indexId434909-276
     if (rv == -1) {  // ERROR occured in poll()
       print(LogLevel::LOG_ERROR, "UDP poll() failed: %s\n", strerror(errno));
-      // TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
+      Command::put(Command::SET_NETWORK_ERROR, NETWORKErrors::UDP_DISCONNECT_ERROR);
+      is_connected = false;
     } else if (rv == 0) {  // Timeout occured 
       print(LogLevel::LOG_ERROR, "UDP timeout\n");
-      // TODO: Once Unified Command Queue is implemented, consider this as a failure & write to queue
+      Command::put(Command::SET_NETWORK_ERROR, NETWORKErrors::UDP_DISCONNECT_ERROR);
+      is_connected = false;
     } else {
       if (fds[0].revents & POLLIN) {  // There is data to be read from UDP
         timeout = connected_timeout;  // Set timeout to appropriate value
@@ -169,6 +180,11 @@ void UDPManager::connection_monitor(const char * hostname, const char * send_por
         if (byte_count > 0 && udp_parse(read_buffer, byte_count)) {  // Check if PING. Returns true if message was PING
           byte_count = udp_send(send_buffer, sizeof(send_buffer));  // Respond with ACK
           // print(LogLevel::LOG_DEBUG, "sent %d bytes, \n", byte_count); 
+          if (!is_connected) {
+            print(LogLevel::LOG_INFO, "UDP Connected! \n");
+            Command::put(Command::CLR_NETWORK_ERROR, NETWORKErrors::UDP_DISCONNECT_ERROR);
+            is_connected = true;
+          }
         }
       } else {
         // print(LogLevel::LOG_ERROR, "UDP poll event, but not on specified socket with specified event\n");

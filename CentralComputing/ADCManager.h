@@ -16,7 +16,7 @@ class ADCManager : public SourceManagerBase<ADCData> {
   std::shared_ptr<ADCData> refresh();
   std::shared_ptr<ADCData> refresh_sim();
   void initialize_sensor_error_configs();
-  void check_for_sensor_error(const std::shared_ptr<ADCData> &);
+  void check_for_sensor_error(const std::shared_ptr<ADCData> &, E_States state);
 
   int64_t calculate_zero_g_timeout;  // Calculate the zero g for X ammount of seconds
   int64_t calculate_zero_g_time;  // variable used in timer

@@ -37,6 +37,18 @@ void Pod::logic_loop() {
         error_processed = true;  // Processed an error, not a command
       }
       #endif
+
+      // Set the currerent State in each Source Manager. 
+      // The SouceManagers use the state while checking for errors, to emit different errors at different times.
+      // We do this here because only after a command would the state have changed - don't need to do this every loop
+      // The SourceManagers don't have access to the StateMachine variable, and this is the easiest way of
+      // getting the state to the SMs. Also, this is the minimal ammount of updates required, and is better
+      // than the SMs accessing the state machine every single time they loop.
+      E_States current_state = state_machine->get_current_state();
+      SourceManager::PRU.set_state(current_state);
+      SourceManager::CAN.set_state(current_state);
+      SourceManager::ADC.set_state(current_state);
+      SourceManager::I2C.set_state(current_state);
     } else {  // Create a "do nothing" command. This will be passed into the steady state caller below
       com.id = 0;
       com.value = 0;
@@ -193,7 +205,6 @@ void Pod::run() {
   print(LogLevel::LOG_INFO, "==================\n");
   print(LogLevel::LOG_INFO, "ILLINI  HYPERLOOP \n");
   print(LogLevel::LOG_INFO, "==================\n");
-  print(LogLevel::LOG_INFO, "Pod State: %s\n", state_machine->get_current_state_string().c_str());
 
   // Start all SourceManager threads
   SourceManager::PRU.initialize();
@@ -220,20 +231,32 @@ void Pod::run() {
   // Connecting to the network will clear this error
   com.id = Command::Network_Command_ID::SET_NETWORK_ERROR;
   com.value = NETWORKErrors::TCP_DISCONNECT_ERROR;
-  set_error_code(&com);  
+  set_error_code(&com);  // Initially have an error set that TCP isn't connected
 
-  // Start Network and main loop thread.
+  com.value = NETWORKErrors::UDP_DISCONNECT_ERROR;
+  set_error_code(&com);  // Initially have an error set that UDP isn't connected
+
+  // I don't know how to use member functions as a thread function, but lambdas work
+  running.store(true);
+  thread logic_thread([&](){ logic_loop(); });  
+
   print(LogLevel::LOG_INFO, "tcp_addr: %s, tcp_port: %s \n", 
                             tcp_addr.c_str(), tcp_port.c_str()); 
   print(LogLevel::LOG_INFO, "upd_addr: %s, upd_send: %s, udp_recv: %s\n", 
                             udp_addr.c_str(), udp_send.c_str(), udp_recv.c_str());    
 
-  // I don't know how to use member functions as a thread function, but lambdas work
-  // std::lock_guard<std::mutex> guard(TCPManager::data_mutex);  // Protect access to TCPManger::data_to_send
+  // Start Network threads
+  // TCP
   thread tcp_thread([&](){ TCPManager::tcp_loop(tcp_addr.c_str(), tcp_port.c_str(), &unified_state); });
+  #ifdef SIM
+  tcp_fully_setup.wait();  // Wait for the simulator to give the go-ahead
+  #endif 
+  // UDP
   thread udp_thread([&](){ UDPManager::connection_monitor(udp_addr.c_str(), udp_send.c_str(), udp_recv.c_str()); });
-  running.store(true);
-  thread logic_thread([&](){ logic_loop(); });  
+  #ifdef SIM
+  udp_fully_setup.wait();  // Wait for the simulator to give the go-ahead
+  #endif 
+
   print(LogLevel::LOG_INFO, "Finished Initialization\n");
   print(LogLevel::LOG_INFO, "================\n");
   
