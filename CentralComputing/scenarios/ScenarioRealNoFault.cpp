@@ -30,12 +30,31 @@ std::shared_ptr<ADCData> ScenarioRealNoFault::sim_get_adc() {
   // Multiply by 455/ 9.80665 to convert m/s/s to adc "levels"
   d->data[0] *= 455/ 9.80665;
   d->data[1] *= 455/ 9.80665;
+  d->data[6] = 2500;
   return d;
 }
 
 std::shared_ptr<CANData> ScenarioRealNoFault::sim_get_can() {
+  // Create a CANData struct and fill with data
   std::shared_ptr<CANData> d = std::make_shared<CANData>();
-  memset(d.get(), (uint8_t)0, sizeof(CANData));
+  d->status_word = 0;
+  d->controller_temp = 30;
+  d->motor_temp = 30;
+  d->dc_link_voltage = 1100;
+  d->logic_power_supply_voltage = 16;
+
+  d->pack_voltage_inst = 1100;
+  d->pack_voltage_open = 1100;
+  d->pack_current = 0;
+  d->highest_temp = 30;
+  d->avg_temp = 30;
+  d->internal_temp = 30;
+  d->low_cell_voltage = 37000;
+  d->high_cell_voltage = 37000;
+  d->power_voltage_input = 160;
+  d->dtc_status_one = 0;
+  d->dtc_status_two = 0;
+
   return d;
 }
 std::shared_ptr<I2CData> ScenarioRealNoFault::sim_get_i2c() {
