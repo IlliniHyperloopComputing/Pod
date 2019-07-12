@@ -26,6 +26,8 @@ void Pod::logic_loop() {
 
     if (loaded) {
       print(LogLevel::LOG_INFO, "Command : %d %d\n", com.id, com.value);
+      print(LogLevel::LOG_INFO, "Which is: %s %s\n", Command::get_network_command_ID_string(com.id).c_str(), 
+                                                     Command::get_network_command_value_string(&com).c_str());
       // Parse the command and call the appropriate state machine function
       auto transition = state_machine->get_transition_function(&com);
       ((*state_machine).*(transition))(); 

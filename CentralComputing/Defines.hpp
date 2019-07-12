@@ -126,6 +126,8 @@ enum ADCErrors {
   ADC_PNEUMATIC_OVER_PRESSURE_ERROR_4 = 0x40,
   ADC_BATTERY_BOX_OVER_PRESSURE_ERROR = 0x80,
   ADC_BATTERY_BOX_UNDER_PRESSURE_ERROR = 0x100,
+  ADC_SENTINEL = 0x200  // Not an error, but a way to easily keep track of the number of errors
+  // Update Command.h with additional errors, or suffer segfaults
 };
 
 enum CANErrors {
@@ -146,6 +148,8 @@ enum CANErrors {
   CAN_BMS_BATTERY_OVER_VOLTAGE = 0x4000,
   CAN_BMS_BATTERY_UNDER_VOLTAGE = 0x8000,
   CAN_BMS_BATTERY_OVER_CURRENT = 0x10000,
+  CAN_SENTINEL = 0x20000  // Not an error, but a way to easily keep track of the number of errors
+  // Update Command.h with additional errors, or suffer segfaults
 };
 
 enum I2CErrors {
@@ -155,6 +159,8 @@ enum I2CErrors {
   I2C_OVER_TEMP_ONE = 0x8,
   I2C_OVER_TEMP_TWO = 0x10,
   I2C_OVER_TEMP_THREE = 0x20,
+  I2C_SENTINEL = 0x40  // Not an error, but a way to easily keep track of the number of errors
+  // Update Command.h with additional errors, or suffer segfaults
 };
 
 enum PRUErrors {
@@ -163,6 +169,8 @@ enum PRUErrors {
   PRU_READ_ERROR = 0x4,
   PRU_ORANGE_DIFF_ERROR = 0x8,
   PRU_WHEEL_DIFF_ERROR = 0x10,
+  PRU_SENTINEL = 0x20  // Not an error, but a way to easily keep track of the number of errors
+  // Update Command.h with additional errors, or suffer segfaults
 };
 
 enum NETWORKErrors {
@@ -172,10 +180,14 @@ enum NETWORKErrors {
   TCP_READ_WRITE_ERROR = 0x8, 
   UDP_DISCONNECT_ERROR = 0x10, 
   TCP_DISCONNECT_ERROR = 0x20, 
+  NET_SENTINEL = 0x40  // Not an error, but a way to easily keep track of the number of errors
+  // Update Command.h with additional errors, or suffer segfaults
 };
 
 enum OTHERErrors {
   GPIO_SWITCH_ERROR = 0x1,
+  GPIO_SENTINEL = 0x2  // Not an error, but a way to easily keep track of the number of errors
+  // Update Command.h with additional errors, or suffer segfaults
 };
 
 struct Errors{
