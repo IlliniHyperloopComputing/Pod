@@ -126,4 +126,17 @@ void PRUManager::initialize_sensor_error_configs() {
 }
 
 void PRUManager::check_for_sensor_error(const std::shared_ptr<PRUData> & check_data) {
+  // hardcoded for two of each type of sensor right now, could use standard dev?
+  // just using distance for now, as velocity is based off of distance
+  if (abs(check_data->orange_distance[0] - check_data->orange_distance[1]) > error_orange_diff) {
+    set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR,PRUErrors::PRU_ORANGE_DIFF_ERROR);
+  }
+  
+  if (abs(check_data->wheel_distance[0] - check_data->wheel_distance[1]) > error_encoder_wheel_diff) {
+    set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR,PRUErrors::PRU_WHEEL_DIFF_ERROR);
+  }
+
 }
+
+
+
