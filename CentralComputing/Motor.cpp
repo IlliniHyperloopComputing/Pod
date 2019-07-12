@@ -24,11 +24,11 @@ void Motor::set_motor_state(bool enable) {
     #ifdef SIM
     SimulatorManager::sim.sim_motor_state(enable);
     #else
-    print(LogLevel::LOG_DEBUG, "NO_ACTION: Motors: %s\n", enable?"Enabled":"Disabled");
+    print(LogLevel::LOG_INFO, "NO_ACTION: Motors: %s\n", enable?"Enabled":"Disabled");
     #endif
   #else
   SourceManager::CAN.set_motor_state(enable);
-  print(LogLevel::LOG_DEBUG, "Motors: %s\n", enable?"Enabled":"Disabled");
+  print(LogLevel::LOG_INFO, "Motors: %s\n", enable?"Enabled":"Disabled");
   #endif
 }
 
@@ -47,11 +47,11 @@ void Motor::set_throttle(int16_t value) {
       #ifdef SIM
       SimulatorManager::sim.sim_motor_set_throttle(value);
       #else
-      print(LogLevel::LOG_DEBUG, "NO_ACTION: Setting motor throttle: %d\n", value);
+      print(LogLevel::LOG_INFO, "NO_ACTION: Setting motor throttle: %d\n", value);
       #endif
     #else
     SourceManager::CAN.set_motor_throttle(value);
-    print(LogLevel::LOG_DEBUG, "Setting motor throttle: %d\n", value);
+    print(LogLevel::LOG_INFO, "Setting motor throttle: %d\n", value);
     #endif
   }
 }

@@ -2,6 +2,9 @@
 #define UDPMANAGER_H_
 
 #include "Utils.h"
+#include "Command.h"
+#include "Defines.hpp"
+#include "Configurator.h"
 #include "SafeQueue.hpp"
 #include "Event.h"
 #include <sys/socket.h>

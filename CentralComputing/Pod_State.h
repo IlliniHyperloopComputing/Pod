@@ -29,13 +29,14 @@ class Pod_State : public StateMachine {
   std::string get_current_state_string() {
     std::string states[] = {
       "SAFE_MODE",
-      "FUNCTIONAL_TESTS",
+      "FUNCTIONAL_TESTS_OUTSIDE",
       "LOADING",
+      "FUNCTIONAL_TESTS_INSIDE",
       "LAUNCH_READY",
       "FLIGHT_ACCEL",
       "FLIGHT_COAST",
       "FLIGHT_BRAKE",
-      "ABORT_STATE",
+      "FLIGHT_ABORT",
       "NOT A STATE"
     };
     return states[static_cast<int>(get_current_state())];
@@ -46,8 +47,9 @@ class Pod_State : public StateMachine {
   * User controlled movement events
   **/
   void move_safe_mode();
-  void move_functional_tests();
+  void move_functional_tests_outside();
   void move_loading();
+  void move_functional_tests_inside();
   void move_launch_ready();
   void accelerate();
   void move_flight_coast();
@@ -69,13 +71,14 @@ class Pod_State : public StateMachine {
   * Each frame, the function will proces the command, 
   **/
   void steady_safe_mode(Command::Network_Command*,         UnifiedState *);
-  void steady_functional(Command::Network_Command*,        UnifiedState *);
+  void steady_function_outside(Command::Network_Command*,  UnifiedState *);
   void steady_loading(Command::Network_Command*,           UnifiedState *);
+  void steady_function_inside(Command::Network_Command*,   UnifiedState *);
   void steady_launch_ready(Command::Network_Command*,      UnifiedState *);
   void steady_flight_accelerate(Command::Network_Command*, UnifiedState *);
   void steady_flight_coast(Command::Network_Command*,      UnifiedState *);
   void steady_flight_brake(Command::Network_Command*,      UnifiedState *);
-  void steady_abort_state(Command::Network_Command*,       UnifiedState *);
+  void steady_flight_abort(Command::Network_Command*,      UnifiedState *);
 
   /*
   * Gets the steady state function for the current state
@@ -120,8 +123,9 @@ class Pod_State : public StateMachine {
   
   std::map<E_States, steady_state_function> steady_state_map;
   void ST_Safe_Mode();
-  void ST_Functional_Test();
+  void ST_Functional_Test_Outside();
   void ST_Loading();
+  void ST_Functional_Test_Inside();
   void ST_Launch_Ready();
   void ST_Flight_Accel();
   void ST_Flight_Coast();
@@ -131,8 +135,9 @@ class Pod_State : public StateMachine {
 
   BEGIN_STATE_MAP
     STATE_MAP_ENTRY(&Pod_State::ST_Safe_Mode)
-    STATE_MAP_ENTRY(&Pod_State::ST_Functional_Test)
+    STATE_MAP_ENTRY(&Pod_State::ST_Functional_Test_Outside)
     STATE_MAP_ENTRY(&Pod_State::ST_Loading)
+    STATE_MAP_ENTRY(&Pod_State::ST_Functional_Test_Inside)
     STATE_MAP_ENTRY(&Pod_State::ST_Launch_Ready)
     STATE_MAP_ENTRY(&Pod_State::ST_Flight_Accel)
     STATE_MAP_ENTRY(&Pod_State::ST_Flight_Coast)

@@ -24,6 +24,8 @@ class SourceManagerBase {
   }
 
   void initialize() {
+    current_state = E_States::ST_SAFE_MODE;
+
     #ifdef SIM
       initialized_correctly = true;
     #else
@@ -97,6 +99,12 @@ class SourceManagerBase {
     return d;
   }
 
+  void set_state(E_States new_state) {
+    mutex.lock();
+    current_state = new_state;
+    mutex.unlock();
+  }
+
  private:
   // Init and Stop functions can setup devices/ file I/O
   // Stop will only be called if init returns true
@@ -106,7 +114,7 @@ class SourceManagerBase {
   virtual std::string name() = 0;
 
   virtual void initialize_sensor_error_configs() = 0;
-  virtual void check_for_sensor_error(const std::shared_ptr<Data> & check_data) = 0;
+  virtual void check_for_sensor_error(const std::shared_ptr<Data> & check_data, E_States state) = 0;
 
   // constructs a new Data object and fills it in
   virtual std::shared_ptr<Data> refresh() = 0;  
@@ -123,15 +131,16 @@ class SourceManagerBase {
         std::shared_ptr<Data> new_data = refresh_sim();
         delayInUsecs = refresh_timeout();  // could be updated by SIM
       #endif
-      check_for_sensor_error(new_data);
       mutex.lock();
       data = new_data;
+      check_for_sensor_error(new_data, current_state);
       mutex.unlock();
       
       closing.wait_for(delayInUsecs);
     }
   }
 
+  E_States current_state;
   std::shared_ptr<Data> data;
   std::mutex mutex;
   std::atomic<bool> running;

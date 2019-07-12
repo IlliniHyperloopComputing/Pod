@@ -6,6 +6,7 @@
 #include "Utils.h"
 #include "SafeQueue.hpp"
 #include "Event.h"
+#include "Simulator.h"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <stdlib.h>
