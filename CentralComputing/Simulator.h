@@ -195,6 +195,7 @@ class Simulator {
   Event pause_udp;
   std::thread read_thread;
   std::mutex mutex;  // To get rid of data races when accessing motion data
+  std::mutex mutex_tcp_clientfd;  // Must satisfy TSAN even for little things
 
   // used with udp stuff
   struct addrinfo hints_udp;

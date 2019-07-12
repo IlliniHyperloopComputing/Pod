@@ -65,7 +65,9 @@ int Simulator::accept_client_tcp() {
     ret = poll(&p, 1, 200);
     if (ret == 1) {  // there's something trying to connect, or we are exiting
       int tmp_clientfd = accept(socketfd_tcp, NULL, NULL);
+      mutex_tcp_clientfd.lock();  // Must statisfy the TSAN. yes this is a bit silly
       clientfd_tcp = tmp_clientfd;
+      mutex_tcp_clientfd.unlock();
       if (clientfd_tcp != -1) {
         print(LogLevel::LOG_DEBUG, "Sim - TCP Connected! \n"); 
       }
@@ -115,11 +117,16 @@ void Simulator::read_loop_tcp() {
 void Simulator::disconnect_tcp() {
   active_connection.store(false);  // stop the read loop
   do_accept_client_tcp.store(false);  // stop the connection loop
-
   pause_tcp.invoke();  // Ensure this event doesn't wait
+
+  mutex_tcp_clientfd.lock();  // Must statisfy the TSAN. yes this is a bit silly
+
   shutdown(clientfd_tcp, SHUT_RDWR);
   closed_tcp.wait();    // wait for sim_connect_tcp() to close, which was waiting on the read_loop_tcp
   close(clientfd_tcp);  // close TCP connection
+
+  mutex_tcp_clientfd.unlock();  
+
   shutdown(socketfd_tcp, SHUT_RDWR);
   close(socketfd_tcp);  // close TCP server
 }
@@ -339,7 +346,6 @@ void Simulator::stop() {
 void Simulator::disable_tcp() {
   print(LogLevel::LOG_DEBUG, "Sim - Disable TCP\n");
   pause_tcp.reset();  // Make sure that the tcp connection loop pauses
-
   active_connection.store(false);  // stop the read loop
   shutdown(clientfd_tcp, SHUT_RDWR);  // shutdown client
   closed_tcp.wait();    // wait for sim_connect_tcp() to close, which was waiting on the read_loop_tcp
