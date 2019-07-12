@@ -3,7 +3,9 @@
 
 #include "SourceManagerBase.hpp"
 #include "Defines.hpp"
+#include "Command.h"
 #include <fstream>
+#include <stdlib.h>
 using std::ifstream;
 
 class ADCManager : public SourceManagerBase<ADCData> {

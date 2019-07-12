@@ -105,4 +105,31 @@ void ADCManager::initialize_sensor_error_configs() {
 }
 
 void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_data) {
+  //Just hardcoding and using difference for accelerometers for now
+  int32_t* adc_data = check_data->data;
+  if (abs(adc_data[0] - adc_data[1]) > error_accel_diff) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_ACCEL_DIFF_ERROR);
+  }
+  if (adc_data[2] > error_pneumatic_1_over_pressure) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_PNEUMATIC_OVER_PRESSURE_ERROR_1);
+  }
+  if (adc_data[3] > error_pneumatic_2_over_pressure) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_PNEUMATIC_OVER_PRESSURE_ERROR_2);
+  }
+  if (adc_data[4] > error_pneumatic_3_over_pressure) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_PNEUMATIC_OVER_PRESSURE_ERROR_3);
+  }
+  if (adc_data[5] > error_pneumatic_4_over_pressure) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_PNEUMATIC_OVER_PRESSURE_ERROR_4);
+  }
+  if (adc_data[6] > error_battery_box_over_pressure) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_BATTERY_BOX_OVER_PRESSURE_ERROR);
+  }
+  if (adc_data[6] < error_battery_box_under_pressure) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_BATTERY_BOX_UNDER_PRESSURE_ERROR);
+  }
 }
+
+
+
+
