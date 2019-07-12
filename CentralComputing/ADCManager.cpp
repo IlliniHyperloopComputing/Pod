@@ -5,6 +5,7 @@ bool ADCManager::initialize_source() {
         ConfiguratorManager::config.getValue("adc_calc_zero_g_timeout", calculate_zero_g_timeout) &&
         ConfiguratorManager::config.getValue("adc_default_zero_g", default_zero_g))) {
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: ADC: Missing necessary configuration\n");
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_SETUP_FAILURE);
     exit(1);  // Crash hard on this error
   }
 
@@ -17,6 +18,7 @@ bool ADCManager::initialize_source() {
   inFile.open(fileName, std::ifstream::in | std::ifstream::binary);
   if (!inFile) {
     print(LogLevel::LOG_DEBUG, "ADC Manager setup failed\n");
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_SETUP_FAILURE);
     return false;
   } else {
     print(LogLevel::LOG_DEBUG, "ADC Manager setup successful\n");
@@ -43,6 +45,9 @@ std::shared_ptr<ADCData> ADCManager::refresh() {
   std::shared_ptr<ADCData> new_data = std::make_shared<ADCData>();
   uint16_t buffer[NUM_ADC];
   inFile.read(reinterpret_cast<char *>(buffer), NUM_ADC * 2);
+  if (!inFile) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_READ_ERROR);
+  }
   for (int i = 0; i < NUM_ADC; i++) {
     uint16_t * val = (buffer + i);
     new_data -> data[i] = (*val);
