@@ -97,6 +97,9 @@ class CANManager : public SourceManagerBase<CANData> {
   int32_t error_battery_over_voltage;
   int32_t error_battery_under_voltage;
   int32_t error_battery_over_current;
+  int32_t error_bms_logic_over_voltage; 
+  int32_t error_bms_logic_under_voltage; 
+  int32_t error_bms_internal_over_temp; 
 
   std::mutex send_mutex;
 
