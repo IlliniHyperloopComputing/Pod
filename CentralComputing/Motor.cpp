@@ -9,18 +9,17 @@ Motor::Motor() {
 }
 
 void Motor::enable_motors() {
-  std::lock_guard<std::mutex> guard(mutex);
   set_throttle(MOTOR_OFF);
   set_motor_state(true);
 }
 
 void Motor::disable_motors() {
-  std::lock_guard<std::mutex> guard(mutex);
   set_throttle(MOTOR_OFF);
   set_motor_state(false);
 }
 
 void Motor::set_motor_state(bool enable) {
+  std::lock_guard<std::mutex> guard(mutex);
   enabled = enable;
   #ifdef NO_ACTION
     #ifdef SIM
@@ -45,6 +44,7 @@ int16_t Motor::get_throttle() {
 }
 
 void Motor::set_throttle(int16_t value) {
+  std::lock_guard<std::mutex> guard(mutex);
   if (enabled) {
     throttle = value;
     #ifdef NO_ACTION
