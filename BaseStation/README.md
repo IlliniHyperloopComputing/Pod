@@ -25,9 +25,8 @@ By default the HTTP server will run on port 8000.
 # ToDo
 * UDP port is not detecting if it is in use. Needs to be fixed.
     * [Issue 101 on github](https://github.com/IlliniHyperloopComputing/Pod/issues/101) has data that needs to be processed.
-* Frontend does not detect if connection is lost
-* State needs to be shown more prominently
 * More stats need to be shown
+* Name the state
 * Stat danger calculations
 * Finish command code implementation
 * Testing on heavy load

@@ -2,7 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { interval } from 'rxjs';
 
 import { StatsService } from '../../services/stats.service';
-import { Stat, Row } from '../../models/stat';
+import { Row } from '../../models/stat';
 
 @Component({
   selector: 'app-stats',

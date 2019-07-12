@@ -69,13 +69,19 @@ def devCommand(request):
         print("Command " + str(command))
         if command == 0:
             print(mess)
-            tcpserver.addToCommandQueue([0, 0])
+            tcpserver.addToCommandQueue([0])
         if command == 1:
             print(mess)
-            tcpserver.addToCommandQueue([1, 0])
+            tcpserver.addToCommandQueue([1])
+        if command == 2:
+            tcpserver.addToCommandQueue([2])
+        if command == 3:
+            tcpserver.addToCommandQueue([3])
+        if command == 4:
+            tcpserver.addToCommandQueue([4])
         if command == 6:
             print(mess)
-            tcpserver.addToCommandQueue([6, 0])
+            tcpserver.addToCommandQueue([6])
         if command == 7:
             print(mess)
             tcpserver.addToCommandQueue([7, 0])

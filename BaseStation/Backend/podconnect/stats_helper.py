@@ -7,7 +7,12 @@ def getStats():
     can_data_motor = {
         "stats": [
             {
-                "name": "Status Word",
+                "name": "State_Number",
+                "value": str(state_data.state),
+                "color": "limegreen"
+            },
+            {
+                "name": "Status_Word",
                 "value": str(hex(can_data.status_word)),
                 "color": "limegreen"
             },

@@ -15,7 +15,7 @@ import numpy as np
 # uint8_t state_id = 6;
 
 # TCP global variables
-TCP_IP = '127.0.0.1'
+TCP_IP = ''
 TCP_PORT = 8001
 BUFFER_SIZE = 300
 
@@ -82,6 +82,7 @@ def serve():
         print("Disconnected from Pod!!")
         # Add this to event logger
 
+import binascii
 def sendData():
     global conn, COMMAND_QUEUE
     # Sending data
@@ -92,10 +93,11 @@ def sendData():
                 print("Sending " + str(command))
                 for message in command:
                     convmessage = np.uint32(message)
+                    print(binascii.hexlify(convmessage))
                     conn.sendall(convmessage)
             except Exception as e:
                 print(e)
-                COMMAND_QUEUE.put(command)
+                #COMMAND_QUEUE.put(command)
         time.sleep(0.2)
 
 # Starts thread for tcp server and processor
