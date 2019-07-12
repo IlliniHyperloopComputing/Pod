@@ -47,7 +47,6 @@ void Pod::logic_loop() {
       E_States current_state = state_machine->get_current_state();
       SourceManager::PRU.set_state(current_state);
       SourceManager::CAN.set_state(current_state);
-      SourceManager::TMP.set_state(current_state);
       SourceManager::ADC.set_state(current_state);
       SourceManager::I2C.set_state(current_state);
     } else {  // Create a "do nothing" command. This will be passed into the steady state caller below
