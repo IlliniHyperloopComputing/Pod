@@ -15,7 +15,7 @@
 #define HUNDRED_FEET_IN_MM (30480)
 #define WHEEL_CIRCUMFRENCE_IN_MM (500)
 
-#define CLOCK_TO_SEC (21.474836475/4294967295.0)
+#define CLOCK_TO_SEC ((double)21.474836475 / (double)4294967295.0)
 
 struct RawPRUData {
   uint32_t counts[11];
