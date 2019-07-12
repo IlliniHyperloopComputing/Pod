@@ -33,35 +33,39 @@ bool PRUManager::initialize_source() {
     return false;
   }
 
-  print(LogLevel::LOG_DEBUG, "PRU Manager setup successful\n");
+  print(LogLevel::LOG_INFO, "PRU Manager setup successful\n");
   return true;
 }
 
 void PRUManager::stop_source() {
   close(pollfds[0].fd);
-  print(LogLevel::LOG_DEBUG, "PRU Manager stopped\n");
+  print(LogLevel::LOG_INFO, "PRU Manager stopped\n");
 }
 
 std::shared_ptr<PRUData> PRUManager::refresh() {
+  // Write to PRU to trigger it to send us data
+  // We send it a "1". This is arbitrary. 
   int result = write(pollfds[0].fd, "1", 2);
   if (result == 0) {
     print(LogLevel::LOG_ERROR, "Unable to write during operation %s\n", DEVICE_NAME);
     set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR, PRUErrors::PRU_WRITE_ERROR);
-
     // Error. return garbage
-    std::shared_ptr<PRUData> new_data = std::make_shared<PRUData>();
-    memset(new_data.get(), (uint8_t)-1, sizeof(PRUData));
-    return new_data;
+    return empty_data();
   }
 
+  // Read from the PRU
   result = read(pollfds[0].fd, readBuf, MAX_BUFFER_SIZE);
   if (result == 0) {
-    print(LogLevel::LOG_ERROR, "Unable to read during operation %s\n", DEVICE_NAME);
-
+    print(LogLevel::LOG_ERROR, "Unable to read during operation. Read 0 bytes from PRU \n");
+    set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR, PRUErrors::PRU_READ_ERROR);
     // Error. return garbage
-    std::shared_ptr<PRUData> new_data = std::make_shared<PRUData>();
-    memset(new_data.get(), (uint8_t)-1, sizeof(PRUData));
-    return new_data;
+    return empty_data();
+  } else if (result != sizeof(RawPRUData)) {
+    print(LogLevel::LOG_ERROR, "Read wrong ammount from PRU %s\n", DEVICE_NAME);
+    print(LogLevel::LOG_ERROR, "Read: %d, should have read sizeof(RawPRUData)=%d\n", result, sizeof(RawPRUData));
+    set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR, PRUErrors::PRU_READ_ERROR);
+    // Error. return garbage
+    return empty_data();
   }
 
   // Copy Raw Data into Buffer
@@ -102,9 +106,9 @@ int32_t PRUManager::convert_to_velocity(uint32_t decay, uint32_t delta, uint32_t
   if (slower == UINT32_MAX) {  // register this as 0 velocity
     return 0;
   } else {
-    // Do the proper conversion into m/s
-    double time_diff = slower * CLOCK_TO_SEC;
-    return distance / time_diff;
+    // Do the proper conversion into actual units. distance over time. 
+    double time_diff = slower * CLOCK_TO_SEC;  // Convert from clocks to seconds
+    return distance / time_diff;  // divide distance by time to get a velocity
   }
 }
 
@@ -125,7 +129,7 @@ void PRUManager::initialize_sensor_error_configs() {
   // Define some sort of difference / variance that indicates that shit broke
 }
 
-void PRUManager::check_for_sensor_error(const std::shared_ptr<PRUData> & check_data) {
+void PRUManager::check_for_sensor_error(const std::shared_ptr<PRUData> & check_data, E_States state) {
   // hardcoded for two of each type of sensor right now, could use standard dev?
   // just using distance for now, as velocity is based off of distance
   if (abs(check_data->orange_distance[0] - check_data->orange_distance[1]) > error_orange_diff) {

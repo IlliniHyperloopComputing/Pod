@@ -109,7 +109,7 @@ void ADCManager::initialize_sensor_error_configs() {
   // Battery Box under pressure
 }
 
-void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_data) {
+void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_data, E_States state) {
   //Just hardcoding and using difference for accelerometers for now
   int32_t* adc_data = check_data->data;
   if (abs(adc_data[0] - adc_data[1]) > error_accel_diff) {
@@ -134,7 +134,3 @@ void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_d
     Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_BATTERY_BOX_UNDER_PRESSURE_ERROR);
   }
 }
-
-
-
-

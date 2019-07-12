@@ -16,7 +16,7 @@
 #define HUNDRED_FEET_IN_MM (30480)
 #define WHEEL_CIRCUMFRENCE_IN_MM (500)
 
-#define CLOCK_TO_SEC (21.474836475/4294967295.0)
+#define CLOCK_TO_SEC ((double)21.474836475 / (double)4294967295.0)
 
 struct RawPRUData {
   uint32_t counts[11];
@@ -31,7 +31,7 @@ class PRUManager : public SourceManagerBase<PRUData> {
     std::shared_ptr<PRUData> refresh();
     std::shared_ptr<PRUData> refresh_sim();
     void initialize_sensor_error_configs();
-    void check_for_sensor_error(const std::shared_ptr<PRUData> &);
+    void check_for_sensor_error(const std::shared_ptr<PRUData> &, E_States state);
 
     int32_t convert_to_velocity(uint32_t decay, uint32_t delta, uint32_t distance);
 

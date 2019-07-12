@@ -19,7 +19,7 @@
  900000   950
 1000000  1000 #1 seconds in, full power
 
-7000000   860 #6 seconds in, start reducing power
+7000000   860 #7 seconds in, start reducing power
 
 8000000   650 #8 seconds in
 
