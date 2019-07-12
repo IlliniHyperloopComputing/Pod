@@ -23,9 +23,13 @@ void Command::flush() {
   while (command_queue.dequeue(&tmp)) {}
 }
 
+std::mutex Command::error_flag_mutex;
+
 // Used in set_error_flag to not flood the command queue
 // See the .h for more explanation
 void Command::set_error_flag(Network_Command_ID id, uint32_t value) {
+  // Satisfy TSAN. There is a potential data race on `first_time`, even though its not a dangerous one.
+  error_flag_mutex.lock();  
   // Initialize if this is the first function call
   static bool first_time = 1;
   if (first_time) {
@@ -35,6 +39,7 @@ void Command::set_error_flag(Network_Command_ID id, uint32_t value) {
     }
     first_time = 0;
   }
+  error_flag_mutex.unlock();
 
   int error_index = (id-Command::SET_ADC_ERROR) * FLAGS_PER_ERROR;
 

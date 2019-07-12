@@ -83,6 +83,7 @@ struct Network_Command {
 // This helper function, and the int64_t array of timers makes that possible
 #define FLAGS_PER_ERROR 32
 extern int64_t error_flag_timers[FLAGS_PER_ERROR * 6];  // 32 flags per error ID, 6 errors
+extern std::mutex error_flag_mutex;
 void set_error_flag(Network_Command_ID id, uint32_t value);
 
 }  // namespace Command
