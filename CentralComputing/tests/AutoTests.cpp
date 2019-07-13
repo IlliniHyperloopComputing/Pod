@@ -98,6 +98,7 @@ using std::make_shared;
 // 
 // }
 
+// Tests the pod through a realistic flight plan
 TEST_F(PodTest, AutomaticTransitionLong) {
   ConfiguratorManager::config.openConfigFile("tests/realFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioRealLong>());
@@ -136,6 +137,7 @@ TEST_F(PodTest, AutomaticTransitionLong) {
 
 }
 
+// Tests that all of the timeouts work appropriatly
 TEST_F(PodTest, AutomaticTransitionTestTimeouts) {
   ConfiguratorManager::config.openConfigFile("tests/basicFlightPlan.txt", true);
   SimulatorManager::sim.set_scenario(make_shared<ScenarioTestTimeouts>());
