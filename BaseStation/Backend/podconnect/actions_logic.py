@@ -13,16 +13,16 @@ def buttonPressed(request):
         if mess["button"] == "ready":
             if state_data.state == 0:
                 print("Transitioning to Test")
-                tcpserver.addToCommandQueue([1, 0])
+                tcpserver.addToCommandQueue([1])
             elif state_data.state == 1:
                 print("Transitioning to Loading")
-                tcpserver.addToCommandQueue([2, 0])
+                tcpserver.addToCommandQueue([2])
             elif state_data.state == 2:
                 print("Transitioning to Launch Ready")
-                tcpserver.addToCommandQueue([3, 0])
+                tcpserver.addToCommandQueue([3])
             elif state_data.state == 3:
                 print("Transitioning to Launch")
-                tcpserver.addToCommandQueue([4, 0])
+                tcpserver.addToCommandQueue([4])
             else:
                 print("State out of left button range")
         else:
