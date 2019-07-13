@@ -20,7 +20,7 @@ tcp_stagger_time3 6000000 # Units are microseconds
 udp_send_port 5004
 udp_recv_port 5005
 udp_addr 127.0.0.1
-udp_heartbeat_period     1000  # Units are MILLISECONDS
+udp_heartbeat_period     100  # Units are MILLISECONDS
 udp_d1_max     10    # Units are MILLISECONDS
 udp_d1_min     2     # Units are MILLISECONDS
 udp_p_max      5     # Units are MILLISECONDS
