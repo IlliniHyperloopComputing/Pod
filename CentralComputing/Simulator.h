@@ -193,6 +193,7 @@ class Simulator {
   Event connected_udp;
   Event pause_tcp;
   Event pause_udp;
+  Event loaded_scenario;
   std::thread read_thread;
   std::mutex mutex;  // To get rid of data races when accessing motion data
   std::mutex mutex_tcp_clientfd;  // Must satisfy TSAN even for little things

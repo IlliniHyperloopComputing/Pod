@@ -71,6 +71,11 @@ class SourceManagerBase {
   void stop() {
     if (initialized_correctly) {
       running.store(false);
+      #ifdef SIM
+      // Make sure we arn't waiting on this
+      // Has to be after running.store(false), otherwise the refresh loop will startup
+      SimulatorManager::sim.loaded_scenario.invoke();  
+      #endif
       closing.invoke();
 
       worker.join();
@@ -124,6 +129,14 @@ class SourceManagerBase {
 
   void refresh_loop() {
     int64_t delayInUsecs = refresh_timeout();
+
+    // Solves a problem where the scenario isn't loaded yet, so we end up throwing errors because
+    //   all the data defaults to Zeros.
+    // Good 'ol race conditions
+    #ifdef SIM
+    SimulatorManager::sim.loaded_scenario.wait();  // Wait for loaded 
+    #endif
+
     while (running.load()) {
       #ifndef SIM
         std::shared_ptr<Data> new_data = refresh();
