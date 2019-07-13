@@ -155,7 +155,8 @@ enum CANErrors {
   CAN_BMS_DTC2_FAULT = 0x200000,
   CAN_MOTOR_CONTROLLER_FAULT = 0x400000,
   CAN_MOTOR_CONTROLLER_WARN = 0x800000,
-  CAN_SENTINEL = 0x1000000  // Not an error, but a way to easily keep track of the number of errors
+  CAN_BMS_ROLLING_COUNTER_ERROR = 0x1000000,
+  CAN_SENTINEL = 0x2000000  // Not an error, but a way to easily keep track of the number of errors
   // Update Command.cpp with additional errors, or suffer segfaults
 };
 

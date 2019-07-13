@@ -51,6 +51,7 @@ error_battery_over_current 4000    # Units are 0.1A
 error_bms_logic_over_voltage 170   # "Power Input Voltage" Units are 0.1V
 error_bms_logic_under_voltage 110  # "Power Input Voltage" Units are 0.1V
 error_bms_internal_over_temp  35   # Units are in degrees C
+error_bms_rolling_counter_timeout 120000 # Units are microseconds. Should be at least 100 milliseconds
 
 error_general_1_over_temp 40  # 
 error_general_2_over_temp 40

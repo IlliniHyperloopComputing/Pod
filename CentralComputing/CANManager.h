@@ -100,6 +100,10 @@ class CANManager : public SourceManagerBase<CANData> {
   int32_t error_bms_logic_over_voltage; 
   int32_t error_bms_logic_under_voltage; 
   int32_t error_bms_internal_over_temp; 
+  int32_t error_bms_rolling_counter_timeout;
+
+  int32_t rolling_counter_tracker;
+  int64_t rolling_counter_timer;
 
   std::mutex send_mutex;
 

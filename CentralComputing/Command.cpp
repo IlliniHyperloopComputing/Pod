@@ -142,6 +142,7 @@ std::string Command::get_network_command_value_string(Network_Command * com) {
       "CAN_BMS_DTC2_FAULT",
       "CAN_MOTOR_CONTROLLER_FAULT",
       "CAN_MOTOR_CONTROLLER_WARN",
+      "CAN_BMS_ROLLING_COUNTER_ERROR",
       "CAN_SENTINEL",
     };
     int val = std::log2(com->value);

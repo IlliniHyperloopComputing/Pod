@@ -251,12 +251,19 @@ void CANManager::initialize_sensor_error_configs() {
       ConfiguratorManager::config.getValue("error_battery_over_voltage",  error_battery_over_voltage) &&
       ConfiguratorManager::config.getValue("error_battery_under_voltage", error_battery_under_voltage) &&
       ConfiguratorManager::config.getValue("error_battery_over_current", error_battery_over_current) &&
+      ConfiguratorManager::config.getValue("error_bms_rolling_counter_timeout", error_bms_rolling_counter_timeout) &&
       ConfiguratorManager::config.getValue("error_bms_internal_over_temp",  error_bms_internal_over_temp) &&  // NOLINT
       ConfiguratorManager::config.getValue("error_bms_logic_over_voltage",  error_bms_logic_over_voltage) &&  // NOLINT
       ConfiguratorManager::config.getValue("error_bms_logic_under_voltage", error_bms_logic_under_voltage))) { // NOLINT
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: CANManager Missing necessary configuration\n");
     exit(1);
   }
+
+  // rolling counter is only up to 255, so this is an unrealistic number for it
+  // This guarantees that the first comparison is good
+  rolling_counter_tracker = 1000; 
+  // set the timer to compare right away;
+  rolling_counter_timer = -1000000;
 }
 
 void CANManager::set_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
@@ -411,6 +418,20 @@ void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_d
   // Within a flight mode
   if (check_data->status_word & 0x80 == 1) {
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_WARN);
+  }
+
+  // Rolling counter must increment every 100 milliseconds. We define a bms rolling counter timeout value
+  // So we see if 100 milliseconds are up
+  //    If yes, then we check if the rolling_counter_tracker == the rolling_counter 
+  //      The Rolling counter _should_ be updated!  IF not, it means the BMS could have stalled
+  //      The rolling_counter_tracker is updated every time the timer is up
+  //    If no, then keep waiting
+  if (microseconds()-rolling_counter_timer > error_bms_rolling_counter_timeout) {
+    if(check_data->rolling_counter == rolling_counter_tracker) {
+      Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_ROLLING_COUNTER_ERROR);
+    } 
+    rolling_counter_tracker = check_data->rolling_counter;
+    rolling_counter_timer = microseconds();
   }
 
 }
