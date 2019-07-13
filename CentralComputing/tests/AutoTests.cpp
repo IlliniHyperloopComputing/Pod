@@ -1,7 +1,5 @@
 #ifdef SIM // Only compile if building test executable
 #include "PodTest.cpp"
-#include "ScenarioSensorFree.h"
-#include "ScenarioRealNoFault.h"
 #include "ScenarioRealLong.h"
 #include "ScenarioTestTimeouts.h"
 using std::make_shared;
