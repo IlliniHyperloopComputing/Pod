@@ -12,7 +12,7 @@ export class StateComponent implements OnInit {
   stateName:string = "Disconnected"
 
   constructor(private stateService: StateService) { 
-    interval(500).subscribe(x => {
+    interval(100).subscribe(x => {
       this.getValues();
     })
   }

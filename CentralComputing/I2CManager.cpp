@@ -36,7 +36,7 @@ bool I2CManager::initialize_source() {
     set_error_flag(Command::Network_Command_ID::SET_I2C_ERROR, I2CErrors::I2C_SETUP_FAILURE);
     return false;
   }
-  
+
   print(LogLevel::LOG_DEBUG, "I2C Manger setup successful\n");
   return true;
 }
@@ -51,7 +51,7 @@ bool I2CManager::single_shot(int fd, int port, int16_t *value) {
 
   // set config register and start conversion
   // config register is 1
-  writeBuf[0] = 1;    
+  writeBuf[0] = 1;
 
   // bit 15 1 bit for single shot
   // Bits 14-12 input selection
@@ -64,7 +64,7 @@ bool I2CManager::single_shot(int fd, int port, int16_t *value) {
   // Bits 4-0  comparator functions see spec sheet.
   writeBuf[1] = 0x83;  // 0b10000011; // bits 15-8
   writeBuf[1] = writeBuf[1] | port << 4;  // bits 15-8
-  writeBuf[2] = 0xe3;  // 0b11100011; // bits 7-0 
+  writeBuf[2] = 0xe3;  // 0b11100011; // bits 7-0
 
   // begin conversion
   if (write(fd, writeBuf, 3) != 3) {
@@ -88,7 +88,7 @@ bool I2CManager::single_shot(int fd, int port, int16_t *value) {
     print(LogLevel::LOG_ERROR, "I2C Write error. Write conversion register. %s\n", strerror(errno));
     return false;
   }
-  
+
   // read 2 bytes
   if (read(fd, readBuf, 2) != 2) {
     print(LogLevel::LOG_ERROR, "I2C Read error. Read conversion error. %s\n", strerror(errno));
@@ -102,9 +102,9 @@ bool I2CManager::single_shot(int fd, int port, int16_t *value) {
 }
 
 std::shared_ptr<I2CData> I2CManager::refresh() {
-  if (i == 3) {
+  if (i == 4) {
     i = 0;
-    if (j == 3) {
+    if (j == 2) {
       j = 0;
     } else {
       j++;
@@ -118,46 +118,52 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
 
   if (i == 0) {
     port = ANC0;
-  } else if (i == 1) {
+  }
+  else if (i == 1) {
     port = ANC1;
-  } else if (i == 2) {
+  }
+  else if (i == 2) {
     port = ANC2;
-  } else {
+  }
+  else {
     port = ANC3;
   }
 
   if (j == 0) {
     addr = 0x48;
-  } else if (j == 1) {
-    addr = 0x49;
-  } else if (j == 2) {
-    addr = 0x4A;
-  } else {
-    addr = 0x4B;
   }
+  else if (j == 1) {
+    addr = 0x49;
+  }
+  //else if (j == 2) {
+  //  addr = 0x4A;
+  //}
+  //else {
+  //  addr = 0x4B;
+  //}
 
-  int64_t a = Utils::microseconds(); 
+  int64_t a = Utils::microseconds();
   int16_t value = 0;
-  
+
   if (!set_i2c_addr(i2c_fd, addr)) {
-    Command::set_error_flag(Command::SET_I2C_ERROR, I2C_READ_ERROR); 
+    Command::set_error_flag(Command::SET_I2C_ERROR, I2C_READ_ERROR);
     return empty_data();
   }
   if (single_shot(i2c_fd, port, &value)) {
-    int64_t b = Utils::microseconds(); 
+    int64_t b = Utils::microseconds();
     print(LogLevel::LOG_DEBUG, "(REMOVE) I2C: i=%d, j =%d, val: %d, took this long: micros: %lu\n", i, j, value, b-a);
   } else {
     Command::set_error_flag(Command::SET_I2C_ERROR, I2C_READ_ERROR);
     return empty_data();
   }
-  int index = (j * 4) + i; 
+  int index = (j * 4) + i;
 
   // Update the "old" data with the new reading
-  old_data->temp[index] = value;  
+  old_data->temp[index] = value;
 
   // duplicate the "old_data" here into the "new_data"
-  std::shared_ptr<I2CData> new_data = std::make_shared<I2CData>(*old_data);  
-  
+  std::shared_ptr<I2CData> new_data = std::make_shared<I2CData>(*old_data);
+
   // new_data contains both the new and old readings.
   return new_data;
 }
@@ -171,7 +177,7 @@ std::shared_ptr<I2CData> I2CManager::refresh_sim() {
 }
 
 void I2CManager::initialize_sensor_error_configs() {
-  if (!(ConfiguratorManager::config.getValue("error_general_1_over_temp", error_general_1_over_temp) && 
+  if (!(ConfiguratorManager::config.getValue("error_general_1_over_temp", error_general_1_over_temp) &&
       ConfiguratorManager::config.getValue("error_general_2_over_temp",   error_general_2_over_temp) &&
       ConfiguratorManager::config.getValue("error_general_3_over_temp",   error_general_3_over_temp))) {
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: I2CManager Missing necessary configuration\n");
@@ -180,7 +186,7 @@ void I2CManager::initialize_sensor_error_configs() {
 }
 
 void I2CManager::check_for_sensor_error(const std::shared_ptr<I2CData> & check_data, E_States state) {
-  auto temp_arr = check_data->temp; 
+  auto temp_arr = check_data->temp;
   for (int index = 0; index < static_cast<int>(NUM_TMP / 3); index++) {
     if (temp_arr[index] > static_cast<int>(error_general_1_over_temp)) {
       Command::set_error_flag(Command::SET_I2C_ERROR, I2C_OVER_TEMP_ONE);

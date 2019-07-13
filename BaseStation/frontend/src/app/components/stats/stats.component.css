@@ -9,7 +9,21 @@
   border-collapse: collapse;
   position: absolute;
   top: 10%;
-  left: 20%;
+  left: 30%;
+}
+
+.table3 {
+  border-collapse: collapse;
+  position: absolute;
+  top: 10%;
+  left: 50%;
+}
+
+.table4 {
+  border-collapse: collapse;
+  position: absolute;
+  top: 10%;
+  left: 70%;
 }
 
 tr, td, th {

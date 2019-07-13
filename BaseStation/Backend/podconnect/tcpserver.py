@@ -60,7 +60,9 @@ def serve():
                     if tcpsaver.saveCANData(data) == -1:
                         print("CAN data failure")
                 elif id == 2: # I2C Data
-                    # ToDo
+                    data = conn.recv(16*2)
+                    data = tcphelper.bytes_to_int16(data, 16)
+                    # Save it here
                     pass
                 elif id == 3: # PRU Data
                     # ToDo

@@ -35,4 +35,40 @@
       </td>
     </tr>
   </table>
+  <table class="table3">
+    <tr>
+      <th>
+        Name
+      </th>
+      <th>
+        Value
+      </th>
+    </tr>
+    <tr *ngFor="let stat of stats[2].stats">
+      <td>
+        {{ stat.name }}
+      </td>
+      <td [ngStyle]="applyStyle(stat.color)">
+        {{ stat.value }}
+      </td>
+    </tr>
+  </table>
+  <table class="table4">
+    <tr>
+      <th>
+        Name
+      </th>
+      <th>
+        Value
+      </th>
+    </tr>
+    <tr *ngFor="let stat of stats[3].stats">
+      <td>
+        {{ stat.name }}
+      </td>
+      <td [ngStyle]="applyStyle(stat.color)">
+        {{ stat.value }}
+      </td>
+    </tr>
+  </table>
 </div>

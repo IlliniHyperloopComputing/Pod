@@ -3,6 +3,7 @@ from . import models
 def getStats():
     state_data = models.State.objects.latest("date_time")
     can_data = models.CANData.objects.latest("date_time")
+    error_data = models.Errors.objects.latest("date_time")
 
     can_data_motor = {
         "stats": [
@@ -71,8 +72,9 @@ def getStats():
                 "value": str(can_data.phase_b_current),
                 "color": "limegreen"
             }
-        ]}
-    can_data_bms = {
+        ]
+    }
+    can_data_bms1 = {
         "stats": [
             {
                 "name": "Internal_Relay_State",
@@ -143,7 +145,11 @@ def getStats():
                 "name": "Max_Pack_DCL",
                 "value": str(can_data.max_pack_dcl),
                 "color": "limegreen"
-            },
+            }
+        ]
+    }
+    can_data_bms2 = {
+        "stats": [
             {
                 "name": "Avg_Pack_Current",
                 "value": str(can_data.avg_pack_current),
@@ -239,6 +245,71 @@ def getStats():
                 "value": str(can_data.adaptive_soc),
                 "color": "limegreen"
             }
-        ]}
-    toReturn = [can_data_motor, can_data_bms]
+        ]
+    }
+    if error_data.ADCError == 0:
+        adc_color = "limegreen"
+    else:
+        adc_color =  "red"
+    
+    if error_data.CANError == 0:
+        can_color = "limegreen"
+    else:
+        can_color =  "red"
+    
+    if error_data.I2CError == 0:
+        i2c_color = "limegreen"
+    else:
+        i2c_color =  "red"
+    
+    if error_data.PRUError == 0:
+        pru_color = "limegreen"
+    else:
+        pru_color =  "red"
+    
+    if error_data.NetworkError == 0:
+        net_color = "limegreen"
+    else:
+        net_color =  "red"
+    
+    if error_data.OtherError == 0:
+        other_color = "limegreen"
+    else:
+        other_color =  "red"
+    
+    error_data_frame = {
+        "stats": [
+            {
+                "name": "ADCError",
+                "value": str(error_data.ADCError),
+                "color": adc_color
+            },
+            {
+                "name": "CANError",
+                "value": str(error_data.CANError),
+                "color": can_color
+            },
+            {
+                "name": "I2CError",
+                "value": str(error_data.I2CError),
+                "color": i2c_color
+            },
+            {
+                "name": "PRUError",
+                "value": str(error_data.PRUError),
+                "color": pru_color
+            },
+            {
+                "name": "NetworkError",
+                "value": str(error_data.NetworkError),
+                "color": net_color
+            },
+            {
+                "name": "OtherError",
+                "value": str(error_data.OtherError),
+                "color": other_color
+            }
+        ]
+    }
+    toReturn = [can_data_motor, can_data_bms1, can_data_bms2, error_data_frame]
     return toReturn

@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 
 import { ButtonsService } from '../../services/buttons.service';
 
+import { interval } from 'rxjs';
+
 @Component({
   selector: 'app-buttons',
   templateUrl: './buttons.component.html',
@@ -13,7 +15,9 @@ export class ButtonsComponent implements OnInit {
   constructor(private bs: ButtonsService) { }
 
   ngOnInit() {
-    this.setInitialName();
+    interval(100).subscribe(x => {
+      this.setInitialName();
+    })
   }
 
   setInitialName() {
@@ -31,12 +35,18 @@ export class ButtonsComponent implements OnInit {
 
   stateToName(state:number):string {
     if (state == 0) {
-      return "Test"
+      return "Test Outside"
     }
     else if (state == 1) {
       return "Loading"
     }
     else if (state == 2) {
+      return "Test Inside"
+    }
+    else if (state == 3) {
+      return "Ready"
+    }
+    else if (state == 4) {
       return "Launch"
     }
     else {
