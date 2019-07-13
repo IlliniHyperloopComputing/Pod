@@ -83,7 +83,8 @@ def serve():
                     data = tcphelper.bytes_to_int(data, 1)
                     if tcpsaver.saveStateData(data) == -1:
                         print("State data failure")
-            except:
+            except Exception as e:
+                print(e)
                 print("Error in TCP Received message")
         print("Disconnected from Pod!!")
         # Add this to event logger
@@ -99,7 +100,6 @@ def sendData():
                 print("Sending " + str(command))
                 for message in command:
                     convmessage = np.uint32(message)
-                    print(binascii.hexlify(convmessage))
                     conn.sendall(convmessage)
             except Exception as e:
                 print(e)

@@ -4,8 +4,9 @@ def getStats():
     state_data = models.State.objects.latest("date_time")
     can_data = models.CANData.objects.latest("date_time")
     error_data = models.Errors.objects.latest("date_time")
-    i2c_data = models.I2CData.objects.latestt("date_time")
-
+    i2c_data = models.I2CData.objects.latest("date_time")
+    pru_data = models.PRUData.objects.latest("date_time")
+    motion_data = models.MotionData.objects.latest("date_time")
     can_data_motor = {
         "stats": [
             {
@@ -159,12 +160,12 @@ def getStats():
             {
                 "name": "Highest_Temp",
                 "value": str(can_data.highest_temp),
-                "color": "red"
+                "color": "limegreen"
             },
             {
                 "name": "Highest_Temp_ID",
                 "value": str(can_data.highest_temp_id),
-                "color": "red"
+                "color": "limegreen"
             },
             {
                 "name": "Avg_Temp",
@@ -330,6 +331,31 @@ def getStats():
                 "value": str(i2c_data.sensor_0x48_3),
                 "color": "limegreen"
             },
+            {
+                "name": "Orange Distance",
+                "value": str(pru_data.orange_distance),
+                "color": "limegreen"
+            },
+            {
+                "name": "Orange Velocity",
+                "value": str(pru_data.orange_velocity),
+                "color": "limegreen"
+            },
+            {
+                "name": "Wheel Distance",
+                "value": str(pru_data.wheel_distance),
+                "color": "limegreen"
+            },
+            {
+                "name": "Wheel Velocity",
+                "value": str(pru_data.wheel_velocity),
+                "color": "limegreen"
+            },
+            {
+                "name": "Acceleration",
+                "value": str(motion_data.acceleration),
+                "color": "limegreen"
+            }
         ]
     }
     toReturn = [can_data_motor, can_data_bms1, can_data_bms2, error_data_frame]

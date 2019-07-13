@@ -30,7 +30,7 @@ def buttonPressed(request):
                 print("State out of left button range")
         else:
             print("AGGHHHH STOP FAST")
-            tcpserver.addToCommandQueue([5])
+            udpserver.addToCommandQueue([5])
     return HttpResponse(state_data.state)
 
 #  TRANS_SAFE_MODE = 0,
