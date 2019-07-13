@@ -4,6 +4,7 @@ def getStats():
     state_data = models.State.objects.latest("date_time")
     can_data = models.CANData.objects.latest("date_time")
     error_data = models.Errors.objects.latest("date_time")
+    i2c_data = models.I2CData.objects.latestt("date_time")
 
     can_data_motor = {
         "stats": [
@@ -308,7 +309,27 @@ def getStats():
                 "name": "OtherError",
                 "value": str(error_data.OtherError),
                 "color": other_color
-            }
+            },
+            {
+                "name": "I2C 0x48 0",
+                "value": str(i2c_data.sensor_0x48_0),
+                "color": "limegreen"
+            },
+            {
+                "name": "I2C 0x48 1",
+                "value": str(i2c_data.sensor_0x48_1),
+                "color": "limegreen"
+            },
+            {
+                "name": "I2C 0x48 2",
+                "value": str(i2c_data.sensor_0x48_2),
+                "color": "limegreen"
+            },
+            {
+                "name": "I2C 0x48 3",
+                "value": str(i2c_data.sensor_0x48_3),
+                "color": "limegreen"
+            },
         ]
     }
     toReturn = [can_data_motor, can_data_bms1, can_data_bms2, error_data_frame]

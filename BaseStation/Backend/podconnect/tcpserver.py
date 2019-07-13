@@ -51,7 +51,7 @@ def serve():
                     break
                 h = bytearray(data)
                 id = int(h[0])
-                if id == 0:
+                if id == 0: # ADC Data
                     # ToDo
                     pass
                 elif id == 1: # CAN Data
@@ -60,16 +60,20 @@ def serve():
                     if tcpsaver.saveCANData(data) == -1:
                         print("CAN data failure")
                 elif id == 2: # I2C Data
-                    data = conn.recv(16*2)
-                    data = tcphelper.bytes_to_int16(data, 16)
-                    # Save it here
-                    pass
+                    data = conn.recv(12*2)
+                    data = tcphelper.bytes_to_int16(data, 12)
+                    if tcpsaver.saveI2CData(data) == -1:
+                        print("I2C data failure")
                 elif id == 3: # PRU Data
-                    # ToDo
-                    pass
+                    data = conn.recv(4*4)
+                    data = tcphelper.bytes_to_int(data, 4)
+                    if tcpsaver.savePRUData(data) == -1:
+                        print("PRU data failure")
                 elif id == 4: # Motion Data
-                    # ToDo
-                    pass
+                    data = conn.recv(3*4)
+                    data = tcphelper.bytes_to_int(data, 3)
+                    if tcpsaver.saveMotionData(data) == -1:
+                        print("Motion data failure")
                 elif id == 5: # Error Data
                     data = conn.recv(6)
                     if tcpsaver.saveErrorData(data) == -1:

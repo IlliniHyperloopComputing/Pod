@@ -4,7 +4,9 @@ from django.db import models
 
 class MotionData(models.Model):
     date_time = models.DateTimeField(auto_now=True,primary_key=True)
-    data = models.IntegerField()
+    position = models.IntegerField()
+    velocity = models.IntegerField()
+    acceleration = models.IntegerField()
 
 class ADCData(models.Model):
     date_time = models.DateTimeField(auto_now=True,primary_key=True)
@@ -14,7 +16,6 @@ class CANData(models.Model):
     date_time = models.DateTimeField(auto_now=True,primary_key=True)
 
     # Motor Controller
-    data = models.IntegerField()
     status_word = models.IntegerField()
     position_val = models.IntegerField()
     torque_val  = models.IntegerField()
@@ -67,11 +68,25 @@ class CANData(models.Model):
 
 class I2CData(models.Model):
     date_time = models.DateTimeField(auto_now=True,primary_key=True)
-    data = models.IntegerField()
+    sensor_0x48_0 = models.IntegerField()
+    sensor_0x48_1 = models.IntegerField()
+    sensor_0x48_2 = models.IntegerField()
+    sensor_0x48_3 = models.IntegerField()
+    sensor_0x49_0 = models.IntegerField()
+    sensor_0x49_1 = models.IntegerField()
+    sensor_0x49_2 = models.IntegerField()
+    sensor_0x49_3 = models.IntegerField()
+    sensor_0x77_0 = models.IntegerField()
+    sensor_0x77_1 = models.IntegerField()
+    sensor_0x77_2 = models.IntegerField()
+    sensor_0x77_3 = models.IntegerField()
 
 class PRUData(models.Model):
     date_time = models.DateTimeField(auto_now=True,primary_key=True)
-    data = models.IntegerField()
+    orange_distance = models.IntegerField()
+    orange_velocity = models.IntegerField()
+    wheel_distance = models.IntegerField()
+    wheel_velocity = models.IntegerField()
 
 class Errors(models.Model):
     date_time = models.DateTimeField(auto_now=True,primary_key=True)

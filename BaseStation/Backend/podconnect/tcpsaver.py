@@ -5,7 +5,7 @@ from . import models
 ###############################################################
 
 def saveStateData(data):
-    if len(data) < 1:
+    if len(data) != 1:
         return -1
     state_model = models.State(
         state=data[0]
@@ -17,7 +17,7 @@ def saveStateData(data):
 # Returns: -1 if the array is too small
 # Returns: 1 on success
 def saveErrorData(data):
-    if len(data) < 6:
+    if len(data) != 6:
         return -1
     error_model = models.Errors(
         ADCError=data[0],
@@ -28,6 +28,49 @@ def saveErrorData(data):
         OtherError=data[5],
     )
     error_model.save()
+    return 1
+
+def saveI2CData(data):
+    if len(data) != 12:
+        return -1
+    i2c_model = models.I2CData(
+        sensor_0x48_0 = data[0],
+        sensor_0x48_1 = data[1],
+        sensor_0x48_2 = data[2],
+        sensor_0x48_3 = data[3],
+        sensor_0x49_0 = data[4],
+        sensor_0x49_1 = data[5],
+        sensor_0x49_2 = data[6],
+        sensor_0x49_3 = data[7],
+        sensor_0x77_0 = data[8],
+        sensor_0x77_1 = data[9],
+        sensor_0x77_2 = data[10],
+        sensor_0x77_3 = data[11],
+    )
+    i2c_model.save()
+    return 1
+
+def savePRUData(data):
+    if len(data) != 4:
+        return -1
+    pru_model = models.PRUData(
+        orange_distance = data[0],
+        orange_velocity = data[1],
+        wheel_distance = data[2],
+        wheel_velocity = data[3]
+    )
+    pru_model.save()
+    return 1
+
+def saveMotionData(data):
+    if len(data) != 3:
+        return -1
+    motion_model = models.MotionData(
+        position = data[0],
+        velocity = data[1],
+        acceleration = data[2]
+    )
+    motion_model.save()
     return 1
 
 # There has to be a better way to do this
@@ -42,13 +85,12 @@ def saveCANData(data):
         return -1
     can_model = models.CANData(
         # Motor Controller
-        data=data[0],
-        status_word=data[1],
-        position_val=data[2],
-        torque_val=data[3],
-        controller_temp=data[4],
-        motor_temp=data[5],
-        dc_link_voltage=data[6],
+        status_word=data[0],
+        position_val=data[1],
+        torque_val=data[2],
+        controller_temp=data[3],
+        motor_temp=data[4],
+        dc_link_voltage=data[5],
         logic_power_supply_voltage=data[6],
         current_demand=data[7],
         motor_current_val=data[8],

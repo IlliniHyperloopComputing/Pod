@@ -25,10 +25,10 @@ def battery(request):
     return JsonResponse(toReturn)
 
 def position(request):
-    can_data = models.CANData.objects.latest("date_time")
+    motion_data = models.MotionData.objects.latest("date_time")
     toReturn = {
-        "currentDistance":can_data.position_val,
-        "totalDistance":1000
+        "currentDistance":motion_data.position,
+        "totalDistance":1200
     }
     return JsonResponse(toReturn)
 

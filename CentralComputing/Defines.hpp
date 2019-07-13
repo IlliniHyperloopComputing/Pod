@@ -31,16 +31,15 @@ enum HV_Relay_State {
 };
 
 #define NUM_ADC 7
-#define NUM_ACCEL 2
 struct ADCData {
   int32_t data[NUM_ADC];
-  // [0]  
-  // [1]  
-  // [2]  
-  // [3]  
-  // [4]  
-  // [5]  
-  // [6]  
+  // [0]
+  // [1]
+  // [2]
+  // [3]
+  // [4]
+  // [5]
+  // [6]
 };
 
 
@@ -62,10 +61,10 @@ struct CANData {
   // BMS
   uint32_t internal_relay_state;        // Used within the CANManager to set BMS relay states
   uint32_t relay_state;                 // uint16_t This should agree with the above (given a small delay)
-  uint32_t rolling_counter;             // uint8_t 
+  uint32_t rolling_counter;             // uint8_t
   uint32_t fail_safe_state;             // uint16_t
   uint32_t pack_current;                // int16_t
-  uint32_t pack_voltage_inst;           // uint16_t       
+  uint32_t pack_voltage_inst;           // uint16_t
   uint32_t pack_voltage_open;           // uint16_t
   uint32_t pack_soc;                    // uint8_t
   uint32_t pack_amphours;               // uint16_t
@@ -95,7 +94,7 @@ struct CANData {
   uint32_t adaptive_soc;                // uint8_t
 };
 
-#define NUM_TMP 16
+#define NUM_TMP 12
 struct I2CData {
   // replace with actual data structure
   int16_t temp[NUM_TMP];
@@ -154,10 +153,10 @@ enum PRUErrors {
 enum NETWORKErrors {
   UDP_SETUP_FAILURE = 0x1,
   TCP_SETUP_FAILURE = 0x2,
-  UDP_READ_WRITE_ERROR = 0x4, 
-  TCP_READ_WRITE_ERROR = 0x8, 
-  UDP_DISCONNECT_ERROR = 0x10, 
-  TCP_DISCONNECT_ERROR = 0x20, 
+  UDP_READ_WRITE_ERROR = 0x4,
+  TCP_READ_WRITE_ERROR = 0x8,
+  UDP_DISCONNECT_ERROR = 0x10,
+  TCP_DISCONNECT_ERROR = 0x20,
 };
 
 enum OTHERErrors {
@@ -165,7 +164,7 @@ enum OTHERErrors {
 };
 
 struct Errors{
-  uint32_t error_vector[6]; 
+  uint32_t error_vector[6];
   // [0] ADC errors
   // [1] CAN errors
   // [2] I2C errors
