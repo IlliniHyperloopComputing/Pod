@@ -104,7 +104,7 @@ bool I2CManager::single_shot(int fd, int port, int16_t *value) {
 std::shared_ptr<I2CData> I2CManager::refresh() {
   if (i == 2) {
     i = 0;
-    if (j == 2) {
+    if (j == 1) {
       j = 0;
     } else {
       j++;
