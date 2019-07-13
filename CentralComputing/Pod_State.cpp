@@ -257,11 +257,12 @@ void Pod_State::ST_Functional_Test_Inside() {
 void Pod_State::ST_Launch_Ready() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
   launch_ready_start_time = microseconds();
-  ready_for_launch = false;  // used in conjunction with the pre-charge timer.
+  ready_for_launch = false;  // used in conjunction with the launch_ready_start_time timer.
 
   brakes.disable_brakes();
   motor.enable_motors();
 
+  // NOTE: We turn on the Precharge and LV Relays. 
   motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_ON);
   motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_ON);
 }
@@ -277,19 +278,28 @@ void Pod_State::ST_Flight_Coast() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
   coast_start_time = microseconds();
   motor.disable_motors();
+  motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
+  motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
+  motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
 }
 
 void Pod_State::ST_Flight_Brake() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
   brake_start_time = microseconds();
   motor.disable_motors();
+  motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
+  motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
+  motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
   brakes.enable_brakes();
 }
 
-void Pod_State::ST_Error() {
+void Pod_State::ST_Flight_Abort() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
   motor.disable_motors();
-  // enable brakes;
+  motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
+  motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
+  motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
+  brakes.enable_brakes();
 }
 
 /////////////////////////////
@@ -297,7 +307,14 @@ void Pod_State::ST_Error() {
 ///////////////////////////
 void Pod_State::steady_safe_mode(Command::Network_Command * command, 
                                   UnifiedState * state) {
-  // not much special stuff to do here  
+  switch (command->id) {
+    case Command::CALC_ACCEL_ZERO_G:
+      // trigger calculate zero g
+      SourceManager::ADC.calculate_zero_g();
+      break;
+    default:
+      break;
+  }
 }
 
 void Pod_State::steady_function_outside(Command::Network_Command * command, 
@@ -353,17 +370,64 @@ void Pod_State::steady_function_outside(Command::Network_Command * command,
 
 void Pod_State::steady_loading(Command::Network_Command * command, 
                                 UnifiedState* state) {
+  switch (command->id) {
+    case Command::CALC_ACCEL_ZERO_G:
+      // trigger calculate zero g
+      SourceManager::ADC.calculate_zero_g();
+      break;
+    default:
+      break;
+  }
 }
 
 void Pod_State::steady_function_inside(Command::Network_Command * command, 
                                   UnifiedState * state) {
+  switch (command->id) {
+    case Command::ENABLE_MOTOR: 
+      motor.enable_motors();
+      break;
+    case Command::DISABLE_MOTOR:
+      motor.disable_motors();
+      break;
+    case Command::SET_MOTOR_SPEED:
+      motor.set_throttle(command->value); 
+      break;
+    case Command::SET_HV_RELAY_HV_POLE:
+      if (command->value == 0) {
+        motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
+      } else if (command->value == 1) {
+        motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_ON);
+      }
+      break;
+    case Command::SET_HV_RELAY_LV_POLE:
+      if (command->value == 0) {
+        motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
+      } else if (command->value == 1) {
+        motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_ON);
+      }
+      break;
+    case Command::SET_HV_RELAY_PRE_CHARGE:
+      if (command->value == 0) {
+        motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
+      } else if (command->value == 1) {
+        motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_ON);
+      }
+      break;
+    case Command::CALC_ACCEL_ZERO_G:
+      // trigger calculate zero g
+      SourceManager::ADC.calculate_zero_g();
+      break;
+    default:
+      break;
+  }
 }
 
 void Pod_State::steady_launch_ready(Command::Network_Command * command, 
                                     UnifiedState* state) {
   // check if precharge complete
-  int64_t timeout_check = microseconds() - acceleration_start_time;
+  int64_t timeout_check = microseconds() - launch_ready_start_time;
   if (timeout_check > launch_ready_precharge_timeout && !ready_for_launch) {
+    // Precharge complete, turn of precharge relay, turn on HV relay
     motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
     motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_ON);
     ready_for_launch = true;  // Set true so we can't get into this IF again
