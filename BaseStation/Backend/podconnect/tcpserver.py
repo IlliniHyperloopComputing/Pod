@@ -86,6 +86,7 @@ def serve():
             except Exception as e:
                 print(e)
                 print("Error in TCP Received message")
+                break
         print("Disconnected from Pod!!")
         # Add this to event logger
 
