@@ -102,7 +102,7 @@ bool I2CManager::single_shot(int fd, int port, int16_t *value) {
 }
 
 std::shared_ptr<I2CData> I2CManager::refresh() {
-  if (i == 4) {
+  if (i == 2) {
     i = 0;
     if (j == 2) {
       j = 0;
@@ -122,12 +122,12 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
   else if (i == 1) {
     port = ANC1;
   }
-  else if (i == 2) {
-    port = ANC2;
-  }
-  else {
-    port = ANC3;
-  }
+  //else if (i == 2) {
+  //  port = ANC2;
+  //}
+  //else {
+  //  port = ANC3;
+  //}
 
   if (j == 0) {
     addr = 0x48;
