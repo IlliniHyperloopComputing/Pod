@@ -110,6 +110,9 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
       j++;
     }
   } else {
+    if (j == 2) {
+      j = 0;
+    }
     i++;
   }
 
