@@ -110,6 +110,10 @@ class SourceManagerBase {
     mutex.unlock();
   }
 
+  // Need to be public for testing purposes
+  virtual void initialize_sensor_error_configs() = 0;
+  virtual void check_for_sensor_error(const std::shared_ptr<Data> & check_data, E_States state) = 0;
+
  private:
   // Init and Stop functions can setup devices/ file I/O
   // Stop will only be called if init returns true
@@ -117,9 +121,6 @@ class SourceManagerBase {
   virtual void stop_source() = 0;
 
   virtual std::string name() = 0;
-
-  virtual void initialize_sensor_error_configs() = 0;
-  virtual void check_for_sensor_error(const std::shared_ptr<Data> & check_data, E_States state) = 0;
 
   // constructs a new Data object and fills it in
   virtual std::shared_ptr<Data> refresh() = 0;  

@@ -18,6 +18,14 @@ bool Command::get(Network_Command * com) {
   return true;
 }
 
+// I would use the function for testing code...
+void Command::wait_for_empty() {
+  Event e;
+  while (command_queue.size() != 0) {
+    e.wait_for(5000);
+  }
+}
+
 void Command::flush() {
   uint64_t tmp;
   while (command_queue.dequeue(&tmp)) {}

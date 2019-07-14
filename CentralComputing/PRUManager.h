@@ -30,8 +30,6 @@ class PRUManager : public SourceManagerBase<PRUData> {
     void stop_source();
     std::shared_ptr<PRUData> refresh();
     std::shared_ptr<PRUData> refresh_sim();
-    void initialize_sensor_error_configs();
-    void check_for_sensor_error(const std::shared_ptr<PRUData> &, E_States state);
 
     int32_t convert_to_velocity(uint32_t decay, uint32_t delta, uint32_t distance);
 
@@ -53,6 +51,11 @@ class PRUManager : public SourceManagerBase<PRUData> {
 
     int32_t orange_diff_counter;
     int32_t wheel_diff_counter;
+
+ public:
+    // Public for testing purposes
+    void initialize_sensor_error_configs();
+    void check_for_sensor_error(const std::shared_ptr<PRUData> &, E_States state);
 };
 
 #endif  // PRUMANAGER_H_

@@ -26,13 +26,15 @@ class CANManager : public SourceManagerBase<CANData> {
   void set_motor_state(bool enable);
   void set_motor_throttle(int16_t value);
 
+  // Public for testing purposes
+  void initialize_sensor_error_configs();
+  void check_for_sensor_error(const std::shared_ptr<CANData> &, E_States state);
+
  private:
   bool initialize_source();
   void stop_source();
   std::shared_ptr<CANData> refresh();
   std::shared_ptr<CANData> refresh_sim();
-  void initialize_sensor_error_configs();
-  void check_for_sensor_error(const std::shared_ptr<CANData> &, E_States state);
 
   CANData stored_data;
 
