@@ -12,6 +12,6 @@ class ScenarioRealLong : public Scenario {
   virtual std::shared_ptr<PRUData> sim_get_pru();
 
   virtual void true_motion();
-  int64_t pru_delta_seconds, can_delta_seconds;
+  int64_t pru_delta_seconds, can_delta_seconds, rolling_counter;
 };
 #endif

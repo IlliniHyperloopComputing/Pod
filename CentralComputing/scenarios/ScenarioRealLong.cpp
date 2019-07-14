@@ -7,6 +7,7 @@ using Utils::clamp;
 ScenarioRealLong::ScenarioRealLong() {
   pru_delta_seconds = microseconds();
   can_delta_seconds = pru_delta_seconds;
+  rolling_counter = 0;
 }
 
 void ScenarioRealLong::true_motion() {
@@ -75,6 +76,8 @@ std::shared_ptr<CANData> ScenarioRealLong::sim_get_can() {
   d->power_voltage_input = 160;
   d->dtc_status_one = 0;
   d->dtc_status_two = 0;
+  rolling_counter++;
+  d->rolling_counter = rolling_counter % 255;
 
   return d;
 }
