@@ -47,7 +47,12 @@ class PRUManager : public SourceManagerBase<PRUData> {
     const uint32_t wheel_map[NUM_WHEEL_INPUTS] = {HUNDRED_FEET_IN_MM, HUNDRED_FEET_IN_MM};
 
     int32_t error_orange_diff;
+    int32_t error_orange_diff_count;
     int32_t error_encoder_wheel_diff;
+    int32_t error_encoder_wheel_diff_count;
+
+    int32_t orange_diff_counter;
+    int32_t wheel_diff_counter;
 };
 
 #endif  // PRUMANAGER_H_

@@ -68,8 +68,10 @@ error_pneumatic_4_over_pressure 2000
 error_battery_box_over_pressure 3000
 error_battery_box_under_pressure 2000
 
-error_orange_diff 200
-error_encoder_wheel_diff 30
+error_orange_diff 30481           # Units are mm. 30480mm == 100 feet. So if the tapes differ by 1 count, its an issue
+error_orange_diff_count 3         # Maybe one tape is just behind the other... give a couple tries to catch up
+error_encoder_wheel_diff 25000    # Units are mm. 25 meters.
+error_encoder_wheel_diff_count 10 # 
 
 
 estimated_brake_deceleration 9810 # Units are mm/s/s
