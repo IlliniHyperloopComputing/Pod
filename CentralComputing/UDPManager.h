@@ -27,7 +27,8 @@ enum Connection_Status{
   DISCONNECTED
 };
 
-extern int socketfd;
+extern int send_socketfd;
+extern int recv_socketfd;
 extern std::atomic<bool> running;
 extern Connection_Status connection_status;
 extern struct addrinfo hints, *sendinfo, *recvinfo;
