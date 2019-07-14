@@ -7,8 +7,8 @@ import time, socket, queue
 COMMAND_QUEUE = queue.Queue()
 
 send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
-UDP_RECV_IP = '127.0.0.1'
-UDP_SEND_IP = '127.0.0.1'
+UDP_RECV_IP = ''
+UDP_SEND_IP = '192.168.0.14' #127.0.0.1'
 UDP_SEND_PORT = 5005
 UDP_RECV_PORT = 5004
 MSG_TO_SEND = "PING"
@@ -34,14 +34,14 @@ def serve():
             if data.decode() == MSG_TO_RECV:
                 # wait a small ammount of time, as to not cause a flood of messages back and forth
                 e.wait( timeout=0.020); 
-                # print ("UDP: received correct message: ", data.decode())
+                print ("UDP: (comment me out) received correct message: ", data.decode())
             else:
                 print ("UDP: received incorrect message: ", data.decode())
             #    # TODO: Determine what to do in this case! 
             #    # TODO: Does it mean the network is bad?
             #    # TODO: Should we throw an error??
-        except Exception as e:
-            print(e)
+        except Exception as f:
+            print(f)
 
 def sendData():
     global send_sock, COMMAND_QUEUE, UDP_SEND_IP, UDP_PORT
