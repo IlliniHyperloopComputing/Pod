@@ -39,7 +39,8 @@ class ADCManager : public SourceManagerBase<ADCData> {
   int32_t error_pneumatic_4_over_pressure;
   int32_t error_battery_box_over_pressure;
   int32_t error_battery_box_under_pressure;
-
+  int32_t accel_diff_counter_error;
+  int32_t accel_diff_counter;
   std::string name() {
     return "adc";
   }

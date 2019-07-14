@@ -93,7 +93,8 @@ void ADCManager::initialize_sensor_error_configs() {
       ConfiguratorManager::config.getValue("error_pneumatic_3_over_pressure", error_pneumatic_3_over_pressure) &&
       ConfiguratorManager::config.getValue("error_pneumatic_4_over_pressure", error_pneumatic_4_over_pressure) &&
       ConfiguratorManager::config.getValue("error_battery_box_over_pressure",  error_battery_box_over_pressure) &&
-      ConfiguratorManager::config.getValue("error_battery_box_under_pressure", error_battery_box_under_pressure))) {
+      ConfiguratorManager::config.getValue("error_battery_box_under_pressure", error_battery_box_under_pressure) &&
+      ConfiguratorManager::config.getValue("accel_diff_counter_error",accel_diff_counter_error))) {
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: ADCManager Missing necessary configuration\n");
     exit(1);
   }
@@ -102,8 +103,13 @@ void ADCManager::initialize_sensor_error_configs() {
 void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_data, E_States state) {
   //Just hardcoding and using difference for accelerometers for now
   int32_t* adc_data = check_data->data;
-  if (abs(adc_data[0] - adc_data[1]) > error_accel_diff) {
-    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_ACCEL_DIFF_ERROR);
+  if (abs(adc_data[0] - adc_data[1]) >= error_accel_diff) {
+    accel_diff_counter = accel_diff_counter + 1;
+    if (accel_diff_counter > accel_diff_counter_error) {
+      Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_ACCEL_DIFF_ERROR);
+    }
+  } else {
+    accel_diff_counter = 0;
   }
   if (adc_data[2] > error_pneumatic_1_over_pressure) {
     Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_PNEUMATIC_OVER_PRESSURE_ERROR_1);

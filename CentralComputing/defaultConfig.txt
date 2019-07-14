@@ -58,6 +58,7 @@ error_general_2_over_temp 40
 error_general_3_over_temp 40
 
 error_accel_diff 20
+accel_diff_counter_error 10
 
 error_pneumatic_1_over_pressure 2000
 error_pneumatic_2_over_pressure 2000
