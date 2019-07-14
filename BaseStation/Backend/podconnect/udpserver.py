@@ -8,7 +8,7 @@ COMMAND_QUEUE = queue.Queue()
 
 send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
 UDP_RECV_IP = ''
-UDP_SEND_IP = '192.168.1.103' #127.0.0.1'
+UDP_SEND_IP = '127.0.0.1'
 UDP_SEND_PORT = 5005
 UDP_RECV_PORT = 5004
 MSG_TO_SEND = "PING"
@@ -28,7 +28,6 @@ def serve():
 
     print("UDP Send Addr= {addr}:{port}".format(addr=UDP_SEND_IP,port=UDP_SEND_PORT))
     while (True):
-        print ("UDP: sending...")
         send_sock.sendto(MSG_TO_SEND.encode(), (UDP_SEND_IP, UDP_SEND_PORT))
         try:
             data, addr = recv_sock.recvfrom(1024) # buffer size is 1024 bytes
