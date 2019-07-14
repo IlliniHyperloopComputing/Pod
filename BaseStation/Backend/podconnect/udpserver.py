@@ -8,7 +8,7 @@ COMMAND_QUEUE = queue.Queue()
 
 send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
 UDP_RECV_IP = ''
-UDP_SEND_IP = '192.168.0.14' #127.0.0.1'
+UDP_SEND_IP = '192.168.1.60' #127.0.0.1'
 UDP_SEND_PORT = 5005
 UDP_RECV_PORT = 5004
 MSG_TO_SEND = "PING"
@@ -41,10 +41,11 @@ def serve():
             #    # TODO: Does it mean the network is bad?
             #    # TODO: Should we throw an error??
         except Exception as f:
-            print(f)
+            #print(f)
+            pass
 
 def sendData():
-    global send_sock, COMMAND_QUEUE, UDP_SEND_IP, UDP_PORT
+    global send_sock, COMMAND_QUEUE, UDP_SEND_IP, UDP_SEND_PORT
     # Sending data
     while True:
         if not COMMAND_QUEUE.empty():
@@ -53,7 +54,7 @@ def sendData():
                 print("Sending " + str(command))
                 for message in command:
                     convmessage = np.uint32(message)
-                    send_sock.sendto(convmessage, (UDP_SEND_IP, UDP_PORT))
+                    send_sock.sendto(convmessage, (UDP_SEND_IP, UDP_SEND_PORT))
             except Exception as e:
                 print(e)
                 #COMMAND_QUEUE.put(command)
