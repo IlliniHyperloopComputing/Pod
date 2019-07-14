@@ -411,12 +411,12 @@ void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_d
   }
 
   // Refer to eDrive_firmware_specifications , page 93
-  if (check_data->status_word & 0x8 == 1) {
+  if (check_data->status_word & 0x8 ) {
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_FAULT);
   }
   // If this error triggers too much, consider only having it trigger 
   // Within a flight mode
-  if (check_data->status_word & 0x80 == 1) {
+  if (check_data->status_word & 0x80) {
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_WARN);
   }
 
