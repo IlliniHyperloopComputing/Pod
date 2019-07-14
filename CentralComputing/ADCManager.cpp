@@ -10,6 +10,7 @@ bool ADCManager::initialize_source() {
   }
 
   do_calculate_zero_g = false;  // By default, just use the default values
+  accel_diff_counter = 0;
   calculate_zero_g_time = 0;
   accel1_zero_g = default_zero_g;  // Set the defaults
   accel2_zero_g = default_zero_g;
@@ -102,15 +103,22 @@ void ADCManager::initialize_sensor_error_configs() {
 
 void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_data, E_States state) {
   //Just hardcoding and using difference for accelerometers for now
+
   int32_t* adc_data = check_data->data;
-  if (abs(adc_data[0] - adc_data[1]) >= error_accel_diff) {
-    accel_diff_counter = accel_diff_counter + 1;
-    if (accel_diff_counter > accel_diff_counter_error) {
-      Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_ACCEL_DIFF_ERROR);
+  // If we are in a flight state, check if accelerometers are in error
+  if (state == E_States::ST_FLIGHT_ACCEL ||
+      state == E_States::ST_FLIGHT_BRAKE || 
+      state == E_States::ST_FLIGHT_COAST) {
+    if (abs(adc_data[0] - adc_data[1]) >= error_accel_diff) {
+      accel_diff_counter++;
+      if (accel_diff_counter > accel_diff_counter_error) {
+        Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_ACCEL_DIFF_ERROR);
+      }
+    } else {
+      accel_diff_counter = 0;
     }
-  } else {
-    accel_diff_counter = 0;
   }
+
   if (adc_data[2] > error_pneumatic_1_over_pressure) {
     Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_PNEUMATIC_OVER_PRESSURE_ERROR_1);
   }
@@ -129,4 +137,5 @@ void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_d
   if (adc_data[6] < error_battery_box_under_pressure) {
     Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_BATTERY_BOX_UNDER_PRESSURE_ERROR);
   }
+
 }
