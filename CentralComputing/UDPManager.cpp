@@ -176,13 +176,13 @@ void UDPManager::connection_monitor(const char * hostname, const char * send_por
   running.store(true);
   print(LogLevel::LOG_INFO, "UDP Setup complete\n");
   setup.invoke();
+
+  // TODO: @Evan Remove this
+  // Send ack just to test
+  udp_send(send_buffer, sizeof(send_buffer));  
+
   // Poll indefinitely until a ping is received, then go into ping-ack loop.
   while (running) {
-    udp_send(send_buffer, sizeof(send_buffer));  // Respond with ACK
-    byte_count = udp_recv(read_buffer, sizeof(read_buffer));  // Read message
-    if (byte_count > 0 && udp_parse(read_buffer, byte_count)) {  // Check if PING. Returns true if message was PING
-    }
-
     rv = poll(fds, 1, timeout);  // http://beej.us/guide/bgnet/html/single/bgnet.html#indexId434909-276
     if (rv == -1) {  // ERROR occured in poll()
       print(LogLevel::LOG_ERROR, "UDP poll() failed: %s\n", strerror(errno));
