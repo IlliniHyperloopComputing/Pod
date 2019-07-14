@@ -43,7 +43,7 @@ bool UDPManager::start_udp(const char * hostname, const char * send_port, const 
   hints.ai_flags = AI_PASSIVE;
   
   // For recv address
-  if ((rv = getaddrinfo(hostname, recv_port, &hints, &recvinfo)) != 0) {
+  if ((rv = getaddrinfo(NULL, recv_port, &hints, &recvinfo)) != 0) {
     print(LogLevel::LOG_ERROR, "UDP Error getting addrinfo: %s\n", gai_strerror(rv));
     goto RETURN_ERROR;
   }
