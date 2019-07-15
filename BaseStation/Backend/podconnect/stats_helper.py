@@ -283,32 +283,32 @@ def getStats():
         "stats": [
             {
                 "name": "ADCError",
-                "value": str(error_data.ADCError),
+                "value": str(hex(error_data.ADCError)),
                 "color": adc_color
             },
             {
                 "name": "CANError",
-                "value": str(error_data.CANError),
+                "value": str(hex(error_data.CANError)),
                 "color": can_color
             },
             {
                 "name": "I2CError",
-                "value": str(error_data.I2CError),
+                "value": str(hex(error_data.I2CError)),
                 "color": i2c_color
             },
             {
                 "name": "PRUError",
-                "value": str(error_data.PRUError),
+                "value": str(hex(error_data.PRUError)),
                 "color": pru_color
             },
             {
                 "name": "NetworkError",
-                "value": str(error_data.NetworkError),
+                "value": str(hex(error_data.NetworkError)),
                 "color": net_color
             },
             {
                 "name": "OtherError",
-                "value": str(error_data.OtherError),
+                "value": str(hex(error_data.OtherError)),
                 "color": other_color
             },
             {

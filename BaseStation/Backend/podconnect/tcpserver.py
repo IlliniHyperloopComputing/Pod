@@ -52,8 +52,7 @@ def serve():
                 h = bytearray(data)
                 id = int(h[0])
                 if id == 0: # ADC Data
-                    # ToDo
-                    pass
+                    data = conn.recv(7*4)
                 elif id == 1: # CAN Data
                     data = conn.recv(45*4)
                     data = tcphelper.bytes_to_int(data, 45)
@@ -75,7 +74,8 @@ def serve():
                     if tcpsaver.saveMotionData(data) == -1:
                         print("Motion data failure")
                 elif id == 5: # Error Data
-                    data = conn.recv(6)
+                    data = conn.recv(6*4)
+                    data = tcphelper.bytes_to_int(data, 6)
                     if tcpsaver.saveErrorData(data) == -1:
                         print("Error data failure")
                 elif id == 6: # State Data
