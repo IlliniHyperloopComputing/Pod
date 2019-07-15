@@ -13,7 +13,7 @@ export class StatsComponent implements OnInit {
   stats:Row[];
 
   constructor(private statsService: StatsService) { 
-    interval(100).subscribe(x => {
+    interval(50).subscribe(x => {
       this.getValues();
     })
   }
