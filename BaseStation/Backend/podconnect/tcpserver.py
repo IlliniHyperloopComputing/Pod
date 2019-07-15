@@ -51,7 +51,7 @@ def serve():
                     break
                 h = bytearray(data)
                 id = int(h[0])
-                if id == 0: # ADC Data
+                if id == 7: # ADC Data
                     data = conn.recv(7*4)
                     data = tcphelper.bytes_to_signed_int32(data, 7)
                     if tcpsaver.saveADCData(data) == -1:
