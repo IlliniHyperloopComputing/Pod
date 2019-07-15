@@ -21,7 +21,7 @@ export class DiagnosticsComponent implements OnInit {
         "value":0
       }, 
       {
-        "name":"TRANS_FUNCTIONAL_TEST",
+        "name":"TRANS_FUNCTIONAL_TEST_OUTSIDE",
         "value":1
       },
       {
@@ -29,15 +29,15 @@ export class DiagnosticsComponent implements OnInit {
         "value":2
       },
       {
-        "name":"TRANS_LAUNCH_READY",
+        "name":"TRANS_FUNCTIONAL_TEST_INSIDE",
         "value":3
       },
       {
-        "name":"LAUNCH",
+        "name":"TRANS_LAUNCH_READY",
         "value":4
       },
       {
-        "name":"EMERGENCY_BRAKE",
+        "name":"TRANS_FLIGHT_ACCEL",
         "value":5
       },
       {
@@ -69,7 +69,7 @@ export class DiagnosticsComponent implements OnInit {
         "value":12
       },
       {
-        "name":"TRANS_ERROR_STATE",
+        "name":"TRANS_ABORT",
         "value":13
       },
       {
@@ -131,6 +131,10 @@ export class DiagnosticsComponent implements OnInit {
       {
         "name":"SET_HV_RELAY_PRE_CHARGE",
         "value":28
+      },
+      {
+        "name":"CALC_ACCEL_ZERO_G",
+        "value":29
       }],
       "currValue": 0,
       "currCommand": 1

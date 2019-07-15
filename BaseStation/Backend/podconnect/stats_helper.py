@@ -77,38 +77,33 @@ def getStats():
                 "color": "limegreen"
             },
             {
-                "name": "ADC_Data_0",
-                "value": str(adc_data.data_0),
+                "name": "Accel_1 x",
+                "value": str(adc_data.data_5 - 2048),
                 "color": "limegreen"
             },
             {
-                "name": "ADC_Data_1",
+                "name": "Accel_1 y",
+                "value": str(adc_data.data_6 - 2048),
+                "color": "limegreen"
+            },
+            {
+                "name": "Accel_1 z",
+                "value": str(adc_data.data_4 - 2048),
+                "color": "limegreen"
+            },
+            {
+                "name": "Accel_2 x",
                 "value": str(adc_data.data_1),
                 "color": "limegreen"
             },
             {
-                "name": "ADC_Data_2",
-                "value": str(adc_data.data_2),
+                "name": "Accel_2 y",
+                "value": str(adc_data.data_3 - 2048),
                 "color": "limegreen"
             },
             {
-                "name": "ADC_Data_3",
-                "value": str(adc_data.data_3),
-                "color": "limegreen"
-            },
-            {
-                "name": "ADC_Data_4",
-                "value": str(adc_data.data_4),
-                "color": "limegreen"
-            },
-            {
-                "name": "ADC_Data_5",
-                "value": str(adc_data.data_5),
-                "color": "limegreen"
-            },
-            {
-                "name": "ADC_Data_6",
-                "value": str(adc_data.data_6),
+                "name": "Accel_2 z",
+                "value": str(adc_data.data_2 - 2048),
                 "color": "limegreen"
             }
         ]
