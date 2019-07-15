@@ -195,7 +195,7 @@ TEST_F(PodTest, AutomaticTransitionTestTimeouts) {
   print(LogLevel::LOG_DEBUG, "Sim - Waiting for Brake timeout to complete...\n");    
   pod->processing_command.reset();
   pod->state_machine->auto_transition_safe_mode.wait();
-  EXPECT_GT(microseconds()-d_start, brake_timeout); // test to make sure that we waited the correct ammount of time
+  EXPECT_GT(microseconds()-d_start+10000, brake_timeout); // test to make sure that we waited the correct ammount of time
   EXPECT_LT(microseconds()-d_start, brake_timeout*1.2); // test to make sure that we are bounded 
   pod->processing_command.wait();
 
