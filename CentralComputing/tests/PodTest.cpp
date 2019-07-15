@@ -40,6 +40,7 @@ class PodTest : public ::testing::Test
     pod->processing_error.reset();
     pod->tcp_fully_setup.reset(); 
     pod->udp_fully_setup.reset(); 
+    SimulatorManager::sim.loaded_scenario.reset();  
 
     // Set the Pod running in its own thread
     pod_thread = std::thread([&](){ pod->run();});

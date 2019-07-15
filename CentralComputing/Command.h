@@ -4,6 +4,7 @@
 #include "Utils.h"
 #include "SafeQueue.hpp"
 #include "Event.h"
+#include "Defines.hpp"
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <stdlib.h>
@@ -21,6 +22,7 @@ extern SafeQueue<uint64_t> command_queue;
 struct Network_Command;
 void put(uint32_t id, uint32_t value);
 bool get(Network_Command * com);
+void wait_for_empty();
 void flush();
   
 enum Network_Command_ID {
@@ -55,7 +57,8 @@ enum Network_Command_ID {
   SET_HV_RELAY_LV_POLE = 27,
   SET_HV_RELAY_PRE_CHARGE = 28,
   CALC_ACCEL_ZERO_G = 29,
-  SENTINEL = 30,
+  SENTINEL = 30,  // Any Command above this value is an invalid command
+  // Update the get_string() function bellow with additional commands, or suffer segfaults
 };
 
 // enum specifying what data is sent
@@ -76,6 +79,12 @@ struct Network_Command {
   uint32_t value;  // value of a command
 };
 
+// returns the string name for command value
+std::string get_network_command_ID_string(uint command);
+
+// Parses the value of a command, returns string
+std::string get_network_command_value_string(Network_Command * com);
+
 // To make error flag setting easy, this helper functionn is defined
 // Why use this instead of just calling Command::put() ? 
 // This function is "safe" and will not spam the queue.
@@ -84,6 +93,7 @@ struct Network_Command {
 // This helper function, and the int64_t array of timers makes that possible
 #define FLAGS_PER_ERROR 32
 extern int64_t error_flag_timers[FLAGS_PER_ERROR * 6];  // 32 flags per error ID, 6 errors
+extern std::mutex error_flag_mutex;
 void set_error_flag(Network_Command_ID id, uint32_t value);
 
 }  // namespace Command

@@ -26,13 +26,15 @@ class CANManager : public SourceManagerBase<CANData> {
   void set_motor_state(bool enable);
   void set_motor_throttle(int16_t value);
 
+  // Public for testing purposes
+  void initialize_sensor_error_configs();
+  void check_for_sensor_error(const std::shared_ptr<CANData> &, E_States state);
+
  private:
   bool initialize_source();
   void stop_source();
   std::shared_ptr<CANData> refresh();
   std::shared_ptr<CANData> refresh_sim();
-  void initialize_sensor_error_configs();
-  void check_for_sensor_error(const std::shared_ptr<CANData> &, E_States state);
 
   CANData stored_data;
 
@@ -97,6 +99,13 @@ class CANManager : public SourceManagerBase<CANData> {
   int32_t error_battery_over_voltage;
   int32_t error_battery_under_voltage;
   int32_t error_battery_over_current;
+  int32_t error_bms_logic_over_voltage; 
+  int32_t error_bms_logic_under_voltage; 
+  int32_t error_bms_internal_over_temp; 
+  int32_t error_bms_rolling_counter_timeout;
+
+  int32_t rolling_counter_tracker;
+  int64_t rolling_counter_timer;
 
   std::mutex send_mutex;
 

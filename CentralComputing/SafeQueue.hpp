@@ -41,6 +41,11 @@ class SafeQueue {
     m_queue.push(object);
   }
 
+  int size() {
+    std::lock_guard<std::mutex> guard(m_mutex);
+    return m_queue.size();
+  }
+
  private:
   std::queue<T> m_queue;
   std::mutex m_mutex;

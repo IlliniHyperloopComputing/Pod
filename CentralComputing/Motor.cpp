@@ -19,6 +19,7 @@ void Motor::disable_motors() {
 }
 
 void Motor::set_motor_state(bool enable) {
+  std::lock_guard<std::mutex> guard(mutex);
   enabled = enable;
   #ifdef NO_ACTION
     #ifdef SIM
@@ -33,14 +34,17 @@ void Motor::set_motor_state(bool enable) {
 }
 
 bool Motor::is_enabled() {
+  std::lock_guard<std::mutex> guard(mutex);
   return enabled;
 }
 
 int16_t Motor::get_throttle() {
+  std::lock_guard<std::mutex> guard(mutex);
   return throttle;
 }
 
 void Motor::set_throttle(int16_t value) {
+  std::lock_guard<std::mutex> guard(mutex);
   if (enabled) {
     throttle = value;
     #ifdef NO_ACTION
@@ -57,6 +61,7 @@ void Motor::set_throttle(int16_t value) {
 }
 
 void Motor::set_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
+  std::lock_guard<std::mutex> guard(mutex);
   #ifdef NO_ACTION
     #ifdef SIM
     SimulatorManager::sim.sim_relay_state(relay, state);

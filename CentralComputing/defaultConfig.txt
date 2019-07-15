@@ -35,36 +35,43 @@ low_pass_filter_velocity 0.90
 low_pass_filter_acceleration 0.90
 motor_distance_clamp 60960
 
-error_motor_ctrl_over_temp 50
-error_motor_over_temp 50
-error_dc_link_over_voltage 122
-error_dc_link_under_voltage 122
-error_motor_ctrl_logic_over_voltage 18
-error_motor_ctrl_logic_under_voltage 12
+error_motor_ctrl_over_temp 50           # Units are in degrees C, eDrive_firmware
+error_motor_over_temp 50                # Units are in degrees C
+error_dc_link_over_voltage 1201         # Units are 1/10 V
+error_dc_link_under_voltage 1000        # Units are 1/10 V
+error_motor_ctrl_logic_over_voltage 17  # Units are in V
+error_motor_ctrl_logic_under_voltage 11 # Units are in V
 
-error_cell_over_voltage 4010
-error_cell_under_voltage 3100
-error_cell_over_temp 50
-error_battery_over_voltage 4010
-error_battery_under_voltage 3100
-error_battery_over_current 700
+error_cell_over_voltage 40100      # Units are 0.0001v
+error_cell_under_voltage 31000     # Units are 0.0001v orionbms.com/manuals/utility_o2/
+error_cell_over_temp 45            # Units are in degrees C
+error_battery_over_voltage 1201    # Units are in 0.1V
+error_battery_under_voltage 1000   # Units are in 0.1V
+error_battery_over_current 4000    # Units are 0.1A
+error_bms_logic_over_voltage 170   # "Power Input Voltage" Units are 0.1V
+error_bms_logic_under_voltage 110  # "Power Input Voltage" Units are 0.1V
+error_bms_internal_over_temp  35   # Units are in degrees C
+error_bms_rolling_counter_timeout 120000 # Units are microseconds. Should be at least 100 milliseconds
 
-error_general_1_over_temp 40
+error_general_1_over_temp 40  # 
 error_general_2_over_temp 40
 error_general_3_over_temp 40
 
 error_accel_diff 20
+accel_diff_counter_error 10
 
 error_pneumatic_1_over_pressure 2000
 error_pneumatic_2_over_pressure 2000
 error_pneumatic_3_over_pressure 2000
 error_pneumatic_4_over_pressure 2000
 
-error_battery_box_over_pressure 2000
+error_battery_box_over_pressure 3000
 error_battery_box_under_pressure 2000
 
-error_orange_diff 20
-error_encoder_wheel_diff 30
+error_orange_diff 30481           # Units are mm. 30480mm == 100 feet. So if the tapes differ by 1 count, its an issue
+error_orange_diff_count 3         # Maybe one tape is just behind the other... give a couple tries to catch up
+error_encoder_wheel_diff 25000    # Units are mm. 25 meters.
+error_encoder_wheel_diff_count 10 # 
 
 
 estimated_brake_deceleration 9810 # Units are mm/s/s
