@@ -384,13 +384,13 @@ void Pod_State::steady_function_inside(Command::Network_Command * command,
                                   UnifiedState * state) {
   switch (command->id) {
     case Command::ENABLE_MOTOR: 
-      motor.enable_motors();
+      // print out something?
       break;
     case Command::DISABLE_MOTOR:
       motor.disable_motors();
       break;
     case Command::SET_MOTOR_SPEED:
-      motor.set_throttle(command->value); 
+      // print out something?
       break;
     case Command::SET_HV_RELAY_HV_POLE:
       if (command->value == 0) {
