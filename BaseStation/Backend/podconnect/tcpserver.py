@@ -53,6 +53,9 @@ def serve():
                 id = int(h[0])
                 if id == 0: # ADC Data
                     data = conn.recv(7*4)
+                    data = tcphelper.bytes_to_signed_int32(data, 7)
+                    if tcpsaver.saveADCData(data) == -1:
+                        print("ADC data failure")
                 elif id == 1: # CAN Data
                     data = conn.recv(45*4)
                     data = tcphelper.bytes_to_int(data, 45)
@@ -65,7 +68,7 @@ def serve():
                         print("I2C data failure")
                 elif id == 3: # PRU Data
                     data = conn.recv(4*4)
-                    data = tcphelper.bytes_to_int(data, 4)
+                    data = tcphelper.bytes_to_signed_int32(data, 4)
                     if tcpsaver.savePRUData(data) == -1:
                         print("PRU data failure")
                 elif id == 4: # Motion Data

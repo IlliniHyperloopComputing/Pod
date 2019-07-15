@@ -11,6 +11,22 @@ def saveStateData(data):
         state=data[0]
     )
     state_model.save()
+    return 1
+
+def saveADCData(data):
+    if len(data) != 7:
+        return -1
+    error_model = models.ADCData(
+        data_0=data[0],
+        data_1=data[1],
+        data_2=data[2],
+        data_3=data[3],
+        data_4=data[4],
+        data_5=data[5],
+        data_6=data[6]
+    )
+    error_model.save()
+    return 1
 
 # Input: data array
 # Function: saves data as a error data model

@@ -7,6 +7,8 @@ def getStats():
     i2c_data = models.I2CData.objects.latest("date_time")
     pru_data = models.PRUData.objects.latest("date_time")
     motion_data = models.MotionData.objects.latest("date_time")
+    adc_data = models.ADCData.objects.latest("date_time")
+
     can_data_motor = {
         "stats": [
             {
@@ -72,6 +74,41 @@ def getStats():
             {
                 "name": "Phase_B_Current",
                 "value": str(can_data.phase_b_current),
+                "color": "limegreen"
+            },
+            {
+                "name": "ADC_Data_0",
+                "value": str(adc_data.data_0),
+                "color": "limegreen"
+            },
+            {
+                "name": "ADC_Data_1",
+                "value": str(adc_data.data_1),
+                "color": "limegreen"
+            },
+            {
+                "name": "ADC_Data_2",
+                "value": str(adc_data.data_2),
+                "color": "limegreen"
+            },
+            {
+                "name": "ADC_Data_3",
+                "value": str(adc_data.data_3),
+                "color": "limegreen"
+            },
+            {
+                "name": "ADC_Data_4",
+                "value": str(adc_data.data_4),
+                "color": "limegreen"
+            },
+            {
+                "name": "ADC_Data_5",
+                "value": str(adc_data.data_5),
+                "color": "limegreen"
+            },
+            {
+                "name": "ADC_Data_6",
+                "value": str(adc_data.data_6),
                 "color": "limegreen"
             }
         ]

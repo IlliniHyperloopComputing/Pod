@@ -10,7 +10,13 @@ class MotionData(models.Model):
 
 class ADCData(models.Model):
     date_time = models.DateTimeField(auto_now=True,primary_key=True)
-    data = models.IntegerField(default=0)
+    data_0 = models.IntegerField(default=0)
+    data_1 = models.IntegerField(default=0)
+    data_2 = models.IntegerField(default=0)
+    data_3 = models.IntegerField(default=0)
+    data_4 = models.IntegerField(default=0)
+    data_5 = models.IntegerField(default=0)
+    data_6 = models.IntegerField(default=0)
 
 class CANData(models.Model):
     date_time = models.DateTimeField(auto_now=True,primary_key=True)
