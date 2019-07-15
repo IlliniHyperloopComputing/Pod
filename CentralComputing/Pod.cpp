@@ -28,6 +28,13 @@ void Pod::logic_loop() {
       print(LogLevel::LOG_INFO, "Command : %d %d\n", com.id, com.value);
       print(LogLevel::LOG_INFO, "Which is: %s %s\n", Command::get_network_command_ID_string(com.id).c_str(), 
                                                      Command::get_network_command_value_string(&com).c_str());
+      // Capture any bad commands before they cause a segfault
+      if (com.id >= Command::Network_Command_ID::SENTINEL) {
+        print(LogLevel::LOG_ERROR, "INVALID COMMAND ID: %d\n", com.id);
+        com.id = 0;
+        com.value = 0;
+        break;  // Exit, we can't use this command
+      }
       // Parse the command and call the appropriate state machine function
       auto transition = state_machine->get_transition_function(&com);
       ((*state_machine).*(transition))(); 
