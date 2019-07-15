@@ -115,7 +115,7 @@ bool UDPManager::udp_parse(uint8_t* buf, uint8_t len) {
   if (buf[0] == 'P') {    // for an example, lets send the first byte to be P, for PING 
     return true;          // if we get ping, we know it's a dummy
   } else {
-    // Print whatever we got because it wasn't PING
+    Command::set_error_flag(Command::Network_Command_ID::SET_NETWORK_ERROR,NETWORKErrors::UDP_READ_WRITE_ERROR);
     print(LogLevel::LOG_INFO, "Parsed %d bytes, they are: %s\n", len, buf);   }
   return false;
 }
