@@ -50,7 +50,7 @@ void MotionModel::calculate(UnifiedState * state) {
 
   // ACCELERATION
   // Simply take the median  
-  int32_t accl = Median(state->adc_data.get()->data, NUM_ACCEL); 
+  int32_t accl = static_cast<int32_t>((state->adc_data.get()->data[0] + state->adc_data.get()->data[1]) / 2)
 
   // Set state
   state->motion_data->x[0] = dist;
