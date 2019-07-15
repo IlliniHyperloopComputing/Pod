@@ -35,8 +35,6 @@ void MotionModel::calculate(UnifiedState * state) {
 
   // Take our minimum distance to be the maximum orange and wheel dist
   int32_t dist = std::max(orange_dist, wheel_dist);
-  // Will accept that the motor is outputing a higher value, up to a certain limit
-  dist = clamp(motor_dist, dist, dist + motor_distance_clamp);
 
   // VELOCITY
   // TODO: Refine this further. Incorporate other sensor inputs??
@@ -50,7 +48,7 @@ void MotionModel::calculate(UnifiedState * state) {
 
   // ACCELERATION
   // Simply take the median  
-  int32_t accl = static_cast<int32_t>((state->adc_data.get()->data[0] + state->adc_data.get()->data[1]) / 2)
+  int32_t accl = static_cast<int32_t>((state->adc_data.get()->data[0] + state->adc_data.get()->data[1]) / 2);
 
   // Set state
   state->motion_data->x[0] = dist;
