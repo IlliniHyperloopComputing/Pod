@@ -46,6 +46,7 @@ TEST_F(PodTest, SafetyCritical_ADC_Errors) {
   SourceManager::ADC.check_for_sensor_error(test_data, E_States::ST_SAFE_MODE);
   // Wait for all commands to be processed.....
   Command::wait_for_empty();
+  Utils::busyWait(1000000); // need to wait until we are actually 
   TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], 0); 
@@ -62,6 +63,7 @@ TEST_F(PodTest, SafetyCritical_ADC_Errors) {
   SourceManager::ADC.check_for_sensor_error(test_data, E_States::ST_SAFE_MODE);
   // Wait for all commands to be processed.....
   Command::wait_for_empty();
+  Utils::busyWait(500000); // need to wait until we are actually 
   // Check that we have all OVER errors
   TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
@@ -78,6 +80,7 @@ TEST_F(PodTest, SafetyCritical_ADC_Errors) {
   SourceManager::ADC.check_for_sensor_error(test_data, E_States::ST_SAFE_MODE);
   // wait for all commands
   Command::wait_for_empty();
+  Utils::busyWait(500000); // need to wait until we are actually 
 
   TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
@@ -165,6 +168,7 @@ TEST_F(PodTest, SafetyCritical_CAN_Errors) {
   SourceManager::CAN.check_for_sensor_error(test_data, E_States::ST_SAFE_MODE);
   // Wait for all commands to be processed.....
   Command::wait_for_empty();
+  Utils::busyWait(1000000); // need to wait until we are actually 
   TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[1], 0); 
@@ -195,6 +199,7 @@ TEST_F(PodTest, SafetyCritical_CAN_Errors) {
   SourceManager::CAN.check_for_sensor_error(test_data, E_States::ST_SAFE_MODE);
   // Wait for all commands to be processed.....
   Command::wait_for_empty();
+  Utils::busyWait(1000000); // need to wait until we are actually 
   // Check that we have all OVER errors
   TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
@@ -228,6 +233,7 @@ TEST_F(PodTest, SafetyCritical_CAN_Errors) {
   SourceManager::CAN.check_for_sensor_error(test_data, E_States::ST_SAFE_MODE);
   // wait for all commands
   Command::wait_for_empty();
+  Utils::busyWait(1000000); // need to wait until we are actually 
 
   TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
@@ -284,6 +290,7 @@ TEST_F(PodTest, SafetyCritical_I2C_Errors) {
   SourceManager::I2C.check_for_sensor_error(test_data, E_States::ST_SAFE_MODE);
   // Wait for all commands to be processed.....
   Command::wait_for_empty();
+  Utils::busyWait(1000000); // need to wait until we are actually 
   TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[2], 0); 
@@ -298,6 +305,7 @@ TEST_F(PodTest, SafetyCritical_I2C_Errors) {
   SourceManager::I2C.check_for_sensor_error(test_data, E_States::ST_SAFE_MODE);
   // Wait for all commands to be processed.....
   Command::wait_for_empty();
+  Utils::busyWait(1000000); // need to wait until we are actually 
   // Check that we have all OVER errors
   TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;

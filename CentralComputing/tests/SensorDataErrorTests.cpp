@@ -44,6 +44,7 @@ TEST_F(PodTest, SensorData_ADC_Errors) {
   SourceManager::ADC.check_for_sensor_error(test_data, E_States::ST_FLIGHT_ACCEL);
   // Wait for all commands to be processed.....
   Command::wait_for_empty();
+  Utils::busyWait(500000); // need to wait until we are actually 
   TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[0], 0); 
@@ -59,6 +60,7 @@ TEST_F(PodTest, SensorData_ADC_Errors) {
   }
   // Wait for all commands to be processed.....
   Command::wait_for_empty();
+  Utils::busyWait(500000); // need to wait until we are actually 
   // Check that we have all OVER errors
   TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
@@ -114,6 +116,7 @@ TEST_F(PodTest, SensorData_PRU_Errors) {
   SourceManager::PRU.check_for_sensor_error(test_data, E_States::ST_FLIGHT_ACCEL);
   // Wait for all commands to be processed.....
   Command::wait_for_empty();
+  Utils::busyWait(500000); // need to wait until we are actually 
   TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[3], 0); 
@@ -135,6 +138,7 @@ TEST_F(PodTest, SensorData_PRU_Errors) {
   }
 
   Command::wait_for_empty();
+  Utils::busyWait(500000); // need to wait until we are actually 
   TCPManager::data_mutex.lock();   // MUST USE LOCK TO AVOID TSAN ERRORS
   unified_state = &pod->unified_state;
   EXPECT_EQ(unified_state->errors->error_vector[3], PRU_ORANGE_DIFF_ERROR |
