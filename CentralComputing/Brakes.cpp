@@ -7,6 +7,7 @@ Brakes::Brakes() {
 }
 
 void Brakes::enable_brakes() {
+  std::lock_guard<std::mutex> guard(mutex);
   #ifdef NO_ACTION
     #ifdef SIM
     SimulatorManager::sim.sim_brake_enable();
@@ -21,6 +22,7 @@ void Brakes::enable_brakes() {
 }
 
 void Brakes::disable_brakes() {
+  std::lock_guard<std::mutex> guard(mutex);
   #ifdef NO_ACTION
     #ifdef SIM
     SimulatorManager::sim.sim_brake_disable();
@@ -39,6 +41,7 @@ void Brakes::set_enable(bool enable) {
 }
 
 bool Brakes::is_enabled() {
+  std::lock_guard<std::mutex> guard(mutex);
   return enabled;
 }
 
