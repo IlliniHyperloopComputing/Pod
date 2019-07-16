@@ -19,8 +19,10 @@ WARNINGS 	:= -Wall -Wextra -pedantic -Wdouble-promotion -Wcast-align -Wcast-qual
 INCLUDE_DIRS	:= -IStateMachineCompact -I${GTEST_DIR}/include -I. -Iscenarios
 CFLAGS_RELEASE 		:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG
 CFLAGS_RELEASE_NA	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG -DNO_ACTION
+CFLAGS_RELEASE_NM	:= -O2 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DNDEBUG -DNO_MOTOR
 CFLAGS_DEBUG   		:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG 
 CFLAGS_DEBUG_NA 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG  -DNO_ACTION
+CFLAGS_DEBUG_NM 	:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG  -DNO_MOTOR
 CFLAGS_SIM 		:= -O0 $(WARNINGS) -g -std=c++11 -c -MMD -MP $(INCLUDE_DIRS) -D_GNU_SOURCE -pthread -DDEBUG  -DNO_ACTION -DSIM 
 CFLAGS_BBB      := -DBBB
 CFLAGS_NORM     := 
@@ -40,8 +42,10 @@ POD_D 		= dbuild
 POD_T 		= sbuild
 POD_CROSS 	= cross
 POD_CROSS_NA 	= cross-na
+POD_CROSS_NM 	= cross-nm
 POD_CROSS_D 	= dcross
 POD_CROSS_D_NA 	= dcross-na
+POD_CROSS_D_NM 	= dcross-nm
 POD_CROSS_T 	= scross
 
 ARM_COMPILER_EXISTS := $(shell command -v $(CXX_BBB) 2> /dev/null)
@@ -226,6 +230,19 @@ $(OBJ_DIR)/%-cross-na.o : %.cpp
 	$(CXX) $? $(CFLAGS) -o $@
 
 #####
+# cross-nm
+#####
+$(POD_CROSS_NM) : CXX 		= $(CXX_BBB)
+$(POD_CROSS_NM) : CFLAGS  	= $(CFLAGS_RELEASE_NM) $(CFLAGS_BBB)
+$(POD_CROSS_NM) : LD  		= $(LD_BBB)
+$(POD_CROSS_NM) : mkdir_obj build-$(POD_CROSS_NM)
+build-$(POD_CROSS_NM) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-nm.o)
+	$(LD) $? $(LDFLAGS) $(LD_TEST_ARM) -o $(POD_CROSS_NM)
+
+$(OBJ_DIR)/%-cross-nm.o : %.cpp
+	$(CXX) $? $(CFLAGS) -o $@
+
+#####
 # cross-debug
 #####
 $(POD_CROSS_D) : CXX 	= $(CXX_BBB)
@@ -249,6 +266,19 @@ build-$(POD_CROSS_D_NA) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-debug-na.o)
 	$(CXX) $? $(LDFLAGS) $(LD_TEST_ARM) -o $(POD_CROSS_D_NA)
 
 $(OBJ_DIR)/%-cross-debug-na.o : %.cpp
+	$(LD) $? $(CFLAGS) -o $@
+
+#####
+# cross-debug-nm
+#####
+$(POD_CROSS_D_NM) : CXX 	= $(CXX_BBB)
+$(POD_CROSS_D_NM) : CFLAGS 	= $(CFLAGS_DEBUG_NM) $(CFLAGS_BBB)
+$(POD_CROSS_D_NM) : LD     	= $(LD_BBB)
+$(POD_CROSS_D_NM) : mkdir_obj build-$(POD_CROSS_D_NM)
+build-$(POD_CROSS_D_NM) : $(OBJ:%.o=$(OBJ_DIR)/%-cross-debug-nm.o)
+	$(CXX) $? $(LDFLAGS) $(LD_TEST_ARM) -o $(POD_CROSS_D_NM)
+
+$(OBJ_DIR)/%-cross-debug-nm.o : %.cpp
 	$(LD) $? $(CFLAGS) -o $@
 
 #####
@@ -285,9 +315,11 @@ push:
 	${info  (2) `make push_sim`    	  for sim build}
 	${info  (3) `make push_debug`  	  for debug build}
 	${info  (4) `make push_debug_na`  for debug build (no action) }
-	${info  (5) `make push_prod`      for optimized build}
-	${info  (6) `make push_prod_na`   for optimized build (no action) }
-	${info  (7) `make push_config`    for config file}
+	${info  (5) `make push_debug_nm`  for debug build (no motor) }
+	${info  (6) `make push_prod`      for optimized build}
+	${info  (7) `make push_prod_na`   for optimized build (no action) }
+	${info  (8) `make push_prod_nm`   for optimized build (no motor) }
+	${info  (9) `make push_config`    for config file}
 	$(info  ==============================================)
 
 .PHONY: push_all
@@ -305,6 +337,10 @@ push_debug: msg_d mkdir_obj $(POD_CROSS_D)
 push_debug_na: msg_d mkdir_obj $(POD_CROSS_D_NA) 
 	scp $(POD_CROSS_D_NA) $(BBB)@$(ADDR):~/
 
+.PHONY: push_debug_nm
+push_debug_nm: msg_d mkdir_obj $(POD_CROSS_D_NM) 
+	scp $(POD_CROSS_D_NM) $(BBB)@$(ADDR):~/
+
 .PHONY: push_prod
 push_prod: msg_p mkdir_obj $(POD_CROSS)
 	scp $(POD_CROSS) $(BBB)@$(ADDR):~/
@@ -312,6 +348,10 @@ push_prod: msg_p mkdir_obj $(POD_CROSS)
 .PHONY: push_prod_na
 push_prod_na: msg_p mkdir_obj $(POD_CROSS_NA)
 	scp $(POD_CROSS_NA) $(BBB)@$(ADDR):~/
+
+.PHONY: push_prod_nm
+push_prod_nm: msg_p mkdir_obj $(POD_CROSS_NM)
+	scp $(POD_CROSS_NM) $(BBB)@$(ADDR):~/
 
 .PHONY: push_config
 push_config: 

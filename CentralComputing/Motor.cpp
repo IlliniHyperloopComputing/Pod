@@ -20,7 +20,7 @@ void Motor::disable_motors() {
 
 void Motor::set_motor_state(bool enable) {
   enabled = enable;
-  #ifdef NO_ACTION
+  #if defined(NO_ACTION) || defined(NO_MOTOR)
     #ifdef SIM
     SimulatorManager::sim.sim_motor_state(enable);
     #else
@@ -43,7 +43,7 @@ int16_t Motor::get_throttle() {
 void Motor::set_throttle(int16_t value) {
   if (enabled) {
     throttle = value;
-    #ifdef NO_ACTION
+    #if defined(NO_ACTION) || defined(NO_MOTOR)
       #ifdef SIM
       SimulatorManager::sim.sim_motor_set_throttle(value);
       #else
@@ -57,7 +57,7 @@ void Motor::set_throttle(int16_t value) {
 }
 
 void Motor::set_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
-  #ifdef NO_ACTION
+  #if defined(NO_ACTION) || defined(NO_MOTOR)
     #ifdef SIM
     SimulatorManager::sim.sim_relay_state(relay, state);
     #else
