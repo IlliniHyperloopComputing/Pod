@@ -107,6 +107,7 @@ struct PRUData {
   int32_t orange_velocity[NUM_ORANGE_INPUTS];
   int32_t wheel_distance[NUM_WHEEL_INPUTS];
   int32_t wheel_velocity[NUM_WHEEL_INPUTS];
+  int32_t watchdog_hz;
 };
 
 struct MotionData {

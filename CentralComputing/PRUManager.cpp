@@ -94,6 +94,13 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
                                                       wheel_map[i]);
   }
 
+  // Get WATCHDOG
+  const int watchdog_input_pin = 3;
+  new_data.watchdog_hz = convert_to_velocity(raw_data.decays[watchdog_input_pin], 
+                                              raw_data.deltas[watchdog_input_pin],
+                                              1);  // 1 for distance, so we get hz
+
+
   // Store in shared_ptr
   std::shared_ptr<PRUData> ret_data = std::make_shared<PRUData>();
   *ret_data = new_data;
