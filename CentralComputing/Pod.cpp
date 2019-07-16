@@ -295,8 +295,13 @@ void Pod::trigger_shutdown() {
 // Used right now to load the configuration file if specified, or use the default
 void parse_command_line_args(int argc, char **argv, string * config_to_open, string * flight_plan_to_open);
 void parse_command_line_args(int argc, char **argv, string * config_to_open, string * flight_plan_to_open) {
+  #ifdef NO_MOTOR
+  *config_to_open = "navigationConfig.txt";
+  *flight_plan_to_open = "navigationFlightPlan.txt";
+  #else
   *config_to_open      = "defaultConfig.txt";
   *flight_plan_to_open = "defaultFlightPlan.txt";
+  #endif
   for (int i = 1; i < argc; i+=2) {
     // basic help
     if (strncmp(argv[i], "-h", 2) == 0 || strncmp(argv[i], "--help", 6) == 0 ||  strncmp(argv[i], "--h", 3) == 0) {
