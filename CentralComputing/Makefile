@@ -311,7 +311,7 @@ push:
 	$(info  ==============================================)
 	$(info  Ways to push to BBB:)
 	${info  Address is: $(BBB) @ $(ADDR) Modify Makefile to change address }
-	${info  (1) `make push_all`    	  for all of the following}
+	${info  (1) `make push_all`    	  for all of the following, but not the na nm}
 	${info  (2) `make push_sim`    	  for sim build}
 	${info  (3) `make push_debug`  	  for debug build}
 	${info  (4) `make push_debug_na`  for debug build (no action) }
