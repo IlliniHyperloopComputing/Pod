@@ -33,31 +33,31 @@ void Pod::logic_loop() {
         print(LogLevel::LOG_ERROR, "INVALID COMMAND ID: %d\n", com.id);
         com.id = 0;
         com.value = 0;
-        break;  // Exit, we can't use this command
-      }
-      // Parse the command and call the appropriate state machine function
-      auto transition = state_machine->get_transition_function(&com);
-      ((*state_machine).*(transition))(); 
-      #ifdef SIM  // Used to indicate to the Simulator that we have processed a command
-      if (!(com.id >= Command::Network_Command_ID::SET_ADC_ERROR &&
-            com.id <= Command::Network_Command_ID::CLR_OTHER_ERROR)) {
-        command_processed = true;  // Processed a command, not an error
       } else {
-        error_processed = true;  // Processed an error, not a command
-      }
-      #endif
+        // Parse the command and call the appropriate state machine function
+        auto transition = state_machine->get_transition_function(&com);
+        ((*state_machine).*(transition))(); 
+        #ifdef SIM  // Used to indicate to the Simulator that we have processed a command
+        if (!(com.id >= Command::Network_Command_ID::SET_ADC_ERROR &&
+              com.id <= Command::Network_Command_ID::CLR_OTHER_ERROR)) {
+          command_processed = true;  // Processed a command, not an error
+        } else {
+          error_processed = true;  // Processed an error, not a command
+        }
+        #endif
 
-      // Set the currerent State in each Source Manager. 
-      // The SouceManagers use the state while checking for errors, to emit different errors at different times.
-      // We do this here because only after a command would the state have changed - don't need to do this every loop
-      // The SourceManagers don't have access to the StateMachine variable, and this is the easiest way of
-      // getting the state to the SMs. Also, this is the minimal ammount of updates required, and is better
-      // than the SMs accessing the state machine every single time they loop.
-      E_States current_state = state_machine->get_current_state();
-      SourceManager::PRU.set_state(current_state);
-      SourceManager::CAN.set_state(current_state);
-      SourceManager::ADC.set_state(current_state);
-      SourceManager::I2C.set_state(current_state);
+        // Set the currerent State in each Source Manager. 
+        // The SouceManagers use the state while checking for errors, to emit different errors at different times.
+        // We do this here because only after a command would the state have changed - don't need to do this every loop
+        // The SourceManagers don't have access to the StateMachine variable, and this is the easiest way of
+        // getting the state to the SMs. Also, this is the minimal ammount of updates required, and is better
+        // than the SMs accessing the state machine every single time they loop.
+        E_States current_state = state_machine->get_current_state();
+        SourceManager::PRU.set_state(current_state);
+        SourceManager::CAN.set_state(current_state);
+        SourceManager::ADC.set_state(current_state);
+        SourceManager::I2C.set_state(current_state);
+      }
     } else {  // Create a "do nothing" command. This will be passed into the steady state caller below
       com.id = 0;
       com.value = 0;
