@@ -21,15 +21,15 @@ void Motor::disable_motors() {
 void Motor::set_motor_state(bool enable) {
   std::lock_guard<std::mutex> guard(mutex);
   enabled = enable;
-  #if defined(NO_ACTION) || defined(NO_MOTOR)
-    #ifdef SIM
-    SimulatorManager::sim.sim_motor_state(enable);
-    #else
-    print(LogLevel::LOG_INFO, "NO_ACTION: Motors: %s\n", enable?"Enabled":"Disabled");
-    #endif
+  #ifdef SIM
+  SimulatorManager::sim.sim_motor_state(enable);
   #else
-  SourceManager::CAN.set_motor_state(enable);
-  print(LogLevel::LOG_INFO, "Motors: %s\n", enable?"Enabled":"Disabled");
+    #if defined(NO_ACTION) || defined(NO_MOTOR)
+    print(LogLevel::LOG_INFO, "NO_ACTION: Motors: %s\n", enable?"Enabled":"Disabled");
+    #else
+    SourceManager::CAN.set_motor_state(enable);
+    print(LogLevel::LOG_INFO, "Motors: %s\n", enable?"Enabled":"Disabled");
+    #endif
   #endif
 }
 
@@ -47,16 +47,16 @@ void Motor::set_throttle(int16_t value) {
   std::lock_guard<std::mutex> guard(mutex);
   if (enabled) {
     throttle = value;
+  #ifdef SIM
+  SimulatorManager::sim.sim_motor_set_throttle(value);
+  #else
     #if defined(NO_ACTION) || defined(NO_MOTOR)
-      #ifdef SIM
-      SimulatorManager::sim.sim_motor_set_throttle(value);
-      #else
-      print(LogLevel::LOG_INFO, "NO_ACTION: Setting motor throttle: %d\n", value);
-      #endif
+    print(LogLevel::LOG_INFO, "NO_ACTION: Setting motor throttle: %d\n", value);
     #else
     SourceManager::CAN.set_motor_throttle(value);
     print(LogLevel::LOG_INFO, "Setting motor throttle: %d\n", value);
     #endif
+  #endif
   }
 }
 
