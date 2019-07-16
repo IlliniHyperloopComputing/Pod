@@ -179,6 +179,41 @@ def getStats():
                 "name": "Max_Pack_DCL",
                 "value": str(can_data.max_pack_dcl),
                 "color": "limegreen"
+            },
+            {
+                "name": "Motor_State",
+                "value": str(motion_data.motor_state),
+                "color": "limegreen"
+            },
+            {
+                "name": "Brake_State",
+                "value": str(can_data.brake_state),
+                "color": "limegreen"
+            },
+            {
+                "name": "Motor_Target_Torque",
+                "value": str(can_data.motor_target_torque),
+                "color": "limegreen"
+            },
+            {
+                "name": "Relay State Buff 0",
+                "value": str(can_data.relay_state_buff_0),
+                "color": "limegreen"
+            },
+            {
+                "name": "Relay State Buff 1",
+                "value": str(can_data.relay_state_buff_1),
+                "color": "limegreen"
+            },
+            {
+                "name": "Relay State Buff 2",
+                "value": str(can_data.relay_state_buff_2),
+                "color": "limegreen"
+            },
+            {
+                "name": "Relay State Buff 3",
+                "value": str(can_data.relay_state_buff_3),
+                "color": "limegreen"
             }
         ]
     }
