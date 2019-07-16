@@ -187,32 +187,32 @@ def getStats():
             },
             {
                 "name": "Brake_State",
-                "value": str(can_data.brake_state),
+                "value": str(motion_data.brake_state),
                 "color": "limegreen"
             },
             {
                 "name": "Motor_Target_Torque",
-                "value": str(can_data.motor_target_torque),
+                "value": str(motion_data.motor_target_torque),
                 "color": "limegreen"
             },
             {
                 "name": "Relay State Buff 0",
-                "value": str(can_data.relay_state_buff_0),
+                "value": str(motion_data.relay_state_buff_0),
                 "color": "limegreen"
             },
             {
                 "name": "Relay State Buff 1",
-                "value": str(can_data.relay_state_buff_1),
+                "value": str(motion_data.relay_state_buff_1),
                 "color": "limegreen"
             },
             {
                 "name": "Relay State Buff 2",
-                "value": str(can_data.relay_state_buff_2),
+                "value": str(motion_data.relay_state_buff_2),
                 "color": "limegreen"
             },
             {
                 "name": "Relay State Buff 3",
-                "value": str(can_data.relay_state_buff_3),
+                "value": str(motion_data.relay_state_buff_3),
                 "color": "limegreen"
             }
         ]
