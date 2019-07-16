@@ -62,6 +62,7 @@ std::shared_ptr<ADCData> ADCManager::refresh() {
 
   if (do_calculate_zero_g) { 
     if ((calculate_zero_g_time + calculate_zero_g_timeout) > Utils::microseconds()) {
+        print(Utils::LOG_DEBUG, "CALCULATING ZERO G")
         //zero_g_sum[0] += new_data->data[0];
         zero_g_sum[1] += new_data->data[1];
         zero_g_sum[2] += new_data->data[2];

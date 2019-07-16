@@ -237,6 +237,7 @@ void Pod_State::ST_Functional_Test_Outside() {
   motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
   motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
   motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
+  SourceManager::ADC.calculate_zero_g();
 }
 void Pod_State::ST_Loading() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
@@ -253,6 +254,7 @@ void Pod_State::ST_Functional_Test_Inside() {
   motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_OFF);
   motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_OFF);
   motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
+  SourceManager::ADC.calculate_zero_g();
 }
 void Pod_State::ST_Launch_Ready() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
