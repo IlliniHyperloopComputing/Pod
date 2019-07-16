@@ -44,6 +44,7 @@ class Motor {
   void set_motor_state(bool enable);
 
   bool enabled;
+  std::mutex mutex;
 
   int16_t throttle;
 };

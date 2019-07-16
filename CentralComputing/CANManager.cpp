@@ -137,8 +137,9 @@ std::shared_ptr<CANData> CANManager::refresh() {
   do {
     a = Utils::microseconds();
     if (!recv_frame()) {
-      print(LogLevel::LOG_ERROR, "CAN recv_frame failed. \n");
-      // TODO: put error on unified command queu
+      // Error has already been done by recv_frame()
+      // Nothing to do now but continue
+      continue;
     }
     b = Utils::microseconds();
     // print(LogLevel::LOG_INFO, "CAN recv_frame takes %lu microseconds\n", b-a);
@@ -182,7 +183,7 @@ std::shared_ptr<CANData> CANManager::refresh() {
       new_data->fail_safe_state       = cast_to_u32(0, 2, r_frame.data);
       new_data->current_limit_status  = cast_to_u32(2, 2, r_frame.data);
       new_data->high_cell_voltage     = cast_to_u32(4, 2, r_frame.data);
-      new_data->low_cell_voltge       = cast_to_u32(6, 2, r_frame.data);
+      new_data->low_cell_voltage       = cast_to_u32(6, 2, r_frame.data);
     } else if (r_frame.can_id == 0x6b2) {
       new_data->dtc_status_one        = cast_to_u32(0, 2, r_frame.data);
       new_data->dtc_status_two        = cast_to_u32(2, 2, r_frame.data);
@@ -216,12 +217,12 @@ std::shared_ptr<CANData> CANManager::refresh() {
     }
 
     // Print the contents of r_frame (assumes len <= 8)
-    char buff[16];
-    for (int j = 0; j < r_frame.len*2; j+=2) {
-      put_hex_byte(buff+j, r_frame.data[j/2]);
-    }
-    buff[r_frame.len*2] = '\0';  // include null terminator
-
+    // char buff[16];
+    // for (int j = 0; j < r_frame.len*2; j+=2) {
+    //   put_hex_byte(buff+j, r_frame.data[j/2]);
+    // }
+    // buff[r_frame.len*2] = '\0';  // include null terminator
+    // 
     // print(LogLevel::LOG_INFO, "CAN msg: id: %d, len: %d, data: %s\n", r_frame.can_id, r_frame.len, buff); 
   } while (r_frame.len != 0);
 
@@ -249,26 +250,20 @@ void CANManager::initialize_sensor_error_configs() {
       ConfiguratorManager::config.getValue("error_cell_over_temp", error_cell_over_temp) &&
       ConfiguratorManager::config.getValue("error_battery_over_voltage",  error_battery_over_voltage) &&
       ConfiguratorManager::config.getValue("error_battery_under_voltage", error_battery_under_voltage) &&
-      ConfiguratorManager::config.getValue("error_battery_over_current", error_battery_over_current))) {
+      ConfiguratorManager::config.getValue("error_battery_over_current", error_battery_over_current) &&
+      ConfiguratorManager::config.getValue("error_bms_rolling_counter_timeout", error_bms_rolling_counter_timeout) &&
+      ConfiguratorManager::config.getValue("error_bms_internal_over_temp",  error_bms_internal_over_temp) &&  // NOLINT
+      ConfiguratorManager::config.getValue("error_bms_logic_over_voltage",  error_bms_logic_over_voltage) &&  // NOLINT
+      ConfiguratorManager::config.getValue("error_bms_logic_under_voltage", error_bms_logic_under_voltage))) { // NOLINT
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: CANManager Missing necessary configuration\n");
     exit(1);
   }
-  // From Motor controller 
-  // Get Motor Controller over temperature
-  // Get Motor over temperature
-  // Get DC Link Voltage over voltage
-  // Get DC link Voltage under voltage
-  // Get Motor Controller Logic Power supply under voltage 
-  // Get Motor Controller Logic Power supply over voltage 
 
-  // From BMS
-  // Cell Over Voltage
-  // Cell under Voltage
-  // Over Temperature
-  // Battery Under Voltage
-  // Battery Over Voltage
-  // Over Current
-  // Grab all configuration variables
+  // rolling counter is only up to 255, so this is an unrealistic number for it
+  // This guarantees that the first comparison is good
+  rolling_counter_tracker = 1000; 
+  // set the timer to compare right away;
+  rolling_counter_timer = -1000000;
 }
 
 void CANManager::set_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
@@ -356,6 +351,89 @@ void CANManager::set_motor_throttle(int16_t value) {  // Using Throttle Value He
 }
 
 void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_data, E_States state) {
+  if (check_data->controller_temp > error_motor_ctrl_over_temp) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE);
+  }
+  if (check_data->motor_temp > error_motor_over_temp) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE);
+  }  
+  if (check_data->dc_link_voltage > error_dc_link_over_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_HV_OVER_VOLTAGE_ERROR);
+  } 
+  if (check_data->dc_link_voltage < error_dc_link_under_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_HV_UNDER_VOLTAGE_ERROR);
+  }
+  if (check_data->logic_power_supply_voltage > error_motor_ctrl_logic_over_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_LV_OVER_VOLTAGE_ERROR);
+  }
+  if (check_data->logic_power_supply_voltage < error_motor_ctrl_logic_under_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_LV_UNDER_VOLTAGE_ERROR);
+  }
+  if (check_data->high_cell_voltage > error_cell_over_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_CELL_OVER_VOLTAGE);
+  }
+  if (check_data->low_cell_voltage < error_cell_under_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_CELL_UNDER_VOLTAGE);
+  }
+  if (check_data->highest_temp > error_cell_over_temp) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_CELL_OVER_TEMP);
+  }
+  if (check_data->pack_voltage_inst > error_battery_over_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_BATTERY_OVER_VOLTAGE);
+  }
+  if (check_data->pack_voltage_inst < error_battery_under_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_BATTERY_UNDER_VOLTAGE);
+  }
+  if (check_data->pack_voltage_open > error_battery_over_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_BATTERY_OVER_VOLTAGE);
+  }
+  if (check_data->pack_voltage_open < error_battery_under_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_BATTERY_UNDER_VOLTAGE);
+  }
+  if (check_data->pack_current > error_battery_over_current) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_BATTERY_OVER_CURRENT);
+  }
+  if (check_data->power_voltage_input > error_bms_logic_over_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_LV_OVER_VOLTAGE_ERROR);
+  }
+  if (check_data->power_voltage_input < error_bms_logic_under_voltage) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_LV_UNDER_VOLTAGE_ERROR);
+  }
+  if (check_data->internal_temp > error_bms_internal_over_temp) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_INTERNAL_OVER_TEMPERATURE);
+  }
+  // Refer here: https://www.orionbms.com/manuals/utility_o2/
+  if (check_data->dtc_status_one != 0) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_DTC1_FAULT);
+  }
+  if (check_data->dtc_status_two != 0) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_DTC2_FAULT);
+  }
+
+  // Refer to eDrive_firmware_specifications , page 93
+  if (check_data->status_word & 0x8 ) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_FAULT);
+  }
+  // If this error triggers too much, consider only having it trigger 
+  // Within a flight mode
+  if (check_data->status_word & 0x80) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_WARN);
+  }
+
+  // Rolling counter must increment every 100 milliseconds. We define a bms rolling counter timeout value
+  // So we see if 100 milliseconds are up
+  //    If yes, then we check if the rolling_counter_tracker == the rolling_counter 
+  //      The Rolling counter _should_ be updated!  IF not, it means the BMS could have stalled
+  //      The rolling_counter_tracker is updated every time the timer is up
+  //    If no, then keep waiting
+  if (microseconds()-rolling_counter_timer > error_bms_rolling_counter_timeout) {
+    if(check_data->rolling_counter == rolling_counter_tracker) {
+      Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_ROLLING_COUNTER_ERROR);
+    } 
+    rolling_counter_tracker = check_data->rolling_counter;
+    rolling_counter_timer = microseconds();
+  }
+
 }
 
 // This will convert Big Endian data types to Little Endian types

@@ -7,6 +7,7 @@
 #include <sys/poll.h>
 #include <fcntl.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 #define DEVICE_NAME   "/dev/rpmsg_pru31"
@@ -29,8 +30,6 @@ class PRUManager : public SourceManagerBase<PRUData> {
     void stop_source();
     std::shared_ptr<PRUData> refresh();
     std::shared_ptr<PRUData> refresh_sim();
-    void initialize_sensor_error_configs();
-    void check_for_sensor_error(const std::shared_ptr<PRUData> &, E_States state);
 
     int32_t convert_to_velocity(uint32_t decay, uint32_t delta, uint32_t distance);
 
@@ -46,7 +45,17 @@ class PRUManager : public SourceManagerBase<PRUData> {
     const uint32_t wheel_map[NUM_WHEEL_INPUTS] = {HUNDRED_FEET_IN_MM, HUNDRED_FEET_IN_MM};
 
     int32_t error_orange_diff;
+    int32_t error_orange_diff_count;
     int32_t error_encoder_wheel_diff;
+    int32_t error_encoder_wheel_diff_count;
+
+    int32_t orange_diff_counter;
+    int32_t wheel_diff_counter;
+
+ public:
+    // Public for testing purposes
+    void initialize_sensor_error_configs();
+    void check_for_sensor_error(const std::shared_ptr<PRUData> &, E_States state);
 };
 
 #endif  // PRUMANAGER_H_

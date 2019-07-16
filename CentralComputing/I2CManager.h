@@ -21,8 +21,6 @@ class I2CManager : public SourceManagerBase<I2CData> {
   bool single_shot(int fd, int port, int16_t * value);
   bool open_i2c(int * fd);
   bool set_i2c_addr(int fd, int addr);
-  void initialize_sensor_error_configs();
-  void check_for_sensor_error(const std::shared_ptr<I2CData> &, E_States state);
 
   int32_t error_general_1_over_temp;
   int32_t error_general_2_over_temp;
@@ -38,6 +36,11 @@ class I2CManager : public SourceManagerBase<I2CData> {
   int i2c_fd = 0;
 
   unsigned char buffer[NUM_TMP];
+
+ public:
+  // Public for testing purposes
+  void initialize_sensor_error_configs();
+  void check_for_sensor_error(const std::shared_ptr<I2CData> &, E_States state);
 };
 
 #endif  // I2CMANAGER_H_
