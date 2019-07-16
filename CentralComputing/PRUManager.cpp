@@ -12,6 +12,9 @@ bool PRUManager::initialize_source() {
   /* Open the rpmsg_pru character device file */
   pollfds[0].fd = open(DEVICE_NAME, O_RDWR);
 
+  orange_diff_counter = 0;
+  wheel_diff_counter = 0;
+
   if (pollfds[0].fd < 0) {
     print(LogLevel::LOG_ERROR, "PRU FAILED TO OPEN %s\n", DEVICE_NAME);
     set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR, PRUErrors::PRU_SETUP_FAILURE);
@@ -122,6 +125,8 @@ std::shared_ptr<PRUData> PRUManager::refresh_sim() {
 
 void PRUManager::initialize_sensor_error_configs() {
   if (!(ConfiguratorManager::config.getValue("error_orange_diff", error_orange_diff) && 
+        ConfiguratorManager::config.getValue("error_orange_diff_count", error_orange_diff_count ) &&
+        ConfiguratorManager::config.getValue("error_encoder_wheel_diff_count", error_encoder_wheel_diff_count) &&
       ConfiguratorManager::config.getValue("error_encoder_wheel_diff", error_encoder_wheel_diff))) { 
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: PRUManager Missing necessary configuration\n");
     exit(1);
@@ -130,4 +135,36 @@ void PRUManager::initialize_sensor_error_configs() {
 }
 
 void PRUManager::check_for_sensor_error(const std::shared_ptr<PRUData> & check_data, E_States state) {
+  // hardcoded for two of each type of sensor right now, could use standard dev?
+  // just using distance for now, as velocity is based off of distance
+  if (state == E_States::ST_FLIGHT_ACCEL ||
+      state == E_States::ST_FLIGHT_BRAKE || 
+      state == E_States::ST_FLIGHT_COAST) {
+
+    // Orange check
+    if (abs(check_data->orange_distance[0] - check_data->orange_distance[1]) > error_orange_diff) {
+      orange_diff_counter++;
+      if (orange_diff_counter > error_orange_diff_count) {
+        set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR,PRUErrors::PRU_ORANGE_DIFF_ERROR);
+      }
+    } else {
+      orange_diff_counter = 0;
+    }
+    
+    // Wheel check
+    if (abs(check_data->wheel_distance[0] - check_data->wheel_distance[1]) > error_encoder_wheel_diff) {
+      wheel_diff_counter++;
+      if (wheel_diff_counter > error_encoder_wheel_diff_count) {
+        set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR,PRUErrors::PRU_WHEEL_DIFF_ERROR);
+      }
+    } else {
+      wheel_diff_counter = 0;
+    }
+
+
+  }
+
 }
+
+
+

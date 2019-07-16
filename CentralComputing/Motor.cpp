@@ -6,6 +6,10 @@ Motor::Motor() {
   // Do nothing here. At the time the constructor is called,
   // the motor class can't do anything, since the sensors/ controls are not
   // yet connected
+
+  relay_state_buf[0] = 0;
+  relay_state_buf[1] = 0;
+  relay_state_buf[2] = 0;
 }
 
 void Motor::enable_motors() {
@@ -19,6 +23,7 @@ void Motor::disable_motors() {
 }
 
 void Motor::set_motor_state(bool enable) {
+  std::lock_guard<std::mutex> guard(mutex);
   enabled = enable;
   #ifdef NO_ACTION
     #ifdef SIM
@@ -33,14 +38,17 @@ void Motor::set_motor_state(bool enable) {
 }
 
 bool Motor::is_enabled() {
+  std::lock_guard<std::mutex> guard(mutex);
   return enabled;
 }
 
 int16_t Motor::get_throttle() {
+  std::lock_guard<std::mutex> guard(mutex);
   return throttle;
 }
 
 void Motor::set_throttle(int16_t value) {
+  std::lock_guard<std::mutex> guard(mutex);
   if (enabled) {
     throttle = value;
     #ifdef NO_ACTION
@@ -57,6 +65,7 @@ void Motor::set_throttle(int16_t value) {
 }
 
 void Motor::set_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
+  std::lock_guard<std::mutex> guard(mutex);
   #ifdef NO_ACTION
     #ifdef SIM
     SimulatorManager::sim.sim_relay_state(relay, state);
@@ -67,4 +76,13 @@ void Motor::set_relay_state(HV_Relay_Select relay, HV_Relay_State state) {
   SourceManager::CAN.set_relay_state(relay, state);
   print(LogLevel::LOG_DEBUG, "Relay %d %s\n", relay, state?"Enabled":"Disabled");
   #endif
+
+  relay_state_buf[relay] = state;
+}
+
+void Motor::get_relay_state(char * buf) {
+  std::lock_guard<std::mutex> guard(mutex);
+  buf[0] = relay_state_buf[0];
+  buf[1] = relay_state_buf[1];
+  buf[2] = relay_state_buf[2];
 }

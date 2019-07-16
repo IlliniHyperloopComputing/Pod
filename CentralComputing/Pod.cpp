@@ -26,6 +26,15 @@ void Pod::logic_loop() {
 
     if (loaded) {
       print(LogLevel::LOG_INFO, "Command : %d %d\n", com.id, com.value);
+      print(LogLevel::LOG_INFO, "Which is: %s %s\n", Command::get_network_command_ID_string(com.id).c_str(), 
+                                                     Command::get_network_command_value_string(&com).c_str());
+      // Capture any bad commands before they cause a segfault
+      if (com.id >= Command::Network_Command_ID::SENTINEL) {
+        print(LogLevel::LOG_ERROR, "INVALID COMMAND ID: %d\n", com.id);
+        com.id = 0;
+        com.value = 0;
+        break;  // Exit, we can't use this command
+      }
       // Parse the command and call the appropriate state machine function
       auto transition = state_machine->get_transition_function(&com);
       ((*state_machine).*(transition))(); 
@@ -70,8 +79,7 @@ void Pod::logic_loop() {
     // Send the heartbeat signal to the watchdog.
     bool is_GPIO_set = Utils::set_GPIO(Utils::HEARTBEAT_GPIO, switchVal);
     if (!is_GPIO_set) {
-      print(LogLevel::LOG_ERROR, "GPIO file not being accessed correctly\n");
-      // TODO: Add command to command queue
+      Command::set_error_flag(Command::Network_Command_ID::SET_OTHER_ERROR, OTHERErrors::GPIO_SWITCH_ERROR);
     }
     switchVal = !switchVal;
     #endif
@@ -119,6 +127,11 @@ void Pod::update_unified_state() {
   unified_state.i2c_data = SourceManager::I2C.Get();
   unified_state.pru_data = SourceManager::PRU.Get();
   unified_state.state = state_machine->get_current_state();
+  unified_state.motion_data->motor_state = (int32_t) state_machine->motor.is_enabled();
+  unified_state.motion_data->brake_state = (int32_t) state_machine->brakes.is_enabled();
+  unified_state.motion_data->motor_target_torque = (int32_t) state_machine->motor.get_throttle();
+  state_machine->motor.get_relay_state(unified_state.motion_data->relay_state_buf);
+
   // unified_state->errors is already updated, see 'set_error_code`
 
   // Update motion_data
