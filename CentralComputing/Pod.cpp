@@ -127,6 +127,11 @@ void Pod::update_unified_state() {
   unified_state.i2c_data = SourceManager::I2C.Get();
   unified_state.pru_data = SourceManager::PRU.Get();
   unified_state.state = state_machine->get_current_state();
+  unified_state.motion_data->motor_state = (int32_t) state_machine->motor.is_enabled();
+  unified_state.motion_data->brake_state = (int32_t) state_machine->brakes.is_enabled();
+  unified_state.motion_data->motor_target_torque = (int32_t) state_machine->motor.get_throttle();
+  state_machine->motor.get_relay_state(unified_state.motion_data->relay_state_buf);
+
   // unified_state->errors is already updated, see 'set_error_code`
 
   // Update motion_data

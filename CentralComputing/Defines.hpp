@@ -114,7 +114,12 @@ struct MotionData {
   // x[0] = x
   // x[1] = x' first derivative
   // x[2] = x'' second derivative
+  int32_t motor_state;
+  int32_t brake_state;
+  int32_t motor_target_torque;
+  char relay_state_buf[4];
 };
+
 
 enum ADCErrors {
   ADC_SETUP_FAILURE = 0x1,

@@ -40,10 +40,13 @@ class Motor {
   
   void set_relay_state(HV_Relay_Select, HV_Relay_State);
 
+  void get_relay_state(char * buf);
+
  private:
   void set_motor_state(bool enable);
 
   bool enabled;
+  char relay_state_buf[3];
   std::mutex mutex;
 
   int16_t throttle;
