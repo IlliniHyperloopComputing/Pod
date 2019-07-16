@@ -193,7 +193,8 @@ enum NETWORKErrors {
   TCP_READ_WRITE_ERROR = 0x8, 
   UDP_DISCONNECT_ERROR = 0x10, 
   TCP_DISCONNECT_ERROR = 0x20, 
-  NET_SENTINEL = 0x40  // Not an error, but a way to easily keep track of the number of errors
+  NET_SENTINEL = 0x40,  // Not an error, but a way to easily keep track of the number of errors
+  UDP_E_BRAKE_ERROR = 0x80, 
   // Update Command.cpp with additional errors, or suffer segfaults
 };
 
