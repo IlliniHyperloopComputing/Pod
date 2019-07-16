@@ -36,8 +36,10 @@ void ADCManager::stop_source() {
 
 void ADCManager::calculate_zero_g() {
   do_calculate_zero_g = true;
-  zero_g_sum[0] = 0;  // Zero these values used in calculating
-  zero_g_sum[1] = 0;
+    int i;
+    for (i = 1; i < 7;i++) {
+        zero_g_sum[i] = 0;
+    }
   zero_g_num_samples = 0;
   calculate_zero_g_time = Utils::microseconds();
 }
@@ -60,21 +62,39 @@ std::shared_ptr<ADCData> ADCManager::refresh() {
 
   if (do_calculate_zero_g) { 
     if ((calculate_zero_g_time + calculate_zero_g_timeout) > Utils::microseconds()) {
-      zero_g_sum[0] += new_data->data[0];  
-      zero_g_sum[1] += new_data->data[1];
+        //zero_g_sum[0] += new_data->data[0];
+        zero_g_sum[1] += new_data->data[1];
+        zero_g_sum[2] += new_data->data[2];
+        zero_g_sum[3] += new_data->data[3];
+        zero_g_sum[4] += new_data->data[4];
+        zero_g_sum[5] += new_data->data[5];
+        zero_g_sum[6] += new_data->data[6];
       zero_g_num_samples++;
     } else {  // Time is up, time to calculate
-      accel1_zero_g = zero_g_sum[0] / zero_g_num_samples; 
-      accel2_zero_g = zero_g_sum[1] / zero_g_num_samples;
+      //accel1_zero_g = zero_g_sum[0] / zero_g_num_samples;
+      accel1_zero_g = zero_g_sum[1] / zero_g_num_samples;
+      accel2_zero_g = zero_g_sum[2] / zero_g_num_samples;
+      accel3_zero_g = zero_g_sum[3] / zero_g_num_samples;
+      accel4_zero_g = zero_g_sum[4] / zero_g_num_samples;
+      accel5_zero_g = zero_g_sum[5] / zero_g_num_samples;
+      accel6_zero_g = zero_g_sum[6] / zero_g_num_samples;
       do_calculate_zero_g = false;
       print(Utils::LOG_DEBUG, "ADC - Accel1 zero g %d\n", accel1_zero_g);
       print(Utils::LOG_DEBUG, "ADC - Accel2 zero g %d\n", accel2_zero_g);
+      print(Utils::LOG_DEBUG, "ADC - Accel3 zero g %d\n", accel3_zero_g);
+      print(Utils::LOG_DEBUG, "ADC - Accel4 zero g %d\n", accel4_zero_g);
+      print(Utils::LOG_DEBUG, "ADC - Accel5 zero g %d\n", accel5_zero_g);
+      print(Utils::LOG_DEBUG, "ADC - Accel6 zero g %d\n", accel6_zero_g);
     }
   }
 
   // Apply the zero g location to each of the accelerometer's data
-  new_data -> data[0] -= accel1_zero_g;
-  new_data -> data[1] -= accel2_zero_g;
+  new_data -> data[1] -= accel1_zero_g;
+  new_data -> data[2] -= accel2_zero_g;
+  new_data -> data[3] -= accel3_zero_g;
+  new_data -> data[4] -= accel4_zero_g;
+  new_data -> data[5] -= accel5_zero_g;
+  new_data -> data[6] -= accel6_zero_g;
 
   return new_data;
 }

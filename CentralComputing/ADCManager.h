@@ -20,7 +20,7 @@ class ADCManager : public SourceManagerBase<ADCData> {
 
   int64_t calculate_zero_g_timeout;  // Calculate the zero g for X ammount of seconds
   int64_t calculate_zero_g_time;  // variable used in timer
-  int64_t zero_g_sum[2];  // used while calculating average
+  int64_t zero_g_sum[6];  // used while calculating average
   int64_t zero_g_num_samples;  // used while calculating average
   int64_t num_samples_zero_g;
   bool do_calculate_zero_g;
@@ -29,6 +29,10 @@ class ADCManager : public SourceManagerBase<ADCData> {
 
   int16_t accel1_zero_g;
   int16_t accel2_zero_g;
+  int16_t accel3_zero_g;
+  int16_t accel4_zero_g;
+  int16_t accel5_zero_g;
+  int16_t accel6_zero_g;
 
   int32_t error_accel_diff;
   int32_t error_pneumatic_1_over_pressure;
