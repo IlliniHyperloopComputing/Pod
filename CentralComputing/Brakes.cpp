@@ -13,10 +13,14 @@ void Brakes::enable_brakes() {
     #ifdef NO_ACTION
     print(LogLevel::LOG_INFO, "NO_ACTION: Brakes Enabled\n");
     #else
+
+    #ifdef BBB
     bool is_brake_set = Utils::set_GPIO(Utils::BRAKE_GPIO, false);
     if (!is_brake_set) {
       Command::set_error_flag(Command::Network_Command_ID::SET_OTHER_ERROR, OTHERErrors::GPIO_SWITCH_ERROR);
     }
+    #endif
+
     print(LogLevel::LOG_DEBUG, "Brakes Enabled\n");
     #endif
   #endif
@@ -30,11 +34,14 @@ void Brakes::disable_brakes() {
     #ifdef NO_ACTION
     print(LogLevel::LOG_INFO, "NO_ACTION: Brakes Disabled\n"); 
     #else
-    // Do actually something to disable brakes
+
+    #ifdef BBB
     bool is_brake_set = Utils::set_GPIO(Utils::BRAKE_GPIO, true);
     if (!is_brake_set) {
       Command::set_error_flag(Command::Network_Command_ID::SET_OTHER_ERROR, OTHERErrors::GPIO_SWITCH_ERROR);
     }
+    #endif
+
     print(LogLevel::LOG_DEBUG, "Brakes Disabled\n");
     #endif
   #endif
