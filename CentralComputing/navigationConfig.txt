@@ -76,8 +76,8 @@ error_encoder_wheel_diff_count 10 #
 
 estimated_brake_deceleration 9810 # Units are mm/s/s
 
-length_of_track     1250000  # Units are mm
-brake_buffer_length 50000    # Units are mm
+length_of_track     10000  # Units are mm
+brake_buffer_length 400    # Units are mm
 
 not_moving_velocity     200  # Units are mm/s
 not_moving_acceleration 10   # Units are ADC levels. there are 455 levels per G, 46.4 levels per m/s/s
