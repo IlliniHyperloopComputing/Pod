@@ -76,8 +76,15 @@ void Pod::logic_loop() {
     ((*state_machine).*(func))(&com, &unified_state); 
 
     #ifdef BBB
+    // Set WD reset pin to high == WD is on
+    // WATCHDOG
+    bool is_GPIO_set = Utils::set_GPIO(Utils::WATCH_DOG_RESET_GPIO, switchVal);
+    if (!is_GPIO_set) {
+      Command::set_error_flag(Command::Network_Command_ID::SET_OTHER_ERROR, OTHERErrors::GPIO_SWITCH_ERROR);
+    }
+
     // Send the heartbeat signal to the watchdog.
-    bool is_GPIO_set = Utils::set_GPIO(Utils::HEARTBEAT_GPIO, switchVal);
+    is_GPIO_set = Utils::set_GPIO(Utils::HEARTBEAT_GPIO, switchVal);
     if (!is_GPIO_set) {
       Command::set_error_flag(Command::Network_Command_ID::SET_OTHER_ERROR, OTHERErrors::GPIO_SWITCH_ERROR);
     }
