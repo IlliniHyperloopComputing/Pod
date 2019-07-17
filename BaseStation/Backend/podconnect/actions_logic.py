@@ -30,7 +30,8 @@ def buttonPressed(request):
                 print("State out of left button range")
         else:
             print("AGGHHHH STOP FAST")
-            udpserver.addToCommandQueue([5])
+            tcpserver.addToCommandQueue([13])
+            udpserver.addToCommandQueue([13])
     return HttpResponse(state_data.state)
 
 def devCommand(request):
