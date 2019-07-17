@@ -134,6 +134,7 @@ void PRUManager::initialize_sensor_error_configs() {
   if (!(ConfiguratorManager::config.getValue("error_orange_diff", error_orange_diff) && 
         ConfiguratorManager::config.getValue("error_orange_diff_count", error_orange_diff_count ) &&
         ConfiguratorManager::config.getValue("error_encoder_wheel_diff_count", error_encoder_wheel_diff_count) &&
+        ConfiguratorManager::config.getValue("error_watchdog_heartbeat_min_hz", error_watchdog_heartbeat_min_hz) &&
       ConfiguratorManager::config.getValue("error_encoder_wheel_diff", error_encoder_wheel_diff))) { 
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: PRUManager Missing necessary configuration\n");
     exit(1);
@@ -167,8 +168,11 @@ void PRUManager::check_for_sensor_error(const std::shared_ptr<PRUData> & check_d
     } else {
       wheel_diff_counter = 0;
     }
+  }
 
 
+  if (check_data->watchdog_hz < error_watchdog_heartbeat_min_hz) {
+    set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR,PRUErrors::PRU_WATCHDOG_FAIL);
   }
 
 }

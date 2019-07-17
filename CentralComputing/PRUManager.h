@@ -48,6 +48,8 @@ class PRUManager : public SourceManagerBase<PRUData> {
     int32_t error_orange_diff_count;
     int32_t error_encoder_wheel_diff;
     int32_t error_encoder_wheel_diff_count;
+    int32_t error_watchdog_heartbeat_min_hz;
+
 
     int32_t orange_diff_counter;
     int32_t wheel_diff_counter;
