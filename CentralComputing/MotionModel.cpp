@@ -8,6 +8,8 @@ using Utils::clamp;
 MotionModel::MotionModel() {
   if (!(ConfiguratorManager::config.getValue("low_pass_filter_velocity", lpfv) &&
       ConfiguratorManager::config.getValue("low_pass_filter_acceleration", lpfa) &&
+      ConfiguratorManager::config.getValue("adc_axis_0", adc_axis_0) &&
+      ConfiguratorManager::config.getValue("adc_axis_1", adc_axis_1) &&
       ConfiguratorManager::config.getValue("motor_distance_clamp", motor_distance_clamp))) {
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: MOTION_MODEL Missing necessary configuration\n");
     exit(1);
@@ -49,8 +51,8 @@ void MotionModel::calculate(UnifiedState * state) {
   int32_t vel = wheel_vel;
 
   // ACCELERATION
-  // Simply take the median  
-  int32_t accl = Median(state->adc_data.get()->data, NUM_ACCEL); 
+  // Simply take the AVERAGE
+  int32_t accl = (state->adc_data->data[adc_axis_0] + state->adc_data->data[adc_axis_1]) / 2;
 
   // Set state
   state->motion_data->x[0] = dist;
