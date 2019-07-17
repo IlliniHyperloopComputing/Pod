@@ -54,7 +54,13 @@ class PRUManager : public SourceManagerBase<PRUData> {
     int32_t orange_diff_counter;
     int32_t wheel_diff_counter;
 
+    bool do_reset = 0;
+    int64_t reset_timeout_start;
+    std::mutex reset_mutex;
+
  public:
+
+   void reset_pru();
     // Public for testing purposes
     void initialize_sensor_error_configs();
     void check_for_sensor_error(const std::shared_ptr<PRUData> &, E_States state);
