@@ -133,6 +133,14 @@ void Pod::update_unified_state() {
   state_machine->motor.get_relay_state(unified_state.motion_data->relay_state_buf);
 
   // unified_state->errors is already updated, see 'set_error_code`
+  state_machine->get_time_and_timeouts(&unified_state.motion_data->p_counter,
+                                        &unified_state.motion_data->p_timeout,
+                                        &unified_state.motion_data->a_counter,
+                                        &unified_state.motion_data->a_timeout,
+                                        &unified_state.motion_data->c_counter,
+                                        &unified_state.motion_data->c_timeout,
+                                        &unified_state.motion_data->b_counter,
+                                        &unified_state.motion_data->b_timeout);
 
   // Update motion_data
   // Pass current state into Motion Model

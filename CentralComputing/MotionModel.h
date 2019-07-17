@@ -33,6 +33,7 @@ class MotionModel {
   // Weights used in position calculation
   float lpfv, lpfa;
   int32_t motor_distance_clamp;  // used while calculating distance. See calculate()
+  int adc_axis_0, adc_axis_1;
 };
 
 #endif  // MOTIONMODEL_H_

@@ -8,6 +8,8 @@ using Utils::clamp;
 MotionModel::MotionModel() {
   if (!(ConfiguratorManager::config.getValue("low_pass_filter_velocity", lpfv) &&
       ConfiguratorManager::config.getValue("low_pass_filter_acceleration", lpfa) &&
+      ConfiguratorManager::config.getValue("adc_axis_0", adc_axis_0) &&
+      ConfiguratorManager::config.getValue("adc_axis_1", adc_axis_1) &&
       ConfiguratorManager::config.getValue("motor_distance_clamp", motor_distance_clamp))) {
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: MOTION_MODEL Missing necessary configuration\n");
     exit(1);
@@ -31,10 +33,10 @@ void MotionModel::calculate(UnifiedState * state) {
   // POSITION
   int32_t orange_dist = std::max(state->pru_data->orange_distance[0], state->pru_data->orange_distance[1]);
   int32_t wheel_dist = std::max(state->pru_data->wheel_distance[0], state->pru_data->wheel_distance[1]);
-  int32_t motor_dist = state->can_data->position_val;
 
   // Take our minimum distance to be the maximum orange and wheel dist
   int32_t dist = std::max(orange_dist, wheel_dist);
+  // Will accept that the motor is outputing a higher value, up to a certain limit
 
   // VELOCITY
   // TODO: Refine this further. Incorporate other sensor inputs??
@@ -47,11 +49,12 @@ void MotionModel::calculate(UnifiedState * state) {
   int32_t vel = wheel_vel;
 
   // ACCELERATION
-  int32_t accl = static_cast<int32_t>((state->adc_data.get()->data[0] + state->adc_data.get()->data[1]) / 2);
+  // Simply take the AVERAGE
+  int32_t accl = (state->adc_data->data[adc_axis_0] + state->adc_data->data[adc_axis_1]) / 2;
 
   // Set state
   state->motion_data->x[0] = dist;
-  state->motion_data->x[1] = low_pass_filter(state->motion_data->x[1], vel, lpfv);
+  state->motion_data->x[1] = vel;
   state->motion_data->x[2] = low_pass_filter(state->motion_data->x[2], accl, lpfa);
 }
 

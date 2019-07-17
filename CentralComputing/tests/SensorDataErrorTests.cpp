@@ -93,6 +93,7 @@ TEST_F(PodTest, SensorData_PRU_Errors) {
   int32_t error_orange_diff_count;
   int32_t error_encoder_wheel_diff;
   int32_t error_encoder_wheel_diff_count;
+  int32_t error_watchdog_heartbeat_min_hz;
   
   int32_t orange_diff_counter;
   int32_t wheel_diff_counter;
@@ -100,6 +101,7 @@ TEST_F(PodTest, SensorData_PRU_Errors) {
   if (!(ConfiguratorManager::config.getValue("error_orange_diff", error_orange_diff) && 
         ConfiguratorManager::config.getValue("error_orange_diff_count", error_orange_diff_count ) &&
         ConfiguratorManager::config.getValue("error_encoder_wheel_diff_count", error_encoder_wheel_diff_count) &&
+        ConfiguratorManager::config.getValue("error_watchdog_heartbeat_min_hz", error_watchdog_heartbeat_min_hz) &&
       ConfiguratorManager::config.getValue("error_encoder_wheel_diff", error_encoder_wheel_diff))) { 
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: PRUManager Missing necessary configuration\n");
     exit(1);
@@ -109,6 +111,7 @@ TEST_F(PodTest, SensorData_PRU_Errors) {
 
   test_data->orange_distance[0] = error_orange_diff*2;
   test_data->orange_distance[1] = error_orange_diff*2;
+  test_data->watchdog_hz = error_watchdog_heartbeat_min_hz + 1;
 
   test_data->wheel_distance[0] = error_encoder_wheel_diff*2;
   test_data->wheel_distance[1] = error_encoder_wheel_diff*2;
