@@ -8,7 +8,7 @@ COMMAND_QUEUE = queue.Queue()
 
 send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
 UDP_RECV_IP = ''
-UDP_SEND_IP = '192.168.6.2' #127.0.0.1'
+UDP_SEND_IP = '192.168.6.2' #'127.0.0.1'
 UDP_SEND_PORT = 5005
 UDP_RECV_PORT = 5004
 MSG_TO_SEND = "PING"
