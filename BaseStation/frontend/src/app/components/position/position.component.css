@@ -1,0 +1,12 @@
+.positionBar {
+    position: absolute;
+    bottom: 10%;
+    left: 15%;
+    width: 70%;
+}
+
+.positionTitle {
+    position:  absolute;
+    bottom: 5%;
+    left: 17.5%;
+}

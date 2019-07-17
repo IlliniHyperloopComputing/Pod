@@ -3,7 +3,8 @@
 using Utils::print;
 using Utils::LogLevel;
 
-int UDPManager::socketfd = 0;
+int UDPManager::send_socketfd = 0;
+int UDPManager::recv_socketfd = 0;
 std::atomic<bool> UDPManager::running(false);
 UDPManager::Connection_Status UDPManager::connection_status = UDPManager::Connection_Status::NOT_YET_CONNECTED;
 struct addrinfo UDPManager::hints;
@@ -29,9 +30,15 @@ bool UDPManager::start_udp(const char * hostname, const char * send_port, const 
     goto RETURN_ERROR;
   }
 
-  // Create socket
-  if ((socketfd = socket(sendinfo->ai_family, sendinfo->ai_socktype, sendinfo->ai_protocol)) == -1) {
-    print(LogLevel::LOG_ERROR, "UDP send Error getting socket\n");
+  // Create SEND socket
+  if ((send_socketfd = socket(sendinfo->ai_family, sendinfo->ai_socktype, sendinfo->ai_protocol)) == -1) {
+    print(LogLevel::LOG_ERROR, "UDP send Error getting send socket\n");
+    goto RETURN_ERROR;
+  }
+
+  // Allow port reuse
+  if (setsockopt(send_socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
+    print(LogLevel::LOG_ERROR, "UDP SEND setsockopt(SO_REUSEADDR) failed: %s\n", strerror(errno));
     goto RETURN_ERROR;
   }
 
@@ -43,19 +50,25 @@ bool UDPManager::start_udp(const char * hostname, const char * send_port, const 
   hints.ai_flags = AI_PASSIVE;
   
   // For recv address
-  if ((rv = getaddrinfo(hostname, recv_port, &hints, &recvinfo)) != 0) {
+  if ((rv = getaddrinfo(NULL, recv_port, &hints, &recvinfo)) != 0) {
     print(LogLevel::LOG_ERROR, "UDP Error getting addrinfo: %s\n", gai_strerror(rv));
     goto RETURN_ERROR;
   }
 
+  // Create recv socket
+  if ((recv_socketfd = socket(recvinfo->ai_family, recvinfo->ai_socktype, recvinfo->ai_protocol)) == -1) {
+    print(LogLevel::LOG_ERROR, "UDP send Error getting send socket\n");
+    goto RETURN_ERROR;
+  }
+
   // Allow port reuse
-  if (setsockopt(socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
-    print(LogLevel::LOG_ERROR, "UDP setsockopt(SO_REUSEADDR) failed: %s\n", strerror(errno));
+  if (setsockopt(recv_socketfd, SOL_SOCKET, SO_REUSEADDR, &enable, sizeof(int)) < 0) {
+    print(LogLevel::LOG_ERROR, "UDP RECV setsockopt(SO_REUSEADDR) failed: %s\n", strerror(errno));
     goto RETURN_ERROR;
   }
 
   // Bind to port (tells the OS the default incoming address)
-  if (bind(socketfd, recvinfo->ai_addr, recvinfo->ai_addrlen) != 0) {
+  if (bind(recv_socketfd, recvinfo->ai_addr, recvinfo->ai_addrlen) != 0) {
     print(LogLevel::LOG_ERROR, "UDP bind failed: %s\n", strerror(errno));
     goto RETURN_ERROR;
   }
@@ -73,7 +86,8 @@ bool UDPManager::start_udp(const char * hostname, const char * send_port, const 
 
 RETURN_ERROR:
   print(LogLevel::LOG_ERROR, "UDP returning error on startup");
-  close(socketfd);
+  close(send_socketfd);
+  close(recv_socketfd);
   freeaddrinfo(sendinfo);
   freeaddrinfo(recvinfo);
   return false;
@@ -84,7 +98,7 @@ int UDPManager::udp_recv(uint8_t* recv_buf, uint8_t len) {
   struct sockaddr_storage fromaddr;  // needed for recvfrom
   fromlen = sizeof fromaddr;         // needed for recvfrom
 
-  int byte_count = recvfrom(socketfd, recv_buf, len, 0, 
+  int byte_count = recvfrom(recv_socketfd, recv_buf, len, 0, 
       (struct sockaddr *)&fromaddr, &fromlen);
   if (byte_count == -1) {
     print(LogLevel::LOG_ERROR, "UDP recv failed: %s\n", strerror(errno));
@@ -100,14 +114,18 @@ int UDPManager::udp_recv(uint8_t* recv_buf, uint8_t len) {
 bool UDPManager::udp_parse(uint8_t* buf, uint8_t len) {
   if (buf[0] == 'P') {    // for an example, lets send the first byte to be P, for PING 
     return true;          // if we get ping, we know it's a dummy
+  } else if (buf[0] == 'E') {
+    //send command to transition to abort/safe mode here  
+    Command::put(Command::TRANS_ABORT,0);
+    return true;
   } else {
-    // Print whatever we got because it wasn't PING
+    Command::set_error_flag(Command::Network_Command_ID::SET_NETWORK_ERROR,NETWORKErrors::UDP_E_BRAKE_ERROR);
     print(LogLevel::LOG_INFO, "Parsed %d bytes, they are: %s\n", len, buf);   }
   return false;
 }
 
 int UDPManager::udp_send(uint8_t* buf, uint8_t len) { 
-  int byte_count = sendto(socketfd, buf, len, 0,
+  int byte_count = sendto(send_socketfd, buf, len, 0,
       sendinfo->ai_addr, sendinfo->ai_addrlen);
   if (byte_count == -1) {
     print(LogLevel::LOG_ERROR, "UDP recv failed: %s\n", strerror(errno));
@@ -131,7 +149,7 @@ void UDPManager::connection_monitor(const char * hostname, const char * send_por
   int rv;
   int byte_count;
   struct pollfd fds[1];
-  fds[0].fd = socketfd;
+  fds[0].fd = recv_socketfd;
   fds[0].events = POLLIN;
   uint8_t send_buffer[] = {'A', 'C', 'K'};
   uint8_t read_buffer[8];
@@ -162,6 +180,11 @@ void UDPManager::connection_monitor(const char * hostname, const char * send_por
   running.store(true);
   print(LogLevel::LOG_INFO, "UDP Setup complete\n");
   setup.invoke();
+
+  // TODO: @Evan Remove this
+  // Send ack just to test
+  udp_send(send_buffer, sizeof(send_buffer));  
+
   // Poll indefinitely until a ping is received, then go into ping-ack loop.
   while (running) {
     rv = poll(fds, 1, timeout);  // http://beej.us/guide/bgnet/html/single/bgnet.html#indexId434909-276
@@ -194,7 +217,8 @@ void UDPManager::connection_monitor(const char * hostname, const char * send_por
   }
 
   freeaddrinfo(sendinfo);  // Free memory
-  close(socketfd);  // Close socket
+  close(send_socketfd);  // Close socket
+  close(recv_socketfd);  // Close socket
   setup.reset();  // Reset event (important when tests are run repeatedly)
   print(LogLevel::LOG_INFO, "UDP Exiting\n");
 }
@@ -202,5 +226,6 @@ void UDPManager::connection_monitor(const char * hostname, const char * send_por
 void UDPManager::close_client() {
   std::lock_guard<std::mutex> guard(mutex);
   running.store(false);
-  shutdown(socketfd, SHUT_RDWR);
+  shutdown(recv_socketfd, SHUT_RDWR);
+  shutdown(send_socketfd, SHUT_RDWR);
 }

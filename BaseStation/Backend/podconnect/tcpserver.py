@@ -15,7 +15,7 @@ import numpy as np
 # uint8_t state_id = 6;
 
 # TCP global variables
-TCP_IP = '127.0.0.1'
+TCP_IP = ''
 TCP_PORT = 8001
 BUFFER_SIZE = 300
 
@@ -51,25 +51,36 @@ def serve():
                     break
                 h = bytearray(data)
                 id = int(h[0])
-                if id == 0:
-                    # ToDo
-                    pass
+                if id == 7: # ADC Data
+                    data = conn.recv(7*4)
+                    data = tcphelper.bytes_to_signed_int32(data, 7)
+                    if tcpsaver.saveADCData(data) == -1:
+                        print("ADC data failure")
                 elif id == 1: # CAN Data
                     data = conn.recv(45*4)
                     data = tcphelper.bytes_to_int(data, 45)
                     if tcpsaver.saveCANData(data) == -1:
                         print("CAN data failure")
                 elif id == 2: # I2C Data
-                    # ToDo
-                    pass
+                    data = conn.recv(12*2)
+                    data = tcphelper.bytes_to_int16(data, 12)
+                    if tcpsaver.saveI2CData(data) == -1:
+                        print("I2C data failure")
                 elif id == 3: # PRU Data
-                    # ToDo
-                    pass
+                    data = conn.recv(4*4)
+                    data = tcphelper.bytes_to_signed_int32(data, 4)
+                    if tcpsaver.savePRUData(data) == -1:
+                        print("PRU data failure")
                 elif id == 4: # Motion Data
-                    # ToDo
-                    pass
+                    data = conn.recv(6*4 + 4)
+                    chars = data[-4:].decode()
+                    print(chars)
+                    data = tcphelper.bytes_to_signed_int32(data, 6)
+                    if tcpsaver.saveMotionData(data, chars) == -1:
+                        print("Motion data failure")
                 elif id == 5: # Error Data
-                    data = conn.recv(6)
+                    data = conn.recv(6*4)
+                    data = tcphelper.bytes_to_int(data, 6)
                     if tcpsaver.saveErrorData(data) == -1:
                         print("Error data failure")
                 elif id == 6: # State Data
@@ -77,11 +88,14 @@ def serve():
                     data = tcphelper.bytes_to_int(data, 1)
                     if tcpsaver.saveStateData(data) == -1:
                         print("State data failure")
-            except:
+            except Exception as e:
+                print(e)
                 print("Error in TCP Received message")
+                break
         print("Disconnected from Pod!!")
         # Add this to event logger
 
+import binascii
 def sendData():
     global conn, COMMAND_QUEUE
     # Sending data
@@ -95,7 +109,7 @@ def sendData():
                     conn.sendall(convmessage)
             except Exception as e:
                 print(e)
-                COMMAND_QUEUE.put(command)
+                #COMMAND_QUEUE.put(command)
         time.sleep(0.2)
 
 # Starts thread for tcp server and processor

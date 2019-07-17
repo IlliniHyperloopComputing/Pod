@@ -15,16 +15,16 @@ MotionModel::MotionModel() {
 }
 
 // Orange tape sensor: Counts orange strips every 100 feet (41 stips in total). Position and velocity
-//        Could undershoot, not overshoot. Assume 
+//        Could undershoot, not overshoot. Assume
 //        Assume no "overcounting" of orange tape. Assume it could miss
 // Wheel encoder: Counts rotations of the back suspension wheel, uses an optical encoder. Pos. and Vel.
-//        Could undershoot, not overshoot. 
-//        Assume wheel does not slip, or slips very little. 
+//        Could undershoot, not overshoot.
+//        Assume wheel does not slip, or slips very little.
 //        Assume no "overcounting" of rotations. Assume it could miss
 // Emrax (motor): Rotations and RPM (velocity) of the Emrax motor. Slip possible.
-//        Could overshoot, not undershoot, due to slip while powered. 
-// 
-// Trust Orange tape and Wheel Encoder distances the most. 
+//        Could overshoot, not undershoot, due to slip while powered.
+//
+// Trust Orange tape and Wheel Encoder distances the most.
 //        Motor can add a bounded ammount of extra distance
 // We trust the wheel encoder velocity the most
 void MotionModel::calculate(UnifiedState * state) {
@@ -35,26 +35,23 @@ void MotionModel::calculate(UnifiedState * state) {
 
   // Take our minimum distance to be the maximum orange and wheel dist
   int32_t dist = std::max(orange_dist, wheel_dist);
-  // Will accept that the motor is outputing a higher value, up to a certain limit
-  dist = clamp(motor_dist, dist, dist + motor_distance_clamp);
 
   // VELOCITY
   // TODO: Refine this further. Incorporate other sensor inputs??
   // int32_t orange_vel = (state->pru_data->orange_velocity[0] + state->pru_data->orange_velocity[1]) / 2;  // average
   int32_t wheel_vel = (state->pru_data->wheel_velocity[0] + state->pru_data->wheel_velocity[1]) / 2;    // average
   // int32_t motor_vel = state->can_data->drive_wheel_velocity;
-  // This is using low_pass_filter as a weighted average. 
+  // This is using low_pass_filter as a weighted average.
   // int32_t vel = low_pass_filter(wheel_vel, orange_vel, 0.90);
   // vel = low_pass_filter(vel, motor_vel, 0.90);
   int32_t vel = wheel_vel;
 
   // ACCELERATION
-  // Simply take the median  
-  int32_t accl = Median(state->adc_data.get()->data, NUM_ACCEL); 
+  int32_t accl = static_cast<int32_t>((state->adc_data.get()->data[0] + state->adc_data.get()->data[1]) / 2);
 
   // Set state
   state->motion_data->x[0] = dist;
-  state->motion_data->x[1] = low_pass_filter(state->motion_data->x[1], vel, lpfv);    
+  state->motion_data->x[1] = low_pass_filter(state->motion_data->x[1], vel, lpfv);
   state->motion_data->x[2] = low_pass_filter(state->motion_data->x[2], accl, lpfa);
 }
 
@@ -71,7 +68,7 @@ float MotionModel::low_pass_filter(float t_old, float t_new, float lowpass_perce
 
 template<class T>
 T MotionModel::Median(T * input, unsigned size) {
-  // Is even. Need to find two indicies, 
+  // Is even. Need to find two indicies,
   // and then take the mean
   if (size % 2 == 0) {
     std::nth_element(input, input+size/2, input + size);
