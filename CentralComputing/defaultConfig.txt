@@ -9,6 +9,9 @@ tcp_write_loop_timeout 1000000 # Units are microseconds
 adc_filename /dev/iio:device0  # Internal ADC filename
 adc_calc_zero_g_timeout 2000000  # Units are microseconds 
 adc_default_zero_g       2048     # In ADC levels (12 bit). 0.9V of 1.8V, 12 bit, 2048
+adc_axis_0 1  #AXIS: x 1, 5  #y 3, 6  #z 2, 4
+adc_axis_1 5
+
 
 tcp_port 8001
 tcp_addr 127.0.0.1 #192.168.7.1 #127.0.0.1

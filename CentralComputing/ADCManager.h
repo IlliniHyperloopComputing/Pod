@@ -30,6 +30,9 @@ class ADCManager : public SourceManagerBase<ADCData> {
   int16_t accel1_zero_g;
   int16_t accel2_zero_g;
 
+  int adc_axis_0;
+  int adc_axis_1;
+
   int32_t error_accel_diff;
   int32_t error_pneumatic_1_over_pressure;
   int32_t error_pneumatic_2_over_pressure;
