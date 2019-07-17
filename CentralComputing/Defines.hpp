@@ -137,7 +137,9 @@ enum ADCErrors {
   ADC_PNEUMATIC_OVER_PRESSURE_ERROR_4 = 0x40,
   ADC_BATTERY_BOX_OVER_PRESSURE_ERROR = 0x80,
   ADC_BATTERY_BOX_UNDER_PRESSURE_ERROR = 0x100,
-  ADC_SENTINEL = 0x200  // Not an error, but a way to easily keep track of the number of errors
+  ADC_POSITIVE_SANITY_ERROR = 0x200,
+  ADC_NEGATIVE_SANITY_ERROR = 0x400,
+  ADC_SENTINEL = 0x800  // Not an error, but a way to easily keep track of the number of errors
   // Update Command.cpp with additional errors, or suffer segfaults
 };
 
@@ -188,7 +190,8 @@ enum PRUErrors {
   PRU_READ_ERROR = 0x4,
   PRU_ORANGE_DIFF_ERROR = 0x8,
   PRU_WHEEL_DIFF_ERROR = 0x10,
-  PRU_SENTINEL = 0x20  // Not an error, but a way to easily keep track of the number of errors
+  PRU_WATCHDOG_FAIL = 0x20,
+  PRU_SENTINEL = 0x40  // Not an error, but a way to easily keep track of the number of errors
   // Update Command.cpp with additional errors, or suffer segfaults
 };
 
