@@ -14,6 +14,7 @@ bool PRUManager::initialize_source() {
 
   orange_diff_counter = 0;
   wheel_diff_counter = 0;
+  reset_timeout_start = microseconds();
 
   if (pollfds[0].fd < 0) {
     print(LogLevel::LOG_ERROR, "PRU FAILED TO OPEN %s\n", DEVICE_NAME);
@@ -46,6 +47,37 @@ void PRUManager::stop_source() {
 }
 
 std::shared_ptr<PRUData> PRUManager::refresh() {
+
+  reset_mutex.lock();
+  if (do_reset) {
+    int result = write(pollfds[0].fd, "RESETING\n", 9);
+    if (result == 0) {
+      print(LogLevel::LOG_ERROR, "PRU RESETTING ERROR Unable to write during operation %s\n", DEVICE_NAME);
+      set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR, PRUErrors::PRU_WRITE_ERROR);
+      // Error. return garbage
+      return empty_data();
+    }
+   
+    result = read(pollfds[0].fd, readBuf, MAX_BUFFER_SIZE);
+    if (result == 0) {
+      print(LogLevel::LOG_ERROR, "PRU RESETTING ERROR  Unable to read during operation. Read 0 bytes from PRU \n");
+      set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR, PRUErrors::PRU_READ_ERROR);
+      // Error. return garbage
+      return empty_data();
+    } else if (result != 9) {  // STARTING   the pru sends back "Starting\n", which is length 9
+      print(LogLevel::LOG_ERROR, "PRU RESETTING error  Read wrong ammount from PRU %s\n", DEVICE_NAME);
+      print(LogLevel::LOG_ERROR, "PRU RESETTING error Read: %d, should have read sizeof(RawPRUData)=%d\n", result, sizeof(RawPRUData));
+      set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR, PRUErrors::PRU_READ_ERROR);
+      // Error. return garbage
+      return empty_data();
+    } else {
+      print(LogLevel::LOG_INFO, "PRU RESET SUCCESSFULL\n");
+    }
+    reset_timeout_start = microseconds();
+    do_reset = false;
+  }
+  reset_mutex.unlock();
+
   // Write to PRU to trigger it to send us data
   // We send it a "1". This is arbitrary. 
   int result = write(pollfds[0].fd, "1", 2);
@@ -94,6 +126,13 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
                                                       wheel_map[i]);
   }
 
+  // Get WATCHDOG
+  const int watchdog_input_pin = 3; //p8_44
+  new_data.watchdog_hz = convert_to_velocity(raw_data.decays[watchdog_input_pin], 
+                                              raw_data.deltas[watchdog_input_pin],
+                                              1);  // 1 for distance, so we get hz
+
+
   // Store in shared_ptr
   std::shared_ptr<PRUData> ret_data = std::make_shared<PRUData>();
   *ret_data = new_data;
@@ -127,11 +166,18 @@ void PRUManager::initialize_sensor_error_configs() {
   if (!(ConfiguratorManager::config.getValue("error_orange_diff", error_orange_diff) && 
         ConfiguratorManager::config.getValue("error_orange_diff_count", error_orange_diff_count ) &&
         ConfiguratorManager::config.getValue("error_encoder_wheel_diff_count", error_encoder_wheel_diff_count) &&
+        ConfiguratorManager::config.getValue("error_watchdog_heartbeat_min_hz", error_watchdog_heartbeat_min_hz) &&
       ConfiguratorManager::config.getValue("error_encoder_wheel_diff", error_encoder_wheel_diff))) { 
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: PRUManager Missing necessary configuration\n");
     exit(1);
   }
   // Define some sort of difference / variance that indicates that shit broke
+}
+
+void PRUManager::reset_pru() {
+  reset_mutex.lock();
+  do_reset = true;
+  reset_mutex.unlock();
 }
 
 void PRUManager::check_for_sensor_error(const std::shared_ptr<PRUData> & check_data, E_States state) {
@@ -160,8 +206,13 @@ void PRUManager::check_for_sensor_error(const std::shared_ptr<PRUData> & check_d
     } else {
       wheel_diff_counter = 0;
     }
+  }
 
-
+  // Wait 2 second after reset, to avoid transient errors
+  if (microseconds() - reset_timeout_start > 2000000 ) {
+    if (check_data->watchdog_hz < error_watchdog_heartbeat_min_hz) {
+      set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR, PRUErrors::PRU_WATCHDOG_FAIL);
+    }
   }
 
 }
