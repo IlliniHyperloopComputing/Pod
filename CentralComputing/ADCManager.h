@@ -33,6 +33,18 @@ class ADCManager : public SourceManagerBase<ADCData> {
   int adc_axis_0;
   int adc_axis_1;
 
+  int adc_dir_flip;
+
+  int32_t adc_san_positive;
+  int32_t adc_san_negative;
+
+  int32_t adc_san_counter_error; //
+
+  int32_t adc0_san_positive_counter;
+  int32_t adc0_san_negative_counter;
+  int32_t adc1_san_positive_counter;
+  int32_t adc1_san_negative_counter;
+
   int32_t error_accel_diff;
   int32_t error_pneumatic_1_over_pressure;
   int32_t error_pneumatic_2_over_pressure;
