@@ -124,8 +124,12 @@ struct MotionData {
   int64_t a_counter;
   int64_t c_counter;
   int64_t b_counter;
-
+  int32_t motor_state;
+  int32_t brake_state;
+  int32_t motor_target_torque;
+  char relay_state_buf[4];
 };
+
 
 enum ADCErrors {
   ADC_SETUP_FAILURE = 0x1,

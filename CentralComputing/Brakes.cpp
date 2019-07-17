@@ -17,6 +17,7 @@ void Brakes::enable_brakes() {
   // Do actually something to enable brakes
   print(LogLevel::LOG_DEBUG, "Brakes Enabled\n");
   #endif
+  std::lock_guard<std::mutex> guard(mutex);
   enabled = true;
 }
 
@@ -31,14 +32,16 @@ void Brakes::disable_brakes() {
   // Do actually something to disable brakes
   print(LogLevel::LOG_DEBUG, "Brakes Disabled\n");
   #endif
-
+  std::lock_guard<std::mutex> guard(mutex);
   enabled = false;
 }
 
 void Brakes::set_enable(bool enable) {
+  enabled = enable;
 }
 
 bool Brakes::is_enabled() {
+  std::lock_guard<std::mutex> guard(mutex);
   return enabled;
 }
 
