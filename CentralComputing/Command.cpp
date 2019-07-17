@@ -121,6 +121,7 @@ std::string Command::get_network_command_value_string(Network_Command * com) {
       "ADC_BATTERY_BOX_UNDER_PRESSURE_ERROR",
       "ADC_POSITIVE_SANITY_ERROR",
       "ADC_NEGATIVE_SANITY_ERROR",
+      "ADC_SENTINEL",
     };
     int val = std::log2(com->value);
     return commands[val];

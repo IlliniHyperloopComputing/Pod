@@ -41,7 +41,7 @@ class PRUManager : public SourceManagerBase<PRUData> {
     // Variables used for pru processing
     const int orange_idx[NUM_ORANGE_INPUTS] = {4, 5}; 
     const uint32_t orange_map[NUM_ORANGE_INPUTS] = {WHEEL_CIRCUMFRENCE_IN_MM, WHEEL_CIRCUMFRENCE_IN_MM};
-    const int wheel_idx[NUM_WHEEL_INPUTS] = {0, 1}; 
+    const int wheel_idx[NUM_WHEEL_INPUTS] = {0, 1}; //p8_45 and p8_46
     const uint32_t wheel_map[NUM_WHEEL_INPUTS] = {HUNDRED_FEET_IN_MM, HUNDRED_FEET_IN_MM};
 
     int32_t error_orange_diff;

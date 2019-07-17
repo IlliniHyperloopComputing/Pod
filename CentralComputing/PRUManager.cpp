@@ -127,7 +127,7 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
   }
 
   // Get WATCHDOG
-  const int watchdog_input_pin = 3;
+  const int watchdog_input_pin = 3; //p8_44
   new_data.watchdog_hz = convert_to_velocity(raw_data.decays[watchdog_input_pin], 
                                               raw_data.deltas[watchdog_input_pin],
                                               1);  // 1 for distance, so we get hz
