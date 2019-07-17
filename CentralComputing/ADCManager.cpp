@@ -14,6 +14,10 @@ bool ADCManager::initialize_source() {
   calculate_zero_g_time = 0;
   accel1_zero_g = default_zero_g;  // Set the defaults
   accel2_zero_g = default_zero_g;
+  accel3_zero_g = default_zero_g;
+  accel4_zero_g = default_zero_g;
+  accel5_zero_g = default_zero_g;
+  accel6_zero_g = default_zero_g;
 
   // Open the ADC file
   inFile.open(fileName, std::ifstream::in | std::ifstream::binary);
@@ -31,7 +35,7 @@ void ADCManager::stop_source() {
   if (inFile) {
     inFile.close();
     print(LogLevel::LOG_DEBUG, "ADC Manager stopped\n");
-  } 
+  }
 }
 
 void ADCManager::calculate_zero_g() {
@@ -55,14 +59,13 @@ std::shared_ptr<ADCData> ADCManager::refresh() {
     uint16_t * val = (buffer + i);
     new_data -> data[i] = (*val);
   }
-  //  print(Utils::LOG_ERROR, "%d \t%d\t%d\t %d\t%d\t%d\t%d\t\n", new_data->data[0], 
-  //                          new_data->data[1], new_data->data[2], 
+  //  print(Utils::LOG_ERROR, "%d \t%d\t%d\t %d\t%d\t%d\t%d\t\n", new_data->data[0],
+  //                          new_data->data[1], new_data->data[2],
   //                          new_data->data[3], new_data->data[4],
   //                          new_data->data[5], new_data->data[6]);
 
-  if (do_calculate_zero_g) { 
+  if (do_calculate_zero_g) {
     if ((calculate_zero_g_time + calculate_zero_g_timeout) > Utils::microseconds()) {
-        print(Utils::LOG_DEBUG, "CALCULATING ZERO G")
         //zero_g_sum[0] += new_data->data[0];
         zero_g_sum[1] += new_data->data[1];
         zero_g_sum[2] += new_data->data[2];
@@ -70,7 +73,7 @@ std::shared_ptr<ADCData> ADCManager::refresh() {
         zero_g_sum[4] += new_data->data[4];
         zero_g_sum[5] += new_data->data[5];
         zero_g_sum[6] += new_data->data[6];
-      zero_g_num_samples++;
+        zero_g_num_samples++;
     } else {  // Time is up, time to calculate
       //accel1_zero_g = zero_g_sum[0] / zero_g_num_samples;
       accel1_zero_g = zero_g_sum[1] / zero_g_num_samples;
@@ -109,7 +112,7 @@ std::shared_ptr<ADCData> ADCManager::refresh_sim() {
 }
 
 void ADCManager::initialize_sensor_error_configs() {
-  if (!(ConfiguratorManager::config.getValue("error_accel_diff", error_accel_diff) && 
+  if (!(ConfiguratorManager::config.getValue("error_accel_diff", error_accel_diff) &&
       ConfiguratorManager::config.getValue("error_pneumatic_1_over_pressure", error_pneumatic_1_over_pressure) &&
       ConfiguratorManager::config.getValue("error_pneumatic_2_over_pressure", error_pneumatic_2_over_pressure) &&
       ConfiguratorManager::config.getValue("error_pneumatic_3_over_pressure", error_pneumatic_3_over_pressure) &&
@@ -128,7 +131,7 @@ void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_d
   int32_t* adc_data = check_data->data;
   // If we are in a flight state, check if accelerometers are in error
   if (state == E_States::ST_FLIGHT_ACCEL ||
-      state == E_States::ST_FLIGHT_BRAKE || 
+      state == E_States::ST_FLIGHT_BRAKE ||
       state == E_States::ST_FLIGHT_COAST) {
     if (abs(adc_data[0] - adc_data[1]) >= error_accel_diff) {
       accel_diff_counter++;
