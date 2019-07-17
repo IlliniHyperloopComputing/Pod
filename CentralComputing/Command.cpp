@@ -98,6 +98,7 @@ std::string Command::get_network_command_ID_string(uint command) {
     "SET_HV_RELAY_LV_POLE",
     "SET_HV_RELAY_PRE_CHARGE",
     "CALC_ACCEL_ZERO_G",
+    "RESET_PRU",
     "SENTINEL -- INVALID COMMAND",
   };
   return commands[command];

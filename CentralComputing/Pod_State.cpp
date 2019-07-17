@@ -38,6 +38,7 @@ Pod_State::Pod_State()
   transition_map[Command::SET_HV_RELAY_LV_POLE] = &Pod_State::no_transition;
   transition_map[Command::SET_HV_RELAY_PRE_CHARGE] = &Pod_State::no_transition;
   transition_map[Command::CALC_ACCEL_ZERO_G] = &Pod_State::no_transition;
+  transition_map[Command::RESET_PRU] = &Pod_State::no_transition;
   steady_state_map[ST_SAFE_MODE] = &Pod_State::steady_safe_mode;
   steady_state_map[ST_FUNCTIONAL_TEST_OUTSIDE] = &Pod_State::steady_function_outside;
   steady_state_map[ST_LOADING] = &Pod_State::steady_loading;
@@ -319,6 +320,14 @@ void Pod_State::ST_Error() {
 void Pod_State::steady_safe_mode(Command::Network_Command * command, 
                                   UnifiedState * state) {
   // not much special stuff to do here  
+
+  switch (command->id) {
+    case Command::RESET_PRU:
+      SourceManager::PRU.reset_pru();
+      break;
+    default:
+      break;
+  }
 }
 
 void Pod_State::steady_function_outside(Command::Network_Command * command, 
@@ -367,6 +376,9 @@ void Pod_State::steady_function_outside(Command::Network_Command * command,
       // trigger calculate zero g
       SourceManager::ADC.calculate_zero_g();
       break;
+    case Command::RESET_PRU:
+      SourceManager::PRU.reset_pru();
+      break;
     default:
       break;
   }
@@ -378,10 +390,24 @@ void Pod_State::steady_loading(Command::Network_Command * command,
 
 void Pod_State::steady_function_inside(Command::Network_Command * command, 
                                   UnifiedState * state) {
+  switch (command->id) {
+    case Command::RESET_PRU:
+      SourceManager::PRU.reset_pru();
+      break;
+    default:
+      break;
+  }
 }
 
 void Pod_State::steady_launch_ready(Command::Network_Command * command, 
                                     UnifiedState* state) {
+  switch (command->id) {
+    case Command::RESET_PRU:
+      SourceManager::PRU.reset_pru();
+      break;
+    default:
+      break;
+  }
   // check if precharge complete
   int64_t timeout_check = microseconds() - launch_ready_start_time;
   if (timeout_check > launch_ready_precharge_timeout && !ready_for_launch) {
