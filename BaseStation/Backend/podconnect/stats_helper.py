@@ -78,17 +78,17 @@ def getStats():
             },
             {
                 "name": "Accel_1 x",
-                "value": str(adc_data.data_5 - 2048),
+                "value": str(adc_data.data_5),
                 "color": "limegreen"
             },
             {
                 "name": "Accel_1 y",
-                "value": str(adc_data.data_6 - 2048),
+                "value": str(adc_data.data_6),
                 "color": "limegreen"
             },
             {
                 "name": "Accel_1 z",
-                "value": str(adc_data.data_4 - 2048),
+                "value": str(adc_data.data_4),
                 "color": "limegreen"
             },
             {
@@ -98,12 +98,12 @@ def getStats():
             },
             {
                 "name": "Accel_2 y",
-                "value": str(adc_data.data_3 - 2048),
+                "value": str(adc_data.data_3),
                 "color": "limegreen"
             },
             {
                 "name": "Accel_2 z",
-                "value": str(adc_data.data_2 - 2048),
+                "value": str(adc_data.data_2),
                 "color": "limegreen"
             }
         ]
@@ -197,22 +197,22 @@ def getStats():
             },
             {
                 "name": "Relay State Buff 0",
-                "value": str(motion_data.relay_state_buff_0),
+                "value": motion_data.relay_state_buff_0,
                 "color": "limegreen"
             },
             {
                 "name": "Relay State Buff 1",
-                "value": str(motion_data.relay_state_buff_1),
+                "value": motion_data.relay_state_buff_1,
                 "color": "limegreen"
             },
             {
                 "name": "Relay State Buff 2",
-                "value": str(motion_data.relay_state_buff_2),
+                "value": motion_data.relay_state_buff_2,
                 "color": "limegreen"
             },
             {
                 "name": "Relay State Buff 3",
-                "value": str(motion_data.relay_state_buff_3),
+                "value": motion_data.relay_state_buff_3,
                 "color": "limegreen"
             }
         ]

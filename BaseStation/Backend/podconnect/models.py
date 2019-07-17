@@ -10,10 +10,10 @@ class MotionData(models.Model):
     motor_state = models.IntegerField(default=0)
     brake_state = models.IntegerField(default=0)
     motor_target_torque = models.IntegerField(default=0)
-    relay_state_buff_0 = models.IntegerField(default=0)
-    relay_state_buff_1 = models.IntegerField(default=0)
-    relay_state_buff_2 = models.IntegerField(default=0)
-    relay_state_buff_3 = models.IntegerField(default=0)
+    relay_state_buff_0 = models.CharField(max_length=1,default=0)
+    relay_state_buff_1 = models.CharField(max_length=1,default=0)
+    relay_state_buff_2 = models.CharField(max_length=1,default=0)
+    relay_state_buff_3 = models.CharField(max_length=1,default=0)
 
 class ADCData(models.Model):
     date_time = models.DateTimeField(auto_now=True,primary_key=True)
