@@ -105,8 +105,7 @@ def sendData():
             try:
                 print("Sending " + str(command))
                 for message in command:
-                    convmessage = np.uint32(message)
-                    conn.sendall(convmessage)
+                    conn.sendall(message)
             except Exception as e:
                 print(e)
                 #COMMAND_QUEUE.put(command)
@@ -121,4 +120,8 @@ def start():
 
 def addToCommandQueue(toSend):
     print(str(toSend) + " Added to Queue")
-    COMMAND_QUEUE.put(toSend)
+    COMMAND_QUEUE.put(np.uint32(toSend))
+
+def addToCommandQueueUINT8(toSend):
+    print(str(toSend) + " Added to Queue as uint8")
+    COMMAND_QUEUE.put(np.uint8(toSend))
