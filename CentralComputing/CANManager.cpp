@@ -144,9 +144,9 @@ std::shared_ptr<CANData> CANManager::refresh() {
     b = Utils::microseconds();
     // print(LogLevel::LOG_INFO, "CAN recv_frame takes %lu microseconds\n", b-a);
     if (r_frame.can_id == can_id_t1) {
-      new_data->status_word =  cast_to_u32(0, 2, r_frame.data);
-      new_data->position_val = cast_to_u32(2, 4, r_frame.data); 
-      new_data->torque_val =   cast_to_u32(6, 2, r_frame.data);  
+      new_data->status_word =  Utils::cast_to_u32(0, 2, r_frame.data);
+      new_data->position_val = Utils::cast_to_u32(2, 4, r_frame.data); 
+      new_data->torque_val =   Utils::cast_to_u32(6, 2, r_frame.data);  
       // print(LogLevel::LOG_INFO, "CAN frame Motor Controller %d \n", can_id_t1);
       // print(LogLevel::LOG_INFO, "\tstatus word %d\n", new_data->status_word);
       // print(LogLevel::LOG_INFO, "\tposition value %d\n", new_data->position_val);
@@ -154,9 +154,9 @@ std::shared_ptr<CANData> CANManager::refresh() {
     } else if (r_frame.can_id == can_id_t2) {
       new_data->controller_temp =            r_frame.data[0];
       new_data->motor_temp =                 r_frame.data[1];
-      new_data->dc_link_voltage =            cast_to_u32(2, 2, r_frame.data);
-      new_data->logic_power_supply_voltage = cast_to_u32(4, 2, r_frame.data);
-      new_data->current_demand =             cast_to_u32(6, 2, r_frame.data);
+      new_data->dc_link_voltage =            Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->logic_power_supply_voltage = Utils::cast_to_u32(4, 2, r_frame.data);
+      new_data->current_demand =             Utils::cast_to_u32(6, 2, r_frame.data);
       // print(LogLevel::LOG_INFO, "CAN frame Motor Controller %d \n", can_id_t1);
       // print(LogLevel::LOG_INFO, "\tcontroller temp %d\n", new_data->controller_temp);
       // print(LogLevel::LOG_INFO, "\tmotor temperature %d\n", new_data->motor_temp);
@@ -165,53 +165,53 @@ std::shared_ptr<CANData> CANManager::refresh() {
       // print(LogLevel::LOG_INFO, "\tcurrent demand %d\n", new_data->current_demand);
     } else if (r_frame.can_id == can_id_t3) {
       new_data->motor_current_val = r_frame.data[0];
-      new_data->electrical_angle =  cast_to_u32(2, 2, r_frame.data);
-      new_data->phase_a_current =   cast_to_u32(4, 2, r_frame.data);
-      new_data->phase_b_current =   cast_to_u32(6, 2, r_frame.data);
+      new_data->electrical_angle =  Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->phase_a_current =   Utils::cast_to_u32(4, 2, r_frame.data);
+      new_data->phase_b_current =   Utils::cast_to_u32(6, 2, r_frame.data);
       // print(LogLevel::LOG_INFO, "CAN frame Motor Controller %d \n", can_id_t1);
       // print(LogLevel::LOG_INFO, "\tmotor current val %d\n", new_data->motor_current_val);
       // print(LogLevel::LOG_INFO, "\telectrical angle %d\n", new_data->electrical_angle);
       // print(LogLevel::LOG_INFO, "\tphase a current  %d\n", new_data->phase_a_current);
       // print(LogLevel::LOG_INFO, "\tphase b current %d\n", new_data->phase_b_current);
     } else if (r_frame.can_id == 0x6b0) {
-      new_data->pack_current        = cast_to_u32(0, 2, r_frame.data);
-      new_data->pack_voltage_inst   = cast_to_u32(2, 2, r_frame.data);
-      new_data->pack_soc            = cast_to_u32(4, 1, r_frame.data);
-      new_data->relay_state         = cast_to_u32(5, 2, r_frame.data);
-      new_data->rolling_counter     = cast_to_u32(7, 1, r_frame.data);
+      new_data->pack_current        = Utils::cast_to_u32(0, 2, r_frame.data);
+      new_data->pack_voltage_inst   = Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->pack_soc            = Utils::cast_to_u32(4, 1, r_frame.data);
+      new_data->relay_state         = Utils::cast_to_u32(5, 2, r_frame.data);
+      new_data->rolling_counter     = Utils::cast_to_u32(7, 1, r_frame.data);
     } else if (r_frame.can_id == 0x6b1) {
-      new_data->fail_safe_state       = cast_to_u32(0, 2, r_frame.data);
-      new_data->current_limit_status  = cast_to_u32(2, 2, r_frame.data);
-      new_data->high_cell_voltage     = cast_to_u32(4, 2, r_frame.data);
-      new_data->low_cell_voltage       = cast_to_u32(6, 2, r_frame.data);
+      new_data->fail_safe_state       = Utils::cast_to_u32(0, 2, r_frame.data);
+      new_data->current_limit_status  = Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->high_cell_voltage     = Utils::cast_to_u32(4, 2, r_frame.data);
+      new_data->low_cell_voltage       = Utils::cast_to_u32(6, 2, r_frame.data);
     } else if (r_frame.can_id == 0x6b2) {
-      new_data->dtc_status_one        = cast_to_u32(0, 2, r_frame.data);
-      new_data->dtc_status_two        = cast_to_u32(2, 2, r_frame.data);
-      new_data->power_voltage_input   = cast_to_u32(4, 2, r_frame.data);
-      new_data->highest_temp          = cast_to_u32(6, 1, r_frame.data);
-      new_data->internal_temp         = cast_to_u32(7, 1, r_frame.data);
+      new_data->dtc_status_one        = Utils::cast_to_u32(0, 2, r_frame.data);
+      new_data->dtc_status_two        = Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->power_voltage_input   = Utils::cast_to_u32(4, 2, r_frame.data);
+      new_data->highest_temp          = Utils::cast_to_u32(6, 1, r_frame.data);
+      new_data->internal_temp         = Utils::cast_to_u32(7, 1, r_frame.data);
     } else if (r_frame.can_id == 0x6b3) {
-      new_data->pack_voltage_open     = cast_to_u32(0, 2, r_frame.data);
-      new_data->pack_amphours         = cast_to_u32(2, 2, r_frame.data);
-      new_data->pack_resistance       = cast_to_u32(4, 2, r_frame.data);
-      new_data->pack_dod              = cast_to_u32(6, 1, r_frame.data);
-      new_data->pack_soh              = cast_to_u32(7, 1, r_frame.data);
+      new_data->pack_voltage_open     = Utils::cast_to_u32(0, 2, r_frame.data);
+      new_data->pack_amphours         = Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->pack_resistance       = Utils::cast_to_u32(4, 2, r_frame.data);
+      new_data->pack_dod              = Utils::cast_to_u32(6, 1, r_frame.data);
+      new_data->pack_soh              = Utils::cast_to_u32(7, 1, r_frame.data);
     } else if (r_frame.can_id == 0x6b4) {
-      new_data->max_pack_dcl          = cast_to_u32(0, 2, r_frame.data);
-      new_data->avg_pack_current      = cast_to_u32(2, 2, r_frame.data);
-      new_data->avg_temp              = cast_to_u32(4, 1, r_frame.data);
-      new_data->high_cell_voltage_id  = cast_to_u32(5, 1, r_frame.data);
-      new_data->low_cell_voltage_id   = cast_to_u32(6, 1, r_frame.data);
-      new_data->highest_temp_id       = cast_to_u32(7, 1, r_frame.data);
+      new_data->max_pack_dcl          = Utils::cast_to_u32(0, 2, r_frame.data);
+      new_data->avg_pack_current      = Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->avg_temp              = Utils::cast_to_u32(4, 1, r_frame.data);
+      new_data->high_cell_voltage_id  = Utils::cast_to_u32(5, 1, r_frame.data);
+      new_data->low_cell_voltage_id   = Utils::cast_to_u32(6, 1, r_frame.data);
+      new_data->highest_temp_id       = Utils::cast_to_u32(7, 1, r_frame.data);
     } else if (r_frame.can_id == 0x6b5) {
-      new_data->low_cell_internalR      = cast_to_u32(0, 2, r_frame.data);
-      new_data->high_cell_internalR     = cast_to_u32(2, 2, r_frame.data);
-      new_data->low_cell_internalR_id   = cast_to_u32(4, 1, r_frame.data);
-      new_data->high_cell_internalR_id  = cast_to_u32(5, 1, r_frame.data);
+      new_data->low_cell_internalR      = Utils::cast_to_u32(0, 2, r_frame.data);
+      new_data->high_cell_internalR     = Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->low_cell_internalR_id   = Utils::cast_to_u32(4, 1, r_frame.data);
+      new_data->high_cell_internalR_id  = Utils::cast_to_u32(5, 1, r_frame.data);
     } else if (r_frame.can_id == 0x6b6) {
-      new_data->adaptive_total_cap      = cast_to_u32(0, 2, r_frame.data);
-      new_data->adaptive_amphours       = cast_to_u32(2, 2, r_frame.data);
-      new_data->adaptive_soc            = cast_to_u32(4, 1, r_frame.data);
+      new_data->adaptive_total_cap      = Utils::cast_to_u32(0, 2, r_frame.data);
+      new_data->adaptive_amphours       = Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->adaptive_soc            = Utils::cast_to_u32(4, 1, r_frame.data);
     } else {
       // print(LogLevel::LOG_DEBUG, "CAN frame unknown! \n");
     }
@@ -434,15 +434,6 @@ void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_d
     rolling_counter_timer = microseconds();
   }
 
-}
-
-// This will convert Big Endian data types to Little Endian types
-inline uint32_t CANManager::cast_to_u32(int offset, int bytes_per_item, uint8_t * bufferArray) {
-  uint32_t tmp = 0;
-  for (int i = 0; i < bytes_per_item; i++) {
-    tmp |= (uint8_t)(bufferArray[offset + i] << (i * 8));
-  }
-  return tmp;
 }
 
 void CANManager::u32_to_bytes(uint32_t toCast, char* bufferArray) {

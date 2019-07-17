@@ -114,7 +114,7 @@ int UDPManager::udp_recv(uint8_t* recv_buf, uint8_t len) {
 bool UDPManager::udp_parse(uint8_t* buf, uint8_t len) {
   if (buf[0] == 'P') {    // for an example, lets send the first byte to be P, for PING 
     return true;          // if we get ping, we know it's a dummy
-  } else if (buf[0] == 'E') {
+  } else if (Utils::cast_to_u32(0,4,buf) == 13) {
     //send command to transition to abort/safe mode here  
     Command::put(Command::TRANS_ABORT,0);
     return true;

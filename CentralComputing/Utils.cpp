@@ -48,6 +48,16 @@ bool Utils::set_GPIO(int GPIONumber, bool switchVal) {
   return true;  // Have it return 1 if it works and zero otherwise
 }
 
+
+
+uint32_t Utils::cast_to_u32(int offset, int bytes_per_item, unsigned char * bufferArray) {
+  uint32_t tmp = 0;
+  for (int i = 0; i < bytes_per_item; i++) {
+    tmp |= (uint8_t)(bufferArray[offset + i] << (i * 8));
+  }
+  return tmp;
+}
+
 int64_t Utils::microseconds() {
   static int64_t start_time = -1;
   auto now = std::chrono::system_clock::now();
