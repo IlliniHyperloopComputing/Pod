@@ -78,7 +78,7 @@ void Pod::logic_loop() {
     #ifdef BBB
     // Set WD reset pin to high == WD is on
     // WATCHDOG
-    bool is_GPIO_set = Utils::set_GPIO(Utils::WATCH_DOG_RESET_GPIO, switchVal);
+    bool is_GPIO_set = Utils::set_GPIO(Utils::WATCH_DOG_RESET_GPIO, true);
     if (!is_GPIO_set) {
       Command::set_error_flag(Command::Network_Command_ID::SET_OTHER_ERROR, OTHERErrors::GPIO_SWITCH_ERROR);
     }
@@ -250,12 +250,13 @@ void Pod::run() {
 
   com.value = NETWORKErrors::UDP_DISCONNECT_ERROR;
   set_error_code(&com);  // Initially have an error set that UDP isn't connected
-
+  #ifdef BBB
   bool is_brake_set = Utils::set_GPIO(Utils::BRAKE_GPIO, true);
   if (!is_brake_set) {
     // Specific brake set error?
     Command::set_error_flag(Command::Network_Command_ID::SET_OTHER_ERROR, OTHERErrors::GPIO_SWITCH_ERROR);
   }
+  #endif
   // I don't know how to use member functions as a thread function, but lambdas work
   running.store(true);
   thread logic_thread([&](){ logic_loop(); });  
