@@ -115,6 +115,16 @@ struct MotionData {
   // x[0] = x
   // x[1] = x' first derivative
   // x[2] = x'' second derivative
+  int64_t p_timeout;
+  int64_t a_timeout;
+  int64_t c_timeout;
+  int64_t b_timeout;
+
+  int64_t p_counter;
+  int64_t a_counter;
+  int64_t c_counter;
+  int64_t b_counter;
+
 };
 
 enum ADCErrors {

@@ -60,11 +60,32 @@ Pod_State::Pod_State()
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: POD_STATE: Missing necessary configuration\n");
     exit(1);
   }
+  p_counter = 0;
+  a_counter = 0;
+  c_counter = 0;
+  b_counter = 0;
 }
 
 // returns the current state as a E_States enum
 E_States Pod_State::get_current_state() {
   return (E_States)StateMachine::getCurrentState();
+}
+
+// Super lazy function. This isn't that great
+void Pod_State::get_time_and_timeouts(int64_t *  p_elapsed_time, int64_t* p_timeout,
+                            int64_t * a_elapsed_time, int64_t* a_timeout,
+                            int64_t * c_elapsed_time, int64_t *c_timeout,
+                            int64_t * b_elapsed_time, int64_t *b_timeout) {
+  *p_timeout = launch_ready_precharge_timeout;
+  *a_timeout = acceleration_timeout;
+  *c_timeout = coast_timeout;
+  *b_timeout = brake_timeout;
+   
+  std::lock_guard<std::mutex> guard(timeout_mutex);
+  *p_elapsed_time = p_counter; 
+  *a_elapsed_time = a_counter; 
+  *c_elapsed_time = c_counter; 
+  *b_elapsed_time = b_counter; 
 }
 
 /**
@@ -256,7 +277,6 @@ void Pod_State::ST_Functional_Test_Inside() {
 }
 void Pod_State::ST_Launch_Ready() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
-  launch_ready_start_time = microseconds();
   ready_for_launch = false;  // used in conjunction with the pre-charge timer.
 
   brakes.disable_brakes();
@@ -264,13 +284,14 @@ void Pod_State::ST_Launch_Ready() {
 
   motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_ON);
   motor.set_relay_state(HV_Relay_Select::RELAY_LV_POLE, HV_Relay_State::RELAY_ON);
+  launch_ready_start_time = microseconds();
 }
 
 void Pod_State::ST_Flight_Accel() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
-  acceleration_start_time = microseconds();
   flight_plan_index = 0;
   old_motor_throttle = -1;
+  acceleration_start_time = microseconds();
 }
 
 void Pod_State::ST_Flight_Coast() {
@@ -281,9 +302,9 @@ void Pod_State::ST_Flight_Coast() {
 
 void Pod_State::ST_Flight_Brake() {
   print(LogLevel::LOG_EDEBUG, "STATE : %s\n", get_current_state_string().c_str());
-  brake_start_time = microseconds();
   motor.disable_motors();
   brakes.enable_brakes();
+  brake_start_time = microseconds();
 }
 
 void Pod_State::ST_Error() {
@@ -362,12 +383,15 @@ void Pod_State::steady_function_inside(Command::Network_Command * command,
 void Pod_State::steady_launch_ready(Command::Network_Command * command, 
                                     UnifiedState* state) {
   // check if precharge complete
-  int64_t timeout_check = microseconds() - acceleration_start_time;
+  int64_t timeout_check = microseconds() - launch_ready_start_time;
   if (timeout_check > launch_ready_precharge_timeout && !ready_for_launch) {
     motor.set_relay_state(HV_Relay_Select::RELAY_PRE_CHARGE, HV_Relay_State::RELAY_OFF);
     motor.set_relay_state(HV_Relay_Select::RELAY_HV_POLE, HV_Relay_State::RELAY_ON);
     ready_for_launch = true;  // Set true so we can't get into this IF again
   }
+
+  std::lock_guard<std::mutex> guard(timeout_mutex);
+  p_counter = timeout_check;
 }
 
 void Pod_State::steady_flight_accelerate(Command::Network_Command * command, 
@@ -389,6 +413,9 @@ void Pod_State::steady_flight_accelerate(Command::Network_Command * command,
     Command::put(Command::Network_Command_ID::TRANS_FLIGHT_COAST, 0);
     auto_transition_coast.invoke();
   }
+
+  std::lock_guard<std::mutex> guard(timeout_mutex);
+  a_counter = timeout_check;
 }
 
 void Pod_State::steady_flight_coast(Command::Network_Command * command, 
@@ -399,6 +426,9 @@ void Pod_State::steady_flight_coast(Command::Network_Command * command,
     Command::put(Command::Network_Command_ID::TRANS_FLIGHT_BRAKE, 0);
     auto_transition_brake.invoke();
   }
+
+  std::lock_guard<std::mutex> guard(timeout_mutex);
+  c_counter = timeout_check;
 }
 
 void Pod_State::steady_flight_brake(Command::Network_Command * command, 
@@ -414,6 +444,9 @@ void Pod_State::steady_flight_brake(Command::Network_Command * command,
     Command::put(Command::Network_Command_ID::TRANS_SAFE_MODE, 0);
     auto_transition_safe_mode.invoke();
   }
+
+  std::lock_guard<std::mutex> guard(timeout_mutex);
+  b_counter = timeout_check;
 }
 
 bool Pod_State::shouldBrake(int64_t vel, int64_t pos) {
