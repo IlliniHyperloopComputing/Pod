@@ -8,11 +8,15 @@ COMMAND_QUEUE = queue.Queue()
 
 send_sock = socket.socket(socket.AF_INET, socket.SOCK_DGRAM) # UDP
 UDP_RECV_IP = ''
-UDP_SEND_IP = '192.168.0.28' # 192.168.6.2
+UDP_SEND_IP = '192.168.6.2' # 192.168.6.2
 UDP_SEND_PORT = 5005
 UDP_RECV_PORT = 5004
 MSG_TO_SEND = "PING"
 MSG_TO_RECV = "ACK"
+
+def getPodIPAndPort():
+    global UDP_SEND_IP, UDP_SEND_PORT
+    return UDP_SEND_IP, UDP_SEND_PORT
 
 def serve():
     global send_sock, UDP_RECV_IP, UDP_SEND_IP, UDP_SEND_PORT, UDP_RECV_PORT, MSG_TO_RECV, MSG_TO_SEND
@@ -58,6 +62,7 @@ def sendData():
             except Exception as e:
                 print(e)
                 #COMMAND_QUEUE.put(command)
+        
         time.sleep(0.2)
 
 # Starts thread for tcp server and processor

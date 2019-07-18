@@ -196,17 +196,17 @@ def getStats():
                 "color": "limegreen"
             },
             {
-                "name": "Relay State Buff 0",
+                "name": "Pre-Charge Relay Status",
                 "value": motion_data.relay_state_buff_0,
                 "color": "limegreen"
             },
             {
-                "name": "Relay State Buff 1",
+                "name": "LV Relay Status",
                 "value": motion_data.relay_state_buff_1,
                 "color": "limegreen"
             },
             {
-                "name": "Relay State Buff 2",
+                "name": "HV Relay Status",
                 "value": motion_data.relay_state_buff_2,
                 "color": "limegreen"
             },
@@ -424,12 +424,12 @@ def getStats():
                 "color": "limegreen"
             },
             {
-                "name": "P counter",
+                "name": "Pre-Charge counter",
                 "value": motion_data.p_counter,
                 "color": "limegreen"
             },
             {
-                "name": "P timeout",
+                "name": "Pre-Charge timeout",
                 "value": motion_data.p_timeout,
                 "color": "limegreen"
             },
