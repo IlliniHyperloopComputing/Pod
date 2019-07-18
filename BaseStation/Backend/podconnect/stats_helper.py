@@ -316,67 +316,40 @@ def getStats():
             }
         ]
     }
-    if error_data.ADCError == 0:
-        adc_color = "limegreen"
-    else:
-        adc_color =  "red"
-    
-    if error_data.CANError == 0:
-        can_color = "limegreen"
-    else:
-        can_color =  "red"
-    
-    if error_data.I2CError == 0:
-        i2c_color = "limegreen"
-    else:
-        i2c_color =  "red"
-    
-    if error_data.PRUError == 0:
-        pru_color = "limegreen"
-    else:
-        pru_color =  "red"
-    
-    if error_data.NetworkError == 0:
-        net_color = "limegreen"
-    else:
-        net_color =  "red"
-    
-    if error_data.OtherError == 0:
-        other_color = "limegreen"
-    else:
-        other_color =  "red"
+
+    error_colors = errorColors(error_data)
     
     error_data_frame = {
         "stats": [
             {
                 "name": "ADCError",
                 "value": str(hex(error_data.ADCError)),
-                "color": adc_color
+                "color": error_colors["adc_color"]
             },
             {
                 "name": "CANError",
                 "value": str(hex(error_data.CANError)),
-                "color": can_color
+                "color": error_colors["can_color"]
             },
             {
                 "name": "I2CError",
                 "value": str(hex(error_data.I2CError)),
-                "color": i2c_color
+                "color": error_colors["i2c_color"]
             },
             {
                 "name": "PRUError",
                 "value": str(hex(error_data.PRUError)),
-                "color": pru_color
+                "color": error_colors["pru_color"]
             },
             {
                 "name": "NetworkError",
                 "value": str(hex(error_data.NetworkError)),
-                "color": net_color
+                "color": error_colors["net_color"]
             },
             {
                 "name": "OtherError",
                 "value": str(hex(error_data.OtherError)),
-                "color": other_color
+                "color": error_colors["other_color"]
             },
             {
                 "name": "I2C 0x48 0",
@@ -467,3 +440,37 @@ def getStats():
     }
     toReturn = [can_data_motor, can_data_bms1, can_data_bms2, error_data_frame]
     return toReturn
+
+def errorColors(error_data):
+    toRet = {}
+    if error_data.ADCError == 0:
+        toRet["adc_color"] = "limegreen"
+    else:
+        toRet["adc_color"] =  "red"
+    
+    if error_data.CANError == 0:
+        toRet["can_color"] = "limegreen"
+    else:
+        toRet["can_color"] =  "red"
+    
+    if error_data.I2CError == 0:
+        toRet["i2c_color"] = "limegreen"
+    else:
+        toRet["i2c_color"] =  "red"
+    
+    if error_data.PRUError == 0:
+        toRet["pru_color"] = "limegreen"
+    else:
+        toRet["pru_color"] =  "red"
+    
+    if error_data.NetworkError == 0:
+        toRet["net_color"] = "limegreen"
+    else:
+        toRet["net_color"] =  "red"
+    
+    if error_data.OtherError == 0:
+        toRet["other_color"] = "limegreen"
+    else:
+        toRet["other_color"] =  "red"
+    
+    return toRet
