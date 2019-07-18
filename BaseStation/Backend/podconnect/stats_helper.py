@@ -422,6 +422,46 @@ def getStats():
                 "name": "Acceleration",
                 "value": str(motion_data.acceleration),
                 "color": "limegreen"
+            },
+            {
+                "name": "P counter",
+                "value": motion_data.p_counter,
+                "color": "limegreen"
+            },
+            {
+                "name": "P timeout",
+                "value": motion_data.p_timeout,
+                "color": "limegreen"
+            },
+            {
+                "name": "Acceleration counter",
+                "value": motion_data.a_counter,
+                "color": "limegreen"
+            },
+            {
+                "name": "Acceleration timeout",
+                "value": motion_data.a_timeout,
+                "color": "limegreen"
+            },
+            {
+                "name": "Coast counter",
+                "value": motion_data.c_counter,
+                "color": "limegreen"
+            },
+            {
+                "name": "Coast timeout",
+                "value": motion_data.c_timeout,
+                "color": "limegreen"
+            },
+            {
+                "name": "Brake counter",
+                "value": motion_data.b_counter,
+                "color": "limegreen"
+            },
+            {
+                "name": "Brake timeout",
+                "value": motion_data.b_timeout,
+                "color": "limegreen"
             }
         ]
     }

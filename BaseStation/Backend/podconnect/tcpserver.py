@@ -72,10 +72,12 @@ def serve():
                     if tcpsaver.savePRUData(data) == -1:
                         print("PRU data failure")
                 elif id == 4: # Motion Data
-                    data = conn.recv(6*4 + 4)
+                    data = conn.recv(6*4 + 8*8 + 4)
                     chars = data[-4:]
-                    print("test",chars)
+                    data64 = data[3 * 4:-3 * 4 - 4]
+                    data = data[:3*4] + data[-3 * 4 - 4:-4]
                     data = tcphelper.bytes_to_signed_int32(data, 6)
+                    data64 = tcphelper.bytes_to_signed_int64(data64, 8)
                     if tcpsaver.saveMotionData(data, chars) == -1:
                         print("Motion data failure")
                 elif id == 5: # Error Data

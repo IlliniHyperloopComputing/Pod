@@ -78,8 +78,10 @@ def savePRUData(data):
     pru_model.save()
     return 1
 
-def saveMotionData(data, char_data):
+def saveMotionData(data, data64, char_data):
     if len(data) != 6:
+        return -1
+    if len(data64) != 8:
         return -1
     motion_model = models.MotionData(
         position = data[0],
@@ -88,6 +90,14 @@ def saveMotionData(data, char_data):
         motor_state = data[3],
         brake_state = data[4],
         motor_target_torque = data[5],
+        p_timeout = data64[0],
+        a_timeout = data64[1],
+        c_timeout = data64[2],
+        b_timeout = data64[3],
+        p_counter = data64[4],
+        a_counter = data64[5],
+        c_counter = data64[6],
+        b_counter = data64[7],
         relay_state_buff_0 = char_data[0],
         relay_state_buff_1 = char_data[1],
         relay_state_buff_2 = char_data[2],

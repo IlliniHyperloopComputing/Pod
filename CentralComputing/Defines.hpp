@@ -124,6 +124,7 @@ struct MotionData {
   int64_t a_counter;
   int64_t c_counter;
   int64_t b_counter;
+  
   int32_t motor_state;
   int32_t brake_state;
   int32_t motor_target_torque;
@@ -202,12 +203,12 @@ enum PRUErrors {
 enum NETWORKErrors {
   UDP_SETUP_FAILURE = 0x1,
   TCP_SETUP_FAILURE = 0x2,
-  UDP_READ_WRITE_ERROR = 0x4, 
-  TCP_READ_WRITE_ERROR = 0x8, 
-  UDP_DISCONNECT_ERROR = 0x10, 
-  TCP_DISCONNECT_ERROR = 0x20, 
+  UDP_READ_WRITE_ERROR = 0x4,
+  TCP_READ_WRITE_ERROR = 0x8,
+  UDP_DISCONNECT_ERROR = 0x10,
+  TCP_DISCONNECT_ERROR = 0x20,
   NET_SENTINEL = 0x40,  // Not an error, but a way to easily keep track of the number of errors
-  UDP_E_BRAKE_ERROR = 0x80, 
+  UDP_E_BRAKE_ERROR = 0x80,
   // Update Command.cpp with additional errors, or suffer segfaults
 };
 
