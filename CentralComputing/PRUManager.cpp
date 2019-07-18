@@ -125,7 +125,7 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
                                                       raw_data.deltas[wheel_idx[i]],
                                                       wheel_map[i]);
   }
-
+  print(LogLevel::LOG_ERROR, "PRU STUFF: %d, %d, %d, %d, %d, %d, %d, %d\n", new_data.orange_distance[0], new_data.orange_velocity[0], new_data.orange_distance[1], new_data.orange_velocity[1], new_data.wheel_distance[0], new_data.wheel_velocity[0], new_data.wheel_distance[1], new_data.wheel_velocity[1]);
   // Get WATCHDOG
   const int watchdog_input_pin = 3; //p8_44
   new_data.watchdog_hz = convert_to_velocity(raw_data.decays[watchdog_input_pin], 

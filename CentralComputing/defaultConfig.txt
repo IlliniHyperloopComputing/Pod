@@ -21,7 +21,7 @@ adc_sanity_bound_counter_error 2   # consecutive readings breaking the bound tha
 
 
 tcp_port 8001
-tcp_addr 192.168.6.1 #192.168.7.1 #127.0.0.1
+tcp_addr 192.168.0.159 #192.168.6.1 #192.168.7.1 #127.0.0.1
 
 tcp_stagger_time1 500000 # Units are microseconds (This is Motion data, Error data, state data)
 tcp_stagger_time2 500000 # Units are microseconds (Can data)
@@ -29,7 +29,7 @@ tcp_stagger_time3 500000 # Units are microseconds (PRU, I2C, ADC)
 
 udp_send_port 5004
 udp_recv_port 5005
-udp_addr 192.168.6.1
+udp_addr 192.168.0.159 #192.168.6.1
 udp_heartbeat_period     100  # Units are MILLISECONDS
 udp_d1_max     10    # Units are MILLISECONDS
 udp_d1_min     2     # Units are MILLISECONDS
