@@ -120,6 +120,7 @@ bool UDPManager::udp_parse(uint8_t* buf, uint8_t len) {
     return true;
   } else {
     Command::set_error_flag(Command::Network_Command_ID::SET_NETWORK_ERROR,NETWORKErrors::UDP_E_BRAKE_ERROR);
+    Command::put(Command::TRANS_ABORT,0);
     print(LogLevel::LOG_INFO, "Parsed %d bytes, they are: %s\n", len, buf);   }
   return false;
 }
