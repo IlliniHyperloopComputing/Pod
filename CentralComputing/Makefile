@@ -296,7 +296,7 @@ $(OBJ_DIR)/%-cross-sim.o : %.cpp
 
 .PHONY: clean
 clean:
-	rm -f $(POD) $(POD_D) $(POD_T) $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T) $(POD_CROSS_NA) $(POD_CROSS_D_NA)
+	rm -f $(POD) $(POD_D) $(POD_T) $(POD_CROSS) $(POD_CROSS_D) $(POD_CROSS_T) $(POD_CROSS_NM) $(POD_CROSS_D_NM) $(POD_CROSS_NA) $(POD_CROSS_D_NA)
 	rm -rf $(OBJ_DIR)/  
 
 .PHONY: clean_lib
