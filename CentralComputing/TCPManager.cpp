@@ -25,6 +25,14 @@ PRUData TCPManager::pru_data;
 MotionData TCPManager::motion_data;
 Errors   TCPManager::error_data;
 E_States TCPManager::state;
+int64_t *p_elapsed_time;
+int64_t *a_elapsed_time;
+int64_t *c_elapsed_time;
+int64_t *b_elapsed_time;
+int64_t *p_timeout;
+int64_t *a_timeout;
+int64_t *c_timeout;
+int64_t *b_timeout;
 
 std::mutex TCPManager::data_mutex;  
 int64_t TCPManager::write_loop_timeout;
@@ -89,11 +97,16 @@ int TCPManager::write_data() {
   if (cur_time - last_sent_times[1] > stagger_times[1]) {  
     data_mutex.lock();  // Protect access to TCPManger::data_to_send
     memcpy(&can_data, unified_state->can_data.get(), sizeof(CANData));
+    Pod_State::get_time_and_timeouts(p_elapsed_time,p_timeout,a_elapsed_time,a_timeout,c_elapsed_time,c_timeout,b_elapsed_time,b_timeout);
+    int64_t timeout_data[8] = {*p_elapsed_time,*p_timeout,*a_elapsed_time,*a_timeout,*c_elapsed_time,*c_timeout,*b_elapsed_time,*b_timeout};
+    uint8_t state_time_data[64]; 
+    memcpy(&state_time_data,timeout_data,sizeof(timeout_data));
     data_mutex.unlock();
 
     last_sent_times[1] = cur_time;
     if ((write_all_to_socket(socketfd, &TCPID.can_id, sizeof(uint8_t)) <= 0) ||
-        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&can_data), sizeof(CANData)) <= 0)) {  //NOLINT
+        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&can_data), sizeof(CANData)) <= 0) ||
+        (write_all_to_socket(socketfd, state_time_data, sizeof(state_time_data)) <= 0)) {  //NOLINT
       return -1;
     }
   }
