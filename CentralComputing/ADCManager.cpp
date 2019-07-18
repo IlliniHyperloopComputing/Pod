@@ -92,13 +92,13 @@ std::shared_ptr<ADCData> ADCManager::refresh_sim() {
 }
 
 void ADCManager::initialize_sensor_error_configs() {
-  if (!(ConfiguratorManager::config.getValue("error_accel_diff", error_accel_diff) && 
-      ConfiguratorManager::config.getValue("error_pneumatic_1_over_pressure", error_pneumatic_1_over_pressure) &&
-      ConfiguratorManager::config.getValue("error_pneumatic_2_over_pressure", error_pneumatic_2_over_pressure) &&
-      ConfiguratorManager::config.getValue("error_pneumatic_3_over_pressure", error_pneumatic_3_over_pressure) &&
-      ConfiguratorManager::config.getValue("error_pneumatic_4_over_pressure", error_pneumatic_4_over_pressure) &&
-      ConfiguratorManager::config.getValue("error_battery_box_over_pressure",  error_battery_box_over_pressure) &&
-      ConfiguratorManager::config.getValue("error_battery_box_under_pressure", error_battery_box_under_pressure) &&
+  if (!(ConfiguratorManager::config.getValue("error_accel_diff", error_accel_diff) &&
+      ConfiguratorManager::config.getValue("error_accel_x_over", error_accel_x_over) &&
+      ConfiguratorManager::config.getValue("error_accel_x_under", error_accel_x_under) &&
+      ConfiguratorManager::config.getValue("error_accel_y_over", error_accel_y_over) &&
+      ConfiguratorManager::config.getValue("error_accel_y_under", error_accel_y_under) &&
+      ConfiguratorManager::config.getValue("error_accel_z_over", error_accel_z_over) &&
+      ConfiguratorManager::config.getValue("error_accel_z_under", error_accel_z_under) &&
       ConfiguratorManager::config.getValue("adc_axis_0", adc_axis_0) &&
       ConfiguratorManager::config.getValue("adc_axis_1", adc_axis_1) &&
       ConfiguratorManager::config.getValue("adc_dir_flip", adc_dir_flip) &&
@@ -186,5 +186,4 @@ void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_d
     Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_BATTERY_BOX_UNDER_PRESSURE_ERROR);
   }
   */
-
 }

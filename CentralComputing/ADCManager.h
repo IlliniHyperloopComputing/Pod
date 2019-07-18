@@ -26,7 +26,6 @@ class ADCManager : public SourceManagerBase<ADCData> {
   bool do_calculate_zero_g;
   int32_t default_zero_g;
 
-
   int16_t accel1_zero_g;
   int16_t accel2_zero_g;
 
@@ -46,14 +45,15 @@ class ADCManager : public SourceManagerBase<ADCData> {
   int32_t adc1_san_negative_counter;
 
   int32_t error_accel_diff;
-  int32_t error_pneumatic_1_over_pressure;
-  int32_t error_pneumatic_2_over_pressure;
-  int32_t error_pneumatic_3_over_pressure;
-  int32_t error_pneumatic_4_over_pressure;
-  int32_t error_battery_box_over_pressure;
-  int32_t error_battery_box_under_pressure;
   int32_t accel_diff_counter_error;
   int32_t accel_diff_counter;
+  int32_t error_accel_x_over;
+  int32_t error_accel_x_under;
+  int32_t error_accel_y_over;
+  int32_t error_accel_y_under;
+  int32_t error_accel_z_over;
+  int32_t error_accel_z_under;
+    
   std::string name() {
     return "adc";
   }

@@ -30,7 +30,7 @@ enum HV_Relay_State {
   RELAY_OFF = 0x00,
 };
 
-#define NUM_ADC 7
+#define NUM_ADC 6
 #define NUM_ACCEL 2
 struct ADCData {
   int32_t data[NUM_ADC];

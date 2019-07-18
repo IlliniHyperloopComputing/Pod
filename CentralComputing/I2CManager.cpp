@@ -171,29 +171,13 @@ std::shared_ptr<I2CData> I2CManager::refresh_sim() {
 }
 
 void I2CManager::initialize_sensor_error_configs() {
-  if (!(ConfiguratorManager::config.getValue("error_general_1_over_temp", error_general_1_over_temp) && 
-      ConfiguratorManager::config.getValue("error_general_2_over_temp",   error_general_2_over_temp) &&
-      ConfiguratorManager::config.getValue("error_general_3_over_temp",   error_general_3_over_temp))) {
+    if (!(ConfiguratorManager::config.getValue("error_pneumatic_brake_high_over_pressure", error_pneumatic_brake_high_over_pressure) && ConfiguratorManager::config.getValue("error_pneumatic_brake_regulator_over_pressure", error_pneumatic_brake_regulator_over_pressure) && ConfiguratorManager::config.getValue("error_pneumatic_brake_end_over_pressure", error_pneumatic_brake_end_over_pressure) &&  ConfiguratorManager::config.getValue("error_battery_box_over_pressure",  error_battery_box_over_pressure) && ConfiguratorManager::config.getValue("error_battery_box_under_pressure", error_battery_box_under_pressure) &&)) {
+    
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: I2CManager Missing necessary configuration\n");
     exit(1);
   }
 }
 
 void I2CManager::check_for_sensor_error(const std::shared_ptr<I2CData> & check_data, E_States state) {
-  auto temp_arr = check_data->temp; 
-  for (int index = 0; index < static_cast<int>(NUM_TMP / 3); index++) {
-    if (temp_arr[index] > static_cast<int>(error_general_1_over_temp)) {
-      Command::set_error_flag(Command::SET_I2C_ERROR, I2C_OVER_TEMP_ONE);
-    }
-  }
-  for (int index = static_cast<int>(NUM_TMP / 3); index < static_cast<int>(2 * (NUM_TMP / 3)); index++) {
-    if (temp_arr[index] > static_cast<int>(error_general_1_over_temp)) {
-      Command::set_error_flag(Command::SET_I2C_ERROR, I2C_OVER_TEMP_TWO);
-    }
-  }
-  for (int index = static_cast<int>(2 * (NUM_TMP / 3)); index < NUM_TMP; index++) {
-    if (temp_arr[index] > static_cast<int>(error_general_1_over_temp)) {
-      Command::set_error_flag(Command::SET_I2C_ERROR, I2C_OVER_TEMP_THREE);
-    }
-  }
+  //auto temp_arr = check_data->temp;
 }
