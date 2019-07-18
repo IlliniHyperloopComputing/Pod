@@ -71,8 +71,11 @@ error_accel_diff 20
 accel_diff_counter_error 10
 
 error_pneumatic_brake_high_over_pressure 2000
+error_pneumatic_brake_high_under_pressure -1
 error_pneumatic_brake_regulator_over_pressure 2000
+rror_pneumatic_brake_regulator_under_pressure -1
 error_pneumatic_brake_end_over_pressure 2000
+error_pneumatic_brake_end_under_pressure -1
 
 error_accel_x_over -1
 error_accel_x_under -1

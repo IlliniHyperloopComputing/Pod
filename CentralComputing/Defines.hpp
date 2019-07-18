@@ -95,9 +95,9 @@ struct CANData {
   uint32_t adaptive_soc;                // uint8_t
 };
 
-#define NUM_TMP 16
+#define NUM_I2C 4
 struct I2CData {
-  int16_t temp[NUM_TMP];
+  int16_t pressures[NUM_I2C];
 };
 
 #define NUM_ORANGE_INPUTS 2

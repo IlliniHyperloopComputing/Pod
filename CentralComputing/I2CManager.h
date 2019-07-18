@@ -23,8 +23,11 @@ class I2CManager : public SourceManagerBase<I2CData> {
   bool set_i2c_addr(int fd, int addr);
 
   int32_t error_pneumatic_brake_high_over_pressure;
+  int32_t error_pneumatic_brake_high_under_pressure;
   int32_t error_pneumatic_brake_regulator_over_pressure;
+  int32_t error_pneumatic_brake_regulator_under_pressure;
   int32_t error_pneumatic_brake_end_over_pressure;
+  int32_t error_pneumatic_brake_end_under_pressure;
   int32_t error_battery_box_over_pressure;
   int32_t error_battery_box_under_pressure;
   std::shared_ptr<I2CData> old_data; 
