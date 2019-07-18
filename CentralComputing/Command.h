@@ -57,7 +57,9 @@ enum Network_Command_ID {
   SET_HV_RELAY_LV_POLE = 27,
   SET_HV_RELAY_PRE_CHARGE = 28,
   CALC_ACCEL_ZERO_G = 29,
-  SENTINEL = 30,  // Any Command above this value is an invalid command
+  RESET_PRU = 30,
+  SENTINEL = 31,  // Any Command above this value is an invalid command
+  // MUST ADD THESE TO TRANSITION LIST
   // Update the get_string() function bellow with additional commands, or suffer segfaults
 };
 

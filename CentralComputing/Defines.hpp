@@ -107,6 +107,7 @@ struct PRUData {
   int32_t orange_velocity[NUM_ORANGE_INPUTS];
   int32_t wheel_distance[NUM_WHEEL_INPUTS];
   int32_t wheel_velocity[NUM_WHEEL_INPUTS];
+  int32_t watchdog_hz;
 };
 
 struct MotionData {
@@ -114,7 +115,21 @@ struct MotionData {
   // x[0] = x
   // x[1] = x' first derivative
   // x[2] = x'' second derivative
+  int64_t p_timeout;
+  int64_t a_timeout;
+  int64_t c_timeout;
+  int64_t b_timeout;
+
+  int64_t p_counter;
+  int64_t a_counter;
+  int64_t c_counter;
+  int64_t b_counter;
+  int32_t motor_state;
+  int32_t brake_state;
+  int32_t motor_target_torque;
+  char relay_state_buf[4];
 };
+
 
 enum ADCErrors {
   ADC_SETUP_FAILURE = 0x1,
@@ -126,7 +141,9 @@ enum ADCErrors {
   ADC_PNEUMATIC_OVER_PRESSURE_ERROR_4 = 0x40,
   ADC_BATTERY_BOX_OVER_PRESSURE_ERROR = 0x80,
   ADC_BATTERY_BOX_UNDER_PRESSURE_ERROR = 0x100,
-  ADC_SENTINEL = 0x200  // Not an error, but a way to easily keep track of the number of errors
+  ADC_POSITIVE_SANITY_ERROR = 0x200,
+  ADC_NEGATIVE_SANITY_ERROR = 0x400,
+  ADC_SENTINEL = 0x800  // Not an error, but a way to easily keep track of the number of errors
   // Update Command.cpp with additional errors, or suffer segfaults
 };
 
@@ -177,7 +194,8 @@ enum PRUErrors {
   PRU_READ_ERROR = 0x4,
   PRU_ORANGE_DIFF_ERROR = 0x8,
   PRU_WHEEL_DIFF_ERROR = 0x10,
-  PRU_SENTINEL = 0x20  // Not an error, but a way to easily keep track of the number of errors
+  PRU_WATCHDOG_FAIL = 0x20,
+  PRU_SENTINEL = 0x40  // Not an error, but a way to easily keep track of the number of errors
   // Update Command.cpp with additional errors, or suffer segfaults
 };
 

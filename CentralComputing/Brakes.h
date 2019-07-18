@@ -33,6 +33,7 @@ class Brakes {
   void set_enable(bool enable);
 
   double integral;
+  std::mutex mutex;
 
   bool enabled;
 };
