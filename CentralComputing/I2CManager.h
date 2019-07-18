@@ -36,11 +36,10 @@ class I2CManager : public SourceManagerBase<I2CData> {
     return "i2c";
   }
 
-  int i = 0;
-  int j = 0;
+  int index = 0;
   int i2c_fd = 0;
 
-  unsigned char buffer[NUM_TMP];
+  unsigned char buffer[NUM_I2C];
 
  public:
   // Public for testing purposes

@@ -102,39 +102,24 @@ bool I2CManager::single_shot(int fd, int port, int16_t *value) {
 }
 
 std::shared_ptr<I2CData> I2CManager::refresh() {
-  if (i == 3) {
-    i = 0;
-    if (j == 3) {
-      j = 0;
-    } else {
-      j++;
-    }
-  } else {
-    i++;
-  }
-
   int port;
   int addr;
 
-  if (i == 0) {
+  if (index == 0) {
     port = ANC0;
-  } else if (i == 1) {
+    index++;
+  } else if (index == 1) {
     port = ANC1;
-  } else if (i == 2) {
+    index++;
+  } else if (index == 2) {
     port = ANC2;
+    index++;
   } else {
     port = ANC3;
+    index = 0;
   }
 
-  if (j == 0) {
-    addr = 0x48;
-  } else if (j == 1) {
-    addr = 0x49;
-  } else if (j == 2) {
-    addr = 0x4A;
-  } else {
-    addr = 0x4B;
-  }
+  addr = 0x48;
 
   int64_t a = Utils::microseconds(); 
   int16_t value = 0;
@@ -145,15 +130,13 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
   }
   if (single_shot(i2c_fd, port, &value)) {
     int64_t b = Utils::microseconds(); 
-    print(LogLevel::LOG_DEBUG, "(REMOVE) I2C: i=%d, j =%d, val: %d, took this long: micros: %lu\n", i, j, value, b-a);
   } else {
     Command::set_error_flag(Command::SET_I2C_ERROR, I2C_READ_ERROR);
     return empty_data();
   }
-  int index = (j * 4) + i; 
 
   // Update the "old" data with the new reading
-  old_data->temp[index] = value;  
+  old_data->pressures[index] = value; 
 
   // duplicate the "old_data" here into the "new_data"
   std::shared_ptr<I2CData> new_data = std::make_shared<I2CData>(*old_data);  
@@ -171,7 +154,7 @@ std::shared_ptr<I2CData> I2CManager::refresh_sim() {
 }
 
 void I2CManager::initialize_sensor_error_configs() {
-    if (!(ConfiguratorManager::config.getValue("error_pneumatic_brake_high_over_pressure", error_pneumatic_brake_high_over_pressure) && ConfiguratorManager::config.getValue("error_pneumatic_brake_high_under_pressure", error_pneumatic_brake_high_under_pressure) && ConfiguratorManager::config.getValue("error_pneumatic_brake_regulator_over_pressure", error_pneumatic_brake_regulator_over_pressure) && ConfiguratorManager::config.getValue("error_pneumatic_brake_regulator_under_pressure", error_pneumatic_brake_regulator_under_pressure) && ConfiguratorManager::config.getValue("error_pneumatic_brake_end_over_pressure", error_pneumatic_brake_end_over_pressure) && ConfiguratorManager::config.getValue("error_pneumatic_brake_end_under_pressure", error_pneumatic_brake_end_under_pressure) && ConfiguratorManager::config.getValue("error_battery_box_over_pressure", error_battery_box_over_pressure) && ConfiguratorManager::config.getValue("error_battery_box_under_pressure", error_battery_box_under_pressure)))) {
+    if (!(ConfiguratorManager::config.getValue("error_pneumatic_brake_high_over_pressure", error_pneumatic_brake_high_over_pressure) && ConfiguratorManager::config.getValue("error_pneumatic_brake_high_under_pressure", error_pneumatic_brake_high_under_pressure) && ConfiguratorManager::config.getValue("error_pneumatic_brake_regulator_over_pressure", error_pneumatic_brake_regulator_over_pressure) && ConfiguratorManager::config.getValue("error_pneumatic_brake_regulator_under_pressure", error_pneumatic_brake_regulator_under_pressure) && ConfiguratorManager::config.getValue("error_pneumatic_brake_end_over_pressure", error_pneumatic_brake_end_over_pressure) && ConfiguratorManager::config.getValue("error_pneumatic_brake_end_under_pressure", error_pneumatic_brake_end_under_pressure) && ConfiguratorManager::config.getValue("error_battery_box_over_pressure", error_battery_box_over_pressure) && ConfiguratorManager::config.getValue("error_battery_box_under_pressure", error_battery_box_under_pressure))) {
     
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: I2CManager Missing necessary configuration\n");
     exit(1);

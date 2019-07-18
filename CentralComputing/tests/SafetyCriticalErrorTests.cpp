@@ -285,7 +285,7 @@ TEST_F(PodTest, SafetyCritical_I2C_Errors) {
 
   // NO errors
   // Set all data to be OK (while it is a bit high, shouldn't trigger anything)
-  test_data->temp[0] =0;
+  test_data->pressures[0] =0;
   // Send it in to check the errors... should populate error flags
   SourceManager::I2C.check_for_sensor_error(test_data, E_States::ST_SAFE_MODE);
   // Wait for all commands to be processed.....
@@ -298,9 +298,9 @@ TEST_F(PodTest, SafetyCritical_I2C_Errors) {
 
   // OVER errors
   // Set data to be a bit high
-  test_data->temp[0]  = (int16_t) error_general_1_over_temp + 1;
-  test_data->temp[6]  = (int16_t) error_general_2_over_temp + 1;
-  test_data->temp[15] = (int16_t) error_general_3_over_temp + 1;
+  test_data->pressures[0]  = (int16_t) error_general_1_over_temp + 1;
+  test_data->pressures[6]  = (int16_t) error_general_2_over_temp + 1;
+  test_data->pressures[15] = (int16_t) error_general_3_over_temp + 1;
   // Send it  check the errors... should populate error flags
   SourceManager::I2C.check_for_sensor_error(test_data, E_States::ST_SAFE_MODE);
   // Wait for all commands to be processed.....
