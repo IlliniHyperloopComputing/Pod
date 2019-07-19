@@ -95,6 +95,28 @@ struct CANData {
   uint32_t adaptive_soc;                // uint8_t
 };
 
+struct BMSCellBroadcastData {
+  uint8_t cell_id;
+  uint16_t instant_voltage;
+  uint16_t internal_resistance;
+  uint16_t open_voltage;
+  uint8_t checksum;
+} __attribute__((__packed__));
+
+struct BMSCells {
+  BMSCellBroadcastData cell_data[30];
+  uint8_t num_therms_enabled;
+  uint8_t lowest_therm_value;
+  uint8_t highest_therm_value;
+  uint8_t highest_therm_id;
+  uint8_t lowest_therm_id;
+  uint8_t PADDING;
+  uint8_t PADDING2;
+  uint8_t PADDING3;
+  int8_t therm_value[40];
+  // Any additional thermistor data her
+};
+
 #define NUM_TMP 16
 struct I2CData {
   int16_t temp[NUM_TMP];
