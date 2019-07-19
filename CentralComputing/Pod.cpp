@@ -26,29 +26,38 @@ void Pod::logic_loop() {
 
     if (loaded) {
       print(LogLevel::LOG_INFO, "Command : %d %d\n", com.id, com.value);
-      // Parse the command and call the appropriate state machine function
-      auto transition = state_machine->get_transition_function(&com);
-      ((*state_machine).*(transition))(); 
-      #ifdef SIM  // Used to indicate to the Simulator that we have processed a command
-      if (!(com.id >= Command::Network_Command_ID::SET_ADC_ERROR &&
-            com.id <= Command::Network_Command_ID::CLR_OTHER_ERROR)) {
-        command_processed = true;  // Processed a command, not an error
+      print(LogLevel::LOG_INFO, "Which is: %s %s\n", Command::get_network_command_ID_string(com.id).c_str(), 
+                                                     Command::get_network_command_value_string(&com).c_str());
+      // Capture any bad commands before they cause a segfault
+      if (com.id >= Command::Network_Command_ID::SENTINEL) {
+        print(LogLevel::LOG_ERROR, "INVALID COMMAND ID: %d\n", com.id);
+        com.id = 0;
+        com.value = 0;
       } else {
-        error_processed = true;  // Processed an error, not a command
-      }
-      #endif
+        // Parse the command and call the appropriate state machine function
+        auto transition = state_machine->get_transition_function(&com);
+        ((*state_machine).*(transition))(); 
+        #ifdef SIM  // Used to indicate to the Simulator that we have processed a command
+        if (!(com.id >= Command::Network_Command_ID::SET_ADC_ERROR &&
+              com.id <= Command::Network_Command_ID::CLR_OTHER_ERROR)) {
+          command_processed = true;  // Processed a command, not an error
+        } else {
+          error_processed = true;  // Processed an error, not a command
+        }
+        #endif
 
-      // Set the currerent State in each Source Manager. 
-      // The SouceManagers use the state while checking for errors, to emit different errors at different times.
-      // We do this here because only after a command would the state have changed - don't need to do this every loop
-      // The SourceManagers don't have access to the StateMachine variable, and this is the easiest way of
-      // getting the state to the SMs. Also, this is the minimal ammount of updates required, and is better
-      // than the SMs accessing the state machine every single time they loop.
-      E_States current_state = state_machine->get_current_state();
-      SourceManager::PRU.set_state(current_state);
-      SourceManager::CAN.set_state(current_state);
-      SourceManager::ADC.set_state(current_state);
-      SourceManager::I2C.set_state(current_state);
+        // Set the currerent State in each Source Manager. 
+        // The SouceManagers use the state while checking for errors, to emit different errors at different times.
+        // We do this here because only after a command would the state have changed - don't need to do this every loop
+        // The SourceManagers don't have access to the StateMachine variable, and this is the easiest way of
+        // getting the state to the SMs. Also, this is the minimal ammount of updates required, and is better
+        // than the SMs accessing the state machine every single time they loop.
+        E_States current_state = state_machine->get_current_state();
+        SourceManager::PRU.set_state(current_state);
+        SourceManager::CAN.set_state(current_state);
+        SourceManager::ADC.set_state(current_state);
+        SourceManager::I2C.set_state(current_state);
+      }
     } else {  // Create a "do nothing" command. This will be passed into the steady state caller below
       com.id = 0;
       com.value = 0;
@@ -67,11 +76,17 @@ void Pod::logic_loop() {
     ((*state_machine).*(func))(&com, &unified_state); 
 
     #ifdef BBB
-    // Send the heartbeat signal to the watchdog.
-    bool is_GPIO_set = Utils::set_GPIO(Utils::HEARTBEAT_GPIO, switchVal);
+    // Set WD reset pin to high == WD is on
+    // WATCHDOG
+    bool is_GPIO_set = Utils::set_GPIO(Utils::WATCH_DOG_RESET_GPIO, true);
     if (!is_GPIO_set) {
-      print(LogLevel::LOG_ERROR, "GPIO file not being accessed correctly\n");
-      // TODO: Add command to command queue
+      Command::set_error_flag(Command::Network_Command_ID::SET_OTHER_ERROR, OTHERErrors::GPIO_SWITCH_ERROR);
+    }
+
+    // Send the heartbeat signal to the watchdog.
+    is_GPIO_set = Utils::set_GPIO(Utils::HEARTBEAT_GPIO, switchVal);
+    if (!is_GPIO_set) {
+      Command::set_error_flag(Command::Network_Command_ID::SET_OTHER_ERROR, OTHERErrors::GPIO_SWITCH_ERROR);
     }
     switchVal = !switchVal;
     #endif
@@ -119,7 +134,20 @@ void Pod::update_unified_state() {
   unified_state.i2c_data = SourceManager::I2C.Get();
   unified_state.pru_data = SourceManager::PRU.Get();
   unified_state.state = state_machine->get_current_state();
+  unified_state.motion_data->motor_state = (int32_t) state_machine->motor.is_enabled();
+  unified_state.motion_data->brake_state = (int32_t) state_machine->brakes.is_enabled();
+  unified_state.motion_data->motor_target_torque = (int32_t) state_machine->motor.get_throttle();
+  state_machine->motor.get_relay_state(unified_state.motion_data->relay_state_buf);
+
   // unified_state->errors is already updated, see 'set_error_code`
+  state_machine->get_time_and_timeouts(&unified_state.motion_data->p_counter,
+                                        &unified_state.motion_data->p_timeout,
+                                        &unified_state.motion_data->a_counter,
+                                        &unified_state.motion_data->a_timeout,
+                                        &unified_state.motion_data->c_counter,
+                                        &unified_state.motion_data->c_timeout,
+                                        &unified_state.motion_data->b_counter,
+                                        &unified_state.motion_data->b_timeout);
 
   // Update motion_data
   // Pass current state into Motion Model
@@ -206,6 +234,9 @@ void Pod::run() {
   print(LogLevel::LOG_INFO, "ILLINI  HYPERLOOP \n");
   print(LogLevel::LOG_INFO, "==================\n");
 
+  print(LogLevel::LOG_EDEBUG, "SANITY_CHECK Struct Size: ADC: %d; CANData: %d;  BMSCellBroadcastData (should be 8) %d; BMSCells  (should be 8 * 30) %d; I2C: %d; PRU: %d; Motion: %d\n", 
+                                                            sizeof(ADCData), sizeof(CANData), sizeof(BMSCellBroadcastData), sizeof(BMSCells), sizeof(I2CData), sizeof(PRUData), sizeof(MotionData));
+
   // Start all SourceManager threads
   SourceManager::PRU.initialize();
   SourceManager::CAN.initialize();
@@ -235,7 +266,13 @@ void Pod::run() {
 
   com.value = NETWORKErrors::UDP_DISCONNECT_ERROR;
   set_error_code(&com);  // Initially have an error set that UDP isn't connected
-
+  #ifdef BBB
+  bool is_brake_set = Utils::set_GPIO(Utils::BRAKE_GPIO, true);
+  if (!is_brake_set) {
+    // Specific brake set error?
+    Command::set_error_flag(Command::Network_Command_ID::SET_OTHER_ERROR, OTHERErrors::GPIO_SWITCH_ERROR);
+  }
+  #endif
   // I don't know how to use member functions as a thread function, but lambdas work
   running.store(true);
   thread logic_thread([&](){ logic_loop(); });  
@@ -287,8 +324,13 @@ void Pod::trigger_shutdown() {
 // Used right now to load the configuration file if specified, or use the default
 void parse_command_line_args(int argc, char **argv, string * config_to_open, string * flight_plan_to_open);
 void parse_command_line_args(int argc, char **argv, string * config_to_open, string * flight_plan_to_open) {
+  #ifdef NO_MOTOR
+  *config_to_open = "navigationConfig.txt";
+  *flight_plan_to_open = "navigationFlightPlan.txt";
+  #else
   *config_to_open      = "defaultConfig.txt";
   *flight_plan_to_open = "defaultFlightPlan.txt";
+  #endif
   for (int i = 1; i < argc; i+=2) {
     // basic help
     if (strncmp(argv[i], "-h", 2) == 0 || strncmp(argv[i], "--help", 6) == 0 ||  strncmp(argv[i], "--h", 3) == 0) {
@@ -325,6 +367,8 @@ void signal_handler(int signal) {shutdown_handler(signal); }
 int main(int argc, char **argv) {
   std::string config_to_open;
   std::string flight_plan_to_open;
+
+
 
   #ifndef SIM
     Utils::loglevel = LogLevel::LOG_EDEBUG;

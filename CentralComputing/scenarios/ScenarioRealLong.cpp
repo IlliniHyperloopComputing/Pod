@@ -7,6 +7,15 @@ using Utils::clamp;
 ScenarioRealLong::ScenarioRealLong() {
   pru_delta_seconds = microseconds();
   can_delta_seconds = pru_delta_seconds;
+  rolling_counter = 0;
+
+  if (!( ConfiguratorManager::config.getValue("adc_axis_0", adc_axis_0) &&
+  ConfiguratorManager::config.getValue("adc_axis_1", adc_axis_1) &&
+  ConfiguratorManager::config.getValue("adc_dir_flip", adc_dir_flip))){
+    print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: SCENARIO_REAL_ERROR Missing necessary configuration\n");
+    exit(1);
+  }
+
 }
 
 void ScenarioRealLong::true_motion() {
@@ -47,15 +56,37 @@ std::shared_ptr<ADCData> ScenarioRealLong::sim_get_adc() {
   true_motion();
   std::shared_ptr<ADCData> d = std::make_shared<ADCData>();
   // Multiply by 455/ 9.80665 to convert m/s/s to adc "levels"
-  d->data[0] =  acceleration * 455/ 9.80665; 
-  d->data[1] =  acceleration * 455/ 9.80665;
+  d->data[adc_axis_0] =  acceleration * 455/ 9.80665; 
+  d->data[adc_axis_1] =  acceleration * 455/ 9.80665;
+  // d->data[6] = 2500;
   return d;
 }
 
 std::shared_ptr<CANData> ScenarioRealLong::sim_get_can() {
   true_motion();
+
+  // Create a CANData struct and fill with data
   std::shared_ptr<CANData> d = std::make_shared<CANData>();
-  memset(d.get(), (uint8_t)0, sizeof(CANData));
+  d->status_word = 0;
+  d->controller_temp = 30;
+  d->motor_temp = 30;
+  d->dc_link_voltage = 1100;
+  d->logic_power_supply_voltage = 16;
+
+  d->pack_voltage_inst = 1100;
+  d->pack_voltage_open = 1100;
+  d->pack_current = 0;
+  d->highest_temp = 30;
+  d->avg_temp = 30;
+  d->internal_temp = 30;
+  d->low_cell_voltage = 37000;
+  d->high_cell_voltage = 37000;
+  d->power_voltage_input = 160;
+  d->dtc_status_one = 0;
+  d->dtc_status_two = 0;
+  rolling_counter++;
+  d->rolling_counter = rolling_counter % 255;
+
   return d;
 }
 
@@ -75,10 +106,12 @@ std::shared_ptr<PRUData> ScenarioRealLong::sim_get_pru() {
   d->wheel_velocity[0] =  velocity * 1000; // multiply by 1000 to convert to millimeters
   d->wheel_velocity[1] =  velocity * 1000;
 
+  d->watchdog_hz = 10000;
+
   d->orange_distance[0] =  std::floor( position / rear_wheel_circumfrence) * rear_wheel_circumfrence * 1000; // multiply by 1000 to convert to millimeters
   d->orange_distance[1] = d->orange_distance[0];
   d->wheel_distance[0] =  std::floor( position / dist_between_orange) * dist_between_orange * 1000; 
-  d->wheel_distance[1] =  d->orange_distance[0];
+  d->wheel_distance[1] =  d->wheel_distance[0];
 
   return d;
 }

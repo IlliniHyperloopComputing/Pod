@@ -1,11 +1,11 @@
-0        0
-100000   0  # 1 second
-200000   0  # 2 seconds
-300000   0  # 3 seconds
-400000   0  # 4 seconds
-500000   0  # 5 seconds
-600000   0  # 6 seconds
-700000   0  # 7 seconds
-800000   0  # 8 seconds
-900000   0  # 9 seconds
-1000000  0  # 10 seconds
+0         0
+1000000   0  # 1 second
+2000000   0  # 2 seconds
+3000000   0  # 3 seconds
+4000000   0  # 4 seconds
+5000000   0  # 5 seconds
+6000000   0  # 6 seconds
+7000000   0  # 7 seconds
+8000000   0  # 8 seconds
+9000000   0  # 9 seconds
+10000000  0  # 10 seconds

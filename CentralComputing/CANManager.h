@@ -26,15 +26,21 @@ class CANManager : public SourceManagerBase<CANData> {
   void set_motor_state(bool enable);
   void set_motor_throttle(int16_t value);
 
+  // Public for testing purposes
+  void initialize_sensor_error_configs();
+  void check_for_sensor_error(const std::shared_ptr<CANData> &, E_States state);
+
+  std::mutex cell_data_mutex;
+  BMSCells public_cell_data;
+
  private:
   bool initialize_source();
   void stop_source();
   std::shared_ptr<CANData> refresh();
   std::shared_ptr<CANData> refresh_sim();
-  void initialize_sensor_error_configs();
-  void check_for_sensor_error(const std::shared_ptr<CANData> &, E_States state);
 
   CANData stored_data;
+  BMSCells private_cell_data;
 
   // Heavily inspired by: https://github.com/linux-can/can-utils/blob/master/candump.c
   // https://www.can-cia.org/fileadmin/resources/documents/proceedings/2012_kleine-budde.pdf
@@ -47,6 +53,7 @@ class CANManager : public SourceManagerBase<CANData> {
   bool recv_frame();
 
   uint32_t cast_to_u32(int offset, int bytes_per_item, uint8_t* bufferArray);
+  uint64_t cast_to_u64(int offset, int bytes_per_item, uint8_t* bufferArray);
   void u32_to_bytes(uint32_t toCast, char* bufferArray);
   void u16_to_bytes(uint16_t toCast, char* bufferArray);
   void i16_to_bytes(int16_t toCast, char* bufferArray);
@@ -80,6 +87,7 @@ class CANManager : public SourceManagerBase<CANData> {
   const unsigned int can_id_bms_two = 53;
   const unsigned int can_id_bms_relay = 0x6A0;
 
+
   // uint32_t relay_state_buf;  // used while sending CAN Frames to BMS
   char relay_state_buf[3];
   // (reinterpret_cast<char*>(&relay_state_buf))[relay] = state;
@@ -97,6 +105,13 @@ class CANManager : public SourceManagerBase<CANData> {
   int32_t error_battery_over_voltage;
   int32_t error_battery_under_voltage;
   int32_t error_battery_over_current;
+  int32_t error_bms_logic_over_voltage; 
+  int32_t error_bms_logic_under_voltage; 
+  int32_t error_bms_internal_over_temp; 
+  int32_t error_bms_rolling_counter_timeout;
+
+  int32_t rolling_counter_tracker;
+  int64_t rolling_counter_timer;
 
   std::mutex send_mutex;
 

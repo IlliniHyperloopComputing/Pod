@@ -101,16 +101,25 @@ class Pod_State : public StateMachine {
   Event auto_transition_coast;
   Event auto_transition_brake;
   Event auto_transition_safe_mode;
+
+  // Super lazy function. This isn't that great
+  void get_time_and_timeouts(int64_t *  p_elapsed_time, int64_t* p_timeout,
+                              int64_t * a_elapsed_time, int64_t* a_timeout,
+                              int64_t * c_elapsed_time, int64_t *c_timeout,
+                              int64_t * b_elapsed_time, int64_t *b_timeout);
     
  private:
   // variables used to measure time in a state, and configurable timeout values
   bool ready_for_launch;
-  int64_t launch_ready_start_time, launch_ready_precharge_timeout;
+  int64_t launch_ready_start_time, launch_ready_precharge_timeout, p_counter;
   unsigned int flight_plan_index;
   int16_t old_motor_throttle;
-  int64_t acceleration_start_time, acceleration_timeout;
-  int64_t coast_start_time, coast_timeout;
-  int64_t brake_start_time, brake_timeout;
+  int64_t acceleration_start_time, acceleration_timeout, a_counter;
+  int64_t coast_start_time, coast_timeout, c_counter;
+  int64_t brake_start_time, brake_timeout, b_counter;
+  std::mutex timeout_mutex;
+
+
 
   // variables used to determine when to exit acceleration
   int64_t estimated_brake_deceleration;

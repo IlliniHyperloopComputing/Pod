@@ -46,7 +46,7 @@ struct ADCData {
 
 struct CANData {
   // Motor Controller
-  uint32_t status_word;                 // actually a uint16_t
+  uint32_t status_word;                  // actually a uint16_t
   uint32_t position_val;                 // actually an int32_t
   uint32_t torque_val;                   // actually a int16_t
   uint32_t controller_temp;              // actually a uin8_t
@@ -79,7 +79,7 @@ struct CANData {
   uint32_t highest_temp_id;             // uint8_t
   uint32_t avg_temp;                    // uint8_t
   uint32_t internal_temp;               // uint8_t
-  uint32_t low_cell_voltge;             // uint16_t
+  uint32_t low_cell_voltage;            // uint16_t
   uint32_t low_cell_voltage_id;         // uint8_t
   uint32_t high_cell_voltage;           // uint16_t
   uint32_t high_cell_voltage_id;        // uint8_t
@@ -95,9 +95,30 @@ struct CANData {
   uint32_t adaptive_soc;                // uint8_t
 };
 
+struct BMSCellBroadcastData {
+  uint8_t cell_id;
+  uint16_t instant_voltage;
+  uint16_t internal_resistance;
+  uint16_t open_voltage;
+  uint8_t checksum;
+} __attribute__((__packed__));
+
+struct BMSCells {
+  BMSCellBroadcastData cell_data[30];
+  uint8_t num_therms_enabled;
+  uint8_t lowest_therm_value;
+  uint8_t highest_therm_value;
+  uint8_t highest_therm_id;
+  uint8_t lowest_therm_id;
+  uint8_t PADDING;
+  uint8_t PADDING2;
+  uint8_t PADDING3;
+  int8_t therm_value[40];
+  // Any additional thermistor data her
+};
+
 #define NUM_TMP 16
 struct I2CData {
-  // replace with actual data structure
   int16_t temp[NUM_TMP];
 };
 
@@ -108,6 +129,7 @@ struct PRUData {
   int32_t orange_velocity[NUM_ORANGE_INPUTS];
   int32_t wheel_distance[NUM_WHEEL_INPUTS];
   int32_t wheel_velocity[NUM_WHEEL_INPUTS];
+  int32_t watchdog_hz;
 };
 
 struct MotionData {
@@ -115,11 +137,36 @@ struct MotionData {
   // x[0] = x
   // x[1] = x' first derivative
   // x[2] = x'' second derivative
+  int64_t p_timeout;
+  int64_t a_timeout;
+  int64_t c_timeout;
+  int64_t b_timeout;
+
+  int64_t p_counter;
+  int64_t a_counter;
+  int64_t c_counter;
+  int64_t b_counter;
+  int32_t motor_state;
+  int32_t brake_state;
+  int32_t motor_target_torque;
+  char relay_state_buf[4];
 };
+
 
 enum ADCErrors {
   ADC_SETUP_FAILURE = 0x1,
   ADC_READ_ERROR = 0x2,
+  ADC_ACCEL_DIFF_ERROR = 0x4,
+  ADC_PNEUMATIC_OVER_PRESSURE_ERROR_1 = 0x8,
+  ADC_PNEUMATIC_OVER_PRESSURE_ERROR_2 = 0x10,
+  ADC_PNEUMATIC_OVER_PRESSURE_ERROR_3 = 0x20,
+  ADC_PNEUMATIC_OVER_PRESSURE_ERROR_4 = 0x40,
+  ADC_BATTERY_BOX_OVER_PRESSURE_ERROR = 0x80,
+  ADC_BATTERY_BOX_UNDER_PRESSURE_ERROR = 0x100,
+  ADC_POSITIVE_SANITY_ERROR = 0x200,
+  ADC_NEGATIVE_SANITY_ERROR = 0x400,
+  ADC_SENTINEL = 0x800  // Not an error, but a way to easily keep track of the number of errors
+  // Update Command.cpp with additional errors, or suffer segfaults
 };
 
 enum CANErrors {
@@ -128,12 +175,28 @@ enum CANErrors {
   CAN_RECV_FRAME_ERROR = 0x4,
   CAN_MOTOR_CONTROLLER_HV_OVER_VOLTAGE_ERROR = 0x8,
   CAN_MOTOR_CONTROLLER_HV_UNDER_VOLTAGE_ERROR = 0x10,
-  CAN_MOTOR_CONTROLLER_OVER_CURRENT = 0x20,
+  CAN_MOTOR_CONTROLLER_OVER_CURRENT = 0x20, // THIS IS NO LONGER USED,
   CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE = 0x40,
-  CAN_MOTOR_CONTROLLER_INTERNAL_ERROR = 0x80,
+  CAN_MOTOR_CONTROLLER_INTERNAL_ERROR = 0x80,  // SUPERSEEDED BY CONTROLLER_FAULT CONTROLLER_WARN
   CAN_MOTOR_CONTROLLER_LV_OVER_VOLTAGE_ERROR = 0x100,
   CAN_MOTOR_CONTROLLER_LV_UNDER_VOLTAGE_ERROR = 0x200,
   CAN_MOTOR_CONTROLLER_INTERNAL_OVER_TEMPERATURE = 0x400,
+  CAN_BMS_CELL_OVER_VOLTAGE = 0x800,
+  CAN_BMS_CELL_UNDER_VOLTAGE = 0x1000,
+  CAN_BMS_CELL_OVER_TEMP = 0x2000,
+  CAN_BMS_BATTERY_OVER_VOLTAGE = 0x4000,
+  CAN_BMS_BATTERY_UNDER_VOLTAGE = 0x8000,
+  CAN_BMS_BATTERY_OVER_CURRENT = 0x10000,
+  CAN_BMS_LV_OVER_VOLTAGE_ERROR = 0x20000,
+  CAN_BMS_LV_UNDER_VOLTAGE_ERROR = 0x40000,
+  CAN_BMS_INTERNAL_OVER_TEMPERATURE = 0x80000,
+  CAN_BMS_DTC1_FAULT = 0x100000,
+  CAN_BMS_DTC2_FAULT = 0x200000,
+  CAN_MOTOR_CONTROLLER_FAULT = 0x400000,
+  CAN_MOTOR_CONTROLLER_WARN = 0x800000,
+  CAN_BMS_ROLLING_COUNTER_ERROR = 0x1000000,
+  CAN_SENTINEL = 0x2000000  // Not an error, but a way to easily keep track of the number of errors
+  // Update Command.cpp with additional errors, or suffer segfaults
 };
 
 enum I2CErrors {
@@ -143,12 +206,19 @@ enum I2CErrors {
   I2C_OVER_TEMP_ONE = 0x8,
   I2C_OVER_TEMP_TWO = 0x10,
   I2C_OVER_TEMP_THREE = 0x20,
+  I2C_SENTINEL = 0x40  // Not an error, but a way to easily keep track of the number of errors
+  // Update Command.cpp with additional errors, or suffer segfaults
 };
 
 enum PRUErrors {
   PRU_SETUP_FAILURE = 0x1,
   PRU_WRITE_ERROR = 0x2,
   PRU_READ_ERROR = 0x4,
+  PRU_ORANGE_DIFF_ERROR = 0x8,
+  PRU_WHEEL_DIFF_ERROR = 0x10,
+  PRU_WATCHDOG_FAIL = 0x20,
+  PRU_SENTINEL = 0x40  // Not an error, but a way to easily keep track of the number of errors
+  // Update Command.cpp with additional errors, or suffer segfaults
 };
 
 enum NETWORKErrors {
@@ -158,10 +228,14 @@ enum NETWORKErrors {
   TCP_READ_WRITE_ERROR = 0x8, 
   UDP_DISCONNECT_ERROR = 0x10, 
   TCP_DISCONNECT_ERROR = 0x20, 
+  NET_SENTINEL = 0x40  // Not an error, but a way to easily keep track of the number of errors
+  // Update Command.cpp with additional errors, or suffer segfaults
 };
 
 enum OTHERErrors {
   GPIO_SWITCH_ERROR = 0x1,
+  GPIO_SENTINEL = 0x2  // Not an error, but a way to easily keep track of the number of errors
+  // Update Command.cpp with additional errors, or suffer segfaults
 };
 
 struct Errors{

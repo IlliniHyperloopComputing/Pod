@@ -1,3 +1,5 @@
 motor_distance_clamp 10
 low_pass_filter_velocity 0.70
 low_pass_filter_acceleration 0.90
+adc_axis_0 0
+adc_axis_1 1

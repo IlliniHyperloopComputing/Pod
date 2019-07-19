@@ -120,32 +120,27 @@ These tests automatically verify that the state machine cannot move into other s
 ### Automatic Transition Tests (Without Errors)
   _Ensure that automatic transitions work, assuming no Error conditions._
 
-1. Test that `Flight - Acceleration` transitions to:
-    * `Flight - Coast`  _(cond. below can be found in Pod_State::steady_flight_accelerate)_
-    * when `accel_timeout` is exceeded
-    * Tested in:
-      * `PodTest.AutomaticTransitionTestTimeouts`
-2. Test that ` Flight - Acceleration ` transitions to:  
+1. Test that ` Flight - Acceleration ` transitions to:  
     * `Flight - Coast`  _(cond. below can be found in Pod_State::steady_flight_accelerate)_
     * when `x+(v^2) / (2*Est_Brake_Decel) ≥ length_of_track - brake_buffer_length` is satisfied
-      * `PodTest.AutomaticTransitionBasic`
-      * `PodTest.AutomaticTransitionSensors`
-      * `PodTest.AutomaticTransitionLong`
-3. Test that ` Flight - Coast ` transitions to:
+    * OR
+    * when `acceleration_timeout` is exceeded
+      * `PodTest.AutomaticTransitionTestTimeouts` _to make sure that the `acceleration_timeout` works_
+      * `PodTest.AutomaticTransitionLong` _to make sure that the acceleration and velocity conditions work_
+2. Test that ` Flight - Coast ` transitions to:
     * `Flight - Brake`  _(cond. below can be found in Pod_State::steady_flight_coast)_
     * when `coast_timeout` is exceeded
-      * `PodTest.AutomaticTransitionTestTimeouts`
-      * `PodTest.AutomaticTransitionLong`
-4. Test that `Flight - Brake` transitions to:
+      * `PodTest.AutomaticTransitionTestTimeouts` _to make sure that the timeout works_
+      * `PodTest.AutomaticTransitionLong` _to make sure that the timeout works_
+3. Test that `Flight - Brake` transitions to:
     * `Safe Mode`  _(cond.s below can be found in Pod_State::steady_flight_brake)_
     * when `brake_timeout` is exceeded
     * AND
     * when `|accel| =< not_moving_accel` is satisfied
     * AND
     * when `|vel| =< not_moving_vel` is satisfied
-      * `PodTest.AutomaticTransitionFlightBrakeToSafeMode` _to make sure that the `brake_timeout` works_
-      * `PodTest.AutomaticTransitionLong` _to make sure that the accelertion and velocity conditons work_
       * `PodTest.AutomaticTransitionTestTimeouts` _to make sure that the `brake_timeout` works_
+      * `PodTest.AutomaticTransitionLong` _to make sure that the accelertion and velocity conditons work_
 
 ### Error Generation Unit Tests (Safety Critical Errors)
   _Test that `Safety Critical Errors` generate the appropriate internal error when conditions are met._
