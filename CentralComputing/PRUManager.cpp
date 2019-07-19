@@ -10,6 +10,7 @@ std::string PRUManager::name() {
 
 bool PRUManager::initialize_source() {
   /* Open the rpmsg_pru character device file */
+  /**
   pollfds[0].fd = open(DEVICE_NAME, O_RDWR);
 
   orange_diff_counter = 0;
@@ -29,7 +30,6 @@ bool PRUManager::initialize_source() {
     return false;
   }
 
-  /* Poll until we receive a message from the PRU and then print it */
   result = read(pollfds[0].fd, readBuf, MAX_BUFFER_SIZE);
   if (result == 0) {
     print(LogLevel::LOG_ERROR, "PRU Unable to read during init: %s\n", DEVICE_NAME);
@@ -39,17 +39,28 @@ bool PRUManager::initialize_source() {
 
   print(LogLevel::LOG_INFO, "PRU Manager setup successful\n");
   reset_pru();
+  **/
   return true;
 }
 
+int PRUManager::check_GPIO(int GPIONumber) {
+  std::string start = "/sys/class/gpio/gpio";
+  std::string integer = std::to_string(GPIONumber);
+  std::string end = "/value";
+  std::string path = start + integer + end;
+  std::fstream myfile(path, std::ios_base::in);
+  int val;
+  myfile >> val;
+  return val;
+}
+
 void PRUManager::stop_source() {
-  close(pollfds[0].fd);
+  //close(pollfds[0].fd);
   print(LogLevel::LOG_INFO, "PRU Manager stopped\n");
 }
 
 std::shared_ptr<PRUData> PRUManager::refresh() {
-
-  reset_mutex.lock();
+  /**reset_mutex.lock();
   if (do_reset) {
     int result = write(pollfds[0].fd, "RESETING\n", 9);
     if (result == 0) {
@@ -106,6 +117,7 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
 
   // Copy Raw Data into Buffer
   RawPRUData raw_data;
+  print(LogLevel::LOG_ERROR,"PRU RAW DATA %d, %d, %d",raw_data.counts[0],raw_data.counts[1],raw_data.counts[2]);
   memcpy(&raw_data, readBuf, sizeof(RawPRUData));
 
   // Convert Raw Data into usable data
@@ -126,13 +138,38 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
                                                       raw_data.deltas[wheel_idx[i]],
                                                       wheel_map[i]);
   }
-  print(LogLevel::LOG_ERROR, "PRU STUFF: %d, %d, %d, %d, %d, %d, %d, %d\n", new_data.orange_distance[0], new_data.orange_velocity[0], new_data.orange_distance[1], new_data.orange_velocity[1], new_data.wheel_distance[0], new_data.wheel_velocity[0], new_data.wheel_distance[1], new_data.wheel_velocity[1]);
+  **/
   // Get WATCHDOG
-  const int watchdog_input_pin = 3; //p8_44
-  new_data.watchdog_hz = convert_to_velocity(raw_data.decays[watchdog_input_pin], 
-                                              raw_data.deltas[watchdog_input_pin],
-                                              1);  // 1 for distance, so we get hz
-
+  PRUData new_data;
+  if (check_GPIO(WHEEL_GPIO_ONE) == 1) {
+    new_data.wheel_distance[0] = new_data.wheel_distance[0] + WHEEL_CIRCUMFERENCE_IN_MM;
+    int64_t time = Utils::microseconds() - wheel_one_last_time;
+    wheel_one_last_time = Utils::microseconds();
+    new_data.wheel_velocity[0] = (int32_t) (WHEEL_CIRCUMFERENCE_IN_MM / time);
+  }
+  if (check_GPIO(WHEEL_GPIO_TWO) == 1) {
+    new_data.wheel_distance[1] = new_data.wheel_distance[1] + WHEEL_CIRCUMFERENCE_IN_MM;
+    int64_t time = Utils::microseconds() - wheel_two_last_time;
+    wheel_two_last_time = Utils::microseconds();
+    new_data.wheel_velocity[1] = (int32_t) (WHEEL_CIRCUMFERENCE_IN_MM / time);
+  }
+  if (check_GPIO(ORANGE_TAPE_GPIO_ONE) == 1) {
+    new_data.orange_distance[0] = new_data.orange_distance[0] + HUNDRED_FEET_IN_MM;
+    int64_t time = Utils::microseconds() - orange_one_last_time;
+    orange_one_last_time = Utils::microseconds();
+    new_data.orange_velocity[0] = (int32_t) (HUNDRED_FEET_IN_MM / time);
+  }
+  if (check_GPIO(ORANGE_TAPE_GPIO_TWO) == 1) {
+    new_data.orange_distance[1] = new_data.orange_distance[1] + HUNDRED_FEET_IN_MM;
+    int64_t time = Utils::microseconds() - orange_two_last_time;
+    orange_two_last_time = Utils::microseconds();
+    new_data.orange_velocity[1] = (int32_t) (HUNDRED_FEET_IN_MM / time);
+  }
+  if (check_GPIO(WATCHDOG_GPIO) == 1) {
+    int64_t time = Utils::microseconds() - watchdog_last_time;
+    watchdog_last_time = Utils::microseconds();
+    new_data.watchdog_hz = (int32_t) (1000000 / time);
+  }
 
   // Store in shared_ptr
   std::shared_ptr<PRUData> ret_data = std::make_shared<PRUData>();
@@ -140,7 +177,7 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
 
   return ret_data;
 }
-
+/**
 inline
 int32_t PRUManager::convert_to_velocity(uint32_t decay, uint32_t delta, uint32_t distance) {
   // Pick the one that gives us the slower velocity
@@ -154,7 +191,7 @@ int32_t PRUManager::convert_to_velocity(uint32_t decay, uint32_t delta, uint32_t
     return distance / time_diff;  // divide distance by time to get a velocity
   }
 }
-
+**/
 std::shared_ptr<PRUData> PRUManager::refresh_sim() {
   #ifdef SIM
   return SimulatorManager::sim.sim_get_pru();
@@ -174,12 +211,13 @@ void PRUManager::initialize_sensor_error_configs() {
   }
   // Define some sort of difference / variance that indicates that shit broke
 }
-
+/**
 void PRUManager::reset_pru() {
   reset_mutex.lock();
   do_reset = true;
   reset_mutex.unlock();
 }
+**/
 
 void PRUManager::check_for_sensor_error(const std::shared_ptr<PRUData> & check_data, E_States state) {
   // hardcoded for two of each type of sensor right now, could use standard dev?
@@ -209,11 +247,8 @@ void PRUManager::check_for_sensor_error(const std::shared_ptr<PRUData> & check_d
     }
   }
 
-  // Wait 2 second after reset, to avoid transient errors
-  if (microseconds() - reset_timeout_start > 2000000 ) {
-    if (check_data->watchdog_hz < error_watchdog_heartbeat_min_hz) {
-      set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR, PRUErrors::PRU_WATCHDOG_FAIL);
-    }
+  if (check_data->watchdog_hz < error_watchdog_heartbeat_min_hz) {
+    set_error_flag(Command::Network_Command_ID::SET_PRU_ERROR, PRUErrors::PRU_WATCHDOG_FAIL);
   }
 
 }
