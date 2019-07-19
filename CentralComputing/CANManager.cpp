@@ -212,7 +212,7 @@ std::shared_ptr<CANData> CANManager::refresh() {
       new_data->adaptive_total_cap      = cast_to_u32(0, 2, r_frame.data);
       new_data->adaptive_amphours       = cast_to_u32(2, 2, r_frame.data);
       new_data->adaptive_soc            = cast_to_u32(4, 1, r_frame.data);
-    } else if (r_frame.can_id == 0x6b7) {  // Cell data
+    } else if (r_frame.can_id == 0x1aa) {  // Cell data
       // Verify that it has a valid ID that we can use to index
       if (r_frame.data[0] < 30) {
         int cell_id = r_frame.data[0]; // If its "1" indexed instead of 0, incremnt this
