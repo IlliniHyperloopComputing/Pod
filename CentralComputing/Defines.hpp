@@ -95,6 +95,11 @@ struct CANData {
   uint32_t adaptive_soc;                // uint8_t
 };
 
+struct BMSCells {
+  uint64_t cell_data[30];
+  // Any additional thermistor data her
+};
+
 #define NUM_TMP 16
 struct I2CData {
   int16_t temp[NUM_TMP];
