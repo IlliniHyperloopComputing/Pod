@@ -1,0 +1,91 @@
+tmp_manager_timeout 100000.0 # Units are microseconds
+i2c_manager_timeout 100000.0 # Units are microseconds
+can_manager_timeout 100000.0 # Units are microseconds 
+adc_manager_timeout 100000.0 # Units are microseconds
+pru_manager_timeout 100000.0 # Units are microseconds
+logic_loop_timeout  1000.0   # Units are microseconds
+tcp_write_loop_timeout 1000000 # Units are microseconds
+
+adc_filename /dev/iio:device0  # Internal ADC filename
+adc_calc_zero_g_timeout 2000000  # Units are microseconds 
+adc_default_zero_g       2048     # In ADC levels (12 bit). 0.9V of 1.8V, 12 bit, 2048
+
+tcp_port 8001
+tcp_addr 127.0.0.1 #192.168.7.1 #127.0.0.1
+
+tcp_stagger_time1 1000000 # Units are microseconds
+tcp_stagger_time2 3000000 # Units are microseconds
+tcp_stagger_time3 6000000 # Units are microseconds
+
+udp_send_port 5004
+udp_recv_port 5005
+udp_addr 127.0.0.1
+udp_heartbeat_period     1000  # Units are MILLISECONDS
+udp_d1_max     10    # Units are MILLISECONDS
+udp_d1_min     2     # Units are MILLISECONDS
+udp_p_max      5     # Units are MILLISECONDS
+udp_p_min      1     # Units are MILLISECONDS
+
+precharge_timeout     30000000    # 30 second precharge delay
+acceleration_timeout  15000000     # 15 second. Units are microseconds
+coast_timeout         200000      # .2 second. Units are microseconds
+brake_timeout         10000000    # 10 second. Units are microseconds
+
+low_pass_filter_velocity 0.90
+low_pass_filter_acceleration 0.90
+motor_distance_clamp 60960
+
+error_motor_ctrl_over_temp 50           # Units are in degrees C, eDrive_firmware
+error_motor_over_temp 50                # Units are in degrees C
+error_dc_link_over_voltage 1201         # Units are 1/10 V
+error_dc_link_under_voltage 1000        # Units are 1/10 V
+error_motor_ctrl_logic_over_voltage 17  # Units are in V
+error_motor_ctrl_logic_under_voltage 11 # Units are in V
+
+error_cell_over_voltage 40100      # Units are 0.0001v
+error_cell_under_voltage 31000     # Units are 0.0001v orionbms.com/manuals/utility_o2/
+error_cell_over_temp 45            # Units are in degrees C
+error_battery_over_voltage 1201    # Units are in 0.1V
+error_battery_under_voltage 1000   # Units are in 0.1V
+error_battery_over_current 4000    # Units are 0.1A
+error_bms_logic_over_voltage 170   # "Power Input Voltage" Units are 0.1V
+error_bms_logic_under_voltage 110  # "Power Input Voltage" Units are 0.1V
+error_bms_internal_over_temp  35   # Units are in degrees C
+error_bms_rolling_counter_timeout 120000 # Units are microseconds. Should be at least 100 milliseconds
+
+error_general_1_over_temp 40  # 
+error_general_2_over_temp 40
+error_general_3_over_temp 40
+
+error_accel_diff 20
+accel_diff_counter_error 10
+
+error_pneumatic_1_over_pressure 2000
+error_pneumatic_2_over_pressure 2000
+error_pneumatic_3_over_pressure 2000
+error_pneumatic_4_over_pressure 2000
+
+error_battery_box_over_pressure 3000
+error_battery_box_under_pressure 2000
+
+error_orange_diff 30481           # Units are mm. 30480mm == 100 feet. So if the tapes differ by 1 count, its an issue
+error_orange_diff_count 3         # Maybe one tape is just behind the other... give a couple tries to catch up
+error_encoder_wheel_diff 25000    # Units are mm. 25 meters.
+error_encoder_wheel_diff_count 10 # 
+
+
+estimated_brake_deceleration 9810 # Units are mm/s/s
+
+length_of_track     10000  # Units are mm
+brake_buffer_length 400    # Units are mm
+
+not_moving_velocity     200  # Units are mm/s
+not_moving_acceleration 10   # Units are ADC levels. there are 455 levels per G, 46.4 levels per m/s/s
+
+scn_gear_ratio 2.79             # For scenario 
+scn_mass 112                    # For scenario Units are kg
+scn_brake_deceleration -8.06    # For scenario Units are m/s/s
+scn_drive_wheel_radius 0.1016   # For scenario, Units are m
+scn_rated_torque 230            # For scenario. Target Torque = rated_torque * throttle / 1000
+scn_rear_wheel_circ 0.319186    # For scenario. meters.
+scn_dist_between_orange 30.48   # Distance between orange tapes (100 feet) meters.

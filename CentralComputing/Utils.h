@@ -18,7 +18,9 @@
 
 namespace Utils {
 
-  const int HEARTBEAT_GPIO = 37;
+  const int HEARTBEAT_GPIO = 68;
+  const int WATCH_DOG_RESET_GPIO = 69;
+  const int BRAKE_GPIO = 13;
 
   /**
   * Gets the current time since program startup

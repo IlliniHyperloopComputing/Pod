@@ -7,30 +7,44 @@ Brakes::Brakes() {
 }
 
 void Brakes::enable_brakes() {
-  #ifdef NO_ACTION
-    #ifdef SIM
-    SimulatorManager::sim.sim_brake_enable();
-    #else 
-    print(LogLevel::LOG_INFO, "NO_ACTION: Brakes Enabled\n");
-    #endif
+  #ifdef SIM
+  SimulatorManager::sim.sim_brake_enable();
   #else
-  // Do actually something to enable brakes
-  print(LogLevel::LOG_DEBUG, "Brakes Enabled\n");
+    #ifdef NO_ACTION
+    print(LogLevel::LOG_INFO, "NO_ACTION: Brakes Enabled\n");
+    #else
+
+    #ifdef BBB
+    bool is_brake_set = Utils::set_GPIO(Utils::BRAKE_GPIO, false);
+    if (!is_brake_set) {
+      Command::set_error_flag(Command::Network_Command_ID::SET_OTHER_ERROR, OTHERErrors::GPIO_SWITCH_ERROR);
+    }
+    #endif
+
+    print(LogLevel::LOG_DEBUG, "Brakes Enabled\n");
+    #endif
   #endif
   std::lock_guard<std::mutex> guard(mutex);
   enabled = true;
 }
 
 void Brakes::disable_brakes() {
-  #ifdef NO_ACTION
-    #ifdef SIM
-    SimulatorManager::sim.sim_brake_disable();
-    #else
-    print(LogLevel::LOG_INFO, "NO_ACTION: Brakes Disabled\n"); 
-    #endif
+  #ifdef SIM
+  SimulatorManager::sim.sim_brake_disable();
   #else
-  // Do actually something to disable brakes
-  print(LogLevel::LOG_DEBUG, "Brakes Disabled\n");
+    #ifdef NO_ACTION
+    print(LogLevel::LOG_INFO, "NO_ACTION: Brakes Disabled\n"); 
+    #else
+
+    #ifdef BBB
+    bool is_brake_set = Utils::set_GPIO(Utils::BRAKE_GPIO, true);
+    if (!is_brake_set) {
+      Command::set_error_flag(Command::Network_Command_ID::SET_OTHER_ERROR, OTHERErrors::GPIO_SWITCH_ERROR);
+    }
+    #endif
+
+    print(LogLevel::LOG_DEBUG, "Brakes Disabled\n");
+    #endif
   #endif
   std::lock_guard<std::mutex> guard(mutex);
   enabled = false;

@@ -8,6 +8,10 @@ sbuild
 cross
 dcross
 scross
+cross-nm
+cross-na
+dcross-nm
+dcross-na
 
 # Ignore vs code
 .vscode/
