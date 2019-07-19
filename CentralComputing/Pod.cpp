@@ -227,6 +227,9 @@ void Pod::run() {
   print(LogLevel::LOG_INFO, "ILLINI  HYPERLOOP \n");
   print(LogLevel::LOG_INFO, "==================\n");
 
+  print(LogLevel::LOG_EDEBUG, "SANITY_CHECK Struct Size: ADC: %d; CANData: %d;  BMSCellBroadcastData (should be 8) %d; BMSCells  (should be 8 * 30) %d; I2C: %d; PRU: %d; Motion: %d\n", 
+                                                            sizeof(ADCData), sizeof(CANData), sizeof(BMSCellBroadcastData), sizeof(BMSCells), sizeof(I2CData), sizeof(PRUData), sizeof(MotionData));
+
   // Start all SourceManager threads
   SourceManager::PRU.initialize();
   SourceManager::CAN.initialize();
@@ -346,6 +349,8 @@ void signal_handler(int signal) {shutdown_handler(signal); }
 int main(int argc, char **argv) {
   std::string config_to_open;
   std::string flight_plan_to_open;
+
+
 
   #ifndef SIM
     Utils::loglevel = LogLevel::LOG_EDEBUG;
