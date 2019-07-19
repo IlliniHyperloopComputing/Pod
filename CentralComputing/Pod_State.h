@@ -139,7 +139,7 @@ class Pod_State : public StateMachine {
   void ST_Flight_Accel();
   void ST_Flight_Coast();
   void ST_Flight_Brake();
-  void ST_Error();
+  void ST_Flight_Abort();
   bool shouldBrake(int64_t, int64_t);
 
   BEGIN_STATE_MAP
@@ -151,7 +151,7 @@ class Pod_State : public StateMachine {
     STATE_MAP_ENTRY(&Pod_State::ST_Flight_Accel)
     STATE_MAP_ENTRY(&Pod_State::ST_Flight_Coast)
     STATE_MAP_ENTRY(&Pod_State::ST_Flight_Brake)
-    STATE_MAP_ENTRY(&Pod_State::ST_Error)
+    STATE_MAP_ENTRY(&Pod_State::ST_Flight_Abort)
   END_STATE_MAP
 };
 

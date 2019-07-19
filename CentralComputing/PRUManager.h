@@ -39,7 +39,7 @@ class PRUManager : public SourceManagerBase<PRUData> {
     int64_t orange_one_last_time = Utils::microseconds();
     int64_t orange_two_last_time = Utils::microseconds();
     int64_t watchdog_last_time = Utils::microseconds();
-
+    PRUData old_data;
     bool initialize_source();
     void stop_source();
     std::shared_ptr<PRUData> refresh();
