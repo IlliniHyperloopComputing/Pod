@@ -38,6 +38,7 @@ bool PRUManager::initialize_source() {
   }
 
   print(LogLevel::LOG_INFO, "PRU Manager setup successful\n");
+  reset_pru();
   return true;
 }
 

@@ -19,6 +19,7 @@ echo 'am335x_pru1_fw' > /sys/class/remoteproc/remoteproc2/firmware
 echo 'start' > /sys/class/remoteproc/remoteproc2/state
 pru2Stat=$?
 echo "pru core 1 is now loaded"
+chmod 777 /dev/rpmsg_pru31
 
 if [ $pru1Stat -eq 0 ] && [ $pru2Stat -eq 0 ] 
 then
