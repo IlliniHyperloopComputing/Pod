@@ -215,11 +215,15 @@ std::shared_ptr<CANData> CANManager::refresh() {
     } else if (r_frame.can_id == 0x6b7) {  // Cell data
       // Verify that it has a valid ID that we can use to index
       if (r_frame.data[0] < 30) {
-        private_cell_data.cell_data[r_frame.data[0]] = cast_to_u64(0, 8, r_frame.data);
+        int cell_id = r_frame.data[0]; // If its "1" indexed instead of 0, incremnt this
+        private_cell_data.cell_data[cell_id].cell_id = r_frame.data[0];
+        private_cell_data.cell_data[cell_id].instant_voltage = cast_to_u32(1, 2, r_frame.data);
+        private_cell_data.cell_data[cell_id].internal_resistance = cast_to_u32(3, 2, r_frame.data);
+        private_cell_data.cell_data[cell_id].open_voltage = cast_to_u32(5, 2, r_frame.data);
+        private_cell_data.cell_data[cell_id].checksum = r_frame.data[7];
       } else {
         print(LogLevel::LOG_ERROR, "Cell Data CAN frame has bad ID ??? %d", r_frame.data[0] ); 
       }
-      new_data->adaptive_total_cap      = cast_to_u32(0, 2, r_frame.data);
     } else {
       print(LogLevel::LOG_DEBUG, "CAN Frame UNKNOWN msg: id: %d, len: %d, \n", r_frame.can_id, r_frame.len); 
     }

@@ -95,8 +95,16 @@ struct CANData {
   uint32_t adaptive_soc;                // uint8_t
 };
 
+struct BMSCellBroadcastData {
+  uint8_t cell_id;
+  uint16_t instant_voltage;
+  uint16_t internal_resistance;
+  uint16_t open_voltage;
+  uint8_t checksum;
+} __attribute__((__packed__));
+
 struct BMSCells {
-  uint64_t cell_data[30];
+  BMSCellBroadcastData cell_data[30];
   // Any additional thermistor data her
 };
 
