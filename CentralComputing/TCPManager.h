@@ -35,7 +35,7 @@ struct TCPSendIDs {
   uint8_t motion_id = 4;
   uint8_t error_id = 5;
   uint8_t state_id = 6;
-  uint8_t can_id = 9;
+  uint8_t bms_id = 9;
 };
 
 extern TCPSendIDs TCPID;
@@ -52,8 +52,8 @@ extern PRUData pru_data;
 extern MotionData motion_data;
 extern Errors  error_data;
 extern E_States state;
-extern int64_t stagger_times[3];  // Used to stagger how frequently data is sent to tcp server 
-extern int64_t last_sent_times[3];   // Used to store the last time a data type was sent
+extern int64_t stagger_times[4];  // Used to stagger how frequently data is sent to tcp server 
+extern int64_t last_sent_times[4];   // Used to store the last time a data type was sent
 extern std::mutex data_mutex;  
 extern int64_t write_loop_timeout;
 

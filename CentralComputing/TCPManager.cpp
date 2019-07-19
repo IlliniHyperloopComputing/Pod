@@ -175,7 +175,7 @@ void TCPManager::tcp_loop(const char * hostname, const char * port, UnifiedState
   if (!( ConfiguratorManager::config.getValue("tcp_write_loop_timeout", write_loop_timeout) &&
       ConfiguratorManager::config.getValue("tcp_stagger_time1", stagger_times[0]) &&
       ConfiguratorManager::config.getValue("tcp_stagger_time2", stagger_times[1]) &&
-      ConfiguratorManager::config.getValue("tcp_stagger_time3", stagger_times[2]))) {
+      ConfiguratorManager::config.getValue("tcp_stagger_time3", stagger_times[2]) &&
       ConfiguratorManager::config.getValue("tcp_stagger_time4", stagger_times[3]))) {
     print(LogLevel::LOG_ERROR, "TCP CONFIG FILE ERROR: Missing necessary configuration\n");
     exit(1);  // Crash hard on this error
