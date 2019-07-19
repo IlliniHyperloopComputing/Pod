@@ -13,6 +13,6 @@ class ScenarioRealLong : public Scenario {
 
   virtual void true_motion();
   int64_t pru_delta_seconds, can_delta_seconds, rolling_counter;
-  int32_t adc_axis_0, adc_axis_1, adc_dir_flip;
+  int32_t adc_x_axis_0, adc_x_axis_1, adc_dir_flip;
 };
 #endif

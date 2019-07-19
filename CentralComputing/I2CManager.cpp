@@ -163,4 +163,29 @@ void I2CManager::initialize_sensor_error_configs() {
 
 void I2CManager::check_for_sensor_error(const std::shared_ptr<I2CData> & check_data, E_States state) {
   //auto temp_arr = check_data->temp;
+  auto pressure_arr = check_data->pressures;
+    if (pressure_arr[0] > error_pneumatic_brake_high_over_pressure) {
+        Command::set_error_flag(Command::SET_I2C_ERROR, I2C_BRAKE_HIGH_OVER_PRESSURE_ERROR);
+    }
+    if (pressure_arr[0] < error_pneumatic_brake_high_under_pressure) {
+        Command::set_error_flag(Command::SET_I2C_ERROR, I2C_BRAKE_HIGH_UNDER_PRESSURE_ERROR);
+    }
+    if (pressure_arr[1] > error_pneumatic_brake_regulator_over_pressure) {
+        Command::set_error_flag(Command::SET_I2C_ERROR, I2C_BRAKE_REGULATOR_OVER_PRESSURE_ERROR);
+    }
+    if (pressure_arr[1] < error_pneumatic_brake_regulator_under_pressure) {
+        Command::set_error_flag(Command::SET_I2C_ERROR, I2C_BRAKE_REGULATOR_UNDER_PRESSURE_ERROR);
+    }
+    if (pressure_arr[2] > error_pneumatic_brake_end_over_pressure) {
+        Command::set_error_flag(Command::SET_I2C_ERROR, I2C_BRAKE_END_OVER_PRESSURE_ERROR);
+    }
+    if (pressure_arr[2] < error_pneumatic_brake_end_under_pressure) {
+        Command::set_error_flag(Command::SET_I2C_ERROR, I2C_BRAKE_END_UNDER_PRESSURE_ERROR);
+    }
+    if (pressure_arr[3] > error_battery_box_over_pressure) {
+        Command::set_error_flag(Command::SET_I2C_ERROR, I2C_BATTERY_BOX_OVER_PRESSURE_ERROR);
+    }
+    if (pressure_arr[3] > error_battery_box_under_pressure) {
+        Command::set_error_flag(Command::SET_I2C_ERROR, I2C_BATTERY_BOX_UNDER_PRESSURE_ERROR);
+    }
 }

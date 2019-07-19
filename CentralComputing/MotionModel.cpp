@@ -8,8 +8,12 @@ using Utils::clamp;
 MotionModel::MotionModel() {
   if (!(ConfiguratorManager::config.getValue("low_pass_filter_velocity", lpfv) &&
       ConfiguratorManager::config.getValue("low_pass_filter_acceleration", lpfa) &&
-      ConfiguratorManager::config.getValue("adc_axis_0", adc_axis_0) &&
-      ConfiguratorManager::config.getValue("adc_axis_1", adc_axis_1) &&
+      ConfiguratorManager::config.getValue("adc_x_axis_0", adc_x_axis_0) &&
+      ConfiguratorManager::config.getValue("adc_x_axis_1", adc_x_axis_1) &&
+      ConfiguratorManager::config.getValue("adc_y_axis_0", adc_y_axis_0) &&
+      ConfiguratorManager::config.getValue("adc_y_axis_1", adc_y_axis_1) &&
+      ConfiguratorManager::config.getValue("adc_z_axis_0", adc_z_axis_0) &&
+      ConfiguratorManager::config.getValue("adc_z_axis_1", adc_z_axis_1) &&
       ConfiguratorManager::config.getValue("motor_distance_clamp", motor_distance_clamp))) {
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: MOTION_MODEL Missing necessary configuration\n");
     exit(1);
@@ -50,7 +54,7 @@ void MotionModel::calculate(UnifiedState * state) {
 
   // ACCELERATION
   // Simply take the AVERAGE
-  int32_t accl = (state->adc_data->data[adc_axis_0] + state->adc_data->data[adc_axis_1]) / 2;
+  int32_t accl = (state->adc_data->data[adc_x_axis_0] + state->adc_data->data[adc_x_axis_1]) / 2;
 
   // Set state
   state->motion_data->x[0] = dist;

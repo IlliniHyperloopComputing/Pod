@@ -29,9 +29,13 @@ class ADCManager : public SourceManagerBase<ADCData> {
   int16_t accel1_zero_g;
   int16_t accel2_zero_g;
 
-  int adc_axis_0;
-  int adc_axis_1;
-
+  int adc_x_axis_0;
+  int adc_x_axis_1;
+  int adc_y_axis_0;
+  int adc_y_axis_1;
+  int adc_z_axis_0;
+  int adc_z_axis_1;
+    
   int adc_dir_flip;
 
   int32_t adc_san_positive;

@@ -113,15 +113,15 @@ std::string Command::get_network_command_value_string(Network_Command * com) {
       "ADC_SETUP_FAILURE",
       "ADC_READ_ERROR",
       "ADC_ACCEL_DIFF_ERROR",
-      "ADC_PNEUMATIC_OVER_PRESSURE_ERROR_1",
-      "ADC_PNEUMATIC_OVER_PRESSURE_ERROR_2",
-      "ADC_PNEUMATIC_OVER_PRESSURE_ERROR_3",
-      "ADC_PNEUMATIC_OVER_PRESSURE_ERROR_4",
-      "ADC_BATTERY_BOX_OVER_PRESSURE_ERROR",
-      "ADC_BATTERY_BOX_UNDER_PRESSURE_ERROR",
       "ADC_POSITIVE_SANITY_ERROR",
       "ADC_NEGATIVE_SANITY_ERROR",
       "ADC_SENTINEL",
+      "ADC_ACCEL_X_OVER_ERROR",
+      "ADC_ACCEL_X_UNDER_ERROR",
+      "ADC_ACCEL_Y_OVER_ERROR",
+      "ADC_ACCEL_Y_UNDER_ERROR",
+      "ADC_ACCEL_Z_OVER_ERROR",
+      "ADC_ACCEL_Z_UNDER_ERROR",
     };
     int val = std::log2(com->value);
     return commands[val];
@@ -164,13 +164,18 @@ std::string Command::get_network_command_value_string(Network_Command * com) {
       return "INVALID";
     }
     std::string commands[] = {
-      "I2C_SETUP_FAILURE",
-      "I2C_WRITE_ERROR",
-      "I2C_READ_ERROR",
-      "I2C_OVER_TEMP_ONE",
-      "I2C_OVER_TEMP_TWO",
-      "I2C_OVER_TEMP_THREE",
-      "I2C_SENTINEL",
+    "I2C_SETUP_FAILURE",
+    "I2C_WRITE_ERROR",
+    "I2C_READ_ERROR",
+    "I2C_SENTINEL",
+    "I2C_BRAKE_HIGH_OVER_PRESSURE_ERROR",
+    "I2C_BRAKE_HIGH_UNDER_PRESSURE",
+    "I2C_BRAKE_REGULATOR_OVER_PRESSURE",
+    "I2C_BRAKE_REGULATOR_UNDER_PRESSURE",
+    "I2C_BRAKE_END_OVER_PRESSURE",
+    "I2C_BRAKE_END_UNDER_PRESSURE",
+    "I2C_BATTERY_BOX_OVER_PRESSURE",
+    "I2C_BATTERY_BOX_UNDER_PRESSURE",
     };
     int val = std::log2(com->value);
     return commands[val];

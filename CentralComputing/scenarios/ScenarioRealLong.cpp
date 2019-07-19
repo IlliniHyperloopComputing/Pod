@@ -9,8 +9,8 @@ ScenarioRealLong::ScenarioRealLong() {
   can_delta_seconds = pru_delta_seconds;
   rolling_counter = 0;
 
-  if (!( ConfiguratorManager::config.getValue("adc_axis_0", adc_axis_0) &&
-  ConfiguratorManager::config.getValue("adc_axis_1", adc_axis_1) &&
+  if (!( ConfiguratorManager::config.getValue("adc_x_axis_0", adc_x_axis_0) &&
+  ConfiguratorManager::config.getValue("adc_x_axis_1", adc_x_axis_1) &&
   ConfiguratorManager::config.getValue("adc_dir_flip", adc_dir_flip))){
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: SCENARIO_REAL_ERROR Missing necessary configuration\n");
     exit(1);
@@ -56,8 +56,8 @@ std::shared_ptr<ADCData> ScenarioRealLong::sim_get_adc() {
   true_motion();
   std::shared_ptr<ADCData> d = std::make_shared<ADCData>();
   // Multiply by 455/ 9.80665 to convert m/s/s to adc "levels"
-  d->data[adc_axis_0] =  acceleration * 455/ 9.80665; 
-  d->data[adc_axis_1] =  acceleration * 455/ 9.80665;
+  d->data[adc_x_axis_0] =  acceleration * 455/ 9.80665; 
+  d->data[adc_x_axis_1] =  acceleration * 455/ 9.80665;
   // d->data[6] = 2500;
   return d;
 }

@@ -7,5 +7,5 @@ MaxDecel 231
 motor_distance_clamp 10 wow
 low_pass_filter_velocity 0.90
 low_pass_filter_acceleration 0.90
-adc_axis_0 1
-adc_axis_1 2
+adc_x_axis_0 1
+adc_x_axis_1 2

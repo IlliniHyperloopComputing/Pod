@@ -64,8 +64,8 @@ std::shared_ptr<ADCData> ADCManager::refresh() {
 
   if (do_calculate_zero_g) { 
     if ((calculate_zero_g_time + calculate_zero_g_timeout) > Utils::microseconds()) {
-      zero_g_sum[0] += new_data->data[adc_axis_0];  
-      zero_g_sum[1] += new_data->data[adc_axis_1];
+      zero_g_sum[0] += new_data->data[adc_x_axis_0];
+      zero_g_sum[1] += new_data->data[adc_x_axis_1];
       zero_g_num_samples++;
     } else {  // Time is up, time to calculate
       accel1_zero_g = zero_g_sum[0] / zero_g_num_samples; 
@@ -77,8 +77,8 @@ std::shared_ptr<ADCData> ADCManager::refresh() {
   }
 
   // Apply the zero g location to each of the accelerometer's data
-  new_data -> data[adc_axis_0] = adc_dir_flip * (new_data -> data[adc_axis_0] - accel1_zero_g);
-  new_data -> data[adc_axis_1] = adc_dir_flip * (new_data -> data[adc_axis_1] - accel2_zero_g);
+  new_data -> data[adc_x_axis_0] = adc_dir_flip * (new_data -> data[adc_x_axis_0] - accel1_zero_g);
+  new_data -> data[adc_x_axis_1] = adc_dir_flip * (new_data -> data[adc_x_axis_1] - accel2_zero_g);
 
   return new_data;
 }
@@ -99,8 +99,12 @@ void ADCManager::initialize_sensor_error_configs() {
       ConfiguratorManager::config.getValue("error_accel_y_under", error_accel_y_under) &&
       ConfiguratorManager::config.getValue("error_accel_z_over", error_accel_z_over) &&
       ConfiguratorManager::config.getValue("error_accel_z_under", error_accel_z_under) &&
-      ConfiguratorManager::config.getValue("adc_axis_0", adc_axis_0) &&
-      ConfiguratorManager::config.getValue("adc_axis_1", adc_axis_1) &&
+      ConfiguratorManager::config.getValue("adc_x_axis_0", adc_x_axis_0) &&
+      ConfiguratorManager::config.getValue("adc_x_axis_1", adc_x_axis_1) &&
+      ConfiguratorManager::config.getValue("adc_y_axis_0", adc_y_axis_0) &&
+      ConfiguratorManager::config.getValue("adc_y_axis_1", adc_y_axis_1) &&
+      ConfiguratorManager::config.getValue("adc_z_axis_0", adc_z_axis_0) &&
+      ConfiguratorManager::config.getValue("adc_z_axis_1", adc_z_axis_1) &&
       ConfiguratorManager::config.getValue("adc_dir_flip", adc_dir_flip) &&
       ConfiguratorManager::config.getValue("adc_sanity_bound_positive", adc_san_positive) &&
       ConfiguratorManager::config.getValue("adc_sanity_bound_negative", adc_san_negative) &&
@@ -119,7 +123,7 @@ void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_d
   if (state == E_States::ST_FLIGHT_ACCEL ||
       state == E_States::ST_FLIGHT_BRAKE || 
       state == E_States::ST_FLIGHT_COAST) {
-    if (abs(adc_data[adc_axis_0] - adc_data[adc_axis_1]) >= error_accel_diff) {
+    if (abs(adc_data[adc_x_axis_0] - adc_data[adc_x_axis_1]) >= error_accel_diff) {
       accel_diff_counter++;
       if (accel_diff_counter > accel_diff_counter_error) {
         Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_ACCEL_DIFF_ERROR);
@@ -130,7 +134,7 @@ void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_d
   }
 
   // POSITIVE SANITY ERRORS
-  if (adc_data[adc_axis_0] > adc_san_positive) {
+  if (adc_data[adc_x_axis_0] > adc_san_positive) {
     adc0_san_positive_counter++;
     if(adc0_san_positive_counter > adc_san_counter_error) {
       Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR, ADCErrors::ADC_POSITIVE_SANITY_ERROR);
@@ -138,7 +142,7 @@ void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_d
   } else {
     adc0_san_positive_counter = 0;
   }
-  if (adc_data[adc_axis_1] > adc_san_positive) {
+  if (adc_data[adc_x_axis_1] > adc_san_positive) {
     adc1_san_positive_counter++;
     if(adc1_san_positive_counter > adc_san_counter_error) {
       Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR, ADCErrors::ADC_POSITIVE_SANITY_ERROR);
@@ -148,7 +152,7 @@ void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_d
   }
 
   // NEGATIVE SANITY ERRORS
-  if (adc_data[adc_axis_0] < adc_san_negative) {
+  if (adc_data[adc_x_axis_0] < adc_san_negative) {
     adc0_san_negative_counter++;
     if(adc0_san_negative_counter > adc_san_counter_error) {
       Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR, ADCErrors::ADC_NEGATIVE_SANITY_ERROR);
@@ -156,7 +160,7 @@ void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_d
   } else {
     adc0_san_negative_counter = 0;
   }
-  if (adc_data[adc_axis_1] < adc_san_negative) {
+  if (adc_data[adc_x_axis_1] < adc_san_negative) {
     adc1_san_negative_counter++;
     if(adc1_san_negative_counter > adc_san_counter_error) {
       Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR, ADCErrors::ADC_NEGATIVE_SANITY_ERROR);
@@ -166,24 +170,41 @@ void ADCManager::check_for_sensor_error(const std::shared_ptr<ADCData> & check_d
   }
 
   /*
-  // NO LONGER CHECKS PRESSURE
-  if (adc_data[2] > error_pneumatic_1_over_pressure) {
-    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_PNEUMATIC_OVER_PRESSURE_ERROR_1);
+  if (adc_data[adc_x_axis_0] > error_accel_x_over) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR, ADCErrors::ADC_ACCEL_X_OVER_ERROR);
   }
-  if (adc_data[3] > error_pneumatic_2_over_pressure) {
-    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_PNEUMATIC_OVER_PRESSURE_ERROR_2);
+  if (adc_data[adc_x_axis_0] < error_accel_x_under) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR, ADCErrors::ADC_ACCEL_X_UNDER_ERROR);
   }
-  if (adc_data[4] > error_pneumatic_3_over_pressure) {
-    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_PNEUMATIC_OVER_PRESSURE_ERROR_3);
+  if (adc_data[adc_y_axis_0] > error_accel_y_over) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR, ADCErrors::ADC_ACCEL_Y_OVER_ERROR);
   }
-  if (adc_data[5] > error_pneumatic_4_over_pressure) {
-    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_PNEUMATIC_OVER_PRESSURE_ERROR_4);
+  if (adc_data[adc_y_axis_0] < error_accel_y_under) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR, ADCErrors::ADC_ACCEL_Y_UNDER_ERROR);
   }
-  if (adc_data[6] > error_battery_box_over_pressure) {
-    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_BATTERY_BOX_OVER_PRESSURE_ERROR);
+  if (adc_data[adc_z_axis_0] > error_accel_z_over) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR, ADCErrors::ADC_ACCEL_Z_OVER_ERROR);
   }
-  if (adc_data[6] < error_battery_box_under_pressure) {
-    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR,ADCErrors::ADC_BATTERY_BOX_UNDER_PRESSURE_ERROR);
+  if (adc_data[adc_z_axis_0] < error_accel_z_under) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR, ADCErrors::ADC_ACCEL_Z_UNDER_ERROR);
+  }
+  if (adc_data[adc_x_axis_1] > error_accel_x_over) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR, ADCErrors::ADC_ACCEL_X_OVER_ERROR);
+  }
+  if (adc_data[adc_x_axis_1] < error_accel_x_under) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR, ADCErrors::ADC_ACCEL_X_UNDER_ERROR);
+  }
+  if (adc_data[adc_y_axis_1] > error_accel_y_over) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR, ADCErrors::ADC_ACCEL_Y_OVER_ERROR);
+  }
+  if (adc_data[adc_y_axis_1] < error_accel_y_under) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR, ADCErrors::ADC_ACCEL_Y_UNDER_ERROR);
+  }
+  if (adc_data[adc_z_axis_1] > error_accel_z_over) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR, ADCErrors::ADC_ACCEL_Z_OVER_ERROR);
+  }
+  if (adc_data[adc_z_axis_1] < error_accel_z_under) {
+    Command::set_error_flag(Command::Network_Command_ID::SET_ADC_ERROR, ADCErrors::ADC_ACCEL_Z_UNDER_ERROR);
   }
   */
 }

@@ -135,16 +135,16 @@ enum ADCErrors {
   ADC_SETUP_FAILURE = 0x1,
   ADC_READ_ERROR = 0x2,
   ADC_ACCEL_DIFF_ERROR = 0x4,
-  ADC_PNEUMATIC_OVER_PRESSURE_ERROR_1 = 0x8,
-  ADC_PNEUMATIC_OVER_PRESSURE_ERROR_2 = 0x10,
-  ADC_PNEUMATIC_OVER_PRESSURE_ERROR_3 = 0x20,
-  ADC_PNEUMATIC_OVER_PRESSURE_ERROR_4 = 0x40,
-  ADC_BATTERY_BOX_OVER_PRESSURE_ERROR = 0x80,
-  ADC_BATTERY_BOX_UNDER_PRESSURE_ERROR = 0x100,
-  ADC_POSITIVE_SANITY_ERROR = 0x200,
-  ADC_NEGATIVE_SANITY_ERROR = 0x400,
-  ADC_SENTINEL = 0x800  // Not an error, but a way to easily keep track of the number of errors
+  ADC_POSITIVE_SANITY_ERROR = 0x8,
+  ADC_NEGATIVE_SANITY_ERROR = 0x10,
+  ADC_SENTINEL = 0x20,  // Not an error, but a way to easily keep track of the number of errors
   // Update Command.cpp with additional errors, or suffer segfaults
+  ADC_ACCEL_X_OVER_ERROR = 0x1000,
+  ADC_ACCEL_X_UNDER_ERROR = 0x2000,
+  ADC_ACCEL_Y_OVER_ERROR = 0x4000,
+  ADC_ACCEL_Y_UNDER_ERROR = 8000,
+  ADC_ACCEL_Z_OVER_ERROR = 0x10000,
+  ADC_ACCEL_Z_UNDER_ERROR = 0x20000
 };
 
 enum CANErrors {
@@ -181,11 +181,16 @@ enum I2CErrors {
   I2C_SETUP_FAILURE = 0x1,
   I2C_WRITE_ERROR = 0x2,
   I2C_READ_ERROR = 0x4,
-  I2C_OVER_TEMP_ONE = 0x8,
-  I2C_OVER_TEMP_TWO = 0x10,
-  I2C_OVER_TEMP_THREE = 0x20,
-  I2C_SENTINEL = 0x40  // Not an error, but a way to easily keep track of the number of errors
+  I2C_SENTINEL = 0x40,  // Not an error, but a way to easily keep track of the number of errors
   // Update Command.cpp with additional errors, or suffer segfaults
+  I2C_BRAKE_HIGH_OVER_PRESSURE_ERROR = 0x80,
+  I2C_BRAKE_HIGH_UNDER_PRESSURE_ERROR = 0x100,
+  I2C_BRAKE_REGULATOR_OVER_PRESSURE_ERROR = 0x200,
+  I2C_BRAKE_REGULATOR_UNDER_PRESSURE_ERROR = 0x400,
+  I2C_BRAKE_END_OVER_PRESSURE_ERROR = 0x800,
+  I2C_BRAKE_END_UNDER_PRESSURE_ERROR = 0x1000,
+  I2C_BATTERY_BOX_OVER_PRESSURE_ERROR = 0x2000,
+  I2C_BATTERY_BOX_UNDER_PRESSURE_ERROR = 0x4000,
 };
 
 enum PRUErrors {
