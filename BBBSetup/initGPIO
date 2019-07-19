@@ -1,5 +1,15 @@
 #!/bin/bash
 echo 37 > /sys/class/gpio/export
 echo "out" > /sys/class/gpio/gpio37/direction
-echo 70 > /sys/class/gpio/export
-echo "out" > /sys/class/gpio/gpio70/direction
+echo 66 > /sys/class/gpio/export
+echo "in" > /sys/class/gpio/gpio66/direction
+echo 26 > /sys/class/gpio/export
+echo "in" > /sys/class/gpio/gpio26/direction
+echo 46 > /sys/class/gpio/export
+echo "in" > /sys/class/gpio/gpio46/direction
+echo 65 > /sys/class/gpio/export
+echo "in" > /sys/class/gpio/gpio65/direction
+echo 61 > /sys/class/gpio/export
+echo "in" > /sys/class/gpio/gpio61/direction
+echo 45 > /sys/class/gpio/export
+echo "in" > /sys/class/gpio/gpio45/direction

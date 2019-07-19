@@ -29,11 +29,11 @@ class PRUManager : public SourceManagerBase<PRUData> {
  private:
     const int32_t WHEEL_CIRCUMFERENCE_IN_MM = 500;
     const int32_t HUNDRED_FEET_IN_MM = 30480;
-    const int WHEEL_GPIO_ONE = 70;
-    const int WHEEL_GPIO_TWO = 71;
-    const int ORANGE_TAPE_GPIO_ONE = 72;
-    const int ORANGE_TAPE_GPIO_TWO = 73;
-    const int WATCHDOG_GPIO = 74;
+    const int WHEEL_GPIO_ONE = 66;
+    const int WHEEL_GPIO_TWO = 26;
+    const int ORANGE_TAPE_GPIO_ONE = 46;
+    const int ORANGE_TAPE_GPIO_TWO = 65;
+    const int WATCHDOG_GPIO =111;
     int64_t wheel_one_last_time = Utils::microseconds();
     int64_t wheel_two_last_time = Utils::microseconds();
     int64_t orange_one_last_time = Utils::microseconds();
