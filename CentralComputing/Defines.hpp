@@ -105,6 +105,15 @@ struct BMSCellBroadcastData {
 
 struct BMSCells {
   BMSCellBroadcastData cell_data[30];
+  uint8_t num_therms_enabled;
+  uint8_t lowest_therm_value;
+  uint8_t highest_therm_value;
+  uint8_t highest_therm_id;
+  uint8_t lowest_therm_id;
+  uint8_t PADDING;
+  uint8_t PADDING2;
+  uint8_t PADDING3;
+  int8_t therm_value[40];
   // Any additional thermistor data her
 };
 

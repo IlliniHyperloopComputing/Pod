@@ -224,7 +224,23 @@ std::shared_ptr<CANData> CANManager::refresh() {
       } else {
         print(LogLevel::LOG_ERROR, "Cell Data CAN frame has bad ID ??? %d", r_frame.data[0] ); 
       }
-    } else {
+     
+    // Thermistor https://www.orionbms.com/downloads/misc/thermistor_module_canbus.pdf
+    } else if (r_frame.can_id == 0x1838F380) {  // Thermistor General CAN
+      // Verify that it has a valid ID that we can use to index
+      int16_t therm_id = cast_to_u32(0, 2, r_frame.data);
+      if (therm_id < 40) {
+        private_cell_data.therm_value[therm_id] = r_frame.data[2];
+        private_cell_data.num_therms_enabled = r_frame.data[3];
+        private_cell_data.lowest_therm_value = r_frame.data[4];
+        private_cell_data.highest_therm_value = r_frame.data[5];
+        private_cell_data.highest_therm_id = r_frame.data[6];
+        private_cell_data.lowest_therm_id = r_frame.data[7];
+      } else {
+        print(LogLevel::LOG_ERROR, "Therm Data CAN frame has bad ID ??? %d", therm_id); 
+      }
+    } 
+    else {
       print(LogLevel::LOG_DEBUG, "CAN Frame UNKNOWN msg: id: %d, len: %d, \n", r_frame.can_id, r_frame.len); 
     }
 
