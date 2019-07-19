@@ -10,12 +10,12 @@ adc_filename /dev/iio:device0  # Internal ADC filename
 adc_calc_zero_g_timeout 2000000  # Units are microseconds 
 adc_default_zero_g       2048     # In ADC levels (12 bit). 0.9V of 1.8V, 12 bit, 2048
 
-adc_x_axis_0 1  #AXIS: x 1, 5  #y 3, 6  #z 2, 4
-adc_x_axis_1 5
-adc_y_axis_0 3
-adc_y_axis_1 6
-adc_z_axis_0 2
-adc_z_axis_1 4
+adc_x_axis_0 1  # pin 1
+adc_x_axis_1 5  # pin 5
+adc_y_axis_0 3  # pin 3
+adc_y_axis_1 6  # pin 6
+adc_z_axis_0 2  # pin 2
+adc_z_axis_1 4  # pin 4
 
 adc_dir_flip 1   #set to 1 or -1   will flip polarity of acceleration axis
 
@@ -81,12 +81,12 @@ error_pneumatic_brake_regulator_under_pressure -1
 error_pneumatic_brake_end_over_pressure 2000
 error_pneumatic_brake_end_under_pressure -1
 
-error_accel_x_over -1
-error_accel_x_under -1
-error_accel_y_over -1
-error_accel_y_under -1
-error_accel_z_over -1
-error_accel_z_under -1
+error_accel_x_over 368  # 3.007g
+error_accel_x_under -4550  # -10g
+error_accel_y_over 69  # 0.153g
+error_accel_y_under -69  # -0.153g
+error_accel_z_over 69  # 0.153g
+error_accel_z_under -69 # -0.153g
 
 error_battery_box_over_pressure 3000
 error_battery_box_under_pressure 2000

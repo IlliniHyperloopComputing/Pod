@@ -16,6 +16,33 @@ MotionModel::MotionModel() {
       ConfiguratorManager::config.getValue("adc_z_axis_1", adc_z_axis_1) &&
       ConfiguratorManager::config.getValue("motor_distance_clamp", motor_distance_clamp))) {
     print(LogLevel::LOG_ERROR, "CONFIG FILE ERROR: MOTION_MODEL Missing necessary configuration\n");
+      if (!(ConfiguratorManager::config.getValue("low_pass_filter_velocity", lpfv))) {
+          print(LogLevel::LOG_ERROR, "1");
+      }
+      if (!(ConfiguratorManager::config.getValue("low_pass_filter_acceleration", lpfa))) {
+          print(LogLevel::LOG_ERROR, "2");
+      }
+      if (!(ConfiguratorManager::config.getValue("adc_x_axis_0", adc_x_axis_0))) {
+          print(LogLevel::LOG_ERROR, "3");
+      }
+      if (!(ConfiguratorManager::config.getValue("adc_x_axis_1", adc_x_axis_1))) {
+          print(LogLevel::LOG_ERROR, "4");
+      }
+      if (!(ConfiguratorManager::config.getValue("adc_y_axis_0", adc_y_axis_0))) {
+          print(LogLevel::LOG_ERROR, "5");
+      }
+      if (!(ConfiguratorManager::config.getValue("adc_y_axis_1", adc_y_axis_1))) {
+          print(LogLevel::LOG_ERROR, "6");
+      }
+      if (!(ConfiguratorManager::config.getValue("adc_z_axis_0", adc_z_axis_0))) {
+          print(LogLevel::LOG_ERROR, "7");
+      }
+      if (!(ConfiguratorManager::config.getValue("adc_z_axis_1", adc_z_axis_1))) {
+          print(LogLevel::LOG_ERROR, "8");
+      }
+      if (!(ConfiguratorManager::config.getValue("motor_distance_clamp", motor_distance_clamp))) {
+          print(LogLevel::LOG_ERROR, "9");
+      }
     exit(1);
   }
 }
