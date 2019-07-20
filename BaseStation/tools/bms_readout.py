@@ -1,12 +1,32 @@
+from threading import Thread
+from . import tcpsaver, tcphelper
 import socket
+import queue
+import time
+import numpy as np
 
-from . imprt tcphelper
+# TCP IDs:
+# uint8_t adc_id = 0;
+# uint8_t can_id = 1;
+# uint8_t i2c_id = 2;
+# uint8_t pru_id = 3;
+# uint8_t motion_id = 4;
+# uint8_t error_id = 5;
+# uint8_t state_id = 6;
 
+# TCP global variables
 TCP_IP = ''
 TCP_PORT = 8001
+BUFFER_SIZE = 300
+
+conn = None
+addr = None
+
+# Initialize command queue
+COMMAND_QUEUE = queue.Queue()
 
 def serve():
-    global TCP_IP, TCP_PORT
+    global TCP_IP, TCP_PORT, BUFFER_SIZE, conn, addr
 
     #Socket setup
     s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -31,8 +51,21 @@ def serve():
                     break
                 h = bytearray(data)
                 id = int(h[0])
-
-                if id == 9:
+                if id == 7: # ADC Data
+                    data = conn.recv(7*4)
+                elif id == 1: # CAN Data
+                    data = conn.recv(45*4)
+                elif id == 2: # I2C Data
+                    data = conn.recv(12*2)
+                elif id == 3: # PRU Data
+                    data = conn.recv(4*4)
+                elif id == 4: # Motion Data
+                    data = conn.recv(6*4 + 8*8 + 4)
+                elif id == 5: # Error Data
+                    data = conn.recv(6*4)
+                elif id == 6: # State Data
+                    data = conn.recv(4)
+                elif id == 9:
                     data = conn.recv(30*(1 + 3*2 + 1) + 48)
                     readCell(data[:30*(1 + 3*2 + 1)])
                     data_int8 = tcphelper.bytes_to_uint8(data[30*(1+3*2+1):-40], 8)
@@ -45,9 +78,15 @@ def serve():
                     print("PADDING2: " + data_int8[6])
                     print("PADDING3: " + data_int8[7])
 
-                    data_int8 = tcphelper.bytes_to_int8(datta[-40:], 40)
+                    data_int8 = tcphelper.bytes_to_int8(data[-40:], 40)
                     for i in range(40):
                         print("Therm " + i + ": " + data_int8[i])
+            except Exception as e:
+                print(e)
+                print("Error in TCP Received message")
+                break
+        print("Disconnected from Pod!!")
+        # Add this to event logger
 
 
 def readCell(data):
