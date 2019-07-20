@@ -346,20 +346,20 @@ void I2CManager::initialize_sensor_error_configs() {
 }
 
 void I2CManager::check_for_sensor_error(const std::shared_ptr<I2CData> & check_data, E_States state) {
-  auto temp_arr = check_data->temp;
-  for (int index = 0; index < static_cast<int>(NUM_TMP / 3); index++) {
-    if (temp_arr[index] > static_cast<int>(error_general_1_over_temp)) {
-      Command::set_error_flag(Command::SET_I2C_ERROR, I2C_OVER_TEMP_ONE);
-    }
-  }
-  for (int index = static_cast<int>(NUM_TMP / 3); index < static_cast<int>(2 * (NUM_TMP / 3)); index++) {
-    if (temp_arr[index] > static_cast<int>(error_general_1_over_temp)) {
-      Command::set_error_flag(Command::SET_I2C_ERROR, I2C_OVER_TEMP_TWO);
-    }
-  }
-  for (int index = static_cast<int>(2 * (NUM_TMP / 3)); index < NUM_TMP; index++) {
-    if (temp_arr[index] > static_cast<int>(error_general_1_over_temp)) {
-      Command::set_error_flag(Command::SET_I2C_ERROR, I2C_OVER_TEMP_THREE);
-    }
-  }
+  // auto temp_arr = check_data->temp;
+  // for (int index = 0; index < static_cast<int>(NUM_TMP / 3); index++) {
+  //   if (temp_arr[index] > static_cast<int>(error_general_1_over_temp)) {
+  //     Command::set_error_flag(Command::SET_I2C_ERROR, I2C_OVER_TEMP_ONE);
+  //   }
+  // }
+  // for (int index = static_cast<int>(NUM_TMP / 3); index < static_cast<int>(2 * (NUM_TMP / 3)); index++) {
+  //   if (temp_arr[index] > static_cast<int>(error_general_1_over_temp)) {
+  //     Command::set_error_flag(Command::SET_I2C_ERROR, I2C_OVER_TEMP_TWO);
+  //   }
+  // }
+  // for (int index = static_cast<int>(2 * (NUM_TMP / 3)); index < NUM_TMP; index++) {
+  //   if (temp_arr[index] > static_cast<int>(error_general_1_over_temp)) {
+  //     Command::set_error_flag(Command::SET_I2C_ERROR, I2C_OVER_TEMP_THREE);
+  //   }
+  // }
 }
