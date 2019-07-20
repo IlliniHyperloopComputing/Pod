@@ -98,6 +98,8 @@ struct CANData {
 #define NUM_TMP 16
 struct I2CData {
   int16_t temp[NUM_TMP];
+  int32_t pressure_sensor;  // Units are hPa
+  int32_t temp_sensor;       // Units are degrees C
 };
 
 #define NUM_ORANGE_INPUTS 2
