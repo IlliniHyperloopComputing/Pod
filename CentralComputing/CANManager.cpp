@@ -62,7 +62,7 @@ bool CANManager::send_frame(uint32_t can_id, const char * buf, int len) {
   memcpy(reinterpret_cast<char*>(s_frame.data), buf, len);
   // print(LogLevel::LOG_INFO, "CAN frame id: %x data:%x %x %x \n",
   //                           can_id, s_frame.data[0], s_frame.data[1], s_frame.data[2]);
-  
+
   s_frame.can_dlc = len;
   // Write s_frame
   int ret = write(can_fd, &s_frame, sizeof(s_frame));
@@ -87,7 +87,7 @@ bool CANManager::recv_frame() {
   msg.msg_controllen = sizeof(ctrlmsg);
   msg.msg_flags = 0;
 
-  int byte_count = recvmsg(can_fd, &msg, MSG_DONTWAIT); 
+  int byte_count = recvmsg(can_fd, &msg, MSG_DONTWAIT);
 
   if (byte_count == -1) {
     r_frame.len = 0;
@@ -122,7 +122,7 @@ std::shared_ptr<CANData> CANManager::refresh() {
 
   int64_t a = Utils::microseconds();
   // Send HV battery relay state frame
-  // print(LogLevel::LOG_INFO, "CAN relay state %d %d %d \n", 
+  // print(LogLevel::LOG_INFO, "CAN relay state %d %d %d \n",
   //                          relay_state_buf[0], relay_state_buf[1], relay_state_buf[2]);
 
   send_mutex.lock();  // Used to protect socketfd (TSan datarace)
@@ -145,8 +145,8 @@ std::shared_ptr<CANData> CANManager::refresh() {
     // print(LogLevel::LOG_INFO, "CAN recv_frame takes %lu microseconds\n", b-a);
     if (r_frame.can_id == can_id_t1) {
       new_data->status_word =  Utils::cast_to_u32(0, 2, r_frame.data);
-      new_data->position_val = Utils::cast_to_u32(2, 4, r_frame.data); 
-      new_data->torque_val =   Utils::cast_to_u32(6, 2, r_frame.data);  
+      new_data->position_val = Utils::cast_to_u32(2, 4, r_frame.data);
+      new_data->torque_val =   Utils::cast_to_u32(6, 2, r_frame.data);
       // print(LogLevel::LOG_INFO, "CAN frame Motor Controller %d \n", can_id_t1);
       // print(LogLevel::LOG_INFO, "\tstatus word %d\n", new_data->status_word);
       // print(LogLevel::LOG_INFO, "\tposition value %d\n", new_data->position_val);
@@ -222,9 +222,9 @@ std::shared_ptr<CANData> CANManager::refresh() {
         private_cell_data.cell_data[cell_id].open_voltage = (r_frame.data[5]<<8) | (r_frame.data[6]);
         private_cell_data.cell_data[cell_id].checksum = r_frame.data[7];
       } else {
-        print(LogLevel::LOG_ERROR, "Cell Data CAN frame has bad ID ??? %d", r_frame.data[0] ); 
+        print(LogLevel::LOG_ERROR, "Cell Data CAN frame has bad ID ??? %d", r_frame.data[0] );
       }
-     
+
     // Thermistor https://www.orionbms.com/downloads/misc/thermistor_module_canbus.pdf
     } else if (r_frame.can_id == 0x1838F380 || r_frame.can_id == 0x9838F380) {  // Thermistor General CAN
       // Verify that it has a valid ID that we can use to index
@@ -236,13 +236,13 @@ std::shared_ptr<CANData> CANManager::refresh() {
         private_cell_data.highest_therm_value = r_frame.data[5];
         private_cell_data.highest_therm_id = r_frame.data[6];
         private_cell_data.lowest_therm_id = r_frame.data[7];
-        //print(LogLevel::LOG_ERROR, "THERM: cell_id: %d val:%d  ", therm_id, r_frame.data[2]); 
+        print(LogLevel::LOG_ERROR, "THERM: cell_id: %d val:%d  ", therm_id, r_frame.data[2]);
       } else {
-        //print(LogLevel::LOG_ERROR, "Therm Data CAN frame has bad ID ??? %d", therm_id); 
+        print(LogLevel::LOG_ERROR, "Therm Data CAN frame has bad ID ??? %d", therm_id); 
       }
-    } 
+    }
     else {
-      //print(LogLevel::LOG_DEBUG, "CAN Frame UNKNOWN msg: id: 0x%x, len: %d, \n", r_frame.can_id, r_frame.len); 
+      print(LogLevel::LOG_DEBUG, "CAN Frame UNKNOWN msg: id: 0x%x, len: %d, \n", r_frame.can_id, r_frame.len);
     }
 
     // Print the contents of r_frame (assumes len <= 8)
@@ -251,8 +251,8 @@ std::shared_ptr<CANData> CANManager::refresh() {
     //   put_hex_byte(buff+j, r_frame.data[j/2]);
     // }
     // buff[r_frame.len*2] = '\0';  // include null terminator
-    // 
-    // print(LogLevel::LOG_INFO, "CAN msg: id: %d, len: %d, data: %s\n", r_frame.can_id, r_frame.len, buff); 
+    //
+    // print(LogLevel::LOG_INFO, "CAN msg: id: %d, len: %d, data: %s\n", r_frame.can_id, r_frame.len, buff);
   } while (r_frame.len != 0);
 
   memcpy(&stored_data, new_data.get(), sizeof(CANData));   // Copy new data to stored data
@@ -274,7 +274,7 @@ std::shared_ptr<CANData> CANManager::refresh_sim() {
 }
 
 void CANManager::initialize_sensor_error_configs() {
-  if (!(ConfiguratorManager::config.getValue("error_motor_ctrl_over_temp", error_motor_ctrl_over_temp) && 
+  if (!(ConfiguratorManager::config.getValue("error_motor_ctrl_over_temp", error_motor_ctrl_over_temp) &&
       ConfiguratorManager::config.getValue("error_motor_over_temp", error_motor_over_temp) &&
       ConfiguratorManager::config.getValue("error_dc_link_over_voltage", error_dc_link_over_voltage) &&
       ConfiguratorManager::config.getValue("error_dc_link_under_voltage", error_dc_link_under_voltage) &&
@@ -296,7 +296,7 @@ void CANManager::initialize_sensor_error_configs() {
 
   // rolling counter is only up to 255, so this is an unrealistic number for it
   // This guarantees that the first comparison is good
-  rolling_counter_tracker = 1000; 
+  rolling_counter_tracker = 1000;
   // set the timer to compare right away;
   rolling_counter_timer = -1000000;
 }
@@ -391,10 +391,10 @@ void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_d
   }
   if (check_data->motor_temp > error_motor_over_temp) {
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE);
-  }  
+  }
   if (check_data->dc_link_voltage > error_dc_link_over_voltage) {
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_HV_OVER_VOLTAGE_ERROR);
-  } 
+  }
   if (check_data->dc_link_voltage < error_dc_link_under_voltage) {
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_HV_UNDER_VOLTAGE_ERROR);
   }
@@ -449,7 +449,7 @@ void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_d
   if (check_data->status_word & 0x8 ) {
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_FAULT);
   }
-  // If this error triggers too much, consider only having it trigger 
+  // If this error triggers too much, consider only having it trigger
   // Within a flight mode
   if (check_data->status_word & 0x80) {
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_WARN);
@@ -457,14 +457,14 @@ void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_d
 
   // Rolling counter must increment every 100 milliseconds. We define a bms rolling counter timeout value
   // So we see if 100 milliseconds are up
-  //    If yes, then we check if the rolling_counter_tracker == the rolling_counter 
+  //    If yes, then we check if the rolling_counter_tracker == the rolling_counter
   //      The Rolling counter _should_ be updated!  IF not, it means the BMS could have stalled
   //      The rolling_counter_tracker is updated every time the timer is up
   //    If no, then keep waiting
   if (microseconds()-rolling_counter_timer > error_bms_rolling_counter_timeout) {
     if(check_data->rolling_counter == rolling_counter_tracker) {
       Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_ROLLING_COUNTER_ERROR);
-    } 
+    }
     rolling_counter_tracker = check_data->rolling_counter;
     rolling_counter_timer = microseconds();
   }

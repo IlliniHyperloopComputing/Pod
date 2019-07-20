@@ -64,8 +64,8 @@ def serve():
                     if tcpsaver.saveCANData(data) == -1:
                         print("CAN data failure")
                 elif id == 2: # I2C Data
-                    data = conn.recv(16*2 + 2*4)
-                    data = tcphelper.bytes_to_int16(data, 16)
+                    data = conn.recv(16*2 + 4*2)
+                    data = tcphelper.bytes_to_int16(data, 12)
                     if tcpsaver.saveI2CData(data) == -1:
                         print("I2C data failure")
                 elif id == 3: # PRU Data
@@ -99,6 +99,7 @@ def serve():
                 print("Error in TCP Received message")
                 break
         print("Disconnected from Pod!!")
+        exit()
         tcpsaver.saveTCPStatus(0)
         # Add this to event logger
 

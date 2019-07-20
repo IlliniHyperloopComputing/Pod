@@ -69,9 +69,10 @@ def serve():
                 elif id == 9:
                     input("Press enter to get next:")
                     data = conn.recv(30*(1 + 3*2 + 1) + 48)
+                    print(binascii.hexlify(data))
                     for i in range(30):
                         readCell(data[i*(1 + 3*2 + 1):(i+1)*(1 + 3*2 + 1)])
-                    data_int8 = tcphelper.bytes_to_uint8(data[30*(1+3*2+1):-40], 8)
+                    data_int8 = tcphelper.bytes_to_uint8(data[31*(1+3*2+1):-40], 8)
                     print("num_therms_enabled: " + str(data_int8[0]))
                     print("highest_therm_value: " + str(data_int8[2]))
                     print("highest_therm_id: " + str(data_int8[3]))
@@ -100,10 +101,11 @@ def readCell(data):
     print("Cell: " + str(cell_id),end=" ")
     voltage_stuff = tcphelper.bytes_to_uint16(data[1:6], 3)
     print("Instant_Voltage: " + str(voltage_stuff[0]/10000),end=" ")
-    print("Instant_Resistance: " + str(voltage_stuff[1]/10000),end=" ")
-    print("Open_Voltage: " + str(voltage_stuff[2]/10000),end=" ")
+    status = "Nominal"
+    if voltage_stuff[0]/10000 > 4.01 or voltage_stuff[0]/10000 < 3.0:
+        status = "Bad"
+    print("Status: " + status)
     checksum = int.from_bytes(data[-1:], byteorder='little', signed=True)
-    print("Checksum: " + str(checksum))
     return
 
 if __name__ == "__main__":

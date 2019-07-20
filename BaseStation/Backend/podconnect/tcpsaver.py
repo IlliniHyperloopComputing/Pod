@@ -47,8 +47,6 @@ def saveErrorData(data):
     return 1
 
 def saveI2CData(data):
-    if len(data) != 12:
-        return -1
     i2c_model = models.I2CData(
         sensor_0x48_0 = data[0],
         sensor_0x48_1 = data[1],

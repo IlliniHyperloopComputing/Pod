@@ -31,7 +31,7 @@ def getStats():
             },
             {
                 "name": "Watchdog",
-                "value": str(connected_data.tcp_connected),
+                "value": 1,
                 "color": "limegreen",
                 "low":  1,
                 "high": 1,
@@ -750,7 +750,6 @@ def getRanges():
     toRet["Peak_Current"] = [0, 1, "m"]  # ??????
     toRet["Pack_Voltage_Inst"] = [100, 120, "V"]  # ??????
     toRet["Pack_Voltage_Open"] = [0, 1, "m"]  # ??????
-    toRet["Pack_SOC"] = [20, 100, "%"]
     toRet["Pack_Amphours"] = [0, 544, "A"]  # ??????
     toRet["Pack_Resistance"] = [0, 1, "m"]  # ??????
     toRet["Pack_DOD"] = [0, 1, "m"]  # ??????
@@ -764,6 +763,7 @@ def getRanges():
     toRet["LV Relay Status"] = [0, 1, "m"]  # Relay_State includes this 
     toRet["HV Relay Status"] = [0, 1, "m"]  # Relay_State includes this 
     toRet["Relay State Buff 3"] = [0, 1, "m"]  # ???
+    toRet["Pack_SOC"] = [0, 100, "%"]
     toRet["Avg_Pack_Current"] = [0, 544, "A"]
     toRet["Highest_Temp"] = [0, 65, "degC"]  # i'm guessing this is for a cell. NOT on health sheet
     toRet["Highest_Temp_ID"] = [0, 30, "Cell"]
@@ -782,8 +782,8 @@ def getRanges():
     toRet["DTC_Status_Two"] = [0, 0, "N/A"]  # guesssing this for BMS
     toRet["Adaptive_Total_Cap"] = [0, 1, "m"]  # ??????
     toRet["Adaptive_Amphours"] = [0, 1, "m"] # ???????
-    toRet["Adaptive_SOC"] = [0, 1, "m"] # ??????
     toRet["ADCError"] = [0, 1, "m"]  # FILLLL INNNNNNNNNNNNNNNNNNNNNNN 
+    toRet["Adaptive_SOC"] = [0, 200, "%"]
     toRet["CANError"] = [0, 1, "m"]
     toRet["I2CError"] = [0, 1, "m"]
     toRet["PRUError"] = [0, 1, "m"]
