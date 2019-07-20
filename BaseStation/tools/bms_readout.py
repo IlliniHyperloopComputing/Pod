@@ -66,6 +66,7 @@ def serve():
                 elif id == 6: # State Data
                     data = conn.recv(4)
                 elif id == 9:
+                    input("Press enter to get next:")
                     data = conn.recv(30*(1 + 3*2 + 1) + 48)
                     readCell(data[:30*(1 + 3*2 + 1)])
                     data_int8 = tcphelper.bytes_to_uint8(data[30*(1+3*2+1):-40], 8)
