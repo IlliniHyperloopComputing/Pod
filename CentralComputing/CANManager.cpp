@@ -236,13 +236,13 @@ std::shared_ptr<CANData> CANManager::refresh() {
         private_cell_data.highest_therm_value = r_frame.data[5];
         private_cell_data.highest_therm_id = r_frame.data[6];
         private_cell_data.lowest_therm_id = r_frame.data[7];
-        print(LogLevel::LOG_ERROR, "THERM: cell_id: %d val:%d  ", therm_id, r_frame.data[2]);
+        //print(LogLevel::LOG_ERROR, "THERM: cell_id: %d val:%d  ", therm_id, r_frame.data[2]);
       } else {
         print(LogLevel::LOG_ERROR, "Therm Data CAN frame has bad ID ??? %d", therm_id); 
       }
     }
     else {
-      print(LogLevel::LOG_DEBUG, "CAN Frame UNKNOWN msg: id: 0x%x, len: %d, \n", r_frame.can_id, r_frame.len);
+      //print(LogLevel::LOG_DEBUG, "CAN Frame UNKNOWN msg: id: 0x%x, len: %d, \n", r_frame.can_id, r_frame.len);
     }
 
     // Print the contents of r_frame (assumes len <= 8)
