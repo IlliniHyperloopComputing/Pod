@@ -228,7 +228,7 @@ std::shared_ptr<CANData> CANManager::refresh() {
     // Thermistor https://www.orionbms.com/downloads/misc/thermistor_module_canbus.pdf
     } else if (r_frame.can_id == 0x1838F380 || r_frame.can_id == 0x9838F380) {  // Thermistor General CAN
       // Verify that it has a valid ID that we can use to index
-      int16_t therm_id = cast_to_u32(0, 2, r_frame.data);
+      int16_t therm_id = (r_frame.data[0]<<8) | (r_frame.data[1]);//cast_to_u32(0, 2, r_frame.data);
       if (therm_id < 40) {
         private_cell_data.therm_value[therm_id] = r_frame.data[2];
         private_cell_data.num_therms_enabled = r_frame.data[3];
