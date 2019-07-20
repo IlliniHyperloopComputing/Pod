@@ -217,9 +217,9 @@ std::shared_ptr<CANData> CANManager::refresh() {
       if (r_frame.data[0] < 30) {
         int cell_id = r_frame.data[0]; // If its "1" indexed instead of 0, incremnt this
         private_cell_data.cell_data[cell_id].cell_id = r_frame.data[0];
-        private_cell_data.cell_data[cell_id].instant_voltage = cast_to_u32(1, 2, r_frame.data);
-        private_cell_data.cell_data[cell_id].internal_resistance = cast_to_u32(3, 2, r_frame.data);
-        private_cell_data.cell_data[cell_id].open_voltage = cast_to_u32(5, 2, r_frame.data);
+        private_cell_data.cell_data[cell_id].instant_voltage = (r_frame.data[1]<<8) | (r_frame.data[2]);
+        private_cell_data.cell_data[cell_id].internal_resistance = (r_frame.data[3]<<8) | (r_frame.data[4]);
+        private_cell_data.cell_data[cell_id].open_voltage = (r_frame.data[5]<<8) | (r_frame.data[6]);
         private_cell_data.cell_data[cell_id].checksum = r_frame.data[7];
       } else {
         print(LogLevel::LOG_ERROR, "Cell Data CAN frame has bad ID ??? %d", r_frame.data[0] ); 
@@ -241,7 +241,7 @@ std::shared_ptr<CANData> CANManager::refresh() {
       }
     } 
     else {
-      print(LogLevel::LOG_DEBUG, "CAN Frame UNKNOWN msg: id: %d, len: %d, \n", r_frame.can_id, r_frame.len); 
+      print(LogLevel::LOG_DEBUG, "CAN Frame UNKNOWN msg: id: 0x%x, len: %d, \n", r_frame.can_id, r_frame.len); 
     }
 
     // Print the contents of r_frame (assumes len <= 8)
