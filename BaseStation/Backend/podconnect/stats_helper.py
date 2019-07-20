@@ -31,7 +31,7 @@ def getStats():
             {
                 "name": "Position_Val",
                 "value": str(can_data.position_val),
-                "color": getColor(ranges["Position_Val"], state_data.state),
+                "color": getColor(ranges["Position_Val"], can_data.position_val),
                 "low":  ranges["Position_Val"][0],
                 "high": ranges["Position_Val"][1],
                 "units":ranges["Position_Val"][2]
@@ -39,7 +39,7 @@ def getStats():
             {
                 "name": "Torque_Val",
                 "value": str(can_data.torque_val),
-                "color": getColor(ranges["Torque_Val"], state_data.state),
+                "color": getColor(ranges["Torque_Val"], can_data.torque_val),
                 "low":  ranges["Torque_Val"][0],
                 "high": ranges["Torque_Val"][1],
                 "units":ranges["Torque_Val"][2]
@@ -47,7 +47,7 @@ def getStats():
             {
                 "name": "Controller_Temp",
                 "value": str(can_data.controller_temp),
-                "color": getColor(ranges["Controller_Temp"], state_data.state),
+                "color": getColor(ranges["Controller_Temp"], can_data.controller_temp),
                 "low":  ranges["Controller_Temp"][0],
                 "high": ranges["Controller_Temp"][1],
                 "units":ranges["Controller_Temp"][2]
@@ -55,7 +55,7 @@ def getStats():
             {
                 "name": "Motor_Temp",
                 "value": str(can_data.motor_temp),
-                "color": getColor(ranges["Motor_Temp"], state_data.state),
+                "color": getColor(ranges["Motor_Temp"], can_data.motor_temp),
                 "low":  ranges["Motor_Temp"][0],
                 "high": ranges["Motor_Temp"][1],
                 "units":ranges["Motor_Temp"][2]
@@ -63,7 +63,7 @@ def getStats():
             {
                 "name": "DC_Link_Voltage",
                 "value": str(can_data.dc_link_voltage),
-                "color": getColor(ranges["DC_Link_Voltage"], state_data.state),
+                "color": getColor(ranges["DC_Link_Voltage"], can_data.dc_link_voltage),
                 "low":  ranges["DC_Link_Voltage"][0],
                 "high": ranges["DC_Link_Voltage"][1],
                 "units":ranges["DC_Link_Voltage"][2]
@@ -71,7 +71,7 @@ def getStats():
             {
                 "name": "Logic_Power_Supply_Voltage",
                 "value": str(can_data.logic_power_supply_voltage),
-                "color": getColor(ranges["Logic_Power_Supply_Voltage"], state_data.state),
+                "color": getColor(ranges["Logic_Power_Supply_Voltage"], can_data.logic_power_supply_voltage),
                 "low":  ranges["Logic_Power_Supply_Voltage"][0],
                 "high": ranges["Logic_Power_Supply_Voltage"][1],
                 "units":ranges["Logic_Power_Supply_Voltage"][2]
@@ -79,7 +79,7 @@ def getStats():
             {
                 "name": "Current_Demand",
                 "value": str(can_data.current_demand),
-                "color": getColor(ranges["Current_Demand"], state_data.state),
+                "color": getColor(ranges["Current_Demand"], can_data.current_demand),
                 "low":  ranges["Current_Demand"][0],
                 "high": ranges["Current_Demand"][1],
                 "units":ranges["Current_Demand"][2]
@@ -87,7 +87,7 @@ def getStats():
             {
                 "name": "Motor_Current_Val",
                 "value": str(can_data.motor_current_val),
-                "color": getColor(ranges["Motor_Current_Val"], state_data.state),
+                "color": getColor(ranges["Motor_Current_Val"], can_data.motor_current_val),
                 "low":  ranges["Motor_Current_Val"][0],
                 "high": ranges["Motor_Current_Val"][1],
                 "units":ranges["Motor_Current_Val"][2]
@@ -95,7 +95,7 @@ def getStats():
             {
                 "name": "Electrical_Angle",
                 "value": str(can_data.electrical_angle),
-                "color": getColor(ranges["Electrical_Angle"], state_data.state),
+                "color": getColor(ranges["Electrical_Angle"], can_data.electrical_angle),
                 "low":  ranges["Electrical_Angle"][0],
                 "high": ranges["Electrical_Angle"][1],
                 "units":ranges["Electrical_Angle"][2]
@@ -103,7 +103,7 @@ def getStats():
             {
                 "name": "Phase_A_Current",
                 "value": str(can_data.phase_a_current),
-                "color": getColor(ranges["Phase_A_Current"], state_data.state),
+                "color": getColor(ranges["Phase_A_Current"], can_data.phase_a_current),
                 "low":  ranges["Phase_A_Current"][0],
                 "high": ranges["Phase_A_Current"][1],
                 "units":ranges["Phase_A_Current"][2]
@@ -111,7 +111,7 @@ def getStats():
             {
                 "name": "Phase_B_Current",
                 "value": str(can_data.phase_b_current),
-                "color": getColor(ranges["Phase_B_Current"], state_data.state),
+                "color": getColor(ranges["Phase_B_Current"], can_data.phase_b_current),
                 "low":  ranges["Phase_B_Current"][0],
                 "high": ranges["Phase_B_Current"][1],
                 "units":ranges["Phase_B_Current"][2]
@@ -119,7 +119,7 @@ def getStats():
             {
                 "name": "Accel_1 x",
                 "value": str(adc_data.data_5),
-                "color": getColor(ranges["Accel_1 x"], state_data.state),
+                "color": getColor(ranges["Accel_1 x"], adc_data.data_5),
                 "low":  ranges["Accel_1 x"][0],
                 "high": ranges["Accel_1 x"][1],
                 "units":ranges["Accel_1 x"][2]
@@ -127,7 +127,7 @@ def getStats():
             {
                 "name": "Accel_1 y",
                 "value": str(adc_data.data_6),
-                "color": getColor(ranges["Accel_1 y"], state_data.state),
+                "color": getColor(ranges["Accel_1 y"], adc_data.data_6),
                 "low":  ranges["Accel_1 y"][0],
                 "high": ranges["Accel_1 y"][1],
                 "units":ranges["Accel_1 y"][2]
@@ -135,7 +135,7 @@ def getStats():
             {
                 "name": "Accel_1 z",
                 "value": str(adc_data.data_4),
-                "color": getColor(ranges["Accel_1 z"], state_data.state),
+                "color": getColor(ranges["Accel_1 z"], adc_data.data_4),
                 "low":  ranges["Accel_1 z"][0],
                 "high": ranges["Accel_1 z"][1],
                 "units":ranges["Accel_1 z"][2]
@@ -143,15 +143,15 @@ def getStats():
             {
                 "name": "Accel_2 x",
                 "value": str(adc_data.data_1),
-                "color": getColor(ranges["Accel_2 x"], state_data.state),
+                "color": getColor(ranges["Accel_2 x"], adc_data.data_1),
                 "low":  ranges["Accel_2 x"][0],
                 "high": ranges["Accel_2 x"][1],
                 "units":ranges["Accel_2 x"][2]
             },
-            {
+            { ##########
                 "name": "Accel_2 y",
                 "value": str(adc_data.data_3),
-                "color": getColor(ranges["Accel_2 y"], state_data.state),
+                "color": getColor(ranges["Accel_2 y"], adc_data.data_3),
                 "low":  ranges["Accel_2 y"][0],
                 "high": ranges["Accel_2 y"][1],
                 "units":ranges["Accel_2 y"][2]
@@ -159,7 +159,7 @@ def getStats():
             {
                 "name": "Accel_2 z",
                 "value": str(adc_data.data_2),
-                "color": getColor(ranges["Accel_2 z"], state_data.state),
+                "color": getColor(ranges["Accel_2 z"], adc_data.data_2),
                 "low":  ranges["Accel_2 z"][0],
                 "high": ranges["Accel_2 z"][1],
                 "units":ranges["Accel_2 z"][2]
@@ -291,7 +291,7 @@ def getStats():
             {
                 "name": "Brake_State",
                 "value": str(motion_data.brake_state),
-                "color": getColor(ranges["Brake_State"],
+                "color": getColor(ranges["Brake_State"], state_data.state),
                 "low": ranges["Brake_State"][0],
                 "high": ranges["Brake_State"][1],
                 "units":ranges["Brake_State"][2]
@@ -758,7 +758,7 @@ def getRanges():
     toRet["Tank Pressure"] = [200, 1000, "m"]
     toRet["Brake High Pressure Sensor"] = [200, 1000, "psi"]
     toRet["Brake Regulator Pressure Sensor"] = [0, 257.5, "psi"]
-    toRet["Brake End Pressure Sensor"] = 0, 257.5, "psi"]
+    toRet["Brake End Pressure Sensor"] = [0, 257.5, "psi"]
     toRet["Orange Distance"] = [0, 1, "m"]
     toRet["Orange Velocity"] = [0, 1, "m"]
     toRet["Wheel Distance"] = [0, 1, "m"]
@@ -776,7 +776,7 @@ def getRanges():
     return toRet
 
 def getColor(range, val):
-    if range[0] <= val and val <= range[1]:
+    if range[0] <= int(val) and int(val) <= range[1]:
         return "limegreen"
     else:
         return "red"
