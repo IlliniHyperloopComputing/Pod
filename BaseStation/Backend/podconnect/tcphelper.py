@@ -34,3 +34,10 @@ def bytes_to_char(bytes, length):
                 new_bytes.append(int.from_bytes(
                 bytes[(x):(x+1)], byteorder='little'))
         return new_bytes
+
+def bytes_to_uint8(bytes, length):
+        new_bytes = []
+        for x in range(0, length):
+                new_bytes.append(int.from_bytes(
+                bytes[(x):(x+1)], byteorder='little', signed=False))
+        return new_bytes

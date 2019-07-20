@@ -39,10 +39,12 @@ def serve():
             TCP_PORT = TCP_PORT + 1
     print("TCP Port = {port}".format(port=TCP_PORT))
     s.listen(1)
+    tcpsaver.saveTCPStatus(0)
 
     while (True):
         conn, addr = s.accept()
         print('Connection address:', addr)
+        tcpsaver.saveTCPStatus(1)
         while (True):
             # Receiving data
             try:
@@ -62,12 +64,12 @@ def serve():
                     if tcpsaver.saveCANData(data) == -1:
                         print("CAN data failure")
                 elif id == 2: # I2C Data
-                    data = conn.recv(12*2)
-                    data = tcphelper.bytes_to_int16(data, 12)
+                    data = conn.recv(16*2 + 2*4)
+                    data = tcphelper.bytes_to_int16(data, 16)
                     if tcpsaver.saveI2CData(data) == -1:
                         print("I2C data failure")
                 elif id == 3: # PRU Data
-                    data = conn.recv(4*4)
+                    data = conn.recv(5*4)
                     data = tcphelper.bytes_to_signed_int32(data, 4)
                     if tcpsaver.savePRUData(data) == -1:
                         print("PRU data failure")
@@ -90,11 +92,14 @@ def serve():
                     data = tcphelper.bytes_to_int(data, 1)
                     if tcpsaver.saveStateData(data) == -1:
                         print("State data failure")
+                elif id == 9:
+                    data = conn.recv(30*(1 + 3*2 + 1) + 48)
             except Exception as e:
                 print(e)
                 print("Error in TCP Received message")
                 break
         print("Disconnected from Pod!!")
+        tcpsaver.saveTCPStatus(0)
         # Add this to event logger
 
 import binascii

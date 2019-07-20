@@ -5,15 +5,33 @@
       Name
     </th>
     <th>
+      Low
+    </th>
+    <th>
       Value
+    </th>
+    <th>
+      High
+    </th>
+    <th>
+      Units
     </th>
   </tr>
   <tr *ngFor="let stat of stats[0].stats">
     <td>
       {{ stat.name }}
     </td>
+    <td>
+      {{ stat.low }}
+    </td>
     <td [ngStyle]="applyStyle(stat.color)">
       {{ stat.value }}
+    </td>
+    <td>
+      {{ stat.high }}
+    </td>
+    <td>
+      {{ stat.units }}
     </td>
   </tr>
 </table>
@@ -23,51 +41,105 @@
         Name
       </th>
       <th>
+        Low
+      </th>
+      <th>
         Value
+      </th>
+      <th>
+        High
+      </th>
+      <th>
+        Units
       </th>
     </tr>
     <tr *ngFor="let stat of stats[1].stats">
       <td>
         {{ stat.name }}
       </td>
+      <td>
+        {{ stat.low }}
+      </td>
       <td [ngStyle]="applyStyle(stat.color)">
         {{ stat.value }}
+      </td>
+      <td>
+        {{ stat.high }}
+      </td>
+      <td>
+        {{ stat.units }}
       </td>
     </tr>
   </table>
   <table class="table3">
     <tr>
-      <th>
-        Name
-      </th>
-      <th>
-        Value
-      </th>
+        <th>
+          Name
+        </th>
+        <th>
+          Low
+        </th>
+        <th>
+          Value
+        </th>
+        <th>
+          High
+        </th>
+        <th>
+          Units
+        </th>
     </tr>
     <tr *ngFor="let stat of stats[2].stats">
       <td>
         {{ stat.name }}
       </td>
+      <td>
+          {{ stat.low }}
+      </td>
       <td [ngStyle]="applyStyle(stat.color)">
         {{ stat.value }}
+      </td>
+      <td>
+        {{ stat.high }}
+        </td>
+      <td>
+        {{ stat.units }}
       </td>
     </tr>
   </table>
   <table class="table4">
     <tr>
-      <th>
-        Name
-      </th>
-      <th>
-        Value
-      </th>
+        <th>
+          Name
+        </th>
+        <th>
+          Low
+        </th>
+        <th>
+          Value
+        </th>
+        <th>
+          High
+        </th>
+        <th>
+          Units
+        </th>
     </tr>
     <tr *ngFor="let stat of stats[3].stats">
       <td>
         {{ stat.name }}
       </td>
+      <td>
+          {{ stat.low }}
+      </td>
       <td [ngStyle]="applyStyle(stat.color)">
         {{ stat.value }}
+      </td>
+      <td>
+        {{ stat.high }}
+        </td>
+      <td>
+        {{ stat.units }}
       </td>
     </tr>
   </table>

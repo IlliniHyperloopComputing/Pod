@@ -174,3 +174,19 @@ def saveCANData(data):
 
     can_model.save()
     return 1
+
+def saveTCPStatus(status):
+    connected_data = models.ConnectedData.objects.latest("date_time")
+    models.ConnectedData(
+        tcp_connected=status,
+        udp_connected=connected_data.udp_connected
+    ).save()
+    return 1
+
+def saveUDPStatus(status):
+    connected_data = models.ConnectedData.objects.latest("date_time")
+    models.ConnectedData(
+        tcp_connected=connected_data.tcp_connected,
+        udp_connected=status
+    ).save()
+    return 1
