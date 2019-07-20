@@ -2,6 +2,11 @@ from django.db import models
 
 # Create your models here.
 
+class ConnectedData(models.Model):
+    date_time = models.DateTimeField(auto_now=True,primary_key=True)
+    tcp_connected = models.IntegerField(default=0)
+    udp_connected = models.IntegerField(default=0)
+
 class MotionData(models.Model):
     date_time = models.DateTimeField(auto_now=True,primary_key=True)
     position = models.IntegerField(default=0)

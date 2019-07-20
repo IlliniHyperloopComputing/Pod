@@ -1,5 +1,5 @@
 from threading import Thread
-from . import tcpsaver, tcphelper
+import tcphelper
 import socket
 import queue
 import time
@@ -53,18 +53,25 @@ def serve():
                 id = int(h[0])
                 if id == 7: # ADC Data
                     data = conn.recv(7*4)
+                    print("ADC")
                 elif id == 1: # CAN Data
                     data = conn.recv(45*4)
+                    print("CAN")
                 elif id == 2: # I2C Data
                     data = conn.recv(12*2)
+                    print("I2C")
                 elif id == 3: # PRU Data
                     data = conn.recv(4*4)
+                    print("PRU")
                 elif id == 4: # Motion Data
                     data = conn.recv(6*4 + 8*8 + 4)
+                    print("Motion")
                 elif id == 5: # Error Data
                     data = conn.recv(6*4)
+                    print("Error")
                 elif id == 6: # State Data
                     data = conn.recv(4)
+                    print("State")
                 elif id == 9:
                     input("Press enter to get next:")
                     data = conn.recv(30*(1 + 3*2 + 1) + 48)
@@ -103,3 +110,6 @@ def readCell(data):
     checksum = int.from_bytes(data[-1:], byteorder='little', signed=True)
     print("Checksum: " + checksum)
     return
+
+if __name__ == "__main__":
+    serve()

@@ -8,6 +8,7 @@ def getStats():
     pru_data = models.PRUData.objects.latest("date_time")
     motion_data = models.MotionData.objects.latest("date_time")
     adc_data = models.ADCData.objects.latest("date_time")
+    connected_data = models.ConnectedData.objects.latest("date_time")
 
     ranges = getRanges()
     can_data_motor = {
@@ -19,6 +20,94 @@ def getStats():
                 "low":  ranges["State_Number"][0],
                 "high": ranges["State_Number"][1],
                 "units":ranges["State_Number"][2]
+            },
+            {
+                "name": "TCP_On",
+                "value": str(connected_data.tcp_connected),
+                "color": getColor(ranges["TCP_On"], connected_data.tcp_connected),
+                "low":  ranges["TCP_On"][0],
+                "high": ranges["TCP_On"][1],
+                "units":ranges["TCP_On"][2]
+            },
+            {
+                "name": "Watchdog",
+                "value": str(connected_data.tcp_connected),
+                "color": "linmegreen",
+                "low":  1,
+                "high": 1,
+                "units":"N/A"
+            },
+            {
+                "name": "Wheel Distance",
+                "value": str(pru_data.wheel_distance),
+                "color": getColor(ranges["Wheel Distance"], pru_data.wheel_distance),
+                "low":  ranges["Wheel Distance"][0],
+                "high": ranges["Wheel Distance"][1],
+                "units":ranges["Wheel Distance"][2]
+            },
+            {
+                "name": "Wheel Velocity",
+                "value": str(pru_data.wheel_velocity),
+                "color": getColor(ranges["Wheel Velocity"], pru_data.wheel_velocity),
+                "low":  ranges["Wheel Velocity"][0],
+                "high": ranges["Wheel Velocity"][1],
+                "units":ranges["Wheel Velocity"][2]
+            },
+            {
+                "name": "Acceleration",
+                "value": str(motion_data.acceleration),
+                "color": getColor(ranges["Acceleration"], motion_data.acceleration),
+                "low":  ranges["Acceleration"][0],
+                "high": ranges["Acceleration"][1],
+                "units":ranges["Acceleration"][2]
+            },
+            {
+                "name": "Motor_State",
+                "value": str(motion_data.motor_state),
+                "color": getColor(ranges["Motor_State"], motion_data.motor_state),
+                "low":  ranges["Motor_State"][0],
+                "high": ranges["Motor_State"][1],
+                "units":ranges["Motor_State"][2]
+            },
+            {
+                "name": "Brake_State",
+                "value": str(motion_data.brake_state),
+                "color": getColor(ranges["Brake_State"], motion_data.brake_state),
+                "low": ranges["Brake_State"][0],
+                "high": ranges["Brake_State"][1],
+                "units":ranges["Brake_State"][2]
+            },
+            {
+                "name": "Motor_Target_Torque",
+                "value": str(motion_data.motor_target_torque),
+                "color": getColor(ranges["Motor_Target_Torque"], motion_data.motor_target_torque),
+                "low":  ranges["Motor_Target_Torque"][0],
+                "high": ranges["Motor_Target_Torque"][1],
+                "units":ranges["Motor_Target_Torque"][2]
+            },
+            {
+                "name": "Pre-Charge Relay Status",
+                "value": motion_data.relay_state_buff_0,
+                "color": getColor(ranges["Pre-Charge Relay Status"], motion_data.relay_state_buff_0),
+                "low":  ranges["Pre-Charge Relay Status"][0],
+                "high": ranges["Pre-Charge Relay Status"][1],
+                "units":ranges["Pre-Charge Relay Status"][2]
+            },
+            {
+                "name": "LV Relay Status",
+                "value": motion_data.relay_state_buff_1,
+                "color": getColor(ranges["LV Relay Status"], motion_data.relay_state_buff_1),
+                "low":  ranges["LV Relay Status"][0],
+                "high": ranges["LV Relay Status"][1],
+                "units":ranges["LV Relay Status"][2]
+            },
+            {
+                "name": "HV Relay Status",
+                "value": motion_data.relay_state_buff_2,
+                "color": getColor(ranges["HV Relay Status"], motion_data.relay_state_buff_2),
+                "low":  ranges["HV Relay Status"][0],
+                "high": ranges["HV Relay Status"][1],
+                "units":ranges["HV Relay Status"][2]
             },
             {
                 "name": "Status_Word",
@@ -115,54 +204,6 @@ def getStats():
                 "low":  ranges["Phase_B_Current"][0],
                 "high": ranges["Phase_B_Current"][1],
                 "units":ranges["Phase_B_Current"][2]
-            },
-            {
-                "name": "Accel_1 x",
-                "value": str(adc_data.data_5),
-                "color": getColor(ranges["Accel_1 x"], adc_data.data_5),
-                "low":  ranges["Accel_1 x"][0],
-                "high": ranges["Accel_1 x"][1],
-                "units":ranges["Accel_1 x"][2]
-            },
-            {
-                "name": "Accel_1 y",
-                "value": str(adc_data.data_6),
-                "color": getColor(ranges["Accel_1 y"], adc_data.data_6),
-                "low":  ranges["Accel_1 y"][0],
-                "high": ranges["Accel_1 y"][1],
-                "units":ranges["Accel_1 y"][2]
-            },
-            {
-                "name": "Accel_1 z",
-                "value": str(adc_data.data_4),
-                "color": getColor(ranges["Accel_1 z"], adc_data.data_4),
-                "low":  ranges["Accel_1 z"][0],
-                "high": ranges["Accel_1 z"][1],
-                "units":ranges["Accel_1 z"][2]
-            },
-            {
-                "name": "Accel_2 x",
-                "value": str(adc_data.data_1),
-                "color": getColor(ranges["Accel_2 x"], adc_data.data_1),
-                "low":  ranges["Accel_2 x"][0],
-                "high": ranges["Accel_2 x"][1],
-                "units":ranges["Accel_2 x"][2]
-            },
-            {
-                "name": "Accel_2 y",
-                "value": str(adc_data.data_3),
-                "color": getColor(ranges["Accel_2 y"], adc_data.data_3),
-                "low":  ranges["Accel_2 y"][0],
-                "high": ranges["Accel_2 y"][1],
-                "units":ranges["Accel_2 y"][2]
-            },
-            {
-                "name": "Accel_2 z",
-                "value": str(adc_data.data_2),
-                "color": getColor(ranges["Accel_2 z"], adc_data.data_2),
-                "low":  ranges["Accel_2 z"][0],
-                "high": ranges["Accel_2 z"][1],
-                "units":ranges["Accel_2 z"][2]
             }
         ]
     }
@@ -281,60 +322,60 @@ def getStats():
                 "units":ranges["Max_Pack_DCL"][2]
             },
             {
-                "name": "Motor_State",
-                "value": str(motion_data.motor_state),
-                "color": getColor(ranges["Motor_State"], motion_data.motor_state),
-                "low":  ranges["Motor_State"][0],
-                "high": ranges["Motor_State"][1],
-                "units":ranges["Motor_State"][2]
-            },
-            {
-                "name": "Brake_State",
-                "value": str(motion_data.brake_state),
-                "color": getColor(ranges["Brake_State"], motion_data.brake_state),
-                "low": ranges["Brake_State"][0],
-                "high": ranges["Brake_State"][1],
-                "units":ranges["Brake_State"][2]
-            },
-            {
-                "name": "Motor_Target_Torque",
-                "value": str(motion_data.motor_target_torque),
-                "color": getColor(ranges["Motor_Target_Torque"], motion_data.motor_target_torque),
-                "low":  ranges["Motor_Target_Torque"][0],
-                "high": ranges["Motor_Target_Torque"][1],
-                "units":ranges["Motor_Target_Torque"][2]
-            },
-            {
-                "name": "Pre-Charge Relay Status",
-                "value": motion_data.relay_state_buff_0,
-                "color": getColor(ranges["Pre-Charge Relay Status"], motion_data.relay_state_buff_0),
-                "low":  ranges["Pre-Charge Relay Status"][0],
-                "high": ranges["Pre-Charge Relay Status"][1],
-                "units":ranges["Pre-Charge Relay Status"][2]
-            },
-            {
-                "name": "LV Relay Status",
-                "value": motion_data.relay_state_buff_1,
-                "color": getColor(ranges["LV Relay Status"], motion_data.relay_state_buff_1),
-                "low":  ranges["LV Relay Status"][0],
-                "high": ranges["LV Relay Status"][1],
-                "units":ranges["LV Relay Status"][2]
-            },
-            {
-                "name": "HV Relay Status",
-                "value": motion_data.relay_state_buff_2,
-                "color": getColor(ranges["HV Relay Status"], motion_data.relay_state_buff_2),
-                "low":  ranges["HV Relay Status"][0],
-                "high": ranges["HV Relay Status"][1],
-                "units":ranges["HV Relay Status"][2]
-            },
-            {
                 "name": "Relay State Buff 3",
                 "value": motion_data.relay_state_buff_3,
                 "color": getColor(ranges["Relay State Buff 3"], motion_data.relay_state_buff_3),
                 "low":  ranges["Relay State Buff 3"][0],
                 "high": ranges["Relay State Buff 3"][1],
                 "units":ranges["Relay State Buff 3"][2]
+            },
+            {
+                "name": "Accel_1 x",
+                "value": str(adc_data.data_5),
+                "color": getColor(ranges["Accel_1 x"], adc_data.data_5),
+                "low":  ranges["Accel_1 x"][0],
+                "high": ranges["Accel_1 x"][1],
+                "units":ranges["Accel_1 x"][2]
+            },
+            {
+                "name": "Accel_1 y",
+                "value": str(adc_data.data_6),
+                "color": getColor(ranges["Accel_1 y"], adc_data.data_6),
+                "low":  ranges["Accel_1 y"][0],
+                "high": ranges["Accel_1 y"][1],
+                "units":ranges["Accel_1 y"][2]
+            },
+            {
+                "name": "Accel_1 z",
+                "value": str(adc_data.data_4),
+                "color": getColor(ranges["Accel_1 z"], adc_data.data_4),
+                "low":  ranges["Accel_1 z"][0],
+                "high": ranges["Accel_1 z"][1],
+                "units":ranges["Accel_1 z"][2]
+            },
+            {
+                "name": "Accel_2 x",
+                "value": str(adc_data.data_1),
+                "color": getColor(ranges["Accel_2 x"], adc_data.data_1),
+                "low":  ranges["Accel_2 x"][0],
+                "high": ranges["Accel_2 x"][1],
+                "units":ranges["Accel_2 x"][2]
+            },
+            {
+                "name": "Accel_2 y",
+                "value": str(adc_data.data_3),
+                "color": getColor(ranges["Accel_2 y"], adc_data.data_3),
+                "low":  ranges["Accel_2 y"][0],
+                "high": ranges["Accel_2 y"][1],
+                "units":ranges["Accel_2 y"][2]
+            },
+            {
+                "name": "Accel_2 z",
+                "value": str(adc_data.data_2),
+                "color": getColor(ranges["Accel_2 z"], adc_data.data_2),
+                "low":  ranges["Accel_2 z"][0],
+                "high": ranges["Accel_2 z"][1],
+                "units":ranges["Accel_2 z"][2]
             }
         ]
     }
@@ -690,6 +731,7 @@ def getStats():
 
 def getRanges():
     toRet = {}
+    toRet["TCP_On"] = [1, 1, "N/A"]
     toRet["State_Number"] = [0, 7, "N/A"]
     toRet["Status_Word"] = [0, 1, "m"]
     toRet["Position_Val"] = [0, 1, "m"]
@@ -764,14 +806,14 @@ def getRanges():
     toRet["Wheel Distance"] = [0, 1, "m"]
     toRet["Wheel Velocity"] = [0, 1, "m"]
     toRet["Acceleration"] = [0, 1, "m"]
-    toRet["Pre-Charge counter"] = [0, 1, "m"]
-    toRet["Pre-Charge timeout"] = [0, 1, "m"]
-    toRet["Acceleration counter"] = [0, 1, "m"]
-    toRet["Acceleration timeout"] = [0, 1, "m"]
-    toRet["Coast counter"] = [0, 1, "m"]
-    toRet["Coast timeout"] = [0, 1, "m"]
-    toRet["Brake counter"] = [0, 1, "m"]
-    toRet["Brake timeout"] = [0, 1, "m"]
+    toRet["Pre-Charge counter"] = [0, 1, "s"]
+    toRet["Pre-Charge timeout"] = [0, 1, "s"]
+    toRet["Acceleration counter"] = [0, 1, "s"]
+    toRet["Acceleration timeout"] = [0, 1, "s"]
+    toRet["Coast counter"] = [0, 1, "s"]
+    toRet["Coast timeout"] = [0, 1, "s"]
+    toRet["Brake counter"] = [0, 1, "s"]
+    toRet["Brake timeout"] = [0, 1, "s"]
 
     return toRet
 
