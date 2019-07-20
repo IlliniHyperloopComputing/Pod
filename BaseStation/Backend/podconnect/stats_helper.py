@@ -32,7 +32,7 @@ def getStats():
             {
                 "name": "Watchdog",
                 "value": str(connected_data.tcp_connected),
-                "color": "linmegreen",
+                "color": "limegreen",
                 "low":  1,
                 "high": 1,
                 "units":"N/A"
@@ -653,14 +653,6 @@ def getStats():
                 "units":ranges["Wheel Velocity"][2]
             },
             {
-                "name": "Acceleration",
-                "value": str(motion_data.acceleration),
-                "color": getColor(ranges["Acceleration"], motion_data.acceleration),
-                "low":  ranges["Acceleration"][0],
-                "high": ranges["Acceleration"][1],
-                "units":ranges["Acceleration"][2]
-            },
-            {
                 "name": "Pre-Charge counter",
                 "value": motion_data.p_counter,
                 "color": getColor(ranges["Pre-Charge counter"], motion_data.p_counter),
@@ -753,7 +745,7 @@ def getRanges():
     toRet["Accel_2 z"] = [-1.5, 1.5, "m/s^2"]
     toRet["Internal_Relay_State"] = [0, 1, "m"]
     toRet["Relay_State"] = [0, 1, "m"]
-    toRet["Rolling_Counter"] = [0, 1, "m"]
+    toRet["Rolling_Counter"] = [0, 256, "m"]
     toRet["Fail_Safe_State"] = [0, 1, "m"]
     toRet["Peak_Current"] = [0, 544, "A"]
     toRet["Pack_Voltage_Inst"] = [0, 1, "m"]
@@ -819,6 +811,8 @@ def getRanges():
 
 def getColor(range, val):
     if range[0] == "N/A" or range[1] == "N/A":
+        return "limegreen"
+    if range[0] == '' or range[1] == '' or val == '':
         return "limegreen"
     if range[0] <= int(val) and int(val) <= range[1]:
         return "limegreen"

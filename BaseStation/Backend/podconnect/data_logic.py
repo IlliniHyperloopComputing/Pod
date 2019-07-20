@@ -22,6 +22,7 @@ def battery(request):
     toReturn = {
         "value": can_data.pack_soc
     }
+    print(can_data.pack_soc)
     return JsonResponse(toReturn)
 
 def position(request):

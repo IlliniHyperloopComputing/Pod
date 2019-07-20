@@ -64,12 +64,12 @@ def serve():
                     if tcpsaver.saveCANData(data) == -1:
                         print("CAN data failure")
                 elif id == 2: # I2C Data
-                    data = conn.recv(12*2)
-                    data = tcphelper.bytes_to_int16(data, 12)
+                    data = conn.recv(16*2 + 2*4)
+                    data = tcphelper.bytes_to_int16(data, 16)
                     if tcpsaver.saveI2CData(data) == -1:
                         print("I2C data failure")
                 elif id == 3: # PRU Data
-                    data = conn.recv(4*4)
+                    data = conn.recv(5*4)
                     data = tcphelper.bytes_to_signed_int32(data, 4)
                     if tcpsaver.savePRUData(data) == -1:
                         print("PRU data failure")
@@ -94,20 +94,6 @@ def serve():
                         print("State data failure")
                 elif id == 9:
                     data = conn.recv(30*(1 + 3*2 + 1) + 48)
-                    readCell(data[:30*(1 + 3*2 + 1)])
-                    data_int8 = tcphelper.bytes_to_uint8(data[30*(1+3*2+1):-40], 8)
-                    print("num_therms_enabled: " + data_int8[0])
-                    print("highest_therm_value: " + data_int8[2])
-                    print("highest_therm_id: " + data_int8[3])
-                    print("lowest_therm_value: " + data_int8[1])
-                    print("lowest_therm_id: " + data_int8[4])
-                    print("PADDING: " + data_int8[5])
-                    print("PADDING2: " + data_int8[6])
-                    print("PADDING3: " + data_int8[7])
-
-                    data_int8 = tcphelper.bytes_to_int8(data[-40:], 40)
-                    for i in range(40):
-                        print("Therm " + i + ": " + data_int8[i])
             except Exception as e:
                 print(e)
                 print("Error in TCP Received message")
@@ -131,20 +117,6 @@ def sendData():
                 print(e)
                 #COMMAND_QUEUE.put(command)
         time.sleep(0.2)
-
-def readCell(data):
-    if len(data) != 1 + 3*2 + 1:
-        print("Failure")
-        return
-    cell_id = int.from_bytes(data[0:1], byteorder='little', signed=True)
-    print("Cell: " + cell_id,end=" ")
-    voltage_stuff = tcphelper.bytes_to_uint16(data[1:6])
-    print("Instant_Voltage: " + cell_id,end=" ")
-    print("Instant_Resistance: " + cell_id,end=" ")
-    print("Open_Voltage: " + cell_id,end=" ")
-    checksum = int.from_bytes(data[-1:], byteorder='little', signed=True)
-    print("Checksum: " + checksum)
-    return
 
 # Starts thread for tcp server and processor
 def start():

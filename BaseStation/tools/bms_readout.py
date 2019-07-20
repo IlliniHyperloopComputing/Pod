@@ -3,6 +3,7 @@ import tcphelper
 import socket
 import queue
 import time
+import binascii
 import numpy as np
 
 # TCP IDs:
@@ -53,42 +54,36 @@ def serve():
                 id = int(h[0])
                 if id == 7: # ADC Data
                     data = conn.recv(7*4)
-                    print("ADC")
                 elif id == 1: # CAN Data
                     data = conn.recv(45*4)
-                    print("CAN")
                 elif id == 2: # I2C Data
                     data = conn.recv(12*2)
-                    print("I2C")
                 elif id == 3: # PRU Data
                     data = conn.recv(4*4)
-                    print("PRU")
                 elif id == 4: # Motion Data
                     data = conn.recv(6*4 + 8*8 + 4)
-                    print("Motion")
                 elif id == 5: # Error Data
                     data = conn.recv(6*4)
-                    print("Error")
                 elif id == 6: # State Data
                     data = conn.recv(4)
-                    print("State")
                 elif id == 9:
                     input("Press enter to get next:")
                     data = conn.recv(30*(1 + 3*2 + 1) + 48)
-                    readCell(data[:30*(1 + 3*2 + 1)])
+                    for i in range(30):
+                        readCell(data[i*(1 + 3*2 + 1):(i+1)*(1 + 3*2 + 1)])
                     data_int8 = tcphelper.bytes_to_uint8(data[30*(1+3*2+1):-40], 8)
-                    print("num_therms_enabled: " + data_int8[0])
-                    print("highest_therm_value: " + data_int8[2])
-                    print("highest_therm_id: " + data_int8[3])
-                    print("lowest_therm_value: " + data_int8[1])
-                    print("lowest_therm_id: " + data_int8[4])
-                    print("PADDING: " + data_int8[5])
-                    print("PADDING2: " + data_int8[6])
-                    print("PADDING3: " + data_int8[7])
+                    print("num_therms_enabled: " + str(data_int8[0]))
+                    print("highest_therm_value: " + str(data_int8[2]))
+                    print("highest_therm_id: " + str(data_int8[3]))
+                    print("lowest_therm_value: " + str(data_int8[1]))
+                    print("lowest_therm_id: " + str(data_int8[4]))
+                    print("PADDING: " + str(data_int8[5]))
+                    print("PADDING2: " + str(data_int8[6]))
+                    print("PADDING3: " + str(data_int8[7]))
 
                     data_int8 = tcphelper.bytes_to_int8(data[-40:], 40)
                     for i in range(40):
-                        print("Therm " + i + ": " + data_int8[i])
+                        print("Therm " + str(i) + ": " + str(data_int8[i]))
             except Exception as e:
                 print(e)
                 print("Error in TCP Received message")
@@ -102,13 +97,13 @@ def readCell(data):
         print("Failure")
         return
     cell_id = int.from_bytes(data[0:1], byteorder='little', signed=True)
-    print("Cell: " + cell_id,end=" ")
-    voltage_stuff = tcphelper.bytes_to_uint16(data[1:6])
-    print("Instant_Voltage: " + cell_id,end=" ")
-    print("Instant_Resistance: " + cell_id,end=" ")
-    print("Open_Voltage: " + cell_id,end=" ")
+    print("Cell: " + str(cell_id),end=" ")
+    voltage_stuff = tcphelper.bytes_to_uint16(data[1:6], 3)
+    print("Instant_Voltage: " + str(voltage_stuff[0]/10000),end=" ")
+    print("Instant_Resistance: " + str(voltage_stuff[1]/10000),end=" ")
+    print("Open_Voltage: " + str(voltage_stuff[2]/10000),end=" ")
     checksum = int.from_bytes(data[-1:], byteorder='little', signed=True)
-    print("Checksum: " + checksum)
+    print("Checksum: " + str(checksum))
     return
 
 if __name__ == "__main__":
