@@ -556,28 +556,28 @@ def getStats():
                 "units":ranges["Adaptive_SOC"][2]
             },
             {
-                "name": "Brake Pressure 1",
+                "name": "Brake High Pressure Sensor",
                 "value": str(i2c_data.sensor_0x48_1),
-                "color": getColor(ranges["Brake Pressure 1"], state_data.state),
-                "low":  ranges["Brake Pressure 1"][0],
-                "high": ranges["Brake Pressure 1"][1],
-                "units":ranges["Brake Pressure 1"][2]
+                "color": getColor(ranges["Brake High Pressure Sensor"], state_data.state),
+                "low":  ranges["Brake High Pressure Sensor"][0],
+                "high": ranges["Brake High Pressure Sensor"][1],
+                "units":ranges["Brake High Pressure Sensor"][2]
             },
             {
-                "name": "Brake Pressure 2",
+                "name": "Brake Regulator Pressure Sensor",
                 "value": str(i2c_data.sensor_0x48_2),
-                "color": getColor(ranges["Brake Pressure 2"], state_data.state),
-                "low":  ranges["Brake Pressure 2"][0],
-                "high": ranges["Brake Pressure 2"][1],
-                "units":ranges["Brake Pressure 2"][2]
+                "color": getColor(ranges["Brake Regulator Pressure Sensor"], state_data.state),
+                "low":  ranges["Brake Regulator Pressure Sensor"][0],
+                "high": ranges["Brake Regulator Pressure Sensor"][1],
+                "units":ranges["Brake Regulator Pressure Sensor"][2]
             },
             {
-                "name": "Brake Pressure 3",
+                "name": "Brake End Pressure Sensor",
                 "value": str(i2c_data.sensor_0x48_3),
-                "color": getColor(ranges["Brake Pressure 3"], state_data.state),
-                "low":  ranges["Brake Pressure 3"][0],
-                "high": ranges["Brake Pressure 3"][1],
-                "units":ranges["Brake Pressure 3"][2]
+                "color": getColor(ranges["Brake End Pressure Sensor"], state_data.state),
+                "low":  ranges["Brake End Pressure Sensor"][0],
+                "high": ranges["Brake End Pressure Sensor"][1],
+                "units":ranges["Brake End Pressure Sensor"][2]
             },
             {
                 "name": "Orange Distance",
@@ -693,13 +693,13 @@ def getRanges():
     toRet["State_Number"] = [0, 7, "N/A"]
     toRet["Status_Word"] = [0, 1, "m"]
     toRet["Position_Val"] = [0, 1, "m"]
-    toRet["Torque_Val"] = [0, 1, "m"]
-    toRet["Controller_Temp"] = [0, 1, "m"]
+    toRet["Torque_Val"] = [0, 230, "psi"]
+    toRet["Controller_Temp"] = [0, 80, "°C"]
     toRet["Motor_Temp"] = [0, 1, "m"]
     toRet["DC_Link_Voltage"] = [0, 1, "m"]
     toRet["Logic_Power_Supply_Voltage"] = [0, 1, "m"]
     toRet["Current_Demand"] = [0, 1, "m"]
-    toRet["Motor_Current_Val"] = [0, 1, "m"]
+    toRet["Motor_Current_Val"] = [0, 544, "A"]
     toRet["Electrical_Angle"] = [0, 1, "m"]
     toRet["Phase_A_Current"] = [0, 1, "m"]
     toRet["Phase_B_Current"] = [0, 1, "m"]
@@ -713,7 +713,7 @@ def getRanges():
     toRet["Relay_State"] = [0, 1, "m"]
     toRet["Rolling_Counter"] = [0, 1, "m"]
     toRet["Fail_Safe_State"] = [0, 1, "m"]
-    toRet["Peak_Current"] = [0, 1, "m"]
+    toRet["Peak_Current"] = [0, 544, "A"]
     toRet["Pack_Voltage_Inst"] = [0, 1, "m"]
     toRet["Pack_Voltage_Open"] = [0, 1, "m"]
     toRet["Pack_SOC"] = [0, 1, "m"]
@@ -730,11 +730,11 @@ def getRanges():
     toRet["LV Relay Status"] = [0, 1, "m"]
     toRet["HV Relay Status"] = [0, 1, "m"]
     toRet["Relay State Buff 3"] = [0, 1, "m"]
-    toRet["Avg_Pack_Current"] = [0, 1, "m"]
-    toRet["Highest_Temp"] = [0, 1, "m"]
-    toRet["Highest_Temp_ID"] = [0, 1, "m"]
-    toRet["Avg_Temp"] = [0, 1, "m"]
-    toRet["Internal_Temp"] = [0, 1, "m"]
+    toRet["Avg_Pack_Current"] = [0, 544, "A"]
+    toRet["Highest_Temp"] = [0, 80, "m"]
+    toRet["Highest_Temp_ID"] = ["N/A", "N/A", "m"]
+    toRet["Avg_Temp"] = [0, 80, "°C"]
+    toRet["Internal_Temp"] = [0, 80, "°C"]
     toRet["Low_Cell_Voltage"] = [0, 1, "m"]
     toRet["Low_Cell_Voltage_ID"] = [0, 1, "m"]
     toRet["High_Cell_Voltage"] = [0, 1, "m"]
@@ -756,9 +756,9 @@ def getRanges():
     toRet["NetworkError"] = [0, 1, "m"]
     toRet["OtherError"] = [0, 1, "m"]
     toRet["Tank Pressure"] = [200, 1000, "m"]
-    toRet["Brake Pressure 1"] = [200, 1000, "m"]
-    toRet["Brake Pressure 2"] = [200, 1000, "m"]
-    toRet["Brake Pressure 3"] = [200, 1000, "m"]
+    toRet["Brake High Pressure Sensor"] = [200, 1000, "psi"]
+    toRet["Brake Regulator Pressure Sensor"] = [0, 257.5, "psi"]
+    toRet["Brake End Pressure Sensor"] = 0, 257.5, "psi"]
     toRet["Orange Distance"] = [0, 1, "m"]
     toRet["Orange Velocity"] = [0, 1, "m"]
     toRet["Wheel Distance"] = [0, 1, "m"]
