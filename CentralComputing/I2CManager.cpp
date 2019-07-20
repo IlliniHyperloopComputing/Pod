@@ -130,11 +130,12 @@ bool I2CManager::single_shot(int fd, int port, int16_t *value) {
 
 bool I2CManager::dps310_read_coef(int fd, uint8_t * read_buf){
   uint8_t write_buf = 0x10;  // first register to read
-  if (write(fd, &write_buf, 1)) {  // Write to set the address that we will read from
-    print(LogLevel::LOG_ERROR, "I2C Write error. DSP310 write coef addr \n");
+  int pls = write(fd, &write_buf, 1);
+  if (write(fd, &write_buf, 1) != 1) {  // Write to set the address that we will read from
+    print(LogLevel::LOG_ERROR, "I2C Write error. DSP310 write coef addr %d\n",pls);
     return false;
   }
-  if (read(fd, read_buf, 18)) {  // read address 0x10 through 0x21
+  if (read(fd, read_buf, 18) != 18) {  // read address 0x10 through 0x21
     print(LogLevel::LOG_ERROR, "I2C Read error. DSP310 read coefs\n");
     return false;
   }
@@ -167,11 +168,11 @@ bool I2CManager::dps310_read_coef(int fd, uint8_t * read_buf){
   }
 
   write_buf = 0x28;  // first register to read
-  if (write(fd, &write_buf, 1)) {  // Write to set the address that we will read from
+  if (write(fd, &write_buf, 1) != 1) {  // Write to set the address that we will read from
     print(LogLevel::LOG_ERROR, "I2C Write error. DSP310 write coef source addr \n");
     return false;
   }
-  if (read(fd, read_buf, 1)) {  // read address 0x10 through 0x21
+  if (read(fd, read_buf, 1) != 1) {  // read address 0x10 through 0x21
     print(LogLevel::LOG_ERROR, "I2C Write error. DSP310 read coefs source\n");
     return false;
   }
@@ -183,7 +184,7 @@ bool I2CManager::dps310_write_config_register(int fd, uint8_t reg, uint8_t value
   uint8_t write_buf[2];
   write_buf[0] = reg;
   write_buf[1] = value;
-  if (write(fd, &write_buf, 2)) {  // Write to set the address that we will read from
+  if (write(fd, &write_buf, 2) != 2) {  // Write to set the address that we will read from
     print(LogLevel::LOG_ERROR, "I2C Write error. DSP310 write config register error: reg: %x value: %x\n", reg, value);
     return false;
   }
@@ -198,13 +199,13 @@ bool I2CManager::dps310_get_temp_and_pressure(int fd, int32_t *temp, int32_t * p
   // Read Temperature First
   // Since we should be in continuous mode, just read from the registers!
   uint8_t write_buf = 0x03;  // first register to read
-  if (write(fd, &write_buf, 1)) {  // Write to set the address that we will read from
+  if (write(fd, &write_buf, 1) != 1) {  // Write to set the address that we will read from
     print(LogLevel::LOG_ERROR, "I2C Write error. DSP310 write addr , while trying to get_temp\n");
     return false;
   }
 
   uint8_t read_buf[3];
-  if (read(fd, read_buf, 3)) {  // read address 0x03 through 0x05 
+  if (read(fd, read_buf, 3) != 3) {  // read address 0x03 through 0x05 
     print(LogLevel::LOG_ERROR, "I2C Read error. DSP310 read temp\n");
     return false;
   }
@@ -228,12 +229,12 @@ bool I2CManager::dps310_get_temp_and_pressure(int fd, int32_t *temp, int32_t * p
   // Read pressure second
   // Since we should be in continuous mode, just read from the registers!
   write_buf = 0x00;  // first register to read
-  if (write(fd, &write_buf, 1)) {  // Write to set the address that we will read from
+  if (write(fd, &write_buf, 1) != 1) {  // Write to set the address that we will read from
     print(LogLevel::LOG_ERROR, "I2C Write error. DSP310 write addr , while trying to get_temp_and_pressure\n");
     return false;
   }
 
-  if (read(fd, read_buf, 3)) {  // read address 0x00 through 0x02 
+  if (read(fd, read_buf, 3) != 3) {  // read address 0x00 through 0x02 
     print(LogLevel::LOG_ERROR, "I2C Read error. DSP310 read pressure\n");
     return false;
   }
@@ -253,24 +254,21 @@ bool I2CManager::dps310_get_temp_and_pressure(int fd, int32_t *temp, int32_t * p
                           + t_raw_sc * dps310_coef_c01 
                           + t_raw_sc * p_raw_sc * (dps310_coef_c11 + p_raw_sc * dps310_coef_c21));
 
-  print(LogLevel::LOG_INFO, "HAHA DSP WORKS ON THE FIRST TRY\n");
   return true;
 }
 
 std::shared_ptr<I2CData> I2CManager::refresh() {
+   
   if (i == 3) {
     i = 0;
-    if (j == 3) {
-      j = 0;
-    } else {
-      j++;
-    }
   } else {
     i++;
   }
+  
 
+  j = 1;
+  int addr = 0x49;
   int port;
-  int addr;
 
   if (i == 0) {
     port = ANC0;
@@ -282,6 +280,7 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
     port = ANC3;
   }
 
+  /* 
   if (j == 0) {
     addr = 0x48;
   } else if (j == 1) {
@@ -291,6 +290,7 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
   } else {
     addr = 0x4B;
   }
+  */
 
   int64_t a = Utils::microseconds(); 
   int16_t value = 0;
@@ -301,7 +301,7 @@ std::shared_ptr<I2CData> I2CManager::refresh() {
   }
   if (single_shot(i2c_fd, port, &value)) {
     int64_t b = Utils::microseconds(); 
-    print(LogLevel::LOG_DEBUG, "(REMOVE) I2C: i=%d, j =%d, val: %d, took this long: micros: %lu\n", i, j, value, b-a);
+    // print(LogLevel::LOG_DEBUG, "(REMOVE) I2C: i=%d, j =%d, val: %d, took this long: micros: %lu\n", i, j, value, b-a);
   } else {
     Command::set_error_flag(Command::SET_I2C_ERROR, I2C_READ_ERROR);
     return empty_data();

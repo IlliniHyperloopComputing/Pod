@@ -60,8 +60,8 @@ bool CANManager::send_frame(uint32_t can_id, const char * buf, int len) {
   // Populate frame
   s_frame.can_id = can_id;
   memcpy(reinterpret_cast<char*>(s_frame.data), buf, len);
-  print(LogLevel::LOG_INFO, "CAN frame id: %x data:%x %x %x \n",
-                            can_id, s_frame.data[0], s_frame.data[1], s_frame.data[2]);
+  // print(LogLevel::LOG_INFO, "CAN frame id: %x data:%x %x %x \n",
+  //                           can_id, s_frame.data[0], s_frame.data[1], s_frame.data[2]);
   
   s_frame.can_dlc = len;
   // Write s_frame
