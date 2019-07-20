@@ -1,6 +1,4 @@
 #!/bin/bash
-echo 37 > /sys/class/gpio/export
-echo "out" > /sys/class/gpio/gpio37/direction
 echo 66 > /sys/class/gpio/export
 echo "in" > /sys/class/gpio/gpio66/direction
 echo 26 > /sys/class/gpio/export
@@ -12,4 +10,8 @@ echo "in" > /sys/class/gpio/gpio65/direction
 echo 61 > /sys/class/gpio/export
 echo "in" > /sys/class/gpio/gpio61/direction
 echo 45 > /sys/class/gpio/export
-echo "in" > /sys/class/gpio/gpio45/direction
+echo "out" > /sys/class/gpio/gpio45/direction
+echo 68 > /sys/class/gpio/export
+echo "out" > /sys/class/gpio/gpio68/direction
+echo 69 > /sys/class/gpio/export
+echo "out" > /sys/class/gpio/gpio69/direction

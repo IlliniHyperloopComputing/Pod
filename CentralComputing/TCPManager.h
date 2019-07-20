@@ -5,6 +5,7 @@
 #include "Defines.hpp"
 #include "Utils.h"
 #include "SafeQueue.hpp"
+#include "SourceManager.h"
 #include "Event.h"
 #include "Simulator.h"
 #include <sys/socket.h>
@@ -34,6 +35,7 @@ struct TCPSendIDs {
   uint8_t motion_id = 4;
   uint8_t error_id = 5;
   uint8_t state_id = 6;
+  uint8_t bms_id = 9;
 };
 
 extern TCPSendIDs TCPID;
@@ -44,14 +46,15 @@ extern std::atomic<bool> running;
 extern UnifiedState * unified_state;
 extern ADCData adc_data;
 extern CANData can_data;
+extern BMSCells bms_data;
 extern I2CData i2c_data;
 extern PRUData pru_data;
 extern MotionData motion_data;
 extern Errors  error_data;
 extern E_States state;
-extern int64_t stagger_times[3];  // Used to stagger how frequently data is sent to tcp server
-extern int64_t last_sent_times[3];   // Used to store the last time a data type was sent
-extern std::mutex data_mutex;
+extern int64_t stagger_times[4];  // Used to stagger how frequently data is sent to tcp server 
+extern int64_t last_sent_times[4];   // Used to store the last time a data type was sent
+extern std::mutex data_mutex;  
 extern int64_t write_loop_timeout;
 
 extern Event connected;  // Used within Simulator to check when TCP is connected

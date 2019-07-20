@@ -60,8 +60,8 @@ bool CANManager::send_frame(uint32_t can_id, const char * buf, int len) {
   // Populate frame
   s_frame.can_id = can_id;
   memcpy(reinterpret_cast<char*>(s_frame.data), buf, len);
-  print(LogLevel::LOG_INFO, "CAN frame id: %x data:%x %x %x \n",
-                            can_id, s_frame.data[0], s_frame.data[1], s_frame.data[2]);
+  // print(LogLevel::LOG_INFO, "CAN frame id: %x data:%x %x %x \n",
+  //                           can_id, s_frame.data[0], s_frame.data[1], s_frame.data[2]);
   
   s_frame.can_dlc = len;
   // Write s_frame
@@ -209,11 +209,39 @@ std::shared_ptr<CANData> CANManager::refresh() {
       new_data->low_cell_internalR_id   = Utils::cast_to_u32(4, 1, r_frame.data);
       new_data->high_cell_internalR_id  = Utils::cast_to_u32(5, 1, r_frame.data);
     } else if (r_frame.can_id == 0x6b6) {
-      new_data->adaptive_total_cap      = Utils::cast_to_u32(0, 2, r_frame.data);
-      new_data->adaptive_amphours       = Utils::cast_to_u32(2, 2, r_frame.data);
-      new_data->adaptive_soc            = Utils::cast_to_u32(4, 1, r_frame.data);
-    } else {
-      // print(LogLevel::LOG_DEBUG, "CAN frame unknown! \n");
+      new_data->adaptive_total_cap      = cast_to_u32(0, 2, r_frame.data);
+      new_data->adaptive_amphours       = cast_to_u32(2, 2, r_frame.data);
+      new_data->adaptive_soc            = cast_to_u32(4, 1, r_frame.data);
+    } else if (r_frame.can_id == 0x1aa) {  // Cell data
+      // Verify that it has a valid ID that we can use to index
+      if (r_frame.data[0] < 30) {
+        int cell_id = r_frame.data[0]; // If its "1" indexed instead of 0, incremnt this
+        private_cell_data.cell_data[cell_id].cell_id = r_frame.data[0];
+        private_cell_data.cell_data[cell_id].instant_voltage = cast_to_u32(1, 2, r_frame.data);
+        private_cell_data.cell_data[cell_id].internal_resistance = cast_to_u32(3, 2, r_frame.data);
+        private_cell_data.cell_data[cell_id].open_voltage = cast_to_u32(5, 2, r_frame.data);
+        private_cell_data.cell_data[cell_id].checksum = r_frame.data[7];
+      } else {
+        print(LogLevel::LOG_ERROR, "Cell Data CAN frame has bad ID ??? %d", r_frame.data[0] ); 
+      }
+     
+    // Thermistor https://www.orionbms.com/downloads/misc/thermistor_module_canbus.pdf
+    } else if (r_frame.can_id == 0x1838F380) {  // Thermistor General CAN
+      // Verify that it has a valid ID that we can use to index
+      int16_t therm_id = cast_to_u32(0, 2, r_frame.data);
+      if (therm_id < 40) {
+        private_cell_data.therm_value[therm_id] = r_frame.data[2];
+        private_cell_data.num_therms_enabled = r_frame.data[3];
+        private_cell_data.lowest_therm_value = r_frame.data[4];
+        private_cell_data.highest_therm_value = r_frame.data[5];
+        private_cell_data.highest_therm_id = r_frame.data[6];
+        private_cell_data.lowest_therm_id = r_frame.data[7];
+      } else {
+        print(LogLevel::LOG_ERROR, "Therm Data CAN frame has bad ID ??? %d", therm_id); 
+      }
+    } 
+    else {
+      print(LogLevel::LOG_DEBUG, "CAN Frame UNKNOWN msg: id: %d, len: %d, \n", r_frame.can_id, r_frame.len); 
     }
 
     // Print the contents of r_frame (assumes len <= 8)
@@ -227,6 +255,12 @@ std::shared_ptr<CANData> CANManager::refresh() {
   } while (r_frame.len != 0);
 
   memcpy(&stored_data, new_data.get(), sizeof(CANData));   // Copy new data to stored data
+
+  // Copy the "private" data to the public facing variable
+  cell_data_mutex.lock();
+  memcpy(&public_cell_data, &private_cell_data, sizeof(BMSCells));
+  cell_data_mutex.unlock();
+
   return new_data;
 }
 
@@ -434,6 +468,23 @@ void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_d
     rolling_counter_timer = microseconds();
   }
 
+}
+
+// This will convert Big Endian data types to Little Endian types
+inline uint32_t CANManager::cast_to_u32(int offset, int bytes_per_item, uint8_t * bufferArray) {
+  uint32_t tmp = 0;
+  for (int i = 0; i < bytes_per_item; i++) {
+    tmp |= (uint8_t)(bufferArray[offset + i] << (i * 8));
+  }
+  return tmp;
+}
+
+inline uint64_t CANManager::cast_to_u64(int offset, int bytes_per_item, uint8_t * bufferArray) {
+  uint64_t tmp = 0;
+  for (int i = 0; i < bytes_per_item; i++) {
+    tmp |= (uint8_t)(bufferArray[offset + i] << (i * 8));
+  }
+  return tmp;
 }
 
 void CANManager::u32_to_bytes(uint32_t toCast, char* bufferArray) {

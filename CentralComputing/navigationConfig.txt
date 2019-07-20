@@ -1,37 +1,26 @@
 tmp_manager_timeout 100000.0 # Units are microseconds
 i2c_manager_timeout 100000.0 # Units are microseconds
-can_manager_timeout 100000.0 # Units are microseconds
+can_manager_timeout 100000.0 # Units are microseconds 
 adc_manager_timeout 100000.0 # Units are microseconds
 pru_manager_timeout 100000.0 # Units are microseconds
 logic_loop_timeout  1000.0   # Units are microseconds
 tcp_write_loop_timeout 1000000 # Units are microseconds
 
 adc_filename /dev/iio:device0  # Internal ADC filename
-adc_calc_zero_g_timeout 2000000  # Units are microseconds
+adc_calc_zero_g_timeout 2000000  # Units are microseconds 
 adc_default_zero_g       2048     # In ADC levels (12 bit). 0.9V of 1.8V, 12 bit, 2048
 
-adc_axis_0 1  #AXIS: x 1, 5  #y 3, 6  #z 2, 4
-adc_axis_1 5
-
-adc_dir_flip 1   #set to 1 or -1   will flip polarity of acceleration axis
-
-adc_sanity_bound_positive  800    #455 levels per g
-adc_sanity_bound_negative  -1000  #455 levels per g
-adc_sanity_bound_counter_error 2   # consecutive readings breaking the bound that triggers error
-
-
 tcp_port 8001
-tcp_addr 192.168.0.159 #192.168.6.1 #192.168.7.1 #127.0.0.1
+tcp_addr 127.0.0.1 #192.168.7.1 #127.0.0.1
 
 tcp_stagger_time1 1000000 # Units are microseconds
 tcp_stagger_time2 3000000 # Units are microseconds
 tcp_stagger_time3 6000000 # Units are microseconds
-tcp_stagger_time4 2000000 # Units are microseconds
 
 udp_send_port 5004
 udp_recv_port 5005
-udp_addr 192.168.0.159 #192.168.6.1
-udp_heartbeat_period     100  # Units are MILLISECONDS
+udp_addr 127.0.0.1
+udp_heartbeat_period     1000  # Units are MILLISECONDS
 udp_d1_max     10    # Units are MILLISECONDS
 udp_d1_min     2     # Units are MILLISECONDS
 udp_p_max      5     # Units are MILLISECONDS
@@ -84,18 +73,16 @@ error_orange_diff_count 3         # Maybe one tape is just behind the other... g
 error_encoder_wheel_diff 25000    # Units are mm. 25 meters.
 error_encoder_wheel_diff_count 10 # 
 
-error_watchdog_heartbeat_min_hz 50 # 
-
 
 estimated_brake_deceleration 9810 # Units are mm/s/s
 
-length_of_track     1250000  # Units are mm
-brake_buffer_length 50000    # Units are mm
+length_of_track     10000  # Units are mm
+brake_buffer_length 400    # Units are mm
 
 not_moving_velocity     200  # Units are mm/s
 not_moving_acceleration 10   # Units are ADC levels. there are 455 levels per G, 46.4 levels per m/s/s
 
-scn_gear_ratio 2.79             # For scenario
+scn_gear_ratio 2.79             # For scenario 
 scn_mass 112                    # For scenario Units are kg
 scn_brake_deceleration -8.06    # For scenario Units are m/s/s
 scn_drive_wheel_radius 0.1016   # For scenario, Units are m

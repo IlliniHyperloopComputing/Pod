@@ -20,6 +20,7 @@ TCPManager::TCPSendIDs TCPManager::TCPID;
 UnifiedState * TCPManager::unified_state;
 ADCData TCPManager::adc_data;
 CANData TCPManager::can_data;
+BMSCells TCPManager::bms_data;
 I2CData TCPManager::i2c_data;
 PRUData TCPManager::pru_data;
 MotionData TCPManager::motion_data;
@@ -29,8 +30,8 @@ E_States TCPManager::state;
 std::mutex TCPManager::data_mutex;  
 int64_t TCPManager::write_loop_timeout;
 
-int64_t TCPManager::stagger_times[3];   // For sendig data to the TCP Write loop
-int64_t TCPManager::last_sent_times[3];   // For sending data to the TCP Write loop
+int64_t TCPManager::stagger_times[4];   // For sendig data to the TCP Write loop
+int64_t TCPManager::last_sent_times[4];   // For sending data to the TCP Write loop
 
 int TCPManager::connect_to_server(const char * hostname, const char * port) {
   std::lock_guard<std::mutex> guard(setup_shutdown_mutex);  // Used to protect socketfd (TSan datarace)
@@ -114,6 +115,19 @@ int TCPManager::write_data() {
       return -1;
     }
   }  
+
+  // This is the fourth time threshold
+  if (cur_time - last_sent_times[3] > stagger_times[3]) {  
+    SourceManager::CAN.cell_data_mutex.lock();  
+    memcpy(&bms_data, &SourceManager::CAN.public_cell_data, sizeof(BMSCells));
+    SourceManager::CAN.cell_data_mutex.unlock();  
+    last_sent_times[3] = cur_time;
+    if ((write_all_to_socket(socketfd, &TCPID.can_id, sizeof(uint8_t)) <= 0) ||
+        (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&bms_data), sizeof(BMSCells)) <= 0)) {  //NOLINT
+      return -1;
+    }
+  }  
+
   return 1;  // Return success
 }
 
@@ -161,7 +175,8 @@ void TCPManager::tcp_loop(const char * hostname, const char * port, UnifiedState
   if (!( ConfiguratorManager::config.getValue("tcp_write_loop_timeout", write_loop_timeout) &&
       ConfiguratorManager::config.getValue("tcp_stagger_time1", stagger_times[0]) &&
       ConfiguratorManager::config.getValue("tcp_stagger_time2", stagger_times[1]) &&
-      ConfiguratorManager::config.getValue("tcp_stagger_time3", stagger_times[2]))) {
+      ConfiguratorManager::config.getValue("tcp_stagger_time3", stagger_times[2]) &&
+      ConfiguratorManager::config.getValue("tcp_stagger_time4", stagger_times[3]))) {
     print(LogLevel::LOG_ERROR, "TCP CONFIG FILE ERROR: Missing necessary configuration\n");
     exit(1);  // Crash hard on this error
   }
