@@ -127,7 +127,11 @@ std::shared_ptr<PRUData> PRUManager::refresh() {
   RawPRUData raw_data;
   print(LogLevel::LOG_ERROR,"PRU RAW DATA %d, %d, %d",raw_data.counts[0],raw_data.counts[1],raw_data.counts[2]);
   memcpy(&raw_data, readBuf, sizeof(RawPRUData));
-
+  //print(LogLevel::LOG_ERROR,"PRU RAW DATA %d, %d, %d %d %d %d %d %d %d %d %d\n"
+  //                          ,raw_data.counts[0],raw_data.counts[1],raw_data.counts[2],
+  //                          raw_data.counts[3],raw_data.counts[4],raw_data.counts[5],
+  //                          raw_data.counts[6],raw_data.counts[7],raw_data.counts[8],
+  //                          raw_data.counts[9],raw_data.counts[10]);
   // Convert Raw Data into usable data
   PRUData new_data;
   
