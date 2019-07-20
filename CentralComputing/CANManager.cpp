@@ -241,7 +241,7 @@ std::shared_ptr<CANData> CANManager::refresh() {
       }
     } 
     else {
-      print(LogLevel::LOG_DEBUG, "CAN Frame UNKNOWN msg: id: %d, len: %d, \n", r_frame.can_id, r_frame.len); 
+      print(LogLevel::LOG_DEBUG, "CAN Frame UNKNOWN msg: id: 0x%x, len: %d, \n", r_frame.can_id, r_frame.len); 
     }
 
     // Print the contents of r_frame (assumes len <= 8)
