@@ -27,7 +27,7 @@ struct RawPRUData {
 
 class PRUManager : public SourceManagerBase<PRUData> {
  private:
-    const int32_t WHEEL_CIRCUMFERENCE_IN_MM = 500;
+    const int32_t WHEEL_CIRCUMFERENCE_IN_MM = 319;
     const int32_t HUNDRED_FEET_IN_MM = 30480;
     const int WHEEL_GPIO_ONE = 66;
     const int WHEEL_GPIO_TWO = 26;
@@ -54,7 +54,7 @@ class PRUManager : public SourceManagerBase<PRUData> {
 
     // Variables used for pru processing
     const int orange_idx[NUM_ORANGE_INPUTS] = {3, 3}; 
-    const uint32_t orange_map[NUM_ORANGE_INPUTS] = {WHEEL_CIRCUMFRENCE_IN_MM, WHEEL_CIRCUMFRENCE_IN_MM};
+    const uint32_t orange_map[NUM_ORANGE_INPUTS] = {WHEEL_CIRCUMFERENCE_IN_MM , WHEEL_CIRCUMFERENCE_IN_MM };
     const int wheel_idx[NUM_WHEEL_INPUTS] = {0, 1}; //p8_45 and p8_46
     const uint32_t wheel_map[NUM_WHEEL_INPUTS] = {HUNDRED_FEET_IN_MM, HUNDRED_FEET_IN_MM};
 
