@@ -303,8 +303,8 @@ clean:
 clean_lib:
 	rm -f $(LIB_DIR)/*
 
-BBB := bbb1
-ADDR := 128.174.163.125
+BBB := debian
+ADDR := 192.168.6.2
 
 .PHONY: push
 push: 
