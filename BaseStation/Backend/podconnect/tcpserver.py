@@ -15,7 +15,7 @@ import numpy as np
 # uint8_t state_id = 6;
 
 # TCP global variables
-TCP_IP = '127.0.0.1'
+TCP_IP = ''
 TCP_PORT = 8001
 BUFFER_SIZE = 300
 
@@ -39,10 +39,12 @@ def serve():
             TCP_PORT = TCP_PORT + 1
     print("TCP Port = {port}".format(port=TCP_PORT))
     s.listen(1)
+    tcpsaver.saveTCPStatus(0)
 
     while (True):
         conn, addr = s.accept()
         print('Connection address:', addr)
+        tcpsaver.saveTCPStatus(1)
         while (True):
             # Receiving data
             try:
@@ -51,25 +53,38 @@ def serve():
                     break
                 h = bytearray(data)
                 id = int(h[0])
-                if id == 0:
-                    # ToDo
-                    pass
+                if id == 7: # ADC Data
+                    data = conn.recv(7*4)
+                    data = tcphelper.bytes_to_signed_int32(data, 7)
+                    if tcpsaver.saveADCData(data) == -1:
+                        print("ADC data failure")
                 elif id == 1: # CAN Data
                     data = conn.recv(45*4)
                     data = tcphelper.bytes_to_int(data, 45)
                     if tcpsaver.saveCANData(data) == -1:
                         print("CAN data failure")
                 elif id == 2: # I2C Data
-                    # ToDo
-                    pass
+                    data = conn.recv(16*2 + 4*2)
+                    data = tcphelper.bytes_to_int16(data, 12)
+                    if tcpsaver.saveI2CData(data) == -1:
+                        print("I2C data failure")
                 elif id == 3: # PRU Data
-                    # ToDo
-                    pass
+                    data = conn.recv(5*4)
+                    data = tcphelper.bytes_to_signed_int32(data, 4)
+                    if tcpsaver.savePRUData(data) == -1:
+                        print("PRU data failure")
                 elif id == 4: # Motion Data
-                    # ToDo
-                    pass
+                    data = conn.recv(6*4 + 8*8 + 4)
+                    chars = data[-4:]
+                    data64 = data[3 * 4:-3 * 4 - 4]
+                    data = data[:3*4] + data[-3 * 4 - 4:-4]
+                    data = tcphelper.bytes_to_signed_int32(data, 6)
+                    data64 = tcphelper.bytes_to_signed_int64(data64, 8)
+                    if tcpsaver.saveMotionData(data, data64, chars) == -1:
+                        print("Motion data failure")
                 elif id == 5: # Error Data
-                    data = conn.recv(6)
+                    data = conn.recv(6*4)
+                    data = tcphelper.bytes_to_int(data, 6)
                     if tcpsaver.saveErrorData(data) == -1:
                         print("Error data failure")
                 elif id == 6: # State Data
@@ -77,11 +92,18 @@ def serve():
                     data = tcphelper.bytes_to_int(data, 1)
                     if tcpsaver.saveStateData(data) == -1:
                         print("State data failure")
-            except:
+                elif id == 9:
+                    data = conn.recv(30*(1 + 3*2 + 1) + 48)
+            except Exception as e:
+                print(e)
                 print("Error in TCP Received message")
+                break
         print("Disconnected from Pod!!")
+        exit()
+        tcpsaver.saveTCPStatus(0)
         # Add this to event logger
 
+import binascii
 def sendData():
     global conn, COMMAND_QUEUE
     # Sending data
@@ -91,11 +113,10 @@ def sendData():
             try:
                 print("Sending " + str(command))
                 for message in command:
-                    convmessage = np.uint32(message)
-                    conn.sendall(convmessage)
+                    conn.sendall(message)
             except Exception as e:
                 print(e)
-                COMMAND_QUEUE.put(command)
+                #COMMAND_QUEUE.put(command)
         time.sleep(0.2)
 
 # Starts thread for tcp server and processor
@@ -107,4 +128,8 @@ def start():
 
 def addToCommandQueue(toSend):
     print(str(toSend) + " Added to Queue")
-    COMMAND_QUEUE.put(toSend)
+    COMMAND_QUEUE.put(np.uint32(toSend))
+
+def addToCommandQueueUINT8(toSend):
+    print(str(toSend) + " Added to Queue as uint8")
+    COMMAND_QUEUE.put(np.uint8(toSend))

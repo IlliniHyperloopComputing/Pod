@@ -1,0 +1,10 @@
+<div>
+  <div class="sentText">{{sentText}}</div>
+  <select class="commands" (change)="onSelect($event.target.value)">
+      <option *ngFor="let x of data.commands" value={{x.value}}>
+        {{x.name}}: {{x.value}}
+      </option>
+    </select>
+  <input type="number" name="value" class="value" (keyup)="onEvent($event.target.value)">
+  <button class="submit" (click)="onSubmit()">Submit</button>
+</div>

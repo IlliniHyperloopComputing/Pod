@@ -62,7 +62,7 @@ bool CANManager::send_frame(uint32_t can_id, const char * buf, int len) {
   memcpy(reinterpret_cast<char*>(s_frame.data), buf, len);
   // print(LogLevel::LOG_INFO, "CAN frame id: %x data:%x %x %x \n",
   //                           can_id, s_frame.data[0], s_frame.data[1], s_frame.data[2]);
-  
+
   s_frame.can_dlc = len;
   // Write s_frame
   int ret = write(can_fd, &s_frame, sizeof(s_frame));
@@ -87,7 +87,7 @@ bool CANManager::recv_frame() {
   msg.msg_controllen = sizeof(ctrlmsg);
   msg.msg_flags = 0;
 
-  int byte_count = recvmsg(can_fd, &msg, MSG_DONTWAIT); 
+  int byte_count = recvmsg(can_fd, &msg, MSG_DONTWAIT);
 
   if (byte_count == -1) {
     r_frame.len = 0;
@@ -122,7 +122,7 @@ std::shared_ptr<CANData> CANManager::refresh() {
 
   int64_t a = Utils::microseconds();
   // Send HV battery relay state frame
-  // print(LogLevel::LOG_INFO, "CAN relay state %d %d %d \n", 
+  // print(LogLevel::LOG_INFO, "CAN relay state %d %d %d \n",
   //                          relay_state_buf[0], relay_state_buf[1], relay_state_buf[2]);
 
   send_mutex.lock();  // Used to protect socketfd (TSan datarace)
@@ -144,9 +144,9 @@ std::shared_ptr<CANData> CANManager::refresh() {
     b = Utils::microseconds();
     // print(LogLevel::LOG_INFO, "CAN recv_frame takes %lu microseconds\n", b-a);
     if (r_frame.can_id == can_id_t1) {
-      new_data->status_word =  cast_to_u32(0, 2, r_frame.data);
-      new_data->position_val = cast_to_u32(2, 4, r_frame.data); 
-      new_data->torque_val =   cast_to_u32(6, 2, r_frame.data);  
+      new_data->status_word =  Utils::cast_to_u32(0, 2, r_frame.data);
+      new_data->position_val = Utils::cast_to_u32(2, 4, r_frame.data);
+      new_data->torque_val =   Utils::cast_to_u32(6, 2, r_frame.data);
       // print(LogLevel::LOG_INFO, "CAN frame Motor Controller %d \n", can_id_t1);
       // print(LogLevel::LOG_INFO, "\tstatus word %d\n", new_data->status_word);
       // print(LogLevel::LOG_INFO, "\tposition value %d\n", new_data->position_val);
@@ -154,9 +154,9 @@ std::shared_ptr<CANData> CANManager::refresh() {
     } else if (r_frame.can_id == can_id_t2) {
       new_data->controller_temp =            r_frame.data[0];
       new_data->motor_temp =                 r_frame.data[1];
-      new_data->dc_link_voltage =            cast_to_u32(2, 2, r_frame.data);
-      new_data->logic_power_supply_voltage = cast_to_u32(4, 2, r_frame.data);
-      new_data->current_demand =             cast_to_u32(6, 2, r_frame.data);
+      new_data->dc_link_voltage =            Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->logic_power_supply_voltage = Utils::cast_to_u32(4, 2, r_frame.data);
+      new_data->current_demand =             Utils::cast_to_u32(6, 2, r_frame.data);
       // print(LogLevel::LOG_INFO, "CAN frame Motor Controller %d \n", can_id_t1);
       // print(LogLevel::LOG_INFO, "\tcontroller temp %d\n", new_data->controller_temp);
       // print(LogLevel::LOG_INFO, "\tmotor temperature %d\n", new_data->motor_temp);
@@ -165,70 +165,70 @@ std::shared_ptr<CANData> CANManager::refresh() {
       // print(LogLevel::LOG_INFO, "\tcurrent demand %d\n", new_data->current_demand);
     } else if (r_frame.can_id == can_id_t3) {
       new_data->motor_current_val = r_frame.data[0];
-      new_data->electrical_angle =  cast_to_u32(2, 2, r_frame.data);
-      new_data->phase_a_current =   cast_to_u32(4, 2, r_frame.data);
-      new_data->phase_b_current =   cast_to_u32(6, 2, r_frame.data);
+      new_data->electrical_angle =  Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->phase_a_current =   Utils::cast_to_u32(4, 2, r_frame.data);
+      new_data->phase_b_current =   Utils::cast_to_u32(6, 2, r_frame.data);
       // print(LogLevel::LOG_INFO, "CAN frame Motor Controller %d \n", can_id_t1);
       // print(LogLevel::LOG_INFO, "\tmotor current val %d\n", new_data->motor_current_val);
       // print(LogLevel::LOG_INFO, "\telectrical angle %d\n", new_data->electrical_angle);
       // print(LogLevel::LOG_INFO, "\tphase a current  %d\n", new_data->phase_a_current);
       // print(LogLevel::LOG_INFO, "\tphase b current %d\n", new_data->phase_b_current);
     } else if (r_frame.can_id == 0x6b0) {
-      new_data->pack_current        = cast_to_u32(0, 2, r_frame.data);
-      new_data->pack_voltage_inst   = cast_to_u32(2, 2, r_frame.data);
-      new_data->pack_soc            = cast_to_u32(4, 1, r_frame.data);
-      new_data->relay_state         = cast_to_u32(5, 2, r_frame.data);
-      new_data->rolling_counter     = cast_to_u32(7, 1, r_frame.data);
+      new_data->pack_current        = Utils::cast_to_u32(0, 2, r_frame.data);
+      new_data->pack_voltage_inst   = Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->pack_soc            = Utils::cast_to_u32(4, 1, r_frame.data);
+      new_data->relay_state         = Utils::cast_to_u32(5, 2, r_frame.data);
+      new_data->rolling_counter     = Utils::cast_to_u32(7, 1, r_frame.data);
     } else if (r_frame.can_id == 0x6b1) {
-      new_data->fail_safe_state       = cast_to_u32(0, 2, r_frame.data);
-      new_data->current_limit_status  = cast_to_u32(2, 2, r_frame.data);
-      new_data->high_cell_voltage     = cast_to_u32(4, 2, r_frame.data);
-      new_data->low_cell_voltage       = cast_to_u32(6, 2, r_frame.data);
+      new_data->fail_safe_state       = Utils::cast_to_u32(0, 2, r_frame.data);
+      new_data->current_limit_status  = Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->high_cell_voltage     = Utils::cast_to_u32(4, 2, r_frame.data);
+      new_data->low_cell_voltage       = Utils::cast_to_u32(6, 2, r_frame.data);
     } else if (r_frame.can_id == 0x6b2) {
-      new_data->dtc_status_one        = cast_to_u32(0, 2, r_frame.data);
-      new_data->dtc_status_two        = cast_to_u32(2, 2, r_frame.data);
-      new_data->power_voltage_input   = cast_to_u32(4, 2, r_frame.data);
-      new_data->highest_temp          = cast_to_u32(6, 1, r_frame.data);
-      new_data->internal_temp         = cast_to_u32(7, 1, r_frame.data);
+      new_data->dtc_status_one        = Utils::cast_to_u32(0, 2, r_frame.data);
+      new_data->dtc_status_two        = Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->power_voltage_input   = Utils::cast_to_u32(4, 2, r_frame.data);
+      new_data->highest_temp          = Utils::cast_to_u32(6, 1, r_frame.data);
+      new_data->internal_temp         = Utils::cast_to_u32(7, 1, r_frame.data);
     } else if (r_frame.can_id == 0x6b3) {
-      new_data->pack_voltage_open     = cast_to_u32(0, 2, r_frame.data);
-      new_data->pack_amphours         = cast_to_u32(2, 2, r_frame.data);
-      new_data->pack_resistance       = cast_to_u32(4, 2, r_frame.data);
-      new_data->pack_dod              = cast_to_u32(6, 1, r_frame.data);
-      new_data->pack_soh              = cast_to_u32(7, 1, r_frame.data);
+      new_data->pack_voltage_open     = Utils::cast_to_u32(0, 2, r_frame.data);
+      new_data->pack_amphours         = Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->pack_resistance       = Utils::cast_to_u32(4, 2, r_frame.data);
+      new_data->pack_dod              = Utils::cast_to_u32(6, 1, r_frame.data);
+      new_data->pack_soh              = Utils::cast_to_u32(7, 1, r_frame.data);
     } else if (r_frame.can_id == 0x6b4) {
-      new_data->max_pack_dcl          = cast_to_u32(0, 2, r_frame.data);
-      new_data->avg_pack_current      = cast_to_u32(2, 2, r_frame.data);
-      new_data->avg_temp              = cast_to_u32(4, 1, r_frame.data);
-      new_data->high_cell_voltage_id  = cast_to_u32(5, 1, r_frame.data);
-      new_data->low_cell_voltage_id   = cast_to_u32(6, 1, r_frame.data);
-      new_data->highest_temp_id       = cast_to_u32(7, 1, r_frame.data);
+      new_data->max_pack_dcl          = Utils::cast_to_u32(0, 2, r_frame.data);
+      new_data->avg_pack_current      = Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->avg_temp              = Utils::cast_to_u32(4, 1, r_frame.data);
+      new_data->high_cell_voltage_id  = Utils::cast_to_u32(5, 1, r_frame.data);
+      new_data->low_cell_voltage_id   = Utils::cast_to_u32(6, 1, r_frame.data);
+      new_data->highest_temp_id       = Utils::cast_to_u32(7, 1, r_frame.data);
     } else if (r_frame.can_id == 0x6b5) {
-      new_data->low_cell_internalR      = cast_to_u32(0, 2, r_frame.data);
-      new_data->high_cell_internalR     = cast_to_u32(2, 2, r_frame.data);
-      new_data->low_cell_internalR_id   = cast_to_u32(4, 1, r_frame.data);
-      new_data->high_cell_internalR_id  = cast_to_u32(5, 1, r_frame.data);
+      new_data->low_cell_internalR      = Utils::cast_to_u32(0, 2, r_frame.data);
+      new_data->high_cell_internalR     = Utils::cast_to_u32(2, 2, r_frame.data);
+      new_data->low_cell_internalR_id   = Utils::cast_to_u32(4, 1, r_frame.data);
+      new_data->high_cell_internalR_id  = Utils::cast_to_u32(5, 1, r_frame.data);
     } else if (r_frame.can_id == 0x6b6) {
       new_data->adaptive_total_cap      = cast_to_u32(0, 2, r_frame.data);
       new_data->adaptive_amphours       = cast_to_u32(2, 2, r_frame.data);
       new_data->adaptive_soc            = cast_to_u32(4, 1, r_frame.data);
-    } else if (r_frame.can_id == 0x6b7) {  // Cell data
+    } else if (r_frame.can_id == 0x1aa) {  // Cell data
       // Verify that it has a valid ID that we can use to index
       if (r_frame.data[0] < 30) {
         int cell_id = r_frame.data[0]; // If its "1" indexed instead of 0, incremnt this
         private_cell_data.cell_data[cell_id].cell_id = r_frame.data[0];
-        private_cell_data.cell_data[cell_id].instant_voltage = cast_to_u32(1, 2, r_frame.data);
-        private_cell_data.cell_data[cell_id].internal_resistance = cast_to_u32(3, 2, r_frame.data);
-        private_cell_data.cell_data[cell_id].open_voltage = cast_to_u32(5, 2, r_frame.data);
+        private_cell_data.cell_data[cell_id].instant_voltage = (r_frame.data[1]<<8) | (r_frame.data[2]);
+        private_cell_data.cell_data[cell_id].internal_resistance = (r_frame.data[3]<<8) | (r_frame.data[4]);
+        private_cell_data.cell_data[cell_id].open_voltage = (r_frame.data[5]<<8) | (r_frame.data[6]);
         private_cell_data.cell_data[cell_id].checksum = r_frame.data[7];
       } else {
-        print(LogLevel::LOG_ERROR, "Cell Data CAN frame has bad ID ??? %d", r_frame.data[0] ); 
+        print(LogLevel::LOG_ERROR, "Cell Data CAN frame has bad ID ??? %d", r_frame.data[0] );
       }
-     
+
     // Thermistor https://www.orionbms.com/downloads/misc/thermistor_module_canbus.pdf
-    } else if (r_frame.can_id == 0x1838F380) {  // Thermistor General CAN
+    } else if (r_frame.can_id == 0x1838F380 || r_frame.can_id == 0x9838F380) {  // Thermistor General CAN
       // Verify that it has a valid ID that we can use to index
-      int16_t therm_id = cast_to_u32(0, 2, r_frame.data);
+      int16_t therm_id = (r_frame.data[0]<<8) | (r_frame.data[1]);//cast_to_u32(0, 2, r_frame.data);
       if (therm_id < 40) {
         private_cell_data.therm_value[therm_id] = r_frame.data[2];
         private_cell_data.num_therms_enabled = r_frame.data[3];
@@ -236,12 +236,13 @@ std::shared_ptr<CANData> CANManager::refresh() {
         private_cell_data.highest_therm_value = r_frame.data[5];
         private_cell_data.highest_therm_id = r_frame.data[6];
         private_cell_data.lowest_therm_id = r_frame.data[7];
+        //print(LogLevel::LOG_ERROR, "THERM: cell_id: %d val:%d  ", therm_id, r_frame.data[2]);
       } else {
         print(LogLevel::LOG_ERROR, "Therm Data CAN frame has bad ID ??? %d", therm_id); 
       }
-    } 
+    }
     else {
-      print(LogLevel::LOG_DEBUG, "CAN Frame UNKNOWN msg: id: %d, len: %d, \n", r_frame.can_id, r_frame.len); 
+      //print(LogLevel::LOG_DEBUG, "CAN Frame UNKNOWN msg: id: 0x%x, len: %d, \n", r_frame.can_id, r_frame.len);
     }
 
     // Print the contents of r_frame (assumes len <= 8)
@@ -250,8 +251,8 @@ std::shared_ptr<CANData> CANManager::refresh() {
     //   put_hex_byte(buff+j, r_frame.data[j/2]);
     // }
     // buff[r_frame.len*2] = '\0';  // include null terminator
-    // 
-    // print(LogLevel::LOG_INFO, "CAN msg: id: %d, len: %d, data: %s\n", r_frame.can_id, r_frame.len, buff); 
+    //
+    // print(LogLevel::LOG_INFO, "CAN msg: id: %d, len: %d, data: %s\n", r_frame.can_id, r_frame.len, buff);
   } while (r_frame.len != 0);
 
   memcpy(&stored_data, new_data.get(), sizeof(CANData));   // Copy new data to stored data
@@ -273,7 +274,7 @@ std::shared_ptr<CANData> CANManager::refresh_sim() {
 }
 
 void CANManager::initialize_sensor_error_configs() {
-  if (!(ConfiguratorManager::config.getValue("error_motor_ctrl_over_temp", error_motor_ctrl_over_temp) && 
+  if (!(ConfiguratorManager::config.getValue("error_motor_ctrl_over_temp", error_motor_ctrl_over_temp) &&
       ConfiguratorManager::config.getValue("error_motor_over_temp", error_motor_over_temp) &&
       ConfiguratorManager::config.getValue("error_dc_link_over_voltage", error_dc_link_over_voltage) &&
       ConfiguratorManager::config.getValue("error_dc_link_under_voltage", error_dc_link_under_voltage) &&
@@ -295,7 +296,7 @@ void CANManager::initialize_sensor_error_configs() {
 
   // rolling counter is only up to 255, so this is an unrealistic number for it
   // This guarantees that the first comparison is good
-  rolling_counter_tracker = 1000; 
+  rolling_counter_tracker = 1000;
   // set the timer to compare right away;
   rolling_counter_timer = -1000000;
 }
@@ -390,10 +391,10 @@ void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_d
   }
   if (check_data->motor_temp > error_motor_over_temp) {
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_MOTOR_OVER_TEMPERATURE);
-  }  
+  }
   if (check_data->dc_link_voltage > error_dc_link_over_voltage) {
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_HV_OVER_VOLTAGE_ERROR);
-  } 
+  }
   if (check_data->dc_link_voltage < error_dc_link_under_voltage) {
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_HV_UNDER_VOLTAGE_ERROR);
   }
@@ -448,7 +449,7 @@ void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_d
   if (check_data->status_word & 0x8 ) {
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_FAULT);
   }
-  // If this error triggers too much, consider only having it trigger 
+  // If this error triggers too much, consider only having it trigger
   // Within a flight mode
   if (check_data->status_word & 0x80) {
     Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_MOTOR_CONTROLLER_WARN);
@@ -456,14 +457,14 @@ void CANManager::check_for_sensor_error(const std::shared_ptr<CANData> & check_d
 
   // Rolling counter must increment every 100 milliseconds. We define a bms rolling counter timeout value
   // So we see if 100 milliseconds are up
-  //    If yes, then we check if the rolling_counter_tracker == the rolling_counter 
+  //    If yes, then we check if the rolling_counter_tracker == the rolling_counter
   //      The Rolling counter _should_ be updated!  IF not, it means the BMS could have stalled
   //      The rolling_counter_tracker is updated every time the timer is up
   //    If no, then keep waiting
   if (microseconds()-rolling_counter_timer > error_bms_rolling_counter_timeout) {
     if(check_data->rolling_counter == rolling_counter_tracker) {
       Command::set_error_flag(Command::Network_Command_ID::SET_CAN_ERROR, CANErrors::CAN_BMS_ROLLING_COUNTER_ERROR);
-    } 
+    }
     rolling_counter_tracker = check_data->rolling_counter;
     rolling_counter_timer = microseconds();
   }

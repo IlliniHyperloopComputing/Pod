@@ -5,19 +5,35 @@ from . import models
 ###############################################################
 
 def saveStateData(data):
-    if len(data) < 1:
+    if len(data) != 1:
         return -1
     state_model = models.State(
         state=data[0]
     )
     state_model.save()
+    return 1
+
+def saveADCData(data):
+    if len(data) != 7:
+        return -1
+    error_model = models.ADCData(
+        data_0=data[0],
+        data_1=data[1],
+        data_2=data[2],
+        data_3=data[3],
+        data_4=data[4],
+        data_5=data[5],
+        data_6=data[6]
+    )
+    error_model.save()
+    return 1
 
 # Input: data array
 # Function: saves data as a error data model
 # Returns: -1 if the array is too small
 # Returns: 1 on success
 def saveErrorData(data):
-    if len(data) < 6:
+    if len(data) != 6:
         return -1
     error_model = models.Errors(
         ADCError=data[0],
@@ -28,6 +44,64 @@ def saveErrorData(data):
         OtherError=data[5],
     )
     error_model.save()
+    return 1
+
+def saveI2CData(data):
+    i2c_model = models.I2CData(
+        sensor_0x48_0 = data[0],
+        sensor_0x48_1 = data[1],
+        sensor_0x48_2 = data[2],
+        sensor_0x48_3 = data[3],
+        sensor_0x49_0 = data[4],
+        sensor_0x49_1 = data[5],
+        sensor_0x49_2 = data[6],
+        sensor_0x49_3 = data[7],
+        sensor_0x77_0 = data[8],
+        sensor_0x77_1 = data[9],
+        sensor_0x77_2 = data[10],
+        sensor_0x77_3 = data[11],
+    )
+    i2c_model.save()
+    return 1
+
+def savePRUData(data):
+    if len(data) != 4:
+        return -1
+    pru_model = models.PRUData(
+        orange_distance = data[0],
+        orange_velocity = data[1],
+        wheel_distance = data[2],
+        wheel_velocity = data[3]
+    )
+    pru_model.save()
+    return 1
+
+def saveMotionData(data, data64, char_data):
+    if len(data) != 6:
+        return -1
+    if len(data64) != 8:
+        return -1
+    motion_model = models.MotionData(
+        position = data[0],
+        velocity = data[1],
+        acceleration = data[2],
+        motor_state = data[3],
+        brake_state = data[4],
+        motor_target_torque = data[5],
+        p_timeout = data64[0],
+        a_timeout = data64[1],
+        c_timeout = data64[2],
+        b_timeout = data64[3],
+        p_counter = data64[4],
+        a_counter = data64[5],
+        c_counter = data64[6],
+        b_counter = data64[7],
+        relay_state_buff_0 = char_data[0],
+        relay_state_buff_1 = char_data[1],
+        relay_state_buff_2 = char_data[2],
+        relay_state_buff_3 = char_data[3]
+    )
+    motion_model.save()
     return 1
 
 # There has to be a better way to do this
@@ -42,13 +116,12 @@ def saveCANData(data):
         return -1
     can_model = models.CANData(
         # Motor Controller
-        data=data[0],
-        status_word=data[1],
-        position_val=data[2],
-        torque_val=data[3],
-        controller_temp=data[4],
-        motor_temp=data[5],
-        dc_link_voltage=data[6],
+        status_word=data[0],
+        position_val=data[1],
+        torque_val=data[2],
+        controller_temp=data[3],
+        motor_temp=data[4],
+        dc_link_voltage=data[5],
         logic_power_supply_voltage=data[6],
         current_demand=data[7],
         motor_current_val=data[8],
@@ -98,4 +171,20 @@ def saveCANData(data):
     )
 
     can_model.save()
+    return 1
+
+def saveTCPStatus(status):
+    connected_data = models.ConnectedData.objects.latest("date_time")
+    models.ConnectedData(
+        tcp_connected=status,
+        udp_connected=connected_data.udp_connected
+    ).save()
+    return 1
+
+def saveUDPStatus(status):
+    connected_data = models.ConnectedData.objects.latest("date_time")
+    models.ConnectedData(
+        tcp_connected=connected_data.tcp_connected,
+        udp_connected=status
+    ).save()
     return 1

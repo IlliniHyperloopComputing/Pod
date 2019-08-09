@@ -387,7 +387,6 @@ void Pod_State::steady_function_outside(Command::Network_Command * command,
       SourceManager::ADC.calculate_zero_g();
       break;
     case Command::RESET_PRU:
-      SourceManager::PRU.reset_pru();
       break;
     default:
       break;
@@ -452,7 +451,6 @@ void Pod_State::steady_launch_ready(Command::Network_Command * command,
                                     UnifiedState* state) {
   switch (command->id) {
     case Command::RESET_PRU:
-      SourceManager::PRU.reset_pru();
       break;
     default:
       break;

@@ -20,7 +20,7 @@ namespace Utils {
 
   const int HEARTBEAT_GPIO = 68;
   const int WATCH_DOG_RESET_GPIO = 69;
-  const int BRAKE_GPIO = 13;
+  const int BRAKE_GPIO = 45;
 
   /**
   * Gets the current time since program startup
@@ -31,6 +31,7 @@ namespace Utils {
   // Set GPIO to specific value
   bool set_GPIO(int GPIONumber, bool switchVal);
 
+  uint32_t cast_to_u32(int offset, int bytes_per_item, unsigned char* bufferArray);
   void busyWait(int64_t microseconds);
   enum LogLevel {
     LOG_EDEBUG = 0,  // excesive debug

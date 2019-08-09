@@ -34,13 +34,13 @@ enum HV_Relay_State {
 #define NUM_ACCEL 2
 struct ADCData {
   int32_t data[NUM_ADC];
-  // [0]  
-  // [1]  
-  // [2]  
-  // [3]  
-  // [4]  
-  // [5]  
-  // [6]  
+  // [0]
+  // [1]
+  // [2]
+  // [3]
+  // [4]
+  // [5]
+  // [6]
 };
 
 
@@ -62,10 +62,10 @@ struct CANData {
   // BMS
   uint32_t internal_relay_state;        // Used within the CANManager to set BMS relay states
   uint32_t relay_state;                 // uint16_t This should agree with the above (given a small delay)
-  uint32_t rolling_counter;             // uint8_t 
+  uint32_t rolling_counter;             // uint8_t
   uint32_t fail_safe_state;             // uint16_t
   uint32_t pack_current;                // int16_t
-  uint32_t pack_voltage_inst;           // uint16_t       
+  uint32_t pack_voltage_inst;           // uint16_t
   uint32_t pack_voltage_open;           // uint16_t
   uint32_t pack_soc;                    // uint8_t
   uint32_t pack_amphours;               // uint16_t
@@ -148,6 +148,7 @@ struct MotionData {
   int64_t a_counter;
   int64_t c_counter;
   int64_t b_counter;
+  
   int32_t motor_state;
   int32_t brake_state;
   int32_t motor_target_torque;
@@ -226,11 +227,12 @@ enum PRUErrors {
 enum NETWORKErrors {
   UDP_SETUP_FAILURE = 0x1,
   TCP_SETUP_FAILURE = 0x2,
-  UDP_READ_WRITE_ERROR = 0x4, 
-  TCP_READ_WRITE_ERROR = 0x8, 
-  UDP_DISCONNECT_ERROR = 0x10, 
-  TCP_DISCONNECT_ERROR = 0x20, 
-  NET_SENTINEL = 0x40  // Not an error, but a way to easily keep track of the number of errors
+  UDP_READ_WRITE_ERROR = 0x4,
+  TCP_READ_WRITE_ERROR = 0x8,
+  UDP_DISCONNECT_ERROR = 0x10,
+  TCP_DISCONNECT_ERROR = 0x20,
+  NET_SENTINEL = 0x40,  // Not an error, but a way to easily keep track of the number of errors
+  UDP_E_BRAKE_ERROR = 0x80,
   // Update Command.cpp with additional errors, or suffer segfaults
 };
 
@@ -241,7 +243,7 @@ enum OTHERErrors {
 };
 
 struct Errors{
-  uint32_t error_vector[6]; 
+  uint32_t error_vector[6];
   // [0] ADC errors
   // [1] CAN errors
   // [2] I2C errors

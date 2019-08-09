@@ -122,7 +122,7 @@ int TCPManager::write_data() {
     memcpy(&bms_data, &SourceManager::CAN.public_cell_data, sizeof(BMSCells));
     SourceManager::CAN.cell_data_mutex.unlock();  
     last_sent_times[3] = cur_time;
-    if ((write_all_to_socket(socketfd, &TCPID.can_id, sizeof(uint8_t)) <= 0) ||
+    if ((write_all_to_socket(socketfd, &TCPID.bms_id, sizeof(uint8_t)) <= 0) ||
         (write_all_to_socket(socketfd, reinterpret_cast<uint8_t*>(&bms_data), sizeof(BMSCells)) <= 0)) {  //NOLINT
       return -1;
     }

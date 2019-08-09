@@ -1,0 +1,8 @@
+.launch {
+    width: 200px;
+    height: 100px;
+    background-color: rgb(24, 113, 143);
+    cursor: pointer;
+    border-radius: 15px;
+    font-weight: bold;
+}

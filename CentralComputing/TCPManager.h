@@ -28,7 +28,7 @@
 namespace TCPManager {
 
 struct TCPSendIDs {
-  uint8_t adc_id = 0;
+  uint8_t adc_id = 7;
   uint8_t can_id = 1;
   uint8_t i2c_id = 2;
   uint8_t pru_id = 3;
@@ -69,8 +69,8 @@ int connect_to_server(const char * hostname, const char * port);
  * @param buffer a pointer to the network command that was read
  * @return the number of bytes read
  **/
-int read_command(uint32_t * ID, uint32_t * Command); 
-/** 
+int read_command(uint32_t * ID, uint32_t * Command);
+/**
  * Collects data from sensor, writes to socket
  * @param times timings for when to send specific data
  * @return bytes written or -1 if failed
@@ -78,13 +78,13 @@ int read_command(uint32_t * ID, uint32_t * Command);
 int write_data();
 
 /**
- * Thread function, continually reads commands from the socket and 
+ * Thread function, continually reads commands from the socket and
  * pushes them onto the queue
  */
 void read_loop();
 
 /**
- * Thread function, continually gets most recent state/motor/brake/sensor 
+ * Thread function, continually gets most recent state/motor/brake/sensor
  * data and sends a packet
  */
 void write_loop();

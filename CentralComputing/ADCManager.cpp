@@ -57,10 +57,10 @@ std::shared_ptr<ADCData> ADCManager::refresh() {
     uint16_t * val = (buffer + i);
     new_data -> data[i] = (*val);
   }
-  //  print(Utils::LOG_ERROR, "%d \t%d\t%d\t %d\t%d\t%d\t%d\t\n", new_data->data[0], 
-  //                          new_data->data[1], new_data->data[2], 
-  //                          new_data->data[3], new_data->data[4],
-  //                          new_data->data[5], new_data->data[6]);
+   print(Utils::LOG_ERROR, "%d \t%d\t%d\t %d\t%d\t%d\t%d\t\n", new_data->data[0], 
+                            new_data->data[1], new_data->data[2], 
+                            new_data->data[3], new_data->data[4],
+                            new_data->data[5], new_data->data[6]);
 
   if (do_calculate_zero_g) { 
     if ((calculate_zero_g_time + calculate_zero_g_timeout) > Utils::microseconds()) {

@@ -135,3 +135,4 @@ cross-test
 # Other
 .depend
 *.swp
+BaseStation/Backend/db.sqlite3

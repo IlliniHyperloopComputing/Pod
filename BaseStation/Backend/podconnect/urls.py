@@ -1,12 +1,15 @@
 from django.urls import path
 
-from . import views
+from . import data_logic, actions_logic
 
 urlpatterns = [
-    path('data/latest', views.getLatest, name='latest'),
-    path('commands/stop', views.stopPressed, name='stopButton'),
-    path('commands/ready', views.readyPressed, name='readyButton'),
-    path('commands/dev', views.devCommand, name='devCommand'),
-    path('commands/servers', views.startupServers, name='startServers')
+    path('data/battery', data_logic.battery, name="data-latest"),
+    #path('data/warnings', data_logic.warnings, name="data-warnings"),
+    path('data/state', data_logic.state, name="state"),
+    path('data/stats', data_logic.stats, name="data-stats"),
+    #path('data/stats/essential', data_logic.essential_stats, name="data-essential-stats"),
+    path('data/position', data_logic.position, name="data-position"),
+    path('commands/button', actions_logic.buttonPressed, name="command-button"),
+    path('commands/dev', actions_logic.devCommand, name="command-dev"),
+    path('commands/servers', actions_logic.startupServers, name="startServers"),
 ]
-
