@@ -245,7 +245,7 @@ BOOST_PYTHON_MODULE(command){
         // exposes Defines.hpp
         class_<ADCData>("ADCData")
         .def_readonly("data", &ADCData::data);
-        // array should be exposed in another way because python doesn't have array
+        // array should be exposed in another way because python doesn't have type array
         // here temporarily use readonly
 
         class_<CANData>("CANData")
@@ -318,4 +318,26 @@ BOOST_PYTHON_MODULE(command){
         .def_readonly("temp", &I2CData::temp)
         .def_readwrite("pressure_sensor", &I2CData::pressure_sensor)
         .def_readwrite("temp_sensor", &I2CData::temp_sensor);
+
+        class_<PRUData>("PRUData")
+        .def_readonly("orange_distance", &PRUData::orange_distance)
+        .def_readonly("orange_velocity", &PRUData::orange_velocity)
+        .def_readonly("wheel_distance", &PRUData::wheel_distance)
+        .def_readonly("wheel_velocity", &PRUData::wheel_velocity)
+        .def_readwrite("watchdog_hz", &PRUData::watchdog_hz);
+
+        class_<MotionData>("MotionData")
+        .def_readonly("x", &MotionData::x)
+        .def_readwrite("p_timeout", &MotionData::p_timeout)
+        .def_readwrite("a_timeout", &MotionData::a_timeout)
+        .def_readwrite("c_timeout", &MotionData::c_timeout)
+        .def_readwrite("b_timeout", &MotionData::b_timeout)
+        .def_readwrite("p_counter", &MotionData::p_counter)
+        .def_readwrite("a_counter", &MotionData::a_counter)
+        .def_readwrite("c_counter", &MotionData::c_counter)
+        .def_readwrite("b_counter", &MotionData::b_counter)
+        .def_readwrite("motor_state", &MotionData::motor_state)
+        .def_readwrite("brake_state", &MotionData::brake_state)
+        .def_readwrite("motor_target_torque", &MotionData::motor_target_torque)
+        .def_readonly("relay_state_buf", &MotionData::relay_state_buf);
 }

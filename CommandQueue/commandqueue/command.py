@@ -27,25 +27,41 @@ assert can_data.status_word == 37
 print("CANData Class Variables Accessible")
 
 # test BMSCellBroadcastData
-BMS_cell_broadcast_data = command.BMSCellBroadcastData()
+bms_cell_broadcast_data = command.BMSCellBroadcastData()
 print("BMSCellBroadcastData Class Available")
 
-BMS_cell_broadcast_data.cell_id = 37
-assert BMS_cell_broadcast_data.cell_id == 37
+bms_cell_broadcast_data.cell_id = 37
+assert bms_cell_broadcast_data.cell_id == 37
 print("BMSCellBroadcastData Class Variables Accessible")
 
 # test BMSCells
-BMS_cells = command.BMSCells()
+bms_cells = command.BMSCells()
 print("BMSCells Class Available")
 
-BMS_cells.num_therms_enabled = 37
-assert BMS_cells.num_therms_enabled == 37
+bms_cells.num_therms_enabled = 37
+assert bms_cells.num_therms_enabled == 37
 print("BMSCells Class Variables Accessible")
 
 # test I2CData
-I2C_data = command.I2CData()
+i2c_data = command.I2CData()
 print("I2CData Class Available")
 
-I2C_data.pressure_sensor = 37
-assert I2C_data.pressure_sensor == 37
+i2c_data.pressure_sensor = 37
+assert i2c_data.pressure_sensor == 37
 print("I2CData Class Variables Accessible")
+
+# test PRUData
+pru_data = command.PRUData()
+print("PRUData Class Available")
+
+pru_data.watchdog_hz = 37
+assert pru_data.watchdog_hz == 37
+print("PRUData Class Variables Accessible")
+
+# test MotionData
+motion_data = command.MotionData()
+print("MotionData Class Available")
+
+motion_data.p_timeout = 37
+assert motion_data.p_timeout == 37
+print("MotionData Class Variables Accessible")
