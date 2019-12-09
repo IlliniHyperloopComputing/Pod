@@ -1,4 +1,8 @@
 class Utils:
+
+    HEARTBEAT_GPIO = 68
+    WATCH_DOG_RESET_GPIO = 69
+
     @staticmethod
     def set_GPIO(GPIONumber, switchVal):
         start = "/sys/class/gpio/gpio"

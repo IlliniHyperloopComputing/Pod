@@ -238,6 +238,13 @@ BOOST_PYTHON_MODULE(command){
         def("wait_for_empty", Command::wait_for_empty);
         def("set_error_flag", Command::set_error_flag);
 
+        // exposes enums
+        enum_<Command::Network_Command_ID>("Network_Command_ID")
+        .value("SET_OTHER_ERROR", Command::Network_Command_ID::SET_OTHER_ERROR);
+
+        enum_<OTHERErrors>("OTHERErrors")
+        .value("GPIO_SWITCH_ERROR", GPIO_SWITCH_ERROR);
+
         // exposes Command.h
         class_<Command::Network_Command>("Network_Command")
         .def_readwrite("id", &Command::Network_Command::id)
