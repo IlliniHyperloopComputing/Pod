@@ -236,6 +236,7 @@ BOOST_PYTHON_MODULE(command){
         def("put", Command::put);
         def("get", Command::get);
         def("wait_for_empty", Command::wait_for_empty);
+        def("set_error_flag", Command::set_error_flag);
 
         // exposes Command.h
         class_<Command::Network_Command>("Network_Command")
