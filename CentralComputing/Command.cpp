@@ -228,3 +228,14 @@ std::string Command::get_network_command_value_string(Network_Command * com) {
 
 }
 
+#include <boost/python/module.hpp>
+#include "boost/python/detail/wrap_python.hpp"
+#include <boost/python/def.hpp>
+using namespace boost::python;
+using namespace Command;
+
+BOOST_PYTHON_MODULE(commandqueue){
+  def("put", put);
+  def("get", get);
+  def("set_error_flag", set_error_flag);
+}
